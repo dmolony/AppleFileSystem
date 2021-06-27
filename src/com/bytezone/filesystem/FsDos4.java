@@ -1,6 +1,8 @@
 package com.bytezone.filesystem;
 
+// -----------------------------------------------------------------------------------//
 public class FsDos4 extends AbstractFileSystem
+// -----------------------------------------------------------------------------------//
 {
   static final int ENTRY_SIZE = 35;
   int dosVersion;
@@ -24,13 +26,13 @@ public class FsDos4 extends AbstractFileSystem
   private void setVersion (byte version)
   // ---------------------------------------------------------------------------------//
   {
-    fileSystemName = "Dos" + switch (version)
+    dosVersion = version & 0xFF;
+    setFileSystemName ("Dos" + switch (version)
     {
       case 0x41 -> "4.1";
       case 0x42 -> "4.2";
       default -> "?.?";
-    };
-    dosVersion = version & 0xFF;
+    });
   }
 
   // ---------------------------------------------------------------------------------//
@@ -51,6 +53,9 @@ public class FsDos4 extends AbstractFileSystem
       if (track == 0)
         break;
 
+      track &= 0x3F;
+      sector &= 0x1F;
+
       AppleBlock catalogSector = getSector (track, sector);
       if (!catalogSector.isValid ())
         return;
@@ -67,23 +72,32 @@ public class FsDos4 extends AbstractFileSystem
         }
         else
         {
-          track = buffer[ptr] & 0xFF;
-          sector = buffer[ptr + 1] & 0xFF;
-
-          track &= 0x3F;
-          sector &= 0x1F;
-
-          AppleBlock tsSector = getSector (track, sector);
-          if (!tsSector.isValid ())
-            return;
-
-          //          String name = string (buffer, ptr + 3, 30);
-          //          System.out.println (name);
+          try
+          {
+            FileDos4 file = new FileDos4 (this, buffer, ptr);
+            files.add (file);
+          }
+          catch (FileFormatException e)
+          {
+            break;
+          }
         }
 
         ptr += ENTRY_SIZE;
       }
       ++catalogBlocks;
     }
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
+  public String toString ()
+  // ---------------------------------------------------------------------------------//
+  {
+    StringBuilder text = new StringBuilder (super.toText ());
+
+    text.append (String.format ("Dos version ........... %02X%n", dosVersion));
+
+    return text.toString ();
   }
 }

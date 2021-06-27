@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 // -----------------------------------------------------------------------------------//
-public class FileDos extends AbstractFile
+public class FileDos4 extends AbstractFile
 // -----------------------------------------------------------------------------------//
 {
   int type;
@@ -16,7 +16,7 @@ public class FileDos extends AbstractFile
   int eof;
 
   // ---------------------------------------------------------------------------------//
-  FileDos (FsDos fs, byte[] buffer, int ptr)
+  FileDos4 (FsDos4 fs, byte[] buffer, int ptr)
   // ---------------------------------------------------------------------------------//
   {
     super (fs);
@@ -31,6 +31,9 @@ public class FileDos extends AbstractFile
 
     while (nextTrack != 0)
     {
+      nextTrack &= 0x3F;
+      nextSector &= 0x1F;
+
       AppleBlock tsSector = fs.getSector (nextTrack, nextSector);
       if (!tsSector.isValid ())
         throw new FileFormatException ("Invalid TS sector");

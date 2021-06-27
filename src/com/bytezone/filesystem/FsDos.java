@@ -26,6 +26,7 @@ public class FsDos extends AbstractFileSystem
   private void setVersion (byte version)
   // ---------------------------------------------------------------------------------//
   {
+    dosVersion = version & 0xFF;
     setFileSystemName ("Dos" + switch (version)
     {
       case 0x01 -> "3.1";
@@ -33,8 +34,6 @@ public class FsDos extends AbstractFileSystem
       case 0x03 -> "3.3";
       default -> "?.?";
     });
-
-    dosVersion = version & 0xFF;
   }
 
   // ---------------------------------------------------------------------------------//
