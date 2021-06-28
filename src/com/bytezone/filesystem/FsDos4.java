@@ -43,6 +43,10 @@ public class FsDos4 extends AbstractFileSystem
 
     AppleBlock vtoc = getSector (17, 0);
     byte[] buffer = vtoc.read ();
+
+    if (buffer[3] != 0x41 && buffer[3] != 0x42)
+      return;
+
     setVersion (buffer[3]);
 
     while (true)
@@ -94,7 +98,7 @@ public class FsDos4 extends AbstractFileSystem
   public String toString ()
   // ---------------------------------------------------------------------------------//
   {
-    StringBuilder text = new StringBuilder (super.toText ());
+    StringBuilder text = new StringBuilder (super.toString ());
 
     text.append (String.format ("Dos version ........... %02X%n", dosVersion));
 

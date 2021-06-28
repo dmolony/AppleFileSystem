@@ -12,14 +12,14 @@ import com.bytezone.filesystem.BlockReader.AddressType;
 public abstract class AbstractFileSystem implements AppleFileSystem
 // -----------------------------------------------------------------------------------//
 {
-  String fileSystemName;        // DosX.X, Prodos, Pascal, CPM
-  String fileName;
+  private String fileSystemName;        // DosX.X, Prodos, Pascal, CPM
+  private String fileName;
 
   final byte[] diskBuffer;      // entire buffer including any header or other disks
   final int diskOffset;         // start of this disk
   final int diskLength;         // length of this disk
 
-  BlockReader blockReader;
+  private BlockReader blockReader;
 
   int totalBlocks;
   int catalogBlocks;
@@ -34,6 +34,10 @@ public abstract class AbstractFileSystem implements AppleFileSystem
     this.diskBuffer = buffer;
     this.diskOffset = offset;
     this.diskLength = length;
+
+    assert offset + length <= diskBuffer.length : String.format (
+        "Disk length: %,d too small for offset %,d + length %,d", diskBuffer.length,
+        offset, length);
   }
 
   // ---------------------------------------------------------------------------------//
@@ -63,6 +67,8 @@ public abstract class AbstractFileSystem implements AppleFileSystem
   // ---------------------------------------------------------------------------------//
   {
     this.blockReader = blockReader;
+//    System.out.printf ("Setting BlockReader: %s%n", blockReader);
+//    System.out.printf ("in FS: %s%n", this.toText ());
 
     totalBlocks = diskLength / blockReader.blockSize;
     catalogBlocks = 0;

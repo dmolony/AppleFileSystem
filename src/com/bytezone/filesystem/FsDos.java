@@ -19,7 +19,7 @@ public class FsDos extends AbstractFileSystem
   // ---------------------------------------------------------------------------------//
   {
     super (name, buffer, offset, length);
-    setFileSystemName ("Dosx.x");
+    setFileSystemName ("Dos3.x");
   }
 
   // ---------------------------------------------------------------------------------//
@@ -43,7 +43,13 @@ public class FsDos extends AbstractFileSystem
     assert catalogBlocks == 0;
 
     AppleBlock vtoc = getSector (17, 0);
+    if (!vtoc.isValid ())
+      return;
     byte[] buffer = vtoc.read ();
+
+    if (buffer[3] < 0x01 || buffer[3] > 0x03)
+      return;
+
     setVersion (buffer[3]);
 
     while (true)
@@ -92,7 +98,7 @@ public class FsDos extends AbstractFileSystem
   public String toString ()
   // ---------------------------------------------------------------------------------//
   {
-    StringBuilder text = new StringBuilder (super.toText ());
+    StringBuilder text = new StringBuilder (super.toString ());
 
     text.append (String.format ("Dos version ........... %02X%n", dosVersion));
 

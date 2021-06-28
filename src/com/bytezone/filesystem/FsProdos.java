@@ -150,7 +150,7 @@ public class FsProdos extends AbstractFileSystem
   public String toString ()
   // ---------------------------------------------------------------------------------//
   {
-    StringBuilder text = new StringBuilder (super.toText ());
+    StringBuilder text = new StringBuilder (super.toString ());
 
     text.append (String.format ("Entry length .......... %d%n", entryLength));
     text.append (String.format ("Entries per block ..... %d%n", entriesPerBlock));

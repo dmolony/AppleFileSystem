@@ -119,4 +119,13 @@ public class BlockReader
         break;          // impossible
     }
   }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
+  public String toString ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return String.format ("Type: %s, BlockSize: %d, Interleave: %d, BlocksPerTrack: %2d",
+        addressType, blockSize, interleave, blocksPerTrack);
+  }
 }

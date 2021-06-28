@@ -67,7 +67,7 @@ public class FsCpm extends AbstractFileSystem
   public String toString ()
   // ---------------------------------------------------------------------------------//
   {
-    StringBuilder text = new StringBuilder (super.toText ());
+    StringBuilder text = new StringBuilder (super.toString ());
 
     text.append (String.format ("Something ............. %d%n", 99));
 
