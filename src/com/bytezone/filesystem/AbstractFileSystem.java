@@ -125,6 +125,16 @@ public abstract class AbstractFileSystem implements AppleFileSystem
     return blockReader.read (diskBuffer, diskOffset, blocks);
   }
 
+  // ---------------------------------------------------------------------------------//
+  @Override
+  public String toText ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return String.format ("%-20.20s %-6s %,8d  %d %,7d  %2d  %3d ", fileName,
+        fileSystemName, diskOffset, blockReader.interleave, totalBlocks,
+        getTotalCatalogBlocks (), files.size ());
+  }
+
   // AppleFile methods
 
   // ---------------------------------------------------------------------------------//
@@ -245,16 +255,6 @@ public abstract class AbstractFileSystem implements AppleFileSystem
 
   // ---------------------------------------------------------------------------------//
   @Override
-  public String toText ()
-  // ---------------------------------------------------------------------------------//
-  {
-    return String.format ("%-20.20s %-6s %,8d  %d %,7d  %2d  %3d ", fileName,
-        fileSystemName, diskOffset, blockReader.interleave, totalBlocks,
-        getTotalCatalogBlocks (), files.size ());
-  }
-
-  // ---------------------------------------------------------------------------------//
-  @Override
   public String toString ()
   // ---------------------------------------------------------------------------------//
   {
@@ -271,7 +271,4 @@ public abstract class AbstractFileSystem implements AppleFileSystem
 
     return text.toString ();
   }
-
-  // to remove later
-
 }
