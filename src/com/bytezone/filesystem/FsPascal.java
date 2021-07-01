@@ -40,8 +40,8 @@ public class FsPascal extends AbstractFileSystem
 //    System.out.println (getName ());
 //    System.out.println (format (buffer));
 
-    int blockFrom = unsignedShort (buffer, 0);
-    int blockTo = unsignedShort (buffer, 2);
+    int blockFrom = Utility.unsignedShort (buffer, 0);
+    int blockTo = Utility.unsignedShort (buffer, 2);
     if (blockFrom != 0 || blockTo != 6)
       throw new FileFormatException (
           String.format ("from: %d, to: %d%n", blockFrom, blockTo));
@@ -49,10 +49,10 @@ public class FsPascal extends AbstractFileSystem
     int nameLength = buffer[6] & 0xFF;
     if (nameLength < 1 || nameLength > 7)
       throw new FileFormatException ("bad name length : " + nameLength);
-    volumeName = AbstractFileSystem.string (buffer, 7, nameLength);
+    volumeName = Utility.string (buffer, 7, nameLength);
 
-    blocks = unsignedShort (buffer, 14);
-    files = unsignedShort (buffer, 16);
+    blocks = Utility.unsignedShort (buffer, 14);
+    files = Utility.unsignedShort (buffer, 16);
     catalogBlocks = blockTo - 2;
 
     int max = Math.min (blockTo, totalBlocks);

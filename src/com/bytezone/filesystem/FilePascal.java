@@ -21,16 +21,16 @@ public class FilePascal extends AbstractFile
 
     isFile = true;
 
-    firstBlock = AbstractFileSystem.unsignedShort (buffer, ptr);
-    lastBlock = AbstractFileSystem.unsignedShort (buffer, ptr + 2);
+    firstBlock = Utility.unsignedShort (buffer, ptr);
+    lastBlock = Utility.unsignedShort (buffer, ptr + 2);
     fileType = buffer[ptr + 4] & 0xFF;
     wildCard = buffer[ptr + 5] & 0xFF;
 
     int nameLength = buffer[ptr + 6] & 0xFF;
-    name = AbstractFileSystem.string (buffer, ptr + 7, nameLength);
+    name = Utility.string (buffer, ptr + 7, nameLength);
 
-    bytesUsedInLastBlock = AbstractFileSystem.unsignedShort (buffer, ptr + 22);
-    date = AbstractFileSystem.getPascalDate (buffer, ptr + 24);
+    bytesUsedInLastBlock = Utility.unsignedShort (buffer, ptr + 22);
+    date = Utility.getPascalDate (buffer, ptr + 24);
   }
 
   // ---------------------------------------------------------------------------------//

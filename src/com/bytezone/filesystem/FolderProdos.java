@@ -40,9 +40,9 @@ public class FolderProdos extends AbstractFile
     blockType = (buffer[ptr] & 0xF0) >>> 4;
     int nameLength = buffer[ptr] & 0x0F;
     if (nameLength > 0)
-      name = AbstractFileSystem.string (buffer, ptr + 1, nameLength);
+      name = Utility.string (buffer, ptr + 1, nameLength);
 
-    created = AbstractFileSystem.getAppleDate (buffer, ptr + 0x18);
+    created = Utility.getAppleDate (buffer, ptr + 0x18);
     dateCreated = created == null ? NO_DATE : created.format (df);
     timeCreated = created == null ? "" : created.format (tf);
 
@@ -51,16 +51,16 @@ public class FolderProdos extends AbstractFile
     access = buffer[ptr + 0x1E] & 0xFF;
 
     fileType = buffer[ptr + 0x10] & 0xFF;
-    keyPtr = AbstractFileSystem.unsignedShort (buffer, ptr + 0x11);
-    size = AbstractFileSystem.unsignedShort (buffer, ptr + 0x13);
-    eof = AbstractFileSystem.unsignedTriple (buffer, ptr + 0x15);
-    auxType = AbstractFileSystem.unsignedShort (buffer, ptr + 0x1F);   // pointless ?
+    keyPtr = Utility.unsignedShort (buffer, ptr + 0x11);
+    size = Utility.unsignedShort (buffer, ptr + 0x13);
+    eof = Utility.unsignedTriple (buffer, ptr + 0x15);
+    auxType = Utility.unsignedShort (buffer, ptr + 0x1F);   // pointless ?
 
-    modified = AbstractFileSystem.getAppleDate (buffer, ptr + 0x21);
+    modified = Utility.getAppleDate (buffer, ptr + 0x21);
     dateModified = modified == null ? NO_DATE : modified.format (df);
     timeModified = modified == null ? "" : modified.format (tf);
 
-    headerPtr = AbstractFileSystem.unsignedShort (buffer, ptr + 0x25);
+    headerPtr = Utility.unsignedShort (buffer, ptr + 0x25);
   }
 
   // ---------------------------------------------------------------------------------//

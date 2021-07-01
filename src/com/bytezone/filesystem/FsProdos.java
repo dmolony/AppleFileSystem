@@ -61,19 +61,19 @@ public class FsProdos extends AbstractFileSystem
         if (buffer[0x23] != ENTRY_SIZE || buffer[0x24] != ENTRIES_PER_BLOCK)
           throw new FileFormatException ("Invalid entry data");
 
-        int bitMapBlock = unsignedShort (buffer, 0x27);
+        int bitMapBlock = Utility.unsignedShort (buffer, 0x27);
         if (bitMapBlock < 3 || bitMapBlock > 10)
           throw new FileFormatException ("Invalid bitmap block value: " + bitMapBlock);
 
         entryLength = buffer[0x23] & 0xFF;                // 39
         entriesPerBlock = buffer[0x24] & 0xFF;            // 13
-        fileCount = unsignedShort (buffer, 0x25);
-        bitmapPointer = unsignedShort (buffer, 0x27);     // 6
-        totalBlocks = unsignedShort (buffer, 0x29);
+        fileCount = Utility.unsignedShort (buffer, 0x25);
+        bitmapPointer = Utility.unsignedShort (buffer, 0x27);     // 6
+        totalBlocks = Utility.unsignedShort (buffer, 0x29);
       }
 
-      prevBlockNo = unsignedShort (buffer, 0);
-      nextBlockNo = unsignedShort (buffer, 2);
+      prevBlockNo = Utility.unsignedShort (buffer, 0);
+      nextBlockNo = Utility.unsignedShort (buffer, 2);
 
       if (!isValidBlockNo (prevBlockNo))
         throw new FileFormatException ("Invalid catalog previous block");
@@ -147,7 +147,7 @@ public class FsProdos extends AbstractFileSystem
         ptr += ENTRY_SIZE;
       }
 
-      int nextBlock = unsignedShort (buffer, 2);
+      int nextBlock = Utility.unsignedShort (buffer, 2);
       catalogBlock = getBlock (nextBlock);
 
       if (!catalogBlock.isValid ())
