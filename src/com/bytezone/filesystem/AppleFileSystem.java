@@ -14,7 +14,7 @@ public interface AppleFileSystem extends AppleFile
 
   // passed through to BlockReader
 
-  AddressType getType ();
+  AddressType getType ();             // BLOCK, SECTOR
 
   int getBlocksPerTrack ();
 

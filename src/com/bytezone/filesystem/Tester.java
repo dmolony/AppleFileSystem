@@ -3,6 +3,9 @@ package com.bytezone.filesystem;
 import static com.bytezone.filesystem.BlockReader.AddressType.BLOCK;
 import static com.bytezone.filesystem.BlockReader.AddressType.SECTOR;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Tester
 {
   static final int UNIDOS_SIZE = 409_600;
@@ -56,4 +59,100 @@ public class Tester
     return a + b;
   }
 
+  // ---------------------------------------------------------------------------------//
+  static FsDos getDos (String name, byte[] buffer)
+  // ---------------------------------------------------------------------------------//
+  {
+    return getDos (name, buffer, 0, buffer.length);
+  }
+
+  // ---------------------------------------------------------------------------------//
+  static FsDos getDos (String name, byte[] buffer, int offset, int length)
+  // ---------------------------------------------------------------------------------//
+  {
+    List<FsDos> disks = new ArrayList<> (2);
+
+    for (int i = 0; i < 2; i++)
+      try
+      {
+        FsDos fs = new FsDos (name, buffer, offset, length);
+        fs.setBlockReader (i == 0 ? dos33Reader0 : dos33Reader1);
+        fs.readCatalog ();
+        disks.add (fs);
+      }
+      catch (FileFormatException e)
+      {
+        System.out.println (e);       // loop around
+      }
+
+    if (disks.size () == 0)
+      return null;
+
+    if (disks.size () == 1)
+      return disks.get (0);
+
+    return disks.get (0).catalogBlocks > disks.get (1).catalogBlocks ? disks.get (0)
+        : disks.get (1);
+  }
+
+  // ---------------------------------------------------------------------------------//
+  static FsProdos getProdos (String name, byte[] buffer, int offset, int length)
+  // ---------------------------------------------------------------------------------//
+  {
+    FsProdos prodos = new FsProdos (name, buffer, offset, length);
+
+    for (int i = 0; i < 2; i++)
+      try
+      {
+        prodos.setBlockReader (i == 0 ? blockReader0 : blockReader1);
+        prodos.readCatalog ();
+        return prodos;
+      }
+      catch (FileFormatException e)
+      {
+        //        System.out.println (e);
+      }
+
+    return null;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  static FsPascal getPascal (String name, byte[] buffer, int offset, int length)
+  // ---------------------------------------------------------------------------------//
+  {
+    FsPascal pascal = new FsPascal (name, buffer, offset, length);
+
+    for (int i = 0; i < 2; i++)
+      try
+      {
+        pascal.setBlockReader (i == 0 ? blockReader0 : blockReader1);
+        pascal.readCatalog ();
+        return pascal;
+      }
+      catch (FileFormatException e)
+      {
+        //          System.out.println (e);
+      }
+
+    return null;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  static FsCpm getCpm (String name, byte[] buffer, int offset, int length)
+  // ---------------------------------------------------------------------------------//
+  {
+    try
+    {
+      FsCpm cpm = new FsCpm (name, buffer, offset, length);
+      cpm.setBlockReader (cpmReader);
+      cpm.readCatalog ();
+      return cpm;
+    }
+    catch (FileFormatException e)
+    {
+      //          System.out.println (e);
+    }
+
+    return null;
+  }
 }

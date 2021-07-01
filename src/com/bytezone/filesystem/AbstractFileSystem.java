@@ -67,8 +67,6 @@ public abstract class AbstractFileSystem implements AppleFileSystem
   // ---------------------------------------------------------------------------------//
   {
     this.blockReader = blockReader;
-//    System.out.printf ("Setting BlockReader: %s%n", blockReader);
-//    System.out.printf ("in FS: %s%n", this.toText ());
 
     totalBlocks = diskLength / blockReader.blockSize;
     catalogBlocks = 0;
@@ -230,6 +228,26 @@ public abstract class AbstractFileSystem implements AppleFileSystem
 
   // ---------------------------------------------------------------------------------//
   @Override
+  public String catalog ()
+  // ---------------------------------------------------------------------------------//
+  {
+    StringBuilder text = new StringBuilder ();
+    text.append (toText () + "\n");
+
+    for (AppleFile file : files)
+      if (file.isFileSystem () || file.isDirectory ())
+        text.append (file.catalog () + "\n");
+      else
+        text.append (file + "\n");
+
+    while (text.charAt (text.length () - 1) == '\n')
+      text.deleteCharAt (text.length () - 1);
+
+    return text.toString ();
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
   public String toText ()
   // ---------------------------------------------------------------------------------//
   {
@@ -252,7 +270,7 @@ public abstract class AbstractFileSystem implements AppleFileSystem
     text.append (String.format ("Catalog blocks ........ %d%n", catalogBlocks));
     text.append (String.format ("Block size ............ %d%n", blockReader.blockSize));
     text.append (String.format ("Interleave ............ %d%n", blockReader.interleave));
-    text.append (String.format ("Total files ........... %d%n", files.size ()));
+    text.append (String.format ("Total files ........... %d", files.size ()));
 
     return text.toString ();
   }

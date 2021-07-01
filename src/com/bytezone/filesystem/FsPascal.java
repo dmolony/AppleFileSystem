@@ -37,6 +37,9 @@ public class FsPascal extends AbstractFileSystem
     AppleBlock vtoc = getBlock (2);
     byte[] buffer = vtoc.read ();
 
+//    System.out.println (getName ());
+//    System.out.println (format (buffer));
+
     int blockFrom = unsignedShort (buffer, 0);
     int blockTo = unsignedShort (buffer, 2);
     if (blockFrom != 0 || blockTo != 6)
@@ -75,8 +78,8 @@ public class FsPascal extends AbstractFileSystem
     StringBuilder text = new StringBuilder (super.toString ());
 
     text.append (String.format ("Volume name ........... %s%n", volumeName));
-    text.append (String.format ("Total blocks .......... %s%n", blocks));
-    text.append (String.format ("Total files ........... %s%n", files));
+    text.append (String.format ("Total blocks .......... %,d%n", blocks));
+    text.append (String.format ("Total files ........... %,d", files));
 
     return text.toString ();
   }

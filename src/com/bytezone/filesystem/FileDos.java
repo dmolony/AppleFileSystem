@@ -81,4 +81,12 @@ public class FileDos extends AbstractFile
   {
     return indexBlocks.size () + dataBlocks.size ();
   }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
+  public String toString ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return String.format ("%-30s  %3d  %3d", name, type, sectorCount);
+  }
 }

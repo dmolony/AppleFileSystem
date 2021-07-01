@@ -50,22 +50,24 @@ public class FolderProdos extends AbstractFile
     minVersion = buffer[ptr + 0x1D] & 0xFF;
     access = buffer[ptr + 0x1E] & 0xFF;
 
-    switch (blockType)
-    {
+    fileType = buffer[ptr + 0x10] & 0xFF;
+    keyPtr = AbstractFileSystem.unsignedShort (buffer, ptr + 0x11);
+    size = AbstractFileSystem.unsignedShort (buffer, ptr + 0x13);
+    eof = AbstractFileSystem.unsignedTriple (buffer, ptr + 0x15);
+    auxType = AbstractFileSystem.unsignedShort (buffer, ptr + 0x1F);   // pointless ?
 
-      case FsProdos.SUBDIRECTORY:
-        fileType = buffer[ptr + 0x10] & 0xFF;
-        keyPtr = AbstractFileSystem.unsignedShort (buffer, ptr + 0x11);
-        size = AbstractFileSystem.unsignedShort (buffer, ptr + 0x13);
-        eof = AbstractFileSystem.unsignedTriple (buffer, ptr + 0x15);
-        auxType = AbstractFileSystem.unsignedShort (buffer, ptr + 0x1F);   // pointless ?
+    modified = AbstractFileSystem.getAppleDate (buffer, ptr + 0x21);
+    dateModified = modified == null ? NO_DATE : modified.format (df);
+    timeModified = modified == null ? "" : modified.format (tf);
 
-        modified = AbstractFileSystem.getAppleDate (buffer, ptr + 0x21);
-        dateModified = modified == null ? NO_DATE : modified.format (df);
-        timeModified = modified == null ? "" : modified.format (tf);
+    headerPtr = AbstractFileSystem.unsignedShort (buffer, ptr + 0x25);
+  }
 
-        headerPtr = AbstractFileSystem.unsignedShort (buffer, ptr + 0x25);
-        break;
-    }
+  // ---------------------------------------------------------------------------------//
+  @Override
+  public String toString ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return String.format ("%-30s  %3d %,8d %3d %,8d", name, fileType, keyPtr, size, eof);
   }
 }

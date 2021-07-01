@@ -29,4 +29,6 @@ public interface AppleFile
   public int getSize ();                   // in data blocks
 
   public List<AppleBlock> getBlocks ();
+
+  public String catalog ();
 }

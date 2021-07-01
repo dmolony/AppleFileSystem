@@ -106,10 +106,20 @@ public class FsProdos extends AbstractFileSystem
           case SEEDLING:
           case SAPLING:
           case TREE:
-          case PASCAL_ON_PROFILE:
-          case GSOS_EXTENDED_FILE:
             FileProdos file = new FileProdos (this, buffer, ptr);
             parent.addFile (file);
+            break;
+
+          case PASCAL_ON_PROFILE:
+            FileProdos pascal = new FileProdos (this, buffer, ptr);
+            byte[] fileBuffer = pascal.read ();
+            FsPascal fs = Tester.getPascal (pascal.name, fileBuffer, 1024,
+                fileBuffer.length - 1024);
+            parent.addFile (fs);
+            break;
+
+          case GSOS_EXTENDED_FILE:
+            // add both forks
             break;
 
           case SUBDIRECTORY:

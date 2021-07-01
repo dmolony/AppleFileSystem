@@ -25,7 +25,7 @@ public class FileDos4 extends AbstractFile
     int nextSector = buffer[ptr + 1] & 0xFF;
 
     type = buffer[ptr + 2] & 0xFF;
-    name = AbstractFileSystem.string (buffer, ptr + 3, 30).trim ();
+    name = AbstractFileSystem.string (buffer, ptr + 3, 24).trim ();
     sectorCount = AbstractFileSystem.unsignedShort (buffer, ptr + 33);
     int sectorsLeft = sectorCount;
 
@@ -83,5 +83,13 @@ public class FileDos4 extends AbstractFile
   // ---------------------------------------------------------------------------------//
   {
     return indexBlocks.size () + dataBlocks.size ();
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
+  public String toString ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return String.format ("%-30s  %3d  %3d", name, type, sectorCount);
   }
 }

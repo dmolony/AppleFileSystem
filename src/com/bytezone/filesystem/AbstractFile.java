@@ -1,5 +1,6 @@
 package com.bytezone.filesystem;
 
+import java.util.ArrayList;
 import java.util.List;
 
 // -----------------------------------------------------------------------------------//
@@ -12,6 +13,8 @@ public abstract class AbstractFile implements AppleFile
   boolean isFile;
   boolean isFolder;
   boolean isFileSystem;
+
+  List<AppleFile> files = new ArrayList<> ();
 
   // ---------------------------------------------------------------------------------//
   AbstractFile (AppleFileSystem fileSystem)
@@ -57,7 +60,8 @@ public abstract class AbstractFile implements AppleFile
   public void addFile (AppleFile file)    // if isDirectory() or isFileSystem()
   // ---------------------------------------------------------------------------------//
   {
-    assert isDirectory () || isFileSystem;
+    assert isDirectory () || isFileSystem ();
+    files.add (file);
   }
 
   // ---------------------------------------------------------------------------------//
@@ -65,7 +69,7 @@ public abstract class AbstractFile implements AppleFile
   public List<AppleFile> getFiles ()      // if isDirectory() or isFileSystem()
   // ---------------------------------------------------------------------------------//
   {
-    assert isDirectory () || isFileSystem;
+    assert isDirectory () || isFileSystem ();
     return null;
   }
 
@@ -115,6 +119,26 @@ public abstract class AbstractFile implements AppleFile
   // ---------------------------------------------------------------------------------//
   {
     return fileSystem.getBlockSize ();
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
+  public String catalog ()
+  // ---------------------------------------------------------------------------------//
+  {
+    StringBuilder text = new StringBuilder ();
+
+    text.append (toString () + "\n");
+    for (AppleFile file : files)
+      if (file.isDirectory () || file.isFileSystem ())
+        text.append (file.catalog () + "\n");
+      else
+        text.append (file + "\n");
+
+    while (text.charAt (text.length () - 1) == '\n')
+      text.deleteCharAt (text.length () - 1);
+
+    return text.toString ();
   }
 
   // ---------------------------------------------------------------------------------//

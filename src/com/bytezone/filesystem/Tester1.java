@@ -4,8 +4,6 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.List;
 
 // -----------------------------------------------------------------------------------//
 public class Tester1 extends Tester
@@ -22,7 +20,7 @@ public class Tester1 extends Tester
       Path path = Path.of (fileNames[fileNo]);
       byte[] buffer = read (path);
 
-      AppleFileSystem fs = getDos (path, buffer);
+      AppleFileSystem fs = getDos (path.toFile ().getName (), buffer);
       System.out.println (fs.toText ());
     }
 
@@ -73,7 +71,7 @@ public class Tester1 extends Tester
         length -= offset;
       }
 
-      AppleFileSystem fs = getProdos (path, buffer, offset, length);
+      AppleFileSystem fs = getProdos (path.toFile ().getName (), buffer, offset, length);
       System.out.println (fs.toText ());
     }
 
@@ -84,7 +82,7 @@ public class Tester1 extends Tester
     int offset = 0;
     int length = buffer.length;
 
-    AppleFileSystem fs = getProdos (path, buffer, offset, length);
+    AppleFileSystem fs = getProdos (path.toFile ().getName (), buffer, offset, length);
     System.out.println (fs.toText ());
 
     // Pascal
@@ -93,7 +91,7 @@ public class Tester1 extends Tester
       path = Path.of (fileNames[fileNo]);
       buffer = read (path);
 
-      fs = getPascal (path, buffer);
+      fs = getPascal (path.toFile ().getName (), buffer, offset, length);
       System.out.println (fs.toText ());
     }
 
@@ -101,7 +99,7 @@ public class Tester1 extends Tester
     path = Path.of (fileNames[16]);
     buffer = read (path);
 
-    FsCpm cpm = new FsCpm (path.toFile ().getName (), buffer);
+    FsCpm cpm = new FsCpm (path.toFile ().getName (), buffer, offset, length);
     cpm.setBlockReader (cpmReader);
     cpm.readCatalog ();
     System.out.println (cpm.toText ());
@@ -110,12 +108,12 @@ public class Tester1 extends Tester
     path = Path.of (fileNames[17]);
     buffer = read (path);
 
-    fs = getDos (path, buffer, 0, UNIDOS_SIZE);
+    fs = getDos (path.toFile ().getName (), buffer, 0, UNIDOS_SIZE);
     fs.setBlockReader (unidosReader);
     ((FsDos) fs).readCatalog ();
     System.out.println (fs.toText ());
 
-    fs = getDos (path, buffer, UNIDOS_SIZE, UNIDOS_SIZE);
+    fs = getDos (path.toFile ().getName (), buffer, UNIDOS_SIZE, UNIDOS_SIZE);
     fs.setBlockReader (unidosReader);
     ((FsDos) fs).readCatalog ();
     System.out.println (fs.toText ());
@@ -124,17 +122,17 @@ public class Tester1 extends Tester
     path = Path.of (fileNames[18]);
     buffer = read (path);
 
-    fs = getDos (path, buffer);
+    fs = getDos (path.toFile ().getName (), buffer);
     System.out.println (fs.toText ());
 
-    fs = getPascal (path, buffer);
+    fs = getPascal (path.toFile ().getName (), buffer, offset, length);
     System.out.println (fs.toText ());
 
     // hybrid CPM/Dos
     path = Path.of (fileNames[19]);
     buffer = read (path);
 
-    fs = getDos (path, buffer);
+    fs = getDos (path.toFile ().getName (), buffer);
     System.out.println (fs.toText ());
 
     cpm = new FsCpm (path.toFile ().getName (), buffer);
@@ -146,10 +144,10 @@ public class Tester1 extends Tester
     path = Path.of (fileNames[20]);
     buffer = read (path);
 
-    fs = getDos (path, buffer);
+    fs = getDos (path.toFile ().getName (), buffer);
     System.out.println (fs.toText ());
 
-    fs = getProdos (path, buffer, 0, buffer.length);
+    fs = getProdos (path.toFile ().getName (), buffer, 0, buffer.length);
     System.out.println (fs.toText ());
   }
 
@@ -178,84 +176,6 @@ public class Tester1 extends Tester
       e.printStackTrace ();
       return null;
     }
-  }
-
-  // ---------------------------------------------------------------------------------//
-  private AppleFileSystem getDos (Path path, byte[] buffer)
-  // ---------------------------------------------------------------------------------//
-  {
-    return getDos (path, buffer, 0, buffer.length);
-  }
-
-  // ---------------------------------------------------------------------------------//
-  private AppleFileSystem getDos (Path path, byte[] buffer, int offset, int length)
-  // ---------------------------------------------------------------------------------//
-  {
-    List<FsDos> disks = new ArrayList<> (2);
-
-    for (int i = 0; i < 2; i++)
-      try
-      {
-        FsDos fs = new FsDos (path.toFile ().getName (), buffer, offset, length);
-        fs.setBlockReader (i == 0 ? dos33Reader0 : dos33Reader1);
-        fs.readCatalog ();
-        disks.add (fs);
-      }
-      catch (FileFormatException e)
-      {
-        System.out.println (e);       // loop around
-      }
-
-    if (disks.size () == 0)
-      return null;
-
-    if (disks.size () == 1)
-      return disks.get (0);
-
-    return disks.get (0).catalogBlocks > disks.get (1).catalogBlocks ? disks.get (0)
-        : disks.get (1);
-  }
-
-  // ---------------------------------------------------------------------------------//
-  private AppleFileSystem getProdos (Path path, byte[] buffer, int offset, int length)
-  // ---------------------------------------------------------------------------------//
-  {
-    FsProdos prodos = new FsProdos (path.toFile ().getName (), buffer, offset, length);
-
-    for (int i = 0; i < 2; i++)
-      try
-      {
-        prodos.setBlockReader (i == 0 ? blockReader0 : blockReader1);
-        prodos.readCatalog ();
-        return prodos;
-      }
-      catch (FileFormatException e)
-      {
-        //        System.out.println (e);
-      }
-
-    return null;
-  }
-
-  // ---------------------------------------------------------------------------------//
-  private AppleFileSystem getPascal (Path path, byte[] buffer)
-  // ---------------------------------------------------------------------------------//
-  {
-    FsPascal pascal = new FsPascal (path.toFile ().getName (), buffer);
-
-    for (int i = 0; i < 2; i++)
-      try
-      {
-        pascal.setBlockReader (i == 0 ? blockReader0 : blockReader1);
-        pascal.readCatalog ();
-        return pascal;
-      }
-      catch (FileFormatException e)
-      {
-        //          System.out.println (e);
-      }
-
-    return null;
   }
 
   // ---------------------------------------------------------------------------------//
