@@ -1,6 +1,7 @@
 package com.bytezone.filesystem;
 
 import java.util.List;
+import java.util.Objects;
 
 // -----------------------------------------------------------------------------------//
 public class BlockReader
@@ -30,7 +31,7 @@ public class BlockReader
   // ---------------------------------------------------------------------------------//
   {
     this.blockSize = blockSize;
-    this.addressType = addressType;
+    this.addressType = Objects.requireNonNull (addressType, "Address type is null");
     this.interleave = interleave;
     this.blocksPerTrack = blocksPerTrack;
 
@@ -115,6 +116,7 @@ public class BlockReader
         break;
 
       default:
+        System.out.println ("Unknown address type: " + addressType);
         assert false;
         break;          // impossible
     }

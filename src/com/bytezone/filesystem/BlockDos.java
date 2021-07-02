@@ -15,6 +15,6 @@ public class BlockDos extends AbstractBlock
   public BlockDos (AppleFileSystem fs, byte[] buffer, int offset)
   // ---------------------------------------------------------------------------------//
   {
-    super (fs, buffer[offset] & 0xFF, buffer[offset + 1] & 0xFF);
+    this (fs, buffer[offset] & 0xFF, buffer[offset + 1] & 0xFF);
   }
 }

@@ -72,7 +72,7 @@ public class FsPascal extends AbstractFileSystem
 
   // ---------------------------------------------------------------------------------//
   @Override
-  public String toString ()
+  public String toText ()
   // ---------------------------------------------------------------------------------//
   {
     StringBuilder text = new StringBuilder (super.toString ());

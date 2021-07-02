@@ -33,7 +33,7 @@ public abstract class AbstractFileSystem implements AppleFileSystem
     this.diskLength = length;
 
     assert offset + length <= diskBuffer.length : String.format (
-        "Disk length: %,d too small for offset %,d + length %,d", diskBuffer.length,
+        "Buffer length: %,d too small for offset %,d + length %,d", diskBuffer.length,
         offset, length);
   }
 
@@ -123,16 +123,6 @@ public abstract class AbstractFileSystem implements AppleFileSystem
   // ---------------------------------------------------------------------------------//
   {
     return blockReader.read (diskBuffer, diskOffset, blocks);
-  }
-
-  // ---------------------------------------------------------------------------------//
-  @Override
-  public String toText ()
-  // ---------------------------------------------------------------------------------//
-  {
-    return String.format ("%-20.20s %-6s %,8d  %d %,7d  %2d  %3d ", fileName,
-        fileSystemName, diskOffset, blockReader.interleave, totalBlocks,
-        getTotalCatalogBlocks (), files.size ());
   }
 
   // AppleFile methods
@@ -239,7 +229,8 @@ public abstract class AbstractFileSystem implements AppleFileSystem
   // ---------------------------------------------------------------------------------//
   {
     StringBuilder text = new StringBuilder ();
-    text.append (toText () + "\n");
+
+    text.append (toString () + "\n");
 
     for (AppleFile file : files)
       if (file.isFileSystem () || file.isDirectory ())
@@ -255,7 +246,7 @@ public abstract class AbstractFileSystem implements AppleFileSystem
 
   // ---------------------------------------------------------------------------------//
   @Override
-  public String toString ()
+  public String toText ()
   // ---------------------------------------------------------------------------------//
   {
     StringBuilder text = new StringBuilder ();
@@ -270,5 +261,15 @@ public abstract class AbstractFileSystem implements AppleFileSystem
     text.append (String.format ("Total files ........... %d", files.size ()));
 
     return text.toString ();
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
+  public String toString ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return String.format ("%-20.20s %-6s %,8d  %d %,7d  %2d  %3d ", fileName,
+        fileSystemName, diskOffset, blockReader.interleave, totalBlocks,
+        getTotalCatalogBlocks (), files.size ());
   }
 }

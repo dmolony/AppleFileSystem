@@ -6,19 +6,20 @@ import com.bytezone.filesystem.BlockReader.AddressType;
 public abstract class AbstractBlock implements AppleBlock
 // -----------------------------------------------------------------------------------//
 {
-  final AppleFileSystem fs;
+  final AppleFileSystem fileSystem;
+
   final int blockNo;
   final int track;
   final int sector;
 
   // ---------------------------------------------------------------------------------//
-  AbstractBlock (AppleFileSystem fs, int blockNo)
+  AbstractBlock (AppleFileSystem fileSystem, int blockNo)
   // ---------------------------------------------------------------------------------//
   {
-    this.fs = fs;
+    this.fileSystem = fileSystem;
     this.blockNo = blockNo;
 
-    int blocksPerTrack = fs.getBlocksPerTrack ();
+    int blocksPerTrack = fileSystem.getBlocksPerTrack ();
     if (blocksPerTrack > 0)
     {
       track = blockNo / blocksPerTrack;
@@ -30,20 +31,20 @@ public abstract class AbstractBlock implements AppleBlock
       sector = -1;
     }
 
-    assert fs.getType () == AddressType.BLOCK;
+    assert fileSystem.getType () == AddressType.BLOCK;
   }
 
   // ---------------------------------------------------------------------------------//
-  AbstractBlock (AppleFileSystem fs, int track, int sector)
+  AbstractBlock (AppleFileSystem fileSystem, int track, int sector)
   // ---------------------------------------------------------------------------------//
   {
-    this.fs = fs;
-    this.blockNo = fs.getBlocksPerTrack () * track + sector;
+    this.fileSystem = fileSystem;
+    this.blockNo = fileSystem.getBlocksPerTrack () * track + sector;
 
     this.track = track;
     this.sector = sector;
 
-    assert fs.getType () == AddressType.SECTOR;
+    assert fileSystem.getType () == AddressType.SECTOR;
   }
 
   // ---------------------------------------------------------------------------------//
@@ -75,7 +76,7 @@ public abstract class AbstractBlock implements AppleBlock
   public boolean isValid ()
   // ---------------------------------------------------------------------------------//
   {
-    return blockNo >= 0 && blockNo < fs.getSize ();
+    return blockNo >= 0 && blockNo < fileSystem.getSize ();
   }
 
   // ---------------------------------------------------------------------------------//
@@ -83,7 +84,7 @@ public abstract class AbstractBlock implements AppleBlock
   public byte[] read ()
   // ---------------------------------------------------------------------------------//
   {
-    return fs.readBlock (this);
+    return fileSystem.readBlock (this);
   }
 
   // ---------------------------------------------------------------------------------//
@@ -105,6 +106,7 @@ public abstract class AbstractBlock implements AppleBlock
   public String toString ()
   // ---------------------------------------------------------------------------------//
   {
-    return String.format ("%-6s: %4d  %3d  %3d", fs.getType (), blockNo, track, sector);
+    return String.format ("%-6s: %4d  %3d  %3d", fileSystem.getType (), blockNo, track,
+        sector);
   }
 }

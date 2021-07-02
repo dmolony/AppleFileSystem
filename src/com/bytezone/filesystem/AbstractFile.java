@@ -129,6 +129,7 @@ public abstract class AbstractFile implements AppleFile
     StringBuilder text = new StringBuilder ();
 
     text.append (toString () + "\n");
+
     for (AppleFile file : files)
       if (file.isDirectory () || file.isFileSystem ())
         text.append (file.catalog () + "\n");

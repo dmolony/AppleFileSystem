@@ -95,7 +95,7 @@ public class FsDos extends AbstractFileSystem
 
   // ---------------------------------------------------------------------------------//
   @Override
-  public String toString ()
+  public String toText ()
   // ---------------------------------------------------------------------------------//
   {
     StringBuilder text = new StringBuilder (super.toString ());

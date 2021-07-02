@@ -11,21 +11,20 @@ public class FolderProdos extends AbstractFile
   private static final DateTimeFormatter tf = DateTimeFormatter.ofPattern ("H:mm");
   private static final String NO_DATE = "<NO DATE>";
 
-  // Common to both
   int blockType;
-  LocalDateTime created;
-  String dateCreated, timeCreated;
   int version;
   int minVersion;
   int access;
   int size;
 
-  // Subdirectory (size contains blocks used)
   int fileType;
   int keyPtr;
   int eof;
   int auxType;
   int headerPtr;
+
+  LocalDateTime created;
+  String dateCreated, timeCreated;
   LocalDateTime modified;
   String dateModified, timeModified;
 
