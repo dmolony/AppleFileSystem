@@ -78,7 +78,7 @@ public class FsPascal extends AbstractFileSystem
   public String toText ()
   // ---------------------------------------------------------------------------------//
   {
-    StringBuilder text = new StringBuilder (super.toString ());
+    StringBuilder text = new StringBuilder (super.toText ());
 
     text.append (String.format ("Volume name ........... %s%n", volumeName));
     text.append (String.format ("Total blocks .......... %,d%n", blocks));

@@ -59,9 +59,6 @@ public class FsCpm extends AbstractFileSystem
 
       ++catalogBlocks;
     }
-
-    //    for (AppleFile file : files)
-    //      System.out.println (file);
   }
 
   // ---------------------------------------------------------------------------------//
@@ -69,7 +66,7 @@ public class FsCpm extends AbstractFileSystem
   public String toText ()
   // ---------------------------------------------------------------------------------//
   {
-    StringBuilder text = new StringBuilder (super.toString ());
+    StringBuilder text = new StringBuilder (super.toText ());
 
     text.append (String.format ("Something ............. %d%n", 99));
 

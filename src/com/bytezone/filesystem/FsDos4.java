@@ -20,7 +20,6 @@ public class FsDos4 extends AbstractFileSystem
   // ---------------------------------------------------------------------------------//
   {
     super (name, buffer, offset, length, blockReader);
-//    setFileSystemName ("Dos4.x");
   }
 
   // ---------------------------------------------------------------------------------//
@@ -100,7 +99,7 @@ public class FsDos4 extends AbstractFileSystem
   public String toText ()
   // ---------------------------------------------------------------------------------//
   {
-    StringBuilder text = new StringBuilder (super.toString ());
+    StringBuilder text = new StringBuilder (super.toText ());
 
     text.append (String.format ("Dos version ........... %02X%n", dosVersion));
 

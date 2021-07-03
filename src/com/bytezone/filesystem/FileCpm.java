@@ -10,14 +10,7 @@ public class FileCpm extends AbstractFile
   private final int userNumber;
   private final String name;
   private final String type;
-  //  private final int extent;
-  //  private final int s1;                               // reserved
-  //  private final int s2;                               // reserved
-  //  private final int recordsUsed;                      // records used in this extent
-  //  private final byte[] blockList = new byte[16];      // allocation blocks used
 
-  //  private final List<DirectoryEntry> entries = new ArrayList<> ();
-  //  private final List<DiskAddress> blocks = new ArrayList<> ();
   private final boolean readOnly;
   private final boolean systemFile;
 
@@ -89,7 +82,8 @@ public class FileCpm extends AbstractFile
   public String toString ()
   // ---------------------------------------------------------------------------------//
   {
-    return String.format ("%-8s %-3s  %s  %s  %3d", name, type, readOnly ? "*" : " ",
-        systemFile ? "*" : " ", dataBlocks.size ());
+    return String.format ("%-8s %-3s  %s  %s  %2d %3d  %3d", name, type,
+        readOnly ? "*" : " ", systemFile ? "*" : " ", userNumber, dataBlocks.size (),
+        recordCount);
   }
 }

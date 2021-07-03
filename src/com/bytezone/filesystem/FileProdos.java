@@ -222,6 +222,6 @@ public class FileProdos extends AbstractFile
   public String toString ()
   // ---------------------------------------------------------------------------------//
   {
-    return String.format ("%-30s  %3d %,8d %3d %,8d", name, fileType, keyPtr, size, eof);
+    return String.format ("%-30s  %02X %04X %3d %,8d", name, fileType, keyPtr, size, eof);
   }
 }

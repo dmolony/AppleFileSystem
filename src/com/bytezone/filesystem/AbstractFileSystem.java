@@ -2,6 +2,7 @@ package com.bytezone.filesystem;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import com.bytezone.filesystem.BlockReader.AddressType;
 
@@ -28,17 +29,17 @@ public abstract class AbstractFileSystem implements AppleFileSystem
       BlockReader blockReader)
   // ---------------------------------------------------------------------------------//
   {
+    Objects.checkFromIndexSize (offset, length, buffer.length);
+
     this.fileName = fileName;
     this.diskBuffer = buffer;
     this.diskOffset = offset;
     this.diskLength = length;
-    this.blockReader = blockReader;
+    this.blockReader = Objects.requireNonNull (blockReader);
 
     totalBlocks = diskLength / blockReader.blockSize;
 
-    assert offset + length <= diskBuffer.length : String.format (
-        "Buffer length: %,d too small for offset %,d + length %,d", diskBuffer.length,
-        offset, length);
+    assert totalBlocks > 0;
 
     readCatalog ();
   }
@@ -63,18 +64,6 @@ public abstract class AbstractFileSystem implements AppleFileSystem
   {
     return blockNo >= 0 && blockNo < getSize ();
   }
-
-  // ---------------------------------------------------------------------------------//
-//  @Override
-//  public void setBlockReader (BlockReader blockReader)
-//  // ---------------------------------------------------------------------------------//
-//  {
-//    this.blockReader = blockReader;
-//
-//    totalBlocks = diskLength / blockReader.blockSize;
-//    catalogBlocks = 0;
-//    readCatalog ();
-//  }
 
   // ---------------------------------------------------------------------------------//
   @Override
