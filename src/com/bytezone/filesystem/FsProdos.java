@@ -24,22 +24,24 @@ public class FsProdos extends AbstractFileSystem
   private int bitmapPointer;
 
   // ---------------------------------------------------------------------------------//
-  public FsProdos (String name, byte[] buffer)
+  public FsProdos (String name, byte[] buffer, BlockReader blockReader)
   // ---------------------------------------------------------------------------------//
   {
-    this (name, buffer, 0, buffer.length);
+    this (name, buffer, 0, buffer.length, blockReader);
   }
 
   // ---------------------------------------------------------------------------------//
-  public FsProdos (String name, byte[] buffer, int offset, int length)
+  public FsProdos (String name, byte[] buffer, int offset, int length,
+      BlockReader blockReader)
   // ---------------------------------------------------------------------------------//
   {
-    super (name, buffer, offset, length);
+    super (name, buffer, offset, length, blockReader);
     setFileSystemName ("Prodos");
   }
 
   // ---------------------------------------------------------------------------------//
-  void readCatalog ()
+  @Override
+  public void readCatalog ()
   // ---------------------------------------------------------------------------------//
   {
     int nextBlockNo = 2;

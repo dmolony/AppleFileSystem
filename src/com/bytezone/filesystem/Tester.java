@@ -75,10 +75,11 @@ public class Tester
     for (int i = 0; i < 2; i++)
       try
       {
-        FsDos fs = new FsDos (name, buffer, offset, length);
-        fs.setBlockReader (i == 0 ? dos33Reader0 : dos33Reader1);
-        fs.readCatalog ();
-        disks.add (fs);
+        FsDos fs = new FsDos (name, buffer, offset, length,
+            (i == 0 ? dos33Reader0 : dos33Reader1));
+
+        if (fs.catalogBlocks > 0)
+          disks.add (fs);
       }
       catch (FileFormatException e)
       {
@@ -99,14 +100,15 @@ public class Tester
   static FsProdos getProdos (String name, byte[] buffer, int offset, int length)
   // ---------------------------------------------------------------------------------//
   {
-    FsProdos prodos = new FsProdos (name, buffer, offset, length);
 
     for (int i = 0; i < 2; i++)
       try
       {
-        prodos.setBlockReader (i == 0 ? blockReader0 : blockReader1);
-        prodos.readCatalog ();
-        return prodos;
+        FsProdos prodos = new FsProdos (name, buffer, offset, length,
+            (i == 0 ? blockReader0 : blockReader1));
+
+        if (prodos.catalogBlocks > 0)
+          return prodos;
       }
       catch (FileFormatException e)
       {
@@ -120,14 +122,15 @@ public class Tester
   static FsPascal getPascal (String name, byte[] buffer, int offset, int length)
   // ---------------------------------------------------------------------------------//
   {
-    FsPascal pascal = new FsPascal (name, buffer, offset, length);
 
     for (int i = 0; i < 2; i++)
       try
       {
-        pascal.setBlockReader (i == 0 ? blockReader0 : blockReader1);
-        pascal.readCatalog ();
-        return pascal;
+        FsPascal pascal = new FsPascal (name, buffer, offset, length,
+            (i == 0 ? blockReader0 : blockReader1));
+
+        if (pascal.catalogBlocks > 0)
+          return pascal;
       }
       catch (FileFormatException e)
       {
@@ -143,10 +146,10 @@ public class Tester
   {
     try
     {
-      FsCpm cpm = new FsCpm (name, buffer, offset, length);
-      cpm.setBlockReader (cpmReader);
-      cpm.readCatalog ();
-      return cpm;
+      FsCpm cpm = new FsCpm (name, buffer, offset, length, cpmReader);
+
+      if (cpm.catalogBlocks > 0)
+        return cpm;
     }
     catch (FileFormatException e)
     {

@@ -16,7 +16,7 @@ public abstract class AbstractFileSystem implements AppleFileSystem
   final int diskOffset;         // start of this disk
   final int diskLength;         // length of this disk
 
-  private BlockReader blockReader;
+  private final BlockReader blockReader;
 
   int totalBlocks;
   int catalogBlocks;
@@ -24,17 +24,23 @@ public abstract class AbstractFileSystem implements AppleFileSystem
   List<AppleFile> files = new ArrayList<> ();
 
   // ---------------------------------------------------------------------------------//
-  public AbstractFileSystem (String fileName, byte[] buffer, int offset, int length)
+  public AbstractFileSystem (String fileName, byte[] buffer, int offset, int length,
+      BlockReader blockReader)
   // ---------------------------------------------------------------------------------//
   {
     this.fileName = fileName;
     this.diskBuffer = buffer;
     this.diskOffset = offset;
     this.diskLength = length;
+    this.blockReader = blockReader;
+
+    totalBlocks = diskLength / blockReader.blockSize;
 
     assert offset + length <= diskBuffer.length : String.format (
         "Buffer length: %,d too small for offset %,d + length %,d", diskBuffer.length,
         offset, length);
+
+    readCatalog ();
   }
 
   // ---------------------------------------------------------------------------------//
@@ -59,15 +65,16 @@ public abstract class AbstractFileSystem implements AppleFileSystem
   }
 
   // ---------------------------------------------------------------------------------//
-  @Override
-  public void setBlockReader (BlockReader blockReader)
-  // ---------------------------------------------------------------------------------//
-  {
-    this.blockReader = blockReader;
-
-    totalBlocks = diskLength / blockReader.blockSize;
-    catalogBlocks = 0;
-  }
+//  @Override
+//  public void setBlockReader (BlockReader blockReader)
+//  // ---------------------------------------------------------------------------------//
+//  {
+//    this.blockReader = blockReader;
+//
+//    totalBlocks = diskLength / blockReader.blockSize;
+//    catalogBlocks = 0;
+//    readCatalog ();
+//  }
 
   // ---------------------------------------------------------------------------------//
   @Override
@@ -188,7 +195,7 @@ public abstract class AbstractFileSystem implements AppleFileSystem
   public byte[] read ()
   // ---------------------------------------------------------------------------------//
   {
-    throw new UnsupportedOperationException ("Cannot read() a file system");
+    throw new UnsupportedOperationException ("Cannot call read() on a file system");
   }
 
   // ---------------------------------------------------------------------------------//
@@ -196,12 +203,12 @@ public abstract class AbstractFileSystem implements AppleFileSystem
   public void write (byte[] buffer)
   // ---------------------------------------------------------------------------------//
   {
-    throw new UnsupportedOperationException ("Cannot write() a file system");
+    throw new UnsupportedOperationException ("Cannot call write() on a file system");
   }
 
   // ---------------------------------------------------------------------------------//
   @Override
-  public int getLength ()
+  public int getLength ()         // in bytes
   // ---------------------------------------------------------------------------------//
   {
     return diskLength;
@@ -209,7 +216,7 @@ public abstract class AbstractFileSystem implements AppleFileSystem
 
   // ---------------------------------------------------------------------------------//
   @Override
-  public int getSize ()
+  public int getSize ()           // in blocks
   // ---------------------------------------------------------------------------------//
   {
     return totalBlocks;
@@ -268,7 +275,7 @@ public abstract class AbstractFileSystem implements AppleFileSystem
   public String toString ()
   // ---------------------------------------------------------------------------------//
   {
-    return String.format ("%-20.20s %-6s %,8d  %d %,7d  %2d  %3d ", fileName,
+    return String.format ("%-20.20s %-6s %,8d  %d %,7d  %2d  %3d", fileName,
         fileSystemName, diskOffset, blockReader.interleave, totalBlocks,
         getTotalCatalogBlocks (), files.size ());
   }

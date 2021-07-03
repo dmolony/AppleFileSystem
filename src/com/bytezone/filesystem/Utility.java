@@ -6,14 +6,14 @@ import java.time.LocalDateTime;
 
 public class Utility
 {
-
   // ---------------------------------------------------------------------------------//
   public static int unsignedShort (byte[] buffer, int ptr)
   // ---------------------------------------------------------------------------------//
   {
     if (ptr >= buffer.length - 1)
     {
-      System.out.println ("Index out of range (unsigned short): " + ptr);
+      System.out.printf ("Index out of range (unsigned short): %d > %d%n", ptr,
+          buffer.length);
       return 0;
     }
     return (buffer[ptr] & 0xFF) | ((buffer[ptr + 1] & 0xFF) << 8);

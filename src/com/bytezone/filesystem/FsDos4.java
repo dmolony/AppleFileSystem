@@ -8,18 +8,19 @@ public class FsDos4 extends AbstractFileSystem
   int dosVersion;
 
   // ---------------------------------------------------------------------------------//
-  public FsDos4 (String name, byte[] buffer)
+  public FsDos4 (String name, byte[] buffer, BlockReader blockReader)
   // ---------------------------------------------------------------------------------//
   {
-    this (name, buffer, 0, buffer.length);
+    this (name, buffer, 0, buffer.length, blockReader);
   }
 
   // ---------------------------------------------------------------------------------//
-  public FsDos4 (String name, byte[] buffer, int offset, int length)
+  public FsDos4 (String name, byte[] buffer, int offset, int length,
+      BlockReader blockReader)
   // ---------------------------------------------------------------------------------//
   {
-    super (name, buffer, offset, length);
-    setFileSystemName ("Dos4.x");
+    super (name, buffer, offset, length, blockReader);
+//    setFileSystemName ("Dos4.x");
   }
 
   // ---------------------------------------------------------------------------------//
@@ -36,7 +37,8 @@ public class FsDos4 extends AbstractFileSystem
   }
 
   // ---------------------------------------------------------------------------------//
-  void readCatalog ()
+  @Override
+  public void readCatalog ()
   // ---------------------------------------------------------------------------------//
   {
     assert catalogBlocks == 0;

@@ -7,22 +7,24 @@ public class FsCpm extends AbstractFileSystem
   private static final int EMPTY_BYTE_VALUE = 0xE5;
 
   // ---------------------------------------------------------------------------------//
-  public FsCpm (String name, byte[] buffer)
+  public FsCpm (String name, byte[] buffer, BlockReader blockReader)
   // ---------------------------------------------------------------------------------//
   {
-    this (name, buffer, 0, buffer.length);
+    this (name, buffer, 0, buffer.length, blockReader);
   }
 
   // ---------------------------------------------------------------------------------//
-  public FsCpm (String name, byte[] buffer, int offset, int length)
+  public FsCpm (String name, byte[] buffer, int offset, int length,
+      BlockReader blockReader)
   // ---------------------------------------------------------------------------------//
   {
-    super (name, buffer, offset, length);
+    super (name, buffer, offset, length, blockReader);
     setFileSystemName ("CPM");
   }
 
   // ---------------------------------------------------------------------------------//
-  void readCatalog ()
+  @Override
+  public void readCatalog ()
   // ---------------------------------------------------------------------------------//
   {
     assert catalogBlocks == 0;

@@ -8,18 +8,19 @@ public class FsDos extends AbstractFileSystem
   int dosVersion;
 
   // ---------------------------------------------------------------------------------//
-  public FsDos (String name, byte[] buffer)
+  public FsDos (String name, byte[] buffer, BlockReader blockReader)
   // ---------------------------------------------------------------------------------//
   {
-    this (name, buffer, 0, buffer.length);
+    this (name, buffer, 0, buffer.length, blockReader);
   }
 
   // ---------------------------------------------------------------------------------//
-  public FsDos (String name, byte[] buffer, int offset, int length)
+  public FsDos (String name, byte[] buffer, int offset, int length,
+      BlockReader blockReader)
   // ---------------------------------------------------------------------------------//
   {
-    super (name, buffer, offset, length);
-    setFileSystemName ("Dos3.x");
+    super (name, buffer, offset, length, blockReader);
+//    setFileSystemName ("Dos3.x");
   }
 
   // ---------------------------------------------------------------------------------//
@@ -37,7 +38,8 @@ public class FsDos extends AbstractFileSystem
   }
 
   // ---------------------------------------------------------------------------------//
-  void readCatalog ()
+  @Override
+  public void readCatalog ()
   // ---------------------------------------------------------------------------------//
   {
     assert catalogBlocks == 0;

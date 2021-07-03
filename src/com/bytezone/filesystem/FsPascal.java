@@ -14,22 +14,24 @@ public class FsPascal extends AbstractFileSystem
   int files;          // no of files on disk
 
   // ---------------------------------------------------------------------------------//
-  public FsPascal (String name, byte[] buffer)
+  public FsPascal (String name, byte[] buffer, BlockReader blockReader)
   // ---------------------------------------------------------------------------------//
   {
-    this (name, buffer, 0, buffer.length);
+    this (name, buffer, 0, buffer.length, blockReader);
   }
 
   // ---------------------------------------------------------------------------------//
-  public FsPascal (String name, byte[] buffer, int offset, int length)
+  public FsPascal (String name, byte[] buffer, int offset, int length,
+      BlockReader blockReader)
   // ---------------------------------------------------------------------------------//
   {
-    super (name, buffer, offset, length);
+    super (name, buffer, offset, length, blockReader);
     setFileSystemName ("Pascal");
   }
 
   // ---------------------------------------------------------------------------------//
-  void readCatalog ()
+  @Override
+  public void readCatalog ()
   // ---------------------------------------------------------------------------------//
   {
     assert catalogBlocks == 0;
@@ -38,7 +40,7 @@ public class FsPascal extends AbstractFileSystem
     byte[] buffer = vtoc.read ();
 
 //    System.out.println (getName ());
-//    System.out.println (format (buffer));
+//    System.out.println (Utility.format (buffer));
 
     int blockFrom = Utility.unsignedShort (buffer, 0);
     int blockTo = Utility.unsignedShort (buffer, 2);
@@ -56,6 +58,7 @@ public class FsPascal extends AbstractFileSystem
     catalogBlocks = blockTo - 2;
 
     int max = Math.min (blockTo, totalBlocks);
+
     List<AppleBlock> addresses = new ArrayList<> ();
     for (int i = 2; i < max; i++)
       addresses.add (getBlock (i));
