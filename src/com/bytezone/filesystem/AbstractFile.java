@@ -15,6 +15,7 @@ public abstract class AbstractFile implements AppleFile
   boolean isFileSystem;
 
   List<AppleFile> files = new ArrayList<> ();
+  List<AppleBlock> dataBlocks = new ArrayList<> ();
 
   // ---------------------------------------------------------------------------------//
   AbstractFile (AppleFileSystem fileSystem)
@@ -86,7 +87,7 @@ public abstract class AbstractFile implements AppleFile
   public byte[] read ()
   // ---------------------------------------------------------------------------------//
   {
-    return null;
+    throw new UnsupportedOperationException ("read() not implemented");
   }
 
   // ---------------------------------------------------------------------------------//

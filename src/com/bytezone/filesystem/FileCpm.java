@@ -1,8 +1,5 @@
 package com.bytezone.filesystem;
 
-import java.util.ArrayList;
-import java.util.List;
-
 // -----------------------------------------------------------------------------------//
 public class FileCpm extends AbstractFile
 // -----------------------------------------------------------------------------------//
@@ -18,8 +15,6 @@ public class FileCpm extends AbstractFile
   private final int extentCounterHi;
   private final int reserved;
   private int recordCount;                      // records used in this extent
-
-  List<AppleBlock> dataBlocks = new ArrayList<> ();
 
   // ---------------------------------------------------------------------------------//
   FileCpm (FsCpm fs, byte[] buffer, int ptr)
@@ -75,6 +70,14 @@ public class FileCpm extends AbstractFile
   // ---------------------------------------------------------------------------------//
   {
     return (recordCount & 0x80) == 0;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
+  public byte[] read ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return fileSystem.readBlocks (dataBlocks);
   }
 
   // ---------------------------------------------------------------------------------//

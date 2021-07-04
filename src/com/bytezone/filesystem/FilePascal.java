@@ -6,12 +6,12 @@ import java.time.LocalDate;
 public class FilePascal extends AbstractFile
 // -----------------------------------------------------------------------------------//
 {
-  int firstBlock;
-  int lastBlock;
-  int bytesUsedInLastBlock;
-  int fileType;
-  int wildCard;
-  LocalDate date;
+  private int firstBlock;
+  private int lastBlock;
+  private int bytesUsedInLastBlock;
+  private int fileType;
+  private int wildCard;
+  private LocalDate date;
 
   // ---------------------------------------------------------------------------------//
   FilePascal (FsPascal fs, byte[] buffer, int ptr)
@@ -35,10 +35,18 @@ public class FilePascal extends AbstractFile
 
   // ---------------------------------------------------------------------------------//
   @Override
+  public byte[] read ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return null;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
   public String toString ()
   // ---------------------------------------------------------------------------------//
   {
-    return String.format ("%-20s  %3d  %3d  %3d  %s", name, firstBlock, lastBlock,
-        bytesUsedInLastBlock, date);
+    return String.format ("%-20s  %3d  %03X-%03X  %3d  %s", name, fileType, firstBlock,
+        lastBlock, bytesUsedInLastBlock, date);
   }
 }
