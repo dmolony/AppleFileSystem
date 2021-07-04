@@ -15,7 +15,6 @@ public abstract class AbstractFile implements AppleFile
   boolean isFileSystem;
 
   List<AppleFile> files = new ArrayList<> ();
-  List<AppleBlock> dataBlocks = new ArrayList<> ();
 
   // ---------------------------------------------------------------------------------//
   AbstractFile (AppleFileSystem fileSystem)
@@ -95,7 +94,7 @@ public abstract class AbstractFile implements AppleFile
   public void write (byte[] buffer)
   // ---------------------------------------------------------------------------------//
   {
-
+    throw new UnsupportedOperationException ("write() not implemented");
   }
 
   // ---------------------------------------------------------------------------------//
@@ -103,15 +102,15 @@ public abstract class AbstractFile implements AppleFile
   public int getLength ()                 // in bytes (eof)
   // ---------------------------------------------------------------------------------//
   {
-    return -1;
+    throw new UnsupportedOperationException ("getLength() not implemented");
   }
 
   // ---------------------------------------------------------------------------------//
   @Override
-  public int getSize ()                   // in data blocks
+  public int getSize ()                   // in blocks
   // ---------------------------------------------------------------------------------//
   {
-    return -1;
+    throw new UnsupportedOperationException ("getSize() not implemented");
   }
 
   // ---------------------------------------------------------------------------------//
@@ -119,7 +118,7 @@ public abstract class AbstractFile implements AppleFile
   public List<AppleBlock> getBlocks ()
   // ---------------------------------------------------------------------------------//
   {
-    return null;
+    throw new UnsupportedOperationException ("getBlocks() not implemented");
   }
 
   // ---------------------------------------------------------------------------------//

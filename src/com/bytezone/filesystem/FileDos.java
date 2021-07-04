@@ -11,7 +11,7 @@ public class FileDos extends AbstractFile
   int sectorCount;
 
   List<AppleBlock> indexBlocks = new ArrayList<> ();
-//  List<AppleBlock> dataBlocks = new ArrayList<> ();
+  List<AppleBlock> dataBlocks = new ArrayList<> ();
 
   int eof;
 
@@ -68,6 +68,14 @@ public class FileDos extends AbstractFile
 
   // ---------------------------------------------------------------------------------//
   @Override
+  public byte[] read ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return fileSystem.readBlocks (dataBlocks);
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
   public int getLength ()                 // in bytes (eof)
   // ---------------------------------------------------------------------------------//
   {
@@ -76,18 +84,10 @@ public class FileDos extends AbstractFile
 
   // ---------------------------------------------------------------------------------//
   @Override
-  public int getSize ()                   // in data blocks
+  public int getSize ()                   // in blocks
   // ---------------------------------------------------------------------------------//
   {
     return indexBlocks.size () + dataBlocks.size ();
-  }
-
-  // ---------------------------------------------------------------------------------//
-  @Override
-  public byte[] read ()
-  // ---------------------------------------------------------------------------------//
-  {
-    return null;
   }
 
   // ---------------------------------------------------------------------------------//

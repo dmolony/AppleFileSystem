@@ -1,6 +1,8 @@
 package com.bytezone.filesystem;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 // -----------------------------------------------------------------------------------//
 public class FilePascal extends AbstractFile
@@ -12,6 +14,8 @@ public class FilePascal extends AbstractFile
   private int fileType;
   private int wildCard;
   private LocalDate date;
+
+  List<AppleBlock> dataBlocks = new ArrayList<> ();
 
   // ---------------------------------------------------------------------------------//
   FilePascal (FsPascal fs, byte[] buffer, int ptr)
@@ -31,6 +35,9 @@ public class FilePascal extends AbstractFile
 
     bytesUsedInLastBlock = Utility.unsignedShort (buffer, ptr + 22);
     date = Utility.getPascalDate (buffer, ptr + 24);
+
+    for (int i = firstBlock; i < lastBlock; i++)
+      dataBlocks.add (fs.getBlock (i));
   }
 
   // ---------------------------------------------------------------------------------//
@@ -38,7 +45,23 @@ public class FilePascal extends AbstractFile
   public byte[] read ()
   // ---------------------------------------------------------------------------------//
   {
-    return null;
+    return fileSystem.readBlocks (dataBlocks);
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
+  public int getLength ()                 // in bytes (eof)
+  // ---------------------------------------------------------------------------------//
+  {
+    return (dataBlocks.size () - 1) * fileSystem.getBlockSize () + bytesUsedInLastBlock;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
+  public int getSize ()                   // in blocks
+  // ---------------------------------------------------------------------------------//
+  {
+    return dataBlocks.size ();
   }
 
   // ---------------------------------------------------------------------------------//
