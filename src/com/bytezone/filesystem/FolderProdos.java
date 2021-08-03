@@ -3,6 +3,8 @@ package com.bytezone.filesystem;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
+import com.bytezone.diskbrowser.prodos.ProdosConstants;
+
 // -----------------------------------------------------------------------------------//
 public class FolderProdos extends AbstractFile
 // -----------------------------------------------------------------------------------//
@@ -67,6 +69,7 @@ public class FolderProdos extends AbstractFile
   public String toString ()
   // ---------------------------------------------------------------------------------//
   {
-    return String.format ("%-30s  %3d %,8d %3d %,8d", name, fileType, keyPtr, size, eof);
+    return String.format ("%-30s %-3s  %04X %4d %,8d", name,
+        ProdosConstants.fileTypes[fileType], keyPtr, size, eof);
   }
 }

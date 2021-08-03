@@ -143,6 +143,11 @@ public class Utility
       int minute = buffer[offset + 2] & 0x3F;
       int hour = buffer[offset + 3] & 0x1F;
 
+      if (hour > 23)
+        hour = 0;
+      if (minute > 59)
+        minute = 0;
+
       if (year < 70)
         year += 2000;
       else
@@ -177,5 +182,19 @@ public class Utility
       year += 1900;
 
     return LocalDate.of (year, month, day);
+  }
+
+  // ---------------------------------------------------------------------------------//
+  public static boolean isMagic (byte[] buffer, int ptr, byte[] magic)
+  // ---------------------------------------------------------------------------------//
+  {
+    if (ptr + magic.length >= buffer.length)
+      return false;
+
+    for (int i = 0; i < magic.length; i++)
+      if (buffer[ptr + i] != magic[i])
+        return false;
+
+    return true;
   }
 }

@@ -5,6 +5,8 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.bytezone.diskbrowser.prodos.ProdosConstants;
+
 // -----------------------------------------------------------------------------------//
 public class FileProdos extends AbstractFile
 // -----------------------------------------------------------------------------------//
@@ -97,6 +99,10 @@ public class FileProdos extends AbstractFile
             if (dataBlock2.isValid ())
               blocks.addAll (readIndex (indexBlock));
           }
+          break;
+
+        case GSOS_EXTENDED_FILE:
+          // read two forks
           break;
 
         case PASCAL_ON_PROFILE:
@@ -222,6 +228,7 @@ public class FileProdos extends AbstractFile
   public String toString ()
   // ---------------------------------------------------------------------------------//
   {
-    return String.format ("%-30s  %02X %04X %3d %,8d", name, fileType, keyPtr, size, eof);
+    return String.format ("%-30s %-3s  %04X %4d %,8d", name,
+        ProdosConstants.fileTypes[fileType], keyPtr, size, eof);
   }
 }

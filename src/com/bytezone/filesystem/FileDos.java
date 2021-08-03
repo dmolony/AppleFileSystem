@@ -3,12 +3,17 @@ package com.bytezone.filesystem;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.bytezone.filesystem.FsDos.FileType;
+
 // -----------------------------------------------------------------------------------//
 public class FileDos extends AbstractFile
 // -----------------------------------------------------------------------------------//
 {
   int type;
   int sectorCount;
+  boolean locked;
+  FileType fileType;
+  String fileTypeLetter;
 
   List<AppleBlock> indexBlocks = new ArrayList<> ();
   List<AppleBlock> dataBlocks = new ArrayList<> ();
@@ -24,11 +29,38 @@ public class FileDos extends AbstractFile
     int nextTrack = buffer[ptr] & 0xFF;
     int nextSector = buffer[ptr + 1] & 0xFF;
 
-    type = buffer[ptr + 2] & 0xFF;
+    type = buffer[ptr + 2] & 0x7F;
+    locked = (buffer[ptr + 2] & 0x80) != 0;
     name = Utility.string (buffer, ptr + 3, 30).trim ();
     sectorCount = Utility.unsignedShort (buffer, ptr + 33);
-    int sectorsLeft = sectorCount;
 
+    fileType = switch (type)
+    {
+      case 0x00 -> FileType.Text;
+      case 0x01 -> FileType.IntegerBasic;
+      case 0x02 -> FileType.ApplesoftBasic;
+      case 0x04 -> FileType.Binary;
+      case 0x08 -> FileType.SS;
+      case 0x10 -> FileType.Relocatable;
+      case 0x20 -> FileType.AA;
+      case 0x40 -> FileType.BB;
+      default -> FileType.Binary;        // should never happen
+    };
+
+    fileTypeLetter = switch (type)
+    {
+      case 0x00 -> "T";
+      case 0x01 -> "I";
+      case 0x02 -> "A";
+      case 0x04 -> "B";
+      case 0x08 -> "S";
+      case 0x10 -> "R";
+      case 0x20 -> "X";
+      case 0x40 -> "Y";
+      default -> "B";        // should never happen
+    };
+
+    int sectorsLeft = sectorCount;
     while (nextTrack != 0)
     {
       AppleBlock tsSector = fs.getSector (nextTrack, nextSector);
@@ -95,6 +127,7 @@ public class FileDos extends AbstractFile
   public String toString ()
   // ---------------------------------------------------------------------------------//
   {
-    return String.format ("%-30s  %3d  %3d", name, type, sectorCount);
+    return String.format ("%s %s %03d %-30s", locked ? "*" : " ", fileTypeLetter,
+        sectorCount, name);
   }
 }

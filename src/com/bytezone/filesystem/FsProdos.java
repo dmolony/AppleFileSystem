@@ -109,15 +109,26 @@ public class FsProdos extends AbstractFileSystem
           case SAPLING:
           case TREE:
             FileProdos file = new FileProdos (this, buffer, ptr);
+//            if (file.fileType == ProdosConstants.FILE_TYPE_LBR
+//                && file.name.endsWith (".SHK"))
+//            {
+//              byte[] fileBuffer = file.read ();
+//              List<AppleFileSystem> fsList =
+//                  FileSystemFactory.getFileSystems (file.name, fileBuffer);
+//              if (fsList != null)
+//                parent.addFile (fsList.get (0));
+//            }
+//            else
             parent.addFile (file);
             break;
 
           case PASCAL_ON_PROFILE:
             FileProdos pascal = new FileProdos (this, buffer, ptr);
-            byte[] fileBuffer = pascal.read ();
-            FsPascal fs = Tester.getPascal (pascal.name, fileBuffer, 1024,
-                fileBuffer.length - 1024);
-            parent.addFile (fs);
+//            byte[] fileBuffer = pascal.read ();
+//            FsPascal fs = FileSystemFactory.getPascal (pascal.name, fileBuffer, 1024,
+//                fileBuffer.length - 1024);
+//            parent.addFile (fs);
+            parent.addFile (pascal);
             break;
 
           case GSOS_EXTENDED_FILE:
