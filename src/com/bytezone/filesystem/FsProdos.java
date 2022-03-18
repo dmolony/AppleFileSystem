@@ -1,5 +1,9 @@
 package com.bytezone.filesystem;
 
+import java.util.List;
+
+import com.bytezone.diskbrowser.prodos.ProdosConstants;
+
 // -----------------------------------------------------------------------------------//
 public class FsProdos extends AbstractFileSystem
 // -----------------------------------------------------------------------------------//
@@ -109,26 +113,26 @@ public class FsProdos extends AbstractFileSystem
           case SAPLING:
           case TREE:
             FileProdos file = new FileProdos (this, buffer, ptr);
-//            if (file.fileType == ProdosConstants.FILE_TYPE_LBR
-//                && file.name.endsWith (".SHK"))
-//            {
-//              byte[] fileBuffer = file.read ();
-//              List<AppleFileSystem> fsList =
-//                  FileSystemFactory.getFileSystems (file.name, fileBuffer);
-//              if (fsList != null)
-//                parent.addFile (fsList.get (0));
-//            }
-//            else
-            parent.addFile (file);
+
+            if (file.fileType == ProdosConstants.FILE_TYPE_LBR
+                && file.name.endsWith (".SHK"))
+            {
+              List<AppleFileSystem> fsList =
+                  FileSystemFactory.getFileSystems (file.name, file.read ());
+              if (fsList.size () > 0)
+                for (AppleFileSystem fs : fsList)
+                  parent.addFile (fs);
+            }
+            else
+              parent.addFile (file);
             break;
 
           case PASCAL_ON_PROFILE:
             FileProdos pascal = new FileProdos (this, buffer, ptr);
-//            byte[] fileBuffer = pascal.read ();
-//            FsPascal fs = FileSystemFactory.getPascal (pascal.name, fileBuffer, 1024,
-//                fileBuffer.length - 1024);
-//            parent.addFile (fs);
-            parent.addFile (pascal);
+            byte[] fileBuffer = pascal.read ();
+            FsPascal fs = FileSystemFactory.getPascal (pascal.name, fileBuffer, 1024,
+                fileBuffer.length - 1024);
+            parent.addFile (fs);
             break;
 
           case GSOS_EXTENDED_FILE:

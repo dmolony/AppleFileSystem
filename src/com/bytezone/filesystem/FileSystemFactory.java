@@ -12,9 +12,9 @@ import com.bytezone.diskbrowser.nufx.NuFX;
 public class FileSystemFactory
 // -----------------------------------------------------------------------------------//
 {
-  private static final byte[] NuFile =
-      { 0x4E, (byte) 0xF5, 0x46, (byte) 0xE9, 0x6C, (byte) 0xE5 };
+  private static final byte[] NuFile = { 0x4E, (byte) 0xF5, 0x46, (byte) 0xE9, 0x6C, (byte) 0xE5 };
   private static final byte[] BIN2 = { 0x0A, 0x47, 0x4C };
+  private static final byte[] TWO_IMG = { 0x32, 0x49, 0x4D, 0x47 };
   private static final int UNIDOS_SIZE = 409_600;
 
   static BlockReader blockReader0 = new BlockReader (512, BLOCK, 0, 0);     // Prodos
@@ -44,8 +44,7 @@ public class FileSystemFactory
 
     List<AppleFileSystem> fileSystems = new ArrayList<> ();
 
-    String prefix = new String (buffer, 0, 4);
-    if ("2IMG".equals (prefix))
+    if (Utility.isMagic (buffer, 0, TWO_IMG))
     {
       offset = Utility.unsignedShort (buffer, 8);
       length -= offset;
@@ -53,7 +52,6 @@ public class FileSystemFactory
     else if (Utility.isMagic (buffer, 0, NuFile))
     {
       NuFX nufx = new NuFX (buffer, name);
-//      System.out.println (nufx);
       buffer = nufx.getDiskBuffer ();
       length = buffer.length;
     }
@@ -128,8 +126,7 @@ public class FileSystemFactory
     for (int i = 0; i < 2; i++)
       try
       {
-        FsDos fs = new FsDos (name, buffer, offset, length,
-            (i == 0 ? dos33Reader0 : dos33Reader1));
+        FsDos fs = new FsDos (name, buffer, offset, length, (i == 0 ? dos33Reader0 : dos33Reader1));
 
         if (fs.catalogBlocks > 0)
           disks.add (fs);
@@ -157,8 +154,8 @@ public class FileSystemFactory
     for (int i = 0; i < 2; i++)
       try
       {
-        FsProdos prodos = new FsProdos (name, buffer, offset, length,
-            (i == 0 ? blockReader0 : blockReader1));
+        FsProdos prodos =
+            new FsProdos (name, buffer, offset, length, (i == 0 ? blockReader0 : blockReader1));
 
         if (prodos.catalogBlocks > 0)
           return prodos;
@@ -179,8 +176,8 @@ public class FileSystemFactory
     for (int i = 0; i < 2; i++)
       try
       {
-        FsPascal pascal = new FsPascal (name, buffer, offset, length,
-            (i == 0 ? blockReader0 : blockReader1));
+        FsPascal pascal =
+            new FsPascal (name, buffer, offset, length, (i == 0 ? blockReader0 : blockReader1));
 
         if (pascal.catalogBlocks > 0)
           return pascal;
