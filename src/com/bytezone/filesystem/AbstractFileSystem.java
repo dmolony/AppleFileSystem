@@ -251,9 +251,9 @@ public abstract class AbstractFileSystem implements AppleFileSystem
     text.append (String.format ("Disk offset ........... %d%n", diskOffset));
     text.append (String.format ("Disk length ........... %,d%n", diskLength));
     text.append (String.format ("Total blocks .......... %,d%n", totalBlocks));
-    text.append (String.format ("Catalog blocks ........ %d%n", catalogBlocks));
     text.append (String.format ("Block size ............ %d%n", blockReader.blockSize));
     text.append (String.format ("Interleave ............ %d%n", blockReader.interleave));
+    text.append (String.format ("Catalog blocks ........ %d%n", catalogBlocks));
     text.append (String.format ("Total files ........... %d", files.size ()));
 
     return text.toString ();
@@ -264,8 +264,7 @@ public abstract class AbstractFileSystem implements AppleFileSystem
   public String toString ()
   // ---------------------------------------------------------------------------------//
   {
-    return String.format ("%-20.20s %-6s %,8d  %d %,7d  %2d  %3d", fileName,
-        fileSystemName, diskOffset, blockReader.interleave, totalBlocks,
-        getTotalCatalogBlocks (), files.size ());
+    return String.format ("%-20.20s %-6s %,8d  %d %,7d  %2d  %3d", fileName, fileSystemName,
+        diskOffset, blockReader.interleave, totalBlocks, getTotalCatalogBlocks (), files.size ());
   }
 }

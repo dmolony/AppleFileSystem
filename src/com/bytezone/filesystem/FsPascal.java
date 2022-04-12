@@ -21,8 +21,7 @@ public class FsPascal extends AbstractFileSystem
   }
 
   // ---------------------------------------------------------------------------------//
-  public FsPascal (String name, byte[] buffer, int offset, int length,
-      BlockReader blockReader)
+  public FsPascal (String name, byte[] buffer, int offset, int length, BlockReader blockReader)
   // ---------------------------------------------------------------------------------//
   {
     super (name, buffer, offset, length, blockReader);
@@ -39,14 +38,13 @@ public class FsPascal extends AbstractFileSystem
     AppleBlock vtoc = getBlock (2);
     byte[] buffer = vtoc.read ();
 
-//    System.out.println (getName ());
-//    System.out.println (Utility.format (buffer));
+    //    System.out.println (getName ());
+    //    System.out.println (Utility.format (buffer));
 
     int blockFrom = Utility.unsignedShort (buffer, 0);
     int blockTo = Utility.unsignedShort (buffer, 2);
     if (blockFrom != 0 || blockTo != 6)
-      throw new FileFormatException (
-          String.format ("from: %d, to: %d%n", blockFrom, blockTo));
+      throw new FileFormatException (String.format ("from: %d, to: %d%n", blockFrom, blockTo));
 
     int nameLength = buffer[6] & 0xFF;
     if (nameLength < 1 || nameLength > 7)
@@ -80,7 +78,7 @@ public class FsPascal extends AbstractFileSystem
   {
     StringBuilder text = new StringBuilder (super.toText ());
 
-    text.append (String.format ("Volume name ........... %s%n", volumeName));
+    text.append (String.format ("%nVolume name ........... %s%n", volumeName));
     text.append (String.format ("Total blocks .......... %,d%n", blocks));
     text.append (String.format ("Total files ........... %,d", files));
 

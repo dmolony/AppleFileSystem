@@ -46,14 +46,16 @@ public class Tester
       cpm + "ARCHIVES 7.2mg",                        // 21: prodos with shk
       sdk + "SCASM.II4.0.SDK",                       // 22: NuFx
       shk + "DosMaster.shk",                         // 23: DosMaster shk
+      adi + "Wizardry/murasama.dsk",                 // 24: pascal wizardry
   };
+
   // ---------------------------------------------------------------------------------//
   Tester ()
   // ---------------------------------------------------------------------------------//
   {
     List<AppleFileSystem> fileSystems = new ArrayList<> ();
 
-    for (int fileNo = 11; fileNo < 12; fileNo++)
+    for (int fileNo = 24; fileNo <= 24; fileNo++)
     {
       Path path = Path.of (fileNames[fileNo]);
       String name = path.toFile ().getName ();
@@ -69,6 +71,8 @@ public class Tester
 
     for (AppleFileSystem fs : fileSystems)
     {
+      System.out.println (fs.toText ());
+      System.out.println ();
       System.out.println (fs.catalog ());
       System.out.println ();
     }

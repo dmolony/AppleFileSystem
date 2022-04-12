@@ -3,7 +3,6 @@ package com.bytezone.filesystem.gui;
 import java.util.prefs.Preferences;
 
 import com.bytezone.appbase.AppBase;
-import com.bytezone.xmit.gui.OutputTabPane;
 
 import javafx.application.Application;
 import javafx.scene.Parent;
@@ -15,7 +14,7 @@ public class FilesystemApp extends AppBase
 // -----------------------------------------------------------------------------------//
 {
   private final SplitPane splitPane = new SplitPane ();
-  private final OutputTabPane outputTabPane = new OutputTabPane ("Output");
+  //  private final OutputTabPane outputTabPane = new OutputTabPane ("Output");
 
   // ---------------------------------------------------------------------------------//
   @Override
@@ -24,7 +23,7 @@ public class FilesystemApp extends AppBase
   {
     super.start (primaryStage);
 
-    xmitStageManager.setSplitPane (splitPane);      // this must happen after show()
+    //    xmitStageManager.setSplitPane (splitPane);      // this must happen after show()
   }
 
   // ---------------------------------------------------------------------------------//

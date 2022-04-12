@@ -7,11 +7,11 @@ import java.util.Objects;
 public class BlockReader
 // -----------------------------------------------------------------------------------//
 {
-  private int[][] interleaves =
-      { { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21,
-          22, 23, 24, 25, 26, 27, 28, 29, 30, 31 },
-        { 0, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 15 },       // 
-        { 0, 6, 12, 3, 9, 15, 14, 5, 11, 2, 8, 7, 13, 4, 10, 1 } };     // CPM
+  private int[][] interleaves = { { //
+      0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16,       //
+      17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31 },   //
+      { 0, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 15 },       // 
+      { 0, 6, 12, 3, 9, 15, 14, 5, 11, 2, 8, 7, 13, 4, 10, 1 } };     // CPM
 
   final AddressType addressType;      // BLOCK, SECTOR
   final int blockSize;                // 256, 512, 1024
@@ -26,8 +26,7 @@ public class BlockReader
   }
 
   // ---------------------------------------------------------------------------------//
-  public BlockReader (int blockSize, AddressType addressType, int interleave,
-      int blocksPerTrack)
+  public BlockReader (int blockSize, AddressType addressType, int interleave, int blocksPerTrack)
   // ---------------------------------------------------------------------------------//
   {
     this.blockSize = blockSize;
@@ -78,8 +77,8 @@ public class BlockReader
   }
 
   // ---------------------------------------------------------------------------------//
-  private void read (byte[] diskBuffer, int diskOffset, AppleBlock block,
-      byte[] blockBuffer, int bufferOffset)
+  private void read (byte[] diskBuffer, int diskOffset, AppleBlock block, byte[] blockBuffer,
+      int bufferOffset)
   // ---------------------------------------------------------------------------------//
   {
     if (block == null)        // sparse file
@@ -88,17 +87,16 @@ public class BlockReader
     switch (addressType)
     {
       case SECTOR:
-        int offset = block.getTrack () * trackSize
-            + interleaves[interleave][block.getSector ()] * blockSize;
-        System.arraycopy (diskBuffer, diskOffset + offset, blockBuffer, bufferOffset,
-            blockSize);
+        int offset =
+            block.getTrack () * trackSize + interleaves[interleave][block.getSector ()] * blockSize;
+        System.arraycopy (diskBuffer, diskOffset + offset, blockBuffer, bufferOffset, blockSize);
         break;
 
       case BLOCK:
         if (interleave == 0)
         {
-          System.arraycopy (diskBuffer, diskOffset + block.getBlockNo () * blockSize,
-              blockBuffer, bufferOffset, blockSize);
+          System.arraycopy (diskBuffer, diskOffset + block.getBlockNo () * blockSize, blockBuffer,
+              bufferOffset, blockSize);
           break;
         }
 
@@ -107,10 +105,9 @@ public class BlockReader
 
         for (int i = 0; i < sectorsPerBlock; i++)
         {
-          offset = base
-              + interleaves[interleave][block.getSector () * sectorsPerBlock + i] * 256;
-          System.arraycopy (diskBuffer, diskOffset + offset, blockBuffer,
-              bufferOffset + i * 256, 256);
+          offset = base + interleaves[interleave][block.getSector () * sectorsPerBlock + i] * 256;
+          System.arraycopy (diskBuffer, diskOffset + offset, blockBuffer, bufferOffset + i * 256,
+              256);
         }
 
         break;
