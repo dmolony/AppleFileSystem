@@ -7,6 +7,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.bytezone.diskbrowser.nufx.NuFX;
+import com.bytezone.woz.DiskNibbleException;
+import com.bytezone.woz.WozFile;
 
 // -----------------------------------------------------------------------------------//
 public class FileSystemFactory
@@ -15,6 +17,8 @@ public class FileSystemFactory
   private static final byte[] NuFile = { 0x4E, (byte) 0xF5, 0x46, (byte) 0xE9, 0x6C, (byte) 0xE5 };
   private static final byte[] BIN2 = { 0x0A, 0x47, 0x4C };
   private static final byte[] TWO_IMG = { 0x32, 0x49, 0x4D, 0x47 };
+  private static final byte[] WOZ_1 = { 0x57, 0x4F, 0x5A, 0x32, (byte) 0xFF };
+  private static final byte[] WOZ_2 = { 0x57, 0x4F, 0x5A, 0x31, (byte) 0xFF };
   private static final int UNIDOS_SIZE = 409_600;
 
   static BlockReader blockReader0 = new BlockReader (512, BLOCK, 0, 0);     // Prodos
@@ -29,7 +33,6 @@ public class FileSystemFactory
   private FileSystemFactory ()
   // ---------------------------------------------------------------------------------//
   {
-
   }
 
   // ---------------------------------------------------------------------------------//
@@ -54,6 +57,18 @@ public class FileSystemFactory
       NuFX nufx = new NuFX (buffer, name);
       buffer = nufx.getDiskBuffer ();
       length = buffer.length;
+    }
+    else if (Utility.isMagic (buffer, 0, WOZ_1) || Utility.isMagic (buffer, 0, WOZ_2))
+    {
+      try
+      {
+        buffer = new WozFile (buffer).getDiskBuffer ();
+        length = buffer.length;
+      }
+      catch (DiskNibbleException e)
+      {
+        e.printStackTrace ();
+      }
     }
 
     try

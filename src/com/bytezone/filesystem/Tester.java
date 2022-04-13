@@ -20,6 +20,7 @@ public class Tester
   String cpm = base + "cpm/CPM collection (37 disks) and more/";
   String sdk = base + "SDK/";
   String shk = base + "SHK/";
+  String woz = base + "woz/wozaday_Wizardry/";
 
   String[] fileNames = {//
       base + "dos/Assembler.dsk",                    // 0: 3.3 intl 0
@@ -47,6 +48,7 @@ public class Tester
       sdk + "SCASM.II4.0.SDK",                       // 22: NuFx
       shk + "DosMaster.shk",                         // 23: DosMaster shk
       adi + "Wizardry/murasama.dsk",                 // 24: pascal wizardry
+      woz + "Wizardry PGMO.woz",                     // 25: pascal wizardry woz
   };
 
   // ---------------------------------------------------------------------------------//
@@ -55,7 +57,7 @@ public class Tester
   {
     List<AppleFileSystem> fileSystems = new ArrayList<> ();
 
-    for (int fileNo = 24; fileNo <= 24; fileNo++)
+    for (int fileNo = 25; fileNo <= 25; fileNo++)
     {
       Path path = Path.of (fileNames[fileNo]);
       String name = path.toFile ().getName ();
