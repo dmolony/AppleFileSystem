@@ -9,7 +9,7 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
-import com.bytezone.diskbrowser.utilities.Utility;
+import com.bytezone.filesystem.Utility;
 
 // -----------------------------------------------------------------------------------//
 public class WozFile
@@ -31,8 +31,6 @@ public class WozFile
       { { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15 },         // 13 sector
           { 0, 7, 14, 6, 13, 5, 12, 4, 11, 3, 10, 2, 9, 1, 8, 15 } };     // 16 sector
 
-  //  public final File file;
-
   private Info info;
   private Meta meta;
   private int diskSectors;
@@ -50,9 +48,6 @@ public class WozFile
   public WozFile (byte[] buffer) throws DiskNibbleException
   // ---------------------------------------------------------------------------------//
   {
-    //    this.file = file;
-    //    byte[] buffer = readFile (file);
-
     String header = new String (buffer, 0, 4);
     if (!"WOZ1".equals (header) && !"WOZ2".equals (header))
       throw new DiskNibbleException ("Header error");
