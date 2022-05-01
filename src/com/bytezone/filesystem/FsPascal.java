@@ -51,7 +51,7 @@ public class FsPascal extends AbstractFileSystem
       throw new FileFormatException ("bad name length : " + nameLength);
     volumeName = Utility.string (buffer, 7, nameLength);
 
-    blocks = Utility.unsignedShort (buffer, 14);
+    blocks = Utility.unsignedShort (buffer, 14);      // 280, 1600, 2048
     files = Utility.unsignedShort (buffer, 16);
     catalogBlocks = blockTo - 2;
 

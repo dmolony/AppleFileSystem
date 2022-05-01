@@ -21,6 +21,7 @@ public class Tester
   String sdk = base + "SDK/";
   String shk = base + "SHK/";
   String woz = base + "woz/wozaday_Wizardry/";
+  String wiz = base + "Wizardry/";
 
   String[] fileNames = {//
       base + "dos/Assembler.dsk",                    // 0: 3.3 intl 0
@@ -47,8 +48,9 @@ public class Tester
       cpm + "ARCHIVES 7.2mg",                        // 21: prodos with shk
       sdk + "SCASM.II4.0.SDK",                       // 22: NuFx
       shk + "DosMaster.shk",                         // 23: DosMaster shk
-      adi + "Wizardry/murasama.dsk",                 // 24: pascal wizardry
+      wiz + "Wizardry/murasama.dsk",                 // 24: pascal wizardry
       woz + "Wizardry PGMO.woz",                     // 25: pascal wizardry woz
+      wiz + "wizardry_IV/wiz4_d1.dsk",               // 26: wizardry IV disk 1
   };
 
   // ---------------------------------------------------------------------------------//
@@ -57,7 +59,7 @@ public class Tester
   {
     List<AppleFileSystem> fileSystems = new ArrayList<> ();
 
-    for (int fileNo = 25; fileNo <= 25; fileNo++)
+    for (int fileNo = 26; fileNo <= 26; fileNo++)
     {
       Path path = Path.of (fileNames[fileNo]);
       String name = path.toFile ().getName ();
