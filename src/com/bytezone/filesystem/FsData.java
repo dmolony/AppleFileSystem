@@ -9,6 +9,7 @@ public class FsData extends AbstractFileSystem
   // ---------------------------------------------------------------------------------//
   {
     this (name, buffer, 0, buffer.length, blockReader);
+    setFileSystemName ("Data");
   }
 
   // ---------------------------------------------------------------------------------//

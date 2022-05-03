@@ -10,7 +10,7 @@ import com.bytezone.filesystem.BlockReader.AddressType;
 public abstract class AbstractFileSystem implements AppleFileSystem
 // -----------------------------------------------------------------------------------//
 {
-  private String fileSystemName;        // DosX.X, Prodos, Pascal, CPM
+  private String fileSystemName;        // DosX.X, Prodos, Pascal, CPM, Data
   private String fileName;
 
   final byte[] diskBuffer;      // entire buffer including any header or other disks
@@ -272,7 +272,8 @@ public abstract class AbstractFileSystem implements AppleFileSystem
   public String toString ()
   // ---------------------------------------------------------------------------------//
   {
-    return String.format ("%-20.20s %-6s %,8d  %d %,7d  %2d  %3d", fileName, fileSystemName,
-        diskOffset, blockReader.interleave, totalBlocks, getTotalCatalogBlocks (), files.size ());
+    return String.format ("%-20.20s %-6s %,8d  %d %,7d  %4d %2d  %3d", fileName, fileSystemName,
+        diskOffset, blockReader.interleave, totalBlocks, blockReader.blockSize, catalogBlocks,
+        files.size ());
   }
 }
