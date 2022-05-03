@@ -50,7 +50,8 @@ public class FsProdos extends AbstractFileSystem
     int nextBlockNo = 2;
     int prevBlockNo = 0;
 
-    assert catalogBlocks == 0;
+    assert getTotalCatalogBlocks () == 0;
+    int catalogBlocks = 0;
 
     while (nextBlockNo != 0)
     {
@@ -70,11 +71,13 @@ public class FsProdos extends AbstractFileSystem
         if (bitMapBlock < 3 || bitMapBlock > 10)
           throw new FileFormatException ("Invalid bitmap block value: " + bitMapBlock);
 
-        entryLength = buffer[0x23] & 0xFF;                // 39
-        entriesPerBlock = buffer[0x24] & 0xFF;            // 13
+        entryLength = buffer[0x23] & 0xFF;                        // 39
+        entriesPerBlock = buffer[0x24] & 0xFF;                    // 13
         fileCount = Utility.unsignedShort (buffer, 0x25);
         bitmapPointer = Utility.unsignedShort (buffer, 0x27);     // 6
-        totalBlocks = Utility.unsignedShort (buffer, 0x29);
+
+        int totalBlocks = Utility.unsignedShort (buffer, 0x29);
+        assert getSize () == totalBlocks;
       }
 
       prevBlockNo = Utility.unsignedShort (buffer, 0);
@@ -89,7 +92,8 @@ public class FsProdos extends AbstractFileSystem
     }
 
     processFolder (2, this);
-    assert fileCount == files.size ();
+    assert fileCount == getFiles ().size ();
+    setCatalogBlocks (catalogBlocks);
   }
 
   // ---------------------------------------------------------------------------------//

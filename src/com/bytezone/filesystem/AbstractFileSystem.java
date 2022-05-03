@@ -10,19 +10,20 @@ import com.bytezone.filesystem.BlockReader.AddressType;
 public abstract class AbstractFileSystem implements AppleFileSystem
 // -----------------------------------------------------------------------------------//
 {
-  private String fileSystemName;        // DosX.X, Prodos, Pascal, CPM, Data
-  private String fileName;
+  private final String fileName;
 
-  final byte[] diskBuffer;      // entire buffer including any header or other disks
-  final int diskOffset;         // start of this disk
-  final int diskLength;         // length of this disk
+  private final byte[] diskBuffer;      // entire buffer including any header or other disks
+  private final int diskOffset;         // start of this disk
+  private final int diskLength;         // length of this disk
 
   private final BlockReader blockReader;
 
-  int totalBlocks;
-  int catalogBlocks;
+  private int totalBlocks;
+  private int catalogBlocks;
 
-  List<AppleFile> files = new ArrayList<> ();
+  private List<AppleFile> files = new ArrayList<> ();
+
+  private String fileSystemName;        // DosX.X, Prodos, Pascal, CPM, Data
 
   // ---------------------------------------------------------------------------------//
   public AbstractFileSystem (String fileName, byte[] buffer, int offset, int length,
@@ -59,10 +60,17 @@ public abstract class AbstractFileSystem implements AppleFileSystem
   }
 
   // ---------------------------------------------------------------------------------//
+  void setCatalogBlocks (int total)
+  // ---------------------------------------------------------------------------------//
+  {
+    catalogBlocks = total;
+  }
+
+  // ---------------------------------------------------------------------------------//
   boolean isValidBlockNo (int blockNo)
   // ---------------------------------------------------------------------------------//
   {
-    return blockNo >= 0 && blockNo < getSize ();
+    return blockNo >= 0 && blockNo < totalBlocks;
   }
 
   // ---------------------------------------------------------------------------------//
@@ -161,22 +169,6 @@ public abstract class AbstractFileSystem implements AppleFileSystem
   // ---------------------------------------------------------------------------------//
   {
     return true;
-  }
-
-  // ---------------------------------------------------------------------------------//
-  @Override
-  public boolean isDirectory ()
-  // ---------------------------------------------------------------------------------//
-  {
-    return false;
-  }
-
-  // ---------------------------------------------------------------------------------//
-  @Override
-  public boolean isFile ()
-  // ---------------------------------------------------------------------------------//
-  {
-    return false;
   }
 
   // ---------------------------------------------------------------------------------//

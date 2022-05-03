@@ -60,7 +60,9 @@ public abstract class AbstractFile implements AppleFile
   public void addFile (AppleFile file)    // if isDirectory() or isFileSystem()
   // ---------------------------------------------------------------------------------//
   {
-    assert isDirectory () || isFileSystem ();
+    if (!isDirectory () && !isFileSystem ())
+      throw new UnsupportedOperationException ("cannot addFile()");
+
     files.add (file);
   }
 
@@ -69,7 +71,9 @@ public abstract class AbstractFile implements AppleFile
   public List<AppleFile> getFiles ()      // if isDirectory() or isFileSystem()
   // ---------------------------------------------------------------------------------//
   {
-    assert isDirectory () || isFileSystem ();
+    if (!isDirectory () && !isFileSystem ())
+      throw new UnsupportedOperationException ("cannot getFiles()");
+
     return files;
   }
 

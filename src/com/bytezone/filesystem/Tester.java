@@ -59,7 +59,7 @@ public class Tester
   {
     List<AppleFileSystem> fileSystems = new ArrayList<> ();
 
-    for (int fileNo = 26; fileNo <= 26; fileNo++)
+    for (int fileNo = 9; fileNo <= 9; fileNo++)
     {
       Path path = Path.of (fileNames[fileNo]);
       String name = path.toFile ().getName ();

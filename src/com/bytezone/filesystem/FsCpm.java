@@ -14,8 +14,7 @@ public class FsCpm extends AbstractFileSystem
   }
 
   // ---------------------------------------------------------------------------------//
-  public FsCpm (String name, byte[] buffer, int offset, int length,
-      BlockReader blockReader)
+  public FsCpm (String name, byte[] buffer, int offset, int length, BlockReader blockReader)
   // ---------------------------------------------------------------------------------//
   {
     super (name, buffer, offset, length, blockReader);
@@ -27,7 +26,8 @@ public class FsCpm extends AbstractFileSystem
   public void readCatalog ()
   // ---------------------------------------------------------------------------------//
   {
-    assert catalogBlocks == 0;
+    assert getTotalCatalogBlocks () == 0;
+    int catalogBlocks = 0;
     FileCpm currentFile = null;
 
     for (int i = 0; i < 2; i++)
@@ -59,6 +59,8 @@ public class FsCpm extends AbstractFileSystem
 
       ++catalogBlocks;
     }
+
+    setCatalogBlocks (catalogBlocks);
   }
 
   // ---------------------------------------------------------------------------------//

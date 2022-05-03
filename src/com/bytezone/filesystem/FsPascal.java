@@ -33,7 +33,7 @@ public class FsPascal extends AbstractFileSystem
   public void readCatalog ()
   // ---------------------------------------------------------------------------------//
   {
-    assert catalogBlocks == 0;
+    assert getTotalCatalogBlocks () == 0;
 
     AppleBlock vtoc = getBlock (2);
     byte[] buffer = vtoc.read ();
@@ -50,9 +50,9 @@ public class FsPascal extends AbstractFileSystem
     volumeName = Utility.string (buffer, 7, nameLength);
     blocks = Utility.unsignedShort (buffer, 14);      // 280, 1600, 2048
     files = Utility.unsignedShort (buffer, 16);
-    catalogBlocks = blockTo - 2;
+    setCatalogBlocks (blockTo - 2);
 
-    int max = Math.min (blockTo, totalBlocks);
+    int max = Math.min (blockTo, getSize ());
 
     List<AppleBlock> addresses = new ArrayList<> ();
     for (int i = 2; i < max; i++)

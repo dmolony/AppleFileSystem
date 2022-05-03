@@ -15,8 +15,7 @@ public class FsDos4 extends AbstractFileSystem
   }
 
   // ---------------------------------------------------------------------------------//
-  public FsDos4 (String name, byte[] buffer, int offset, int length,
-      BlockReader blockReader)
+  public FsDos4 (String name, byte[] buffer, int offset, int length, BlockReader blockReader)
   // ---------------------------------------------------------------------------------//
   {
     super (name, buffer, offset, length, blockReader);
@@ -41,7 +40,8 @@ public class FsDos4 extends AbstractFileSystem
   public void readCatalog ()
   // ---------------------------------------------------------------------------------//
   {
-    assert catalogBlocks == 0;
+    assert getTotalCatalogBlocks () == 0;
+    int catalogBlocks = 0;
 
     AppleBlock vtoc = getSector (17, 0);
     byte[] buffer = vtoc.read ();
@@ -81,7 +81,7 @@ public class FsDos4 extends AbstractFileSystem
           try
           {
             FileDos4 file = new FileDos4 (this, buffer, ptr);
-            files.add (file);
+            addFile (file);
           }
           catch (FileFormatException e)
           {
@@ -93,6 +93,7 @@ public class FsDos4 extends AbstractFileSystem
       }
       ++catalogBlocks;
     }
+    setCatalogBlocks (catalogBlocks);
   }
 
   // ---------------------------------------------------------------------------------//

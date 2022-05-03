@@ -8,11 +8,20 @@ public interface AppleFile
 {
   public String getName ();
 
-  public boolean isFileSystem ();
+  public default boolean isFileSystem ()
+  {
+    return false;
+  }
 
-  public boolean isDirectory ();
+  public default boolean isDirectory ()
+  {
+    return false;
+  }
 
-  public boolean isFile ();
+  public default boolean isFile ()
+  {
+    return false;
+  }
 
   public void addFile (AppleFile file);             // if isDirectory() or isFileSystem()
 

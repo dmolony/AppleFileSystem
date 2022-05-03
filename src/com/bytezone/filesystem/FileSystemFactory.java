@@ -86,7 +86,7 @@ public class FileSystemFactory
       if (length == 116_480)                  // Dos3.1
       {
         FsDos dos = new FsDos (name, buffer, offset, length, dos31Reader);
-        if (dos.catalogBlocks > 0)
+        if (dos.getTotalCatalogBlocks () > 0)
           fileSystems.add (dos);
       }
       else if (length == 143_360)
@@ -103,18 +103,21 @@ public class FileSystemFactory
 
         // Dos4
         FsDos4 dos4 = new FsDos4 (name, buffer, offset, length, dos33Reader0);
-        if (dos4.catalogBlocks > 0)
+        if (dos4.getTotalCatalogBlocks () > 0)
           fileSystems.add (dos4);
       }
       else if (length == UNIDOS_SIZE * 2)       // Unidos
       {
-        FsDos fs = new FsDos (name, buffer, 0, UNIDOS_SIZE, unidosReader);
-        if (fs != null && fs.catalogBlocks > 0)
-          fileSystems.add (fs);
-
-        fs = new FsDos (name, buffer, UNIDOS_SIZE, UNIDOS_SIZE, unidosReader);
-        if (fs != null && fs.catalogBlocks > 0)
-          fileSystems.add (fs);
+        FsDos fs1 = new FsDos (name, buffer, 0, UNIDOS_SIZE, unidosReader);
+        if (fs1 != null && fs1.getTotalCatalogBlocks () > 0)
+        {
+          FsDos fs2 = new FsDos (name, buffer, UNIDOS_SIZE, UNIDOS_SIZE, unidosReader);
+          if (fs2 != null && fs2.getTotalCatalogBlocks () > 0)
+          {
+            fileSystems.add (fs1);
+            fileSystems.add (fs2);
+          }
+        }
       }
     }
     catch (FileFormatException e)
@@ -143,7 +146,7 @@ public class FileSystemFactory
       {
         FsDos fs = new FsDos (name, buffer, offset, length, (i == 0 ? dos33Reader0 : dos33Reader1));
 
-        if (fs.catalogBlocks > 0)
+        if (fs.getTotalCatalogBlocks () > 0)
           disks.add (fs);
       }
       catch (FileFormatException e)
@@ -157,8 +160,8 @@ public class FileSystemFactory
     if (disks.size () == 1)
       return disks.get (0);
 
-    return disks.get (0).catalogBlocks > disks.get (1).catalogBlocks ? disks.get (0)
-        : disks.get (1);
+    return disks.get (0).getTotalCatalogBlocks () > disks.get (1).getTotalCatalogBlocks ()
+        ? disks.get (0) : disks.get (1);
   }
 
   // ---------------------------------------------------------------------------------//
@@ -171,7 +174,7 @@ public class FileSystemFactory
         FsProdos prodos =
             new FsProdos (name, buffer, offset, length, (i == 0 ? blockReader0 : blockReader1));
 
-        if (prodos.catalogBlocks > 0)
+        if (prodos.getTotalCatalogBlocks () > 0)
           return prodos;
       }
       catch (FileFormatException e)
@@ -191,7 +194,7 @@ public class FileSystemFactory
         FsPascal pascal =
             new FsPascal (name, buffer, offset, length, (i == 0 ? blockReader0 : blockReader1));
 
-        if (pascal.catalogBlocks > 0)
+        if (pascal.getTotalCatalogBlocks () > 0)
           return pascal;
       }
       catch (FileFormatException e)
@@ -209,7 +212,7 @@ public class FileSystemFactory
     {
       FsCpm cpm = new FsCpm (name, buffer, offset, length, cpmReader);
 
-      if (cpm.catalogBlocks > 0)
+      if (cpm.getTotalCatalogBlocks () > 0)
         return cpm;
     }
     catch (FileFormatException e)
