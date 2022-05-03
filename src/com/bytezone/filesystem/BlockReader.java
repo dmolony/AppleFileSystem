@@ -120,6 +120,62 @@ public class BlockReader
   }
 
   // ---------------------------------------------------------------------------------//
+  public void write (byte[] diskBuffer, int diskOffset, AppleBlock block, byte[] blockBuffer)
+  // ---------------------------------------------------------------------------------//
+  {
+    write (diskBuffer, diskOffset, block, blockBuffer, 0);
+  }
+
+  // ---------------------------------------------------------------------------------//
+  public void write (byte[] diskBuffer, int diskOffset, List<AppleBlock> blocks, byte[] blockBuffer)
+  // ---------------------------------------------------------------------------------//
+  {
+    for (int i = 0; i < blocks.size (); i++)
+      write (diskBuffer, diskOffset, blocks.get (i), blockBuffer, i * blockSize);
+  }
+
+  // ---------------------------------------------------------------------------------//
+  private void write (byte[] diskBuffer, int diskOffset, AppleBlock block, byte[] blockBuffer,
+      int bufferOffset)
+  // ---------------------------------------------------------------------------------//
+  {
+    switch (addressType)
+    {
+      case SECTOR:
+        int offset =
+            block.getTrack () * trackSize + interleaves[interleave][block.getSector ()] * blockSize;
+        System.arraycopy (blockBuffer, bufferOffset, diskBuffer, diskOffset + offset, blockSize);
+        break;
+
+      case BLOCK:
+        if (interleave == 0)
+        {
+          System.arraycopy (blockBuffer, bufferOffset, diskBuffer,
+              diskOffset + block.getBlockNo () * blockSize, blockSize);
+          break;
+        }
+
+        int base = block.getTrack () * trackSize;
+        int sectorsPerBlock = blockSize / 256;
+
+        for (int i = 0; i < sectorsPerBlock; i++)
+        {
+          offset = base + interleaves[interleave][block.getSector () * sectorsPerBlock + i] * 256;
+          System.arraycopy (blockBuffer, bufferOffset + i * 256, diskBuffer, diskOffset + offset,
+              256);
+        }
+
+        break;
+
+      default:
+        System.out.println ("Unknown address type: " + addressType);
+        assert false;
+        break;          // impossible
+    }
+
+  }
+
+  // ---------------------------------------------------------------------------------//
   @Override
   public String toString ()
   // ---------------------------------------------------------------------------------//

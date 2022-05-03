@@ -35,8 +35,7 @@ public class FsProdos extends AbstractFileSystem
   }
 
   // ---------------------------------------------------------------------------------//
-  public FsProdos (String name, byte[] buffer, int offset, int length,
-      BlockReader blockReader)
+  public FsProdos (String name, byte[] buffer, int offset, int length, BlockReader blockReader)
   // ---------------------------------------------------------------------------------//
   {
     super (name, buffer, offset, length, blockReader);
@@ -98,6 +97,7 @@ public class FsProdos extends AbstractFileSystem
   // ---------------------------------------------------------------------------------//
   {
     AppleBlock catalogBlock = getBlock (blockNo);
+
     while (catalogBlock.getBlockNo () != 0)
     {
       byte[] buffer = catalogBlock.read ();
@@ -114,8 +114,7 @@ public class FsProdos extends AbstractFileSystem
           case TREE:
             FileProdos file = new FileProdos (this, buffer, ptr);
 
-            if (file.fileType == ProdosConstants.FILE_TYPE_LBR
-                && file.name.endsWith (".SHK"))
+            if (file.fileType == ProdosConstants.FILE_TYPE_LBR && file.name.endsWith (".SHK"))
             {
               List<AppleFileSystem> fsList =
                   FileSystemFactory.getFileSystems (file.name, file.read ());
@@ -164,8 +163,7 @@ public class FsProdos extends AbstractFileSystem
         ptr += ENTRY_SIZE;
       }
 
-      int nextBlock = Utility.unsignedShort (buffer, 2);
-      catalogBlock = getBlock (nextBlock);
+      catalogBlock = getBlock (Utility.unsignedShort (buffer, 2));
 
       if (!catalogBlock.isValid ())
         throw new FileFormatException ("Invalid catalog");

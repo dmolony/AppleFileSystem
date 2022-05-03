@@ -129,6 +129,22 @@ public abstract class AbstractFileSystem implements AppleFileSystem
     return blockReader.read (diskBuffer, diskOffset, blocks);
   }
 
+  // ---------------------------------------------------------------------------------//
+  @Override
+  public void writeBlock (AppleBlock block, byte[] buffer)
+  // ---------------------------------------------------------------------------------//
+  {
+    blockReader.write (diskBuffer, diskOffset, block, buffer);
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
+  public void writeBlocks (List<AppleBlock> blocks, byte[] buffer)
+  // ---------------------------------------------------------------------------------//
+  {
+    blockReader.write (diskBuffer, diskOffset, blocks, buffer);
+  }
+
   // AppleFile methods
 
   // ---------------------------------------------------------------------------------//

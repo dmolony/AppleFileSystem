@@ -92,6 +92,7 @@ public abstract class AbstractBlock implements AppleBlock
   public void write (byte[] buffer)
   // ---------------------------------------------------------------------------------//
   {
+    fileSystem.write (buffer);
   }
 
   // ---------------------------------------------------------------------------------//
@@ -99,6 +100,7 @@ public abstract class AbstractBlock implements AppleBlock
   public void write ()
   // ---------------------------------------------------------------------------------//
   {
+    // ????
   }
 
   // ---------------------------------------------------------------------------------//
@@ -106,7 +108,6 @@ public abstract class AbstractBlock implements AppleBlock
   public String toString ()
   // ---------------------------------------------------------------------------------//
   {
-    return String.format ("%-6s: %4d  %3d  %3d", fileSystem.getType (), blockNo, track,
-        sector);
+    return String.format ("%-6s: %4d  %3d  %3d", fileSystem.getType (), blockNo, track, sector);
   }
 }

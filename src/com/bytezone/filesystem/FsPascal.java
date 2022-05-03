@@ -38,9 +38,6 @@ public class FsPascal extends AbstractFileSystem
     AppleBlock vtoc = getBlock (2);
     byte[] buffer = vtoc.read ();
 
-    //    System.out.println (getName ());
-    //    System.out.println (Utility.format (buffer));
-
     int blockFrom = Utility.unsignedShort (buffer, 0);
     int blockTo = Utility.unsignedShort (buffer, 2);
     if (blockFrom != 0 || blockTo != 6)
@@ -49,8 +46,8 @@ public class FsPascal extends AbstractFileSystem
     int nameLength = buffer[6] & 0xFF;
     if (nameLength < 1 || nameLength > 7)
       throw new FileFormatException ("bad name length : " + nameLength);
-    volumeName = Utility.string (buffer, 7, nameLength);
 
+    volumeName = Utility.string (buffer, 7, nameLength);
     blocks = Utility.unsignedShort (buffer, 14);      // 280, 1600, 2048
     files = Utility.unsignedShort (buffer, 16);
     catalogBlocks = blockTo - 2;
@@ -64,11 +61,7 @@ public class FsPascal extends AbstractFileSystem
     buffer = readBlocks (addresses);
 
     for (int i = 1; i <= files; i++)      // skip first entry
-    {
-      int ptr = i * CATALOG_ENTRY_SIZE;
-      AppleFile file = new FilePascal (this, buffer, ptr);
-      this.addFile (file);
-    }
+      this.addFile (new FilePascal (this, buffer, i * CATALOG_ENTRY_SIZE));
   }
 
   // ---------------------------------------------------------------------------------//

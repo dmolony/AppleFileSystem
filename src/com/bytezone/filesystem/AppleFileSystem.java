@@ -29,5 +29,9 @@ public interface AppleFileSystem extends AppleFile
 
   byte[] readBlocks (List<AppleBlock> blocks);
 
+  void writeBlock (AppleBlock block, byte[] buffer);
+
+  void writeBlocks (List<AppleBlock> blocks, byte[] buffer);
+
   String toText ();
 }
