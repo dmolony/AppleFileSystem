@@ -8,7 +8,8 @@ import com.bytezone.filesystem.BlockReader.AddressType;
 public interface AppleFileSystem extends AppleFile
 // -----------------------------------------------------------------------------------//
 {
-//  void setBlockReader (BlockReader blockReader);
+  //  void setBlockReader (BlockReader blockReader);
+  BlockReader getBlockReader ();
 
   AppleBlock allocate ();
 

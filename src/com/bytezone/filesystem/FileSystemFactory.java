@@ -165,7 +165,6 @@ public class FileSystemFactory
   static FsProdos getProdos (String name, byte[] buffer, int offset, int length)
   // ---------------------------------------------------------------------------------//
   {
-
     for (int i = 0; i < 2; i++)
       try
       {
@@ -177,7 +176,6 @@ public class FileSystemFactory
       }
       catch (FileFormatException e)
       {
-        //        System.out.println (e);
       }
 
     return null;
@@ -187,7 +185,6 @@ public class FileSystemFactory
   static FsPascal getPascal (String name, byte[] buffer, int offset, int length)
   // ---------------------------------------------------------------------------------//
   {
-
     for (int i = 0; i < 2; i++)
       try
       {
@@ -199,7 +196,6 @@ public class FileSystemFactory
       }
       catch (FileFormatException e)
       {
-        //          System.out.println (e);
       }
 
     return null;
@@ -218,7 +214,6 @@ public class FileSystemFactory
     }
     catch (FileFormatException e)
     {
-      //          System.out.println (e);
     }
 
     return null;
