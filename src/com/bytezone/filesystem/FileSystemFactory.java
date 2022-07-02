@@ -6,7 +6,7 @@ import static com.bytezone.filesystem.BlockReader.AddressType.SECTOR;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.bytezone.diskbrowser.nufx.NuFX;
+import com.bytezone.nufx.NuFX;
 import com.bytezone.woz.DiskNibbleException;
 import com.bytezone.woz.WozFile;
 
