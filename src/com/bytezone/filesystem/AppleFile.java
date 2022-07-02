@@ -27,17 +27,17 @@ public interface AppleFile
 
   public List<AppleFile> getFiles ();               // if isDirectory() or isFileSystem()
 
-  public int getBlockSize ();
-
   public byte[] read ();
 
   public void write (byte[] buffer);
 
-  public int getLength ();                    // in bytes (eof)
+  public int getLength ();                          // in bytes (eof)
 
-  public int getSize ();                      // in data blocks
+  public int getSize ();                            // in data blocks
 
   public List<AppleBlock> getBlocks ();
 
   public String catalog ();
+
+  public int getBlockSize ();                       // returns blockReader.blockSize()
 }

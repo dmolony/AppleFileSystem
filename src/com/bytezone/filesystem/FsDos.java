@@ -107,6 +107,7 @@ public class FsDos extends AbstractFileSystem
   {
     StringBuilder text = new StringBuilder (super.toText ());
 
+    text.append ("\n");
     text.append (String.format ("Dos version ........... %02X%n", dosVersion));
 
     return text.toString ();

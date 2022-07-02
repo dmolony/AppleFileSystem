@@ -181,10 +181,11 @@ public class FsProdos extends AbstractFileSystem
   {
     StringBuilder text = new StringBuilder (super.toText ());
 
+    text.append ("\n");
     text.append (String.format ("Entry length .......... %d%n", entryLength));
     text.append (String.format ("Entries per block ..... %d%n", entriesPerBlock));
     text.append (String.format ("File count ............ %d%n", fileCount));
-    text.append (String.format ("Bitmap ptr ............ %d%n", bitmapPointer));
+    text.append (String.format ("Bitmap ptr ............ %d", bitmapPointer));
 
     return text.toString ();
   }

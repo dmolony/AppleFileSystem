@@ -18,7 +18,7 @@ public abstract class AbstractFileSystem implements AppleFileSystem
 
   private final BlockReader blockReader;
 
-  private int totalBlocks;
+  private final int totalBlocks;
   private int catalogBlocks;
 
   private List<AppleFile> files = new ArrayList<> ();
@@ -87,22 +87,6 @@ public abstract class AbstractFileSystem implements AppleFileSystem
   // ---------------------------------------------------------------------------------//
   {
     return blockReader;
-  }
-
-  // ---------------------------------------------------------------------------------//
-  @Override
-  public byte[] getBuffer ()
-  // ---------------------------------------------------------------------------------//
-  {
-    return diskBuffer;
-  }
-
-  // ---------------------------------------------------------------------------------//
-  @Override
-  public int getOffset ()
-  // ---------------------------------------------------------------------------------//
-  {
-    return diskOffset;
   }
 
   // ---------------------------------------------------------------------------------//
@@ -229,6 +213,30 @@ public abstract class AbstractFileSystem implements AppleFileSystem
 
   // ---------------------------------------------------------------------------------//
   @Override
+  public List<AppleBlock> getBlocks ()
+  // ---------------------------------------------------------------------------------//
+  {
+    throw new UnsupportedOperationException ("Cannot call getBlocks() on a file system");
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
+  public byte[] getBuffer ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return diskBuffer;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
+  public int getOffset ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return diskOffset;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
   public int getLength ()         // in bytes
   // ---------------------------------------------------------------------------------//
   {
@@ -241,14 +249,6 @@ public abstract class AbstractFileSystem implements AppleFileSystem
   // ---------------------------------------------------------------------------------//
   {
     return totalBlocks;
-  }
-
-  // ---------------------------------------------------------------------------------//
-  @Override
-  public List<AppleBlock> getBlocks ()
-  // ---------------------------------------------------------------------------------//
-  {
-    throw new UnsupportedOperationException ("Cannot call getBlocks() on a file system");
   }
 
   // ---------------------------------------------------------------------------------//
