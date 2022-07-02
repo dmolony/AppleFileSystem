@@ -4,8 +4,13 @@ import java.time.DateTimeException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
+// -----------------------------------------------------------------------------------//
 public class Utility
+// -----------------------------------------------------------------------------------//
 {
+  private static String[] hex =
+      { "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "A", "B", "C", "D", "E", "F" };
+
   // ---------------------------------------------------------------------------------//
   public static int unsignedShort (byte[] buffer, int ptr)
   // ---------------------------------------------------------------------------------//
@@ -69,9 +74,6 @@ public class Utility
   {
     return format (buffer, 0, buffer.length, true, 0);
   }
-
-  private static String[] hex =
-      { "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "A", "B", "C", "D", "E", "F" };
 
   // ---------------------------------------------------------------------------------//
   static String format (byte[] buffer, int offset, int length, boolean header, int startingAddress)
