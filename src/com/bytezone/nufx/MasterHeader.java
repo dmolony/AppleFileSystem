@@ -63,13 +63,13 @@ public class MasterHeader
       throw new FileFormatException ("NuFile not found");
     }
 
-    crc = Utility.getShort (buffer, ptr + 6);
-    totalRecords = Utility.getLong (buffer, ptr + 8);
+    crc = Utility.unsignedShort (buffer, ptr + 6);
+    totalRecords = Utility.unsignedLong (buffer, ptr + 8);
     created = new DateTime (buffer, ptr + 12);
     modified = new DateTime (buffer, ptr + 20);
-    version = Utility.getShort (buffer, ptr + 28);
-    reserved = Utility.getShort (buffer, ptr + 30);
-    eof = Utility.getLong (buffer, ptr + 38);
+    version = Utility.unsignedShort (buffer, ptr + 28);
+    reserved = Utility.unsignedShort (buffer, ptr + 30);
+    eof = Utility.unsignedLong (buffer, ptr + 38);
 
     //    assert reserved == 0;
     //    if (reserved != 0)

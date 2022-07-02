@@ -39,13 +39,13 @@ class Thread
   public Thread (byte[] buffer, int offset, int dataOffset)
   // ---------------------------------------------------------------------------------//
   {
-    threadClass = Utility.getShort (buffer, offset);
-    threadFormat = Utility.getShort (buffer, offset + 2);
-    threadKind = Utility.getShort (buffer, offset + 4);
+    threadClass = Utility.unsignedShort (buffer, offset);
+    threadFormat = Utility.unsignedShort (buffer, offset + 2);
+    threadKind = Utility.unsignedShort (buffer, offset + 4);
 
-    threadCrc = Utility.getShort (buffer, offset + 6);
-    uncompressedEOF = Utility.getLong (buffer, offset + 8);
-    compressedEOF = Utility.getLong (buffer, offset + 12);
+    threadCrc = Utility.unsignedShort (buffer, offset + 6);
+    uncompressedEOF = Utility.unsignedLong (buffer, offset + 8);
+    compressedEOF = Utility.unsignedLong (buffer, offset + 12);
 
     data = new byte[compressedEOF];
     System.arraycopy (buffer, dataOffset, data, 0, data.length);

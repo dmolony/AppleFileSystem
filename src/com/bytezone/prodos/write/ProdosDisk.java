@@ -367,7 +367,7 @@ public class ProdosDisk
 
         ptr += ENTRY_SIZE;
       }
-      blockNo = Utility.getShort (buffer, offset + 2);
+      blockNo = Utility.unsignedShort (buffer, offset + 2);
     } while (blockNo > 0);
 
     return Optional.empty ();
@@ -473,7 +473,7 @@ public class ProdosDisk
       }
 
       lastBlockNo = blockNo;
-      blockNo = Utility.getShort (buffer, offset + 2);      // next block
+      blockNo = Utility.unsignedShort (buffer, offset + 2);      // next block
     } while (blockNo > 0);
 
     if (subdirectoryHeader == null)         // this should be impossible

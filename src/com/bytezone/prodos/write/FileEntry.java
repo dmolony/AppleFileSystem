@@ -3,9 +3,9 @@ package com.bytezone.prodos.write;
 import static com.bytezone.filesystem.ProdosConstants.BLOCK_SIZE;
 import static com.bytezone.filesystem.ProdosConstants.ENTRY_SIZE;
 import static com.bytezone.filesystem.Utility.getAppleDate;
-import static com.bytezone.filesystem.Utility.getShort;
 import static com.bytezone.filesystem.Utility.putAppleDate;
-import static com.bytezone.filesystem.Utility.readTriple;
+import static com.bytezone.filesystem.Utility.unsignedShort;
+import static com.bytezone.filesystem.Utility.unsignedTriple;
 import static com.bytezone.filesystem.Utility.writeShort;
 import static com.bytezone.filesystem.Utility.writeTriple;
 import static com.bytezone.prodos.write.ProdosDisk.UNDERLINE;
@@ -70,18 +70,18 @@ public class FileEntry
       fileName = "";
 
     fileType = buffer[ptr + 0x10];
-    keyPointer = getShort (buffer, ptr + 0x11);
-    blocksUsed = getShort (buffer, ptr + 0x13);
-    eof = readTriple (buffer, ptr + 0x15);
+    keyPointer = unsignedShort (buffer, ptr + 0x11);
+    blocksUsed = unsignedShort (buffer, ptr + 0x13);
+    eof = unsignedTriple (buffer, ptr + 0x15);
     creationDate = getAppleDate (buffer, ptr + 0x18);
 
     version = buffer[ptr + 0x1C];
     minVersion = buffer[ptr + 0x1D];
     access = buffer[ptr + 0x1E];
 
-    auxType = getShort (buffer, ptr + 0x1F);
+    auxType = unsignedShort (buffer, ptr + 0x1F);
     modifiedDate = getAppleDate (buffer, ptr + 0x21);
-    headerPointer = getShort (buffer, ptr + 0x25);
+    headerPointer = unsignedShort (buffer, ptr + 0x25);
   }
 
   // ---------------------------------------------------------------------------------//

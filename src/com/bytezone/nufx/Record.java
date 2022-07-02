@@ -51,21 +51,21 @@ class Record
     if (!Utility.isMagic (buffer, dataPtr, NuFX))
       throw new FileFormatException ("NuFX not found");
 
-    crc = Utility.getShort (buffer, dataPtr + 4);
-    attributes = Utility.getShort (buffer, dataPtr + 6);
-    version = Utility.getShort (buffer, dataPtr + 8);
-    totThreads = Utility.getLong (buffer, dataPtr + 10);
-    fileSystemID = Utility.getShort (buffer, dataPtr + 14);
+    crc = Utility.unsignedShort (buffer, dataPtr + 4);
+    attributes = Utility.unsignedShort (buffer, dataPtr + 6);
+    version = Utility.unsignedShort (buffer, dataPtr + 8);
+    totThreads = Utility.unsignedLong (buffer, dataPtr + 10);
+    fileSystemID = Utility.unsignedShort (buffer, dataPtr + 14);
     separator = (char) (buffer[dataPtr + 16] & 0x00FF);
-    access = Utility.getLong (buffer, dataPtr + 18);
-    fileType = Utility.getLong (buffer, dataPtr + 22);
-    auxType = Utility.getLong (buffer, dataPtr + 26);
-    storType = Utility.getShort (buffer, dataPtr + 30);
+    access = Utility.unsignedLong (buffer, dataPtr + 18);
+    fileType = Utility.unsignedLong (buffer, dataPtr + 22);
+    auxType = Utility.unsignedLong (buffer, dataPtr + 26);
+    storType = Utility.unsignedShort (buffer, dataPtr + 30);
     created = new DateTime (buffer, dataPtr + 32);
     modified = new DateTime (buffer, dataPtr + 40);
     archived = new DateTime (buffer, dataPtr + 48);
-    optionSize = Utility.getShort (buffer, dataPtr + 56);
-    fileNameLength = Utility.getShort (buffer, dataPtr + attributes - 2);
+    optionSize = Utility.unsignedShort (buffer, dataPtr + 56);
+    fileNameLength = Utility.unsignedShort (buffer, dataPtr + attributes - 2);
 
     int len = attributes + fileNameLength - 6;
     byte[] crcBuffer = new byte[len + totThreads * 16];

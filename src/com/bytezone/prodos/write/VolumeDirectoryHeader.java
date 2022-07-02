@@ -25,8 +25,8 @@ public class VolumeDirectoryHeader extends DirectoryHeader
   {
     super.read ();
 
-    bitMapPointer = Utility.getShort (buffer, ptr + 0x23);
-    totalBlocks = Utility.getShort (buffer, ptr + 0x25);
+    bitMapPointer = Utility.unsignedShort (buffer, ptr + 0x23);
+    totalBlocks = Utility.unsignedShort (buffer, ptr + 0x25);
   }
 
   // ---------------------------------------------------------------------------------//

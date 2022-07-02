@@ -19,7 +19,7 @@ class LZW1 extends LZW
   void unpack ()
   // ---------------------------------------------------------------------------------//
   {
-    crc = Utility.getShort (buffer, 0);
+    crc = Utility.unsignedShort (buffer, 0);
     crcBase = 0;
 
     volume = buffer[2] & 0xFF;
@@ -28,7 +28,7 @@ class LZW1 extends LZW
 
     while (ptr < buffer.length - 2)
     {
-      int rleLength = Utility.getShort (buffer, ptr);
+      int rleLength = Utility.unsignedShort (buffer, ptr);
       boolean lzwPerformed = (buffer[ptr + 2] & 0xFF) != 0;
       ptr += 3;
 

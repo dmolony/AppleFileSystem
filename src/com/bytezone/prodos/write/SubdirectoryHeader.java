@@ -63,7 +63,7 @@ public class SubdirectoryHeader extends DirectoryHeader
   {
     super.read ();
 
-    parentPointer = Utility.getShort (buffer, ptr + 0x23);
+    parentPointer = Utility.unsignedShort (buffer, ptr + 0x23);
     parentEntry = buffer[ptr + 0x25];
     parentEntryLength = buffer[ptr + 0x26];
 
