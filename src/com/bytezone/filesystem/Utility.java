@@ -15,19 +15,33 @@ public class Utility
   public static int unsignedShort (byte[] buffer, int ptr)
   // ---------------------------------------------------------------------------------//
   {
-    if (ptr >= buffer.length - 1)
+    try
     {
-      System.out.printf ("Index out of range (unsigned short): %d > %d%n", ptr, buffer.length);
+      return (buffer[ptr] & 0xFF)             //
+          | ((buffer[ptr + 1] & 0xFF) << 8);
+    }
+    catch (ArrayIndexOutOfBoundsException e)
+    {
+      System.out.printf ("Index out of range (unsignedShort): %d > %d%n", ptr, buffer.length);
       return 0;
     }
-    return (buffer[ptr] & 0xFF) | ((buffer[ptr + 1] & 0xFF) << 8);
   }
 
   // ---------------------------------------------------------------------------------//
   public static int unsignedTriple (byte[] buffer, int ptr)
   // ---------------------------------------------------------------------------------//
   {
-    return (buffer[ptr] & 0xFF) | (buffer[ptr + 1] & 0xFF) << 8 | (buffer[ptr + 2] & 0xFF) << 16;
+    try
+    {
+      return (buffer[ptr] & 0xFF)             //
+          | (buffer[ptr + 1] & 0xFF) << 8     //
+          | (buffer[ptr + 2] & 0xFF) << 16;
+    }
+    catch (ArrayIndexOutOfBoundsException e)
+    {
+      System.out.printf ("Index out of range (unsignedTriple): %08X  %<d%n", ptr);
+      return 0;
+    }
   }
 
   // ---------------------------------------------------------------------------------//
@@ -36,17 +50,14 @@ public class Utility
   {
     try
     {
-      int val = 0;
-      for (int i = 3; i >= 0; i--)
-      {
-        val <<= 8;
-        val += buffer[ptr + i] & 0xFF;
-      }
-      return val;
+      return (buffer[ptr] & 0xFF)             //
+          | (buffer[ptr + 1] & 0xFF) << 8     //
+          | (buffer[ptr + 2] & 0xFF) << 16    //
+          | (buffer[ptr + 3] & 0xFF) << 24;
     }
     catch (ArrayIndexOutOfBoundsException e)
     {
-      System.out.printf ("Index out of range (getLong): %08X  %<d%n", ptr);
+      System.out.printf ("Index out of range (unsignedLong): %08X  %<d%n", ptr);
       return 0;
     }
   }
