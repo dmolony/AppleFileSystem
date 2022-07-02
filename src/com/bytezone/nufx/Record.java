@@ -1,14 +1,13 @@
 package com.bytezone.nufx;
 
-import static com.bytezone.diskbrowser.prodos.ProdosConstants.fileTypes;
+import static com.bytezone.filesystem.ProdosConstants.fileTypes;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.bytezone.diskbrowser.utilities.DateTime;
-import com.bytezone.diskbrowser.utilities.FileFormatException;
-import com.bytezone.diskbrowser.utilities.Utility;
+import com.bytezone.filesystem.FileFormatException;
+import com.bytezone.filesystem.Utility;
 
 // -----------------------------------------------------------------------------------//
 class Record
@@ -16,12 +15,11 @@ class Record
 {
   private static final byte[] NuFX = { 0x4E, (byte) 0xF5, 0x46, (byte) 0xD8 };
   private static String[] fileSystems =
-      { "", "ProDOS/SOS", "DOS 3.3", "DOS 3.2", "Apple II Pascal", "Macintosh HFS",
-        "Macintosh MFS", "Lisa File System", "Apple CP/M", "", "MS-DOS", "High Sierra",
-        "ISO 9660", "AppleShare" };
+      { "", "ProDOS/SOS", "DOS 3.3", "DOS 3.2", "Apple II Pascal", "Macintosh HFS", "Macintosh MFS",
+          "Lisa File System", "Apple CP/M", "", "MS-DOS", "High Sierra", "ISO 9660", "AppleShare" };
 
-  private static String[] storage = { "", "Seedling", "Sapling", "Tree", "", "Extended",
-                                      "", "", "", "", "", "", "", "Subdirectory" };
+  private static String[] storage = { "", "Seedling", "Sapling", "Tree", "", "Extended", "", "", "",
+      "", "", "", "", "Subdirectory" };
 
   private static String[] accessChars = { "D", "R", "B", "", "", "I", "W", "R" };
   private static String threadFormats[] = { "unc", "sq ", "lz1", "lz2", "", "" };
@@ -321,12 +319,12 @@ class Record
     String forkedFlag = hasResource () ? "+" : " ";
 
     if (hasDisk ())
-      return String.format ("%s%-27.27s %-4s %-6s %-15s  %s  %3.0f%%   %7d", lockedFlag,
-          name, "Disk", (getUncompressedSize () / 1024) + "k", archived.format2 (),
+      return String.format ("%s%-27.27s %-4s %-6s %-15s  %s  %3.0f%%   %7d", lockedFlag, name,
+          "Disk", (getUncompressedSize () / 1024) + "k", archived.format2 (),
           threadFormats[getThreadFormat ()], pct, getUncompressedSize ());
 
-    return String.format ("%s%-27.27s %s%s $%04X  %-15s  %s  %3.0f%%   %7d", lockedFlag,
-        name, fileTypes[fileType], forkedFlag, auxType, archived.format2 (),
+    return String.format ("%s%-27.27s %s%s $%04X  %-15s  %s  %3.0f%%   %7d", lockedFlag, name,
+        fileTypes[fileType], forkedFlag, auxType, archived.format2 (),
         threadFormats[getThreadFormat ()], pct, getUncompressedSize ());
   }
 
@@ -345,18 +343,15 @@ class Record
     text.append (String.format ("Attributes ..... %d%n", attributes));
     text.append (String.format ("Version ........ %d%n", version));
     text.append (String.format ("Threads ........ %d%n", totThreads));
-    text.append (
-        String.format ("File sys id .... %d (%s)%n", fileSystemID, getFileSystemName ()));
+    text.append (String.format ("File sys id .... %d (%s)%n", fileSystemID, getFileSystemName ()));
     text.append (String.format ("Separator ...... %s%n", separator));
     text.append (String.format ("Access ......... %s  %s%n", bits, decode));
 
     if (storType < 16)
     {
-      text.append (String.format ("File type ...... %02X     %s%n", fileType,
-          fileTypes[fileType]));
+      text.append (String.format ("File type ...... %02X     %s%n", fileType, fileTypes[fileType]));
       text.append (String.format ("Aux type ....... %,d  $%<04X%n", auxType));
-      text.append (
-          String.format ("Stor type ...... %,d  %s%n", storType, storage[storType]));
+      text.append (String.format ("Stor type ...... %,d  %s%n", storType, storage[storType]));
     }
     else
     {

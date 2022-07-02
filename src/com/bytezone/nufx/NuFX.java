@@ -1,17 +1,17 @@
 package com.bytezone.nufx;
 
-import static com.bytezone.diskbrowser.prodos.ProdosConstants.BLOCK_SIZE;
+import static com.bytezone.filesystem.ProdosConstants.BLOCK_SIZE;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.bytezone.diskbrowser.prodos.write.DiskFullException;
-import com.bytezone.diskbrowser.prodos.write.FileAlreadyExistsException;
-import com.bytezone.diskbrowser.prodos.write.FileEntry;
-import com.bytezone.diskbrowser.prodos.write.ProdosDisk;
-import com.bytezone.diskbrowser.prodos.write.VolumeCatalogFullException;
+import com.bytezone.prodos.write.DiskFullException;
+import com.bytezone.prodos.write.FileAlreadyExistsException;
+import com.bytezone.prodos.write.FileEntry;
+import com.bytezone.prodos.write.ProdosDisk;
+import com.bytezone.prodos.write.VolumeCatalogFullException;
 
 // -----------------------------------------------------------------------------------//
 public class NuFX

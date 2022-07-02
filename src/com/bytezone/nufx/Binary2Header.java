@@ -1,23 +1,22 @@
 package com.bytezone.nufx;
 
-import static com.bytezone.diskbrowser.prodos.ProdosConstants.fileTypes;
+import static com.bytezone.filesystem.ProdosConstants.fileTypes;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
-import com.bytezone.diskbrowser.prodos.write.ProdosDisk;
-import com.bytezone.diskbrowser.utilities.HexFormatter;
-import com.bytezone.diskbrowser.utilities.Utility;
+import com.bytezone.filesystem.Utility;
 
 // -----------------------------------------------------------------------------------//
 public class Binary2Header
 // -----------------------------------------------------------------------------------//
 {
-  static DateTimeFormatter formatter = DateTimeFormatter.ofPattern ("dd-LLL-yy HH:mm");
-  static String[] osTypes =
-      { "Prodos", "DOS 3.3", "Reserved", "DOS 3.2 or 3.1", "Pascal", "Macintosh MFS",
-        "Macintosh HFS", "Lisa", "CPM", "Reserved", "MS-DOS", "High Sierra (CD-ROM)",
-        "ISO 9660 (CD-ROM)", "AppleShare" };
+  static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern ("dd-LLL-yy HH:mm");
+  static final String[] osTypes = { "Prodos", "DOS 3.3", "Reserved", "DOS 3.2 or 3.1", "Pascal",
+      "Macintosh MFS", "Macintosh HFS", "Lisa", "CPM", "Reserved", "MS-DOS", "High Sierra (CD-ROM)",
+      "ISO 9660 (CD-ROM)", "AppleShare" };
+  static final String[] storageTypes = { "Deleted", "Seedling", "Sapling", "Tree", "", "", "", "",
+      "", "", "", "", "", "Subdirectory", "Subdirectory Header", "Volume Directory Header" };
 
   int ptr;
   byte[] buffer;
@@ -66,7 +65,7 @@ public class Binary2Header
     created = Utility.getAppleDate (buffer, ptr + 14);
     id = buffer[ptr + 18] & 0xFF;
     eof = Utility.readTriple (buffer, ptr + 20);
-    fileName = HexFormatter.getPascalString (buffer, ptr + 23);
+    fileName = Utility.getPascalString (buffer, ptr + 23);
     prodos16accessCode = buffer[ptr + 111] & 0xFF;
     prodos16fileType = buffer[ptr + 112] & 0xFF;
     prodos16storageType = buffer[113] & 0xFF;
@@ -89,8 +88,8 @@ public class Binary2Header
   public String getLine ()
   // ---------------------------------------------------------------------------------//
   {
-    return String.format (" %-33s %3s  $%04X  %s  unc   %7d", fileName,
-        fileTypes[fileType], auxType, modified.format (formatter), eof);
+    return String.format (" %-33s %3s  $%04X  %s  unc   %7d", fileName, fileTypes[fileType],
+        auxType, modified.format (formatter), eof);
   }
 
   // ---------------------------------------------------------------------------------//
@@ -105,7 +104,7 @@ public class Binary2Header
     text.append (String.format ("File type ............. %02X%n", fileType));
     text.append (String.format ("Aux type .............. %04X%n", auxType));
     text.append (String.format ("Storage type .......... %02X  %s%n", storageType,
-        ProdosDisk.storageTypes[storageType]));
+        storageTypes[storageType]));
     text.append (String.format ("Total blocks .......... %04X  %<,d%n", totalBlocks));
     text.append (String.format ("Modified .............. %s%n", modified));
     text.append (String.format ("Created ............... %s%n", created));
@@ -117,10 +116,8 @@ public class Binary2Header
     text.append (String.format ("Prodos storage type ... %02X%n", prodos16storageType));
     text.append (String.format ("Prodos total blocks ... %02X%n", prodos16totalBlocks));
     text.append (String.format ("Prodos eof ............ %06X  %<,d%n", prodos16eof));
-    text.append (
-        String.format ("Disk space needed ..... %08X  %<,d%n", diskSpaceRequired));
-    text.append (
-        String.format ("OS type ............... %02X  %s%n", osType, osTypes[osType]));
+    text.append (String.format ("Disk space needed ..... %08X  %<,d%n", diskSpaceRequired));
+    text.append (String.format ("OS type ............... %02X  %s%n", osType, osTypes[osType]));
     text.append (String.format ("Native file type ...... %02X%n", nativeFileType));
     text.append (String.format ("Data flags ............ %02X%n", dataFlags));
     text.append (String.format ("Version ............... %02X%n", version));

@@ -7,6 +7,18 @@ import java.time.LocalDateTime;
 public class Utility
 {
   // ---------------------------------------------------------------------------------//
+  public static int getShort (byte[] buffer, int ptr)
+  // ---------------------------------------------------------------------------------//
+  {
+    if (ptr >= buffer.length - 1)
+    {
+      System.out.printf ("Index out of range (unsigned short): %d > %d%n", ptr, buffer.length);
+      return 0;
+    }
+    return (buffer[ptr] & 0xFF) | ((buffer[ptr + 1] & 0xFF) << 8);
+  }
+
+  // ---------------------------------------------------------------------------------//
   public static int unsignedShort (byte[] buffer, int ptr)
   // ---------------------------------------------------------------------------------//
   {
@@ -23,6 +35,51 @@ public class Utility
   // ---------------------------------------------------------------------------------//
   {
     return (buffer[ptr] & 0xFF) | (buffer[ptr + 1] & 0xFF) << 8 | (buffer[ptr + 2] & 0xFF) << 16;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  public static int readTriple (byte[] buffer, int ptr)
+  // ---------------------------------------------------------------------------------//
+  {
+    return (buffer[ptr] & 0xFF) | (buffer[ptr + 1] & 0xFF) << 8 | (buffer[ptr + 2] & 0xFF) << 16;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  public static int getLong (byte[] buffer, int ptr)
+  // ---------------------------------------------------------------------------------//
+  {
+    try
+    {
+      int val = 0;
+      for (int i = 3; i >= 0; i--)
+      {
+        val <<= 8;
+        val += buffer[ptr + i] & 0xFF;
+      }
+      return val;
+    }
+    catch (ArrayIndexOutOfBoundsException e)
+    {
+      System.out.printf ("Index out of range (getLong): %08X  %<d%n", ptr);
+      return 0;
+    }
+  }
+
+  // ---------------------------------------------------------------------------------//
+  public static void writeShort (byte[] buffer, int ptr, int value)
+  // ---------------------------------------------------------------------------------//
+  {
+    buffer[ptr] = (byte) (value & 0xFF);
+    buffer[ptr + 1] = (byte) ((value & 0xFF00) >>> 8);
+  }
+
+  // ---------------------------------------------------------------------------------//
+  public static void writeTriple (byte[] buffer, int ptr, int value)
+  // ---------------------------------------------------------------------------------//
+  {
+    buffer[ptr] = (byte) (value & 0xFF);
+    buffer[ptr + 1] = (byte) ((value & 0xFF00) >>> 8);
+    buffer[ptr + 2] = (byte) ((value & 0xFF0000) >>> 16);
   }
 
   // ---------------------------------------------------------------------------------//
@@ -126,6 +183,14 @@ public class Utility
   }
 
   // ---------------------------------------------------------------------------------//
+  public static String getPascalString (byte[] buffer, int offset)
+  // ---------------------------------------------------------------------------------//
+  {
+    int length = buffer[offset] & 0xFF;
+    return new String (buffer, offset + 1, length);
+  }
+
+  // ---------------------------------------------------------------------------------//
   public static LocalDateTime getAppleDate (byte[] buffer, int offset)
   // ---------------------------------------------------------------------------------//
   {
@@ -163,6 +228,30 @@ public class Utility
   }
 
   // ---------------------------------------------------------------------------------//
+  public static void putAppleDate (byte[] buffer, int offset, LocalDateTime date)
+  // ---------------------------------------------------------------------------------//
+  {
+    if (date != null)
+    {
+      int year = date.getYear ();
+      int month = date.getMonthValue ();
+      int day = date.getDayOfMonth ();
+      int hour = date.getHour ();
+      int minute = date.getMinute ();
+
+      if (year < 2000)
+        year -= 1900;
+      else
+        year -= 2000;
+
+      int val1 = year << 9 | month << 5 | day;
+      writeShort (buffer, offset, val1);
+      buffer[offset + 2] = (byte) minute;
+      buffer[offset + 3] = (byte) hour;
+    }
+  }
+
+  // ---------------------------------------------------------------------------------//
   public static LocalDate getPascalDate (byte[] buffer, int offset)
   // ---------------------------------------------------------------------------------//
   {
@@ -191,6 +280,44 @@ public class Utility
         return false;
 
     return true;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  public static String matchFlags (int flag, String[] chars)
+  // ---------------------------------------------------------------------------------//
+  {
+    int weight = (int) Math.pow (2, chars.length - 1);
+    StringBuilder text = new StringBuilder ();
+
+    for (int i = 0; i < chars.length; i++)
+    {
+      if ((flag & weight) != 0)
+        text.append (chars[i]);
+      else
+        text.append (".");
+      weight >>>= 1;
+    }
+
+    return text.toString ();
+  }
+
+  // ---------------------------------------------------------------------------------//
+  public static int getCRC (final byte[] buffer, int length, int initialValue)
+  // ---------------------------------------------------------------------------------//
+  {
+    int crc = initialValue;
+    for (int j = 0; j < length; j++)
+    {
+      crc = ((crc >>> 8) | (crc << 8)) & 0xFFFF;
+      crc ^= (buffer[j] & 0xFF);
+      crc ^= ((crc & 0xFF) >>> 4);
+      crc ^= (crc << 12) & 0xFFFF;
+      crc ^= ((crc & 0xFF) << 5) & 0xFFFF;
+    }
+
+    crc &= 0xFFFF;
+
+    return crc;
   }
 
   // ---------------------------------------------------------------------------------//

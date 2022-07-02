@@ -2,8 +2,6 @@ package com.bytezone.filesystem;
 
 import java.util.List;
 
-import com.bytezone.diskbrowser.prodos.ProdosConstants;
-
 // -----------------------------------------------------------------------------------//
 public class FsProdos extends AbstractFileSystem
 // -----------------------------------------------------------------------------------//

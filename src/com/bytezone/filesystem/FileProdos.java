@@ -5,8 +5,6 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.bytezone.diskbrowser.prodos.ProdosConstants;
-
 // -----------------------------------------------------------------------------------//
 public class FileProdos extends AbstractFile
 // -----------------------------------------------------------------------------------//
@@ -228,7 +226,7 @@ public class FileProdos extends AbstractFile
   public String toString ()
   // ---------------------------------------------------------------------------------//
   {
-    return String.format ("%-30s %-3s  %04X %4d %,8d", name,
-        ProdosConstants.fileTypes[fileType], keyPtr, size, eof);
+    return String.format ("%-30s %-3s  %04X %4d %,8d", name, ProdosConstants.fileTypes[fileType],
+        keyPtr, size, eof);
   }
 }

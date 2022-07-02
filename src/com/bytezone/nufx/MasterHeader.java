@@ -1,16 +1,13 @@
 package com.bytezone.nufx;
 
-import com.bytezone.diskbrowser.utilities.DateTime;
-import com.bytezone.diskbrowser.utilities.FileFormatException;
-import com.bytezone.diskbrowser.utilities.HexFormatter;
-import com.bytezone.diskbrowser.utilities.Utility;
+import com.bytezone.filesystem.FileFormatException;
+import com.bytezone.filesystem.Utility;
 
 // -----------------------------------------------------------------------------------//
 public class MasterHeader
 // -----------------------------------------------------------------------------------//
 {
-  private static final byte[] NuFile =
-      { 0x4E, (byte) 0xF5, 0x46, (byte) 0xE9, 0x6C, (byte) 0xE5 };
+  private static final byte[] NuFile = { 0x4E, (byte) 0xF5, 0x46, (byte) 0xE9, 0x6C, (byte) 0xE5 };
   private static final byte[] BIN2 = { 0x0A, 0x47, 0x4C };
 
   private final int crc;
@@ -62,7 +59,7 @@ public class MasterHeader
         }
       }
 
-      System.out.println (HexFormatter.format (buffer, 0, 256));
+      //      System.out.println (Utility.format (buffer, 0, 256));
       throw new FileFormatException ("NuFile not found");
     }
 

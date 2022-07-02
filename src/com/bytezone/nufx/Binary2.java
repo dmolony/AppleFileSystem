@@ -6,18 +6,17 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.bytezone.diskbrowser.prodos.write.DiskFullException;
-import com.bytezone.diskbrowser.prodos.write.FileAlreadyExistsException;
-import com.bytezone.diskbrowser.prodos.write.ProdosDisk;
-import com.bytezone.diskbrowser.prodos.write.VolumeCatalogFullException;
+import com.bytezone.prodos.write.DiskFullException;
+import com.bytezone.prodos.write.FileAlreadyExistsException;
+import com.bytezone.prodos.write.ProdosDisk;
+import com.bytezone.prodos.write.VolumeCatalogFullException;
 
 // -----------------------------------------------------------------------------------//
 public class Binary2
 // -----------------------------------------------------------------------------------//
 {
   private static final String UNDERLINE =
-      "------------------------------------------------------"
-          + "-----------------------";
+      "------------------------------------------------------" + "-----------------------";
 
   Binary2Header binary2Header;
   byte[] buffer;
@@ -53,8 +52,8 @@ public class Binary2
   }
 
   // ---------------------------------------------------------------------------------//
-  public byte[] getDiskBuffer () throws DiskFullException, VolumeCatalogFullException,
-      FileAlreadyExistsException, IOException
+  public byte[] getDiskBuffer ()
+      throws DiskFullException, VolumeCatalogFullException, FileAlreadyExistsException, IOException
   // ---------------------------------------------------------------------------------//
   {
     ProdosDisk disk = new ProdosDisk (800, "DiskBrowser");
@@ -80,12 +79,12 @@ public class Binary2
   {
     StringBuilder text = new StringBuilder ();
 
-    text.append (String.format (
-        " %-15.15s                                                  Files:%5d%n%n",
-        fileName, headers.size ()));
+    text.append (
+        String.format (" %-15.15s                                                  Files:%5d%n%n",
+            fileName, headers.size ()));
 
-    text.append (" Name                              Type Auxtyp Modified"
-        + "         Fmat   Length\n");
+    text.append (
+        " Name                              Type Auxtyp Modified" + "         Fmat   Length\n");
 
     text.append (String.format ("%s%n", UNDERLINE));
 

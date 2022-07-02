@@ -1,20 +1,17 @@
 package com.bytezone.nufx;
 
-import com.bytezone.diskbrowser.utilities.Utility;
+import com.bytezone.filesystem.Utility;
 
 // -----------------------------------------------------------------------------------//
 class Thread
 // -----------------------------------------------------------------------------------//
 {
   private static String[] threadClassText = { "Message", "Control", "Data", "Filename" };
-  private static String[] formatText =
-      { "Uncompressed", "Huffman squeeze", "LZW/1", "LZW/2", "Unix 12-bit Compress",
-        "Unix 16-bit Compress" };
-  private static String[][] threadKindText =
-      { { "ASCII text", "predefined EOF", "IIgs icon" },
-        { "create directory", "undefined", "undefined" },
-        { "data fork", "disk image", "resource fork" },
-        { "filename", "undefined", "undefined" } };
+  private static String[] formatText = { "Uncompressed", "Huffman squeeze", "LZW/1", "LZW/2",
+      "Unix 12-bit Compress", "Unix 16-bit Compress" };
+  private static String[][] threadKindText = { { "ASCII text", "predefined EOF", "IIgs icon" },
+      { "create directory", "undefined", "undefined" },
+      { "data fork", "disk image", "resource fork" }, { "filename", "undefined", "undefined" } };
 
   private static final int DATA_FORK = 0;
   private static final int DISK_IMAGE = 1;
@@ -222,8 +219,8 @@ class Thread
 
     text.append (String.format ("  threadClass ....... %d  %s%n", threadClass,
         threadClassText[threadClass]));
-    text.append (String.format ("  format ............ %d  %s%n", threadFormat,
-        formatText[threadFormat]));
+    text.append (
+        String.format ("  format ............ %d  %s%n", threadFormat, formatText[threadFormat]));
     text.append (String.format ("  kind .............. %d  %s%n", threadKind,
         threadKindText[threadClass][threadKind]));
     text.append (String.format ("  crc ............... %,d  (%<04X)%n", threadCrc));

@@ -1,6 +1,6 @@
 package com.bytezone.nufx;
 
-import com.bytezone.diskbrowser.utilities.Utility;
+import com.bytezone.filesystem.Utility;
 
 // -----------------------------------------------------------------------------------//
 class LZW1 extends LZW
