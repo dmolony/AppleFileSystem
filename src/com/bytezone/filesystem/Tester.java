@@ -50,7 +50,7 @@ public class Tester
       shk + "DosMaster.shk",                         // 23: DosMaster shk
       wiz + "Wizardry/murasama.dsk",                 // 24: pascal wizardry
       woz + "Wizardry PGMO.woz",                     // 25: pascal wizardry woz
-      wiz + "wizardry_IV/wiz4_d1.dsk",               // 26: wizardry IV disk 1
+      wiz + "wizardry_IV/Version A/wiz4_d1.dsk",     // 26: wizardry IV disk 1
   };
 
   // ---------------------------------------------------------------------------------//
@@ -59,7 +59,7 @@ public class Tester
   {
     List<AppleFileSystem> fileSystems = new ArrayList<> ();
 
-    for (int fileNo = 9; fileNo <= 9; fileNo++)
+    for (int fileNo = 21; fileNo <= 21; fileNo++)
     {
       Path path = Path.of (fileNames[fileNo]);
       String name = path.toFile ().getName ();

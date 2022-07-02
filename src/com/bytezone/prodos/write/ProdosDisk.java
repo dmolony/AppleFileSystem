@@ -48,7 +48,7 @@ public class ProdosDisk
   // ---------------------------------------------------------------------------------//
   {
     try (DataInputStream in = new DataInputStream (ProdosDisk.class.getClassLoader ()
-        .getResourceAsStream ("com/bytezone/diskbrowser/prodos/write/block-00.bin")))
+        .getResourceAsStream ("com/bytezone/prodos/write/block-00.bin")))
     {
       int count = in.read (bootSector);
       if (count != BLOCK_SIZE)
