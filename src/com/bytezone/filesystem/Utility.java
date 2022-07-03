@@ -39,7 +39,7 @@ public class Utility
     }
     catch (ArrayIndexOutOfBoundsException e)
     {
-      System.out.printf ("Index out of range (unsignedTriple): %08X  %<d%n", ptr);
+      System.out.printf ("Index out of range (unsignedTriple): %d > %d%n", ptr, buffer.length);
       return 0;
     }
   }
@@ -57,7 +57,7 @@ public class Utility
     }
     catch (ArrayIndexOutOfBoundsException e)
     {
-      System.out.printf ("Index out of range (unsignedLong): %08X  %<d%n", ptr);
+      System.out.printf ("Index out of range (unsignedLong): %d > %d%n", ptr, buffer.length);
       return 0;
     }
   }
