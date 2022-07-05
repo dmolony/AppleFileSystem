@@ -7,11 +7,11 @@ import java.util.List;
 public class FsPascal extends AbstractFileSystem
 // -----------------------------------------------------------------------------------//
 {
-  static final int CATALOG_ENTRY_SIZE = 26;
+  private static final int CATALOG_ENTRY_SIZE = 26;
 
-  String volumeName;
-  int blocks;         // size of disk
-  int files;          // no of files on disk
+  private String volumeName;
+  private int blocks;         // size of disk
+  private int files;          // no of files on disk
 
   // ---------------------------------------------------------------------------------//
   public FsPascal (String name, byte[] buffer, BlockReader blockReader)
@@ -86,7 +86,7 @@ public class FsPascal extends AbstractFileSystem
   }
 }
 /*
- * Blocks 0 and 1 are the boot blocks.  The directory occupies blocks 2
+Blocks 0 and 1 are the boot blocks.  The directory occupies blocks 2
 through 5.  It contains 78 entries, each 26 bytes long.  Block boundaries
 are ignored--the entire directory is treated as a single contiguous
 2048-byte array.
@@ -147,4 +147,4 @@ first-block-number field, then you've found some free space.
 
 All "word" entries are, of course, stored in standard Apple II
 low-byte-first order.
- * */
+*/
