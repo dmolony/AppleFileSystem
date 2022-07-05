@@ -11,7 +11,7 @@ public class FolderProdos extends AbstractFile
   private static final DateTimeFormatter tf = DateTimeFormatter.ofPattern ("H:mm");
   private static final String NO_DATE = "<NO DATE>";
 
-  int blockType;
+  int storageType;
   int version;
   int minVersion;
   int access;
@@ -36,7 +36,7 @@ public class FolderProdos extends AbstractFile
 
     isFolder = true;
 
-    blockType = (buffer[ptr] & 0xF0) >>> 4;
+    storageType = (buffer[ptr] & 0xF0) >>> 4;
     int nameLength = buffer[ptr] & 0x0F;
     if (nameLength > 0)
       name = Utility.string (buffer, ptr + 1, nameLength);

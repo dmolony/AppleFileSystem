@@ -13,7 +13,6 @@ public class Tester
   String base = "/Users/denismolony/Documents/Examples/";
   String adi = base + "Apple Disk Images/";
   String adav = base + "apple_dos_all_versions/";
-  //    String pdav = adi + "prodos_all_versions/";
   String intl = base + "interleave/";
   String euro = base + "Apple_IIgs_European_Disk_Collection/";
   String hybr = base + "AppleHybrid/";
@@ -23,7 +22,7 @@ public class Tester
   String woz = base + "woz/wozaday_Wizardry/";
   String wiz = base + "Wizardry/";
 
-  String[] fileNames = {//
+  String[] fileNames = {                             //
       base + "dos/Assembler.dsk",                    // 0: 3.3 intl 0
       adi + "Apple disks/DOS33.dsk",                 // 1: 3.3 intl 1
       adi + "Toolkit.do",                            // 2: 3.3 128 bytes too long
@@ -59,10 +58,12 @@ public class Tester
   {
     List<AppleFileSystem> fileSystems = new ArrayList<> ();
 
-    for (int fileNo = 10; fileNo <= 10; fileNo++)
+    for (int fileNo = 0; fileNo < fileNames.length; fileNo++)
     {
       Path path = Path.of (fileNames[fileNo]);
       String name = path.toFile ().getName ();
+
+      System.out.printf ("%n%d %s%n", fileNo, fileNames[fileNo].substring (base.length ()));
 
       byte[] buffer = readAllBytes (path);
       List<AppleFileSystem> fsList = FileSystemFactory.getFileSystems (name, buffer);
@@ -70,16 +71,21 @@ public class Tester
       if (fsList.size () == 0)
         System.out.println ("Unknown disk format: " + name);
       else
-        fileSystems.addAll (fsList);
+        //        fileSystems.addAll (fsList);
+        for (AppleFileSystem fs : fsList)
+        {
+          System.out.println ();
+          System.out.println (fs.toText ());
+        }
     }
 
-    for (AppleFileSystem fs : fileSystems)
-    {
-      System.out.println (fs.toText ());
-      System.out.println ();
-      System.out.println (fs.catalog ());
-      System.out.println ();
-    }
+    //    for (AppleFileSystem fs : fileSystems)
+    //    {
+    //      System.out.println (fs.toText ());
+    //      System.out.println ();
+    //      System.out.println (fs.catalog ());
+    //      System.out.println ();
+    //    }
   }
 
   // ---------------------------------------------------------------------------------//

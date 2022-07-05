@@ -89,13 +89,13 @@ public class FsProdos extends AbstractFileSystem
       ++catalogBlocks;
     }
 
-    processFolder (2, this);
+    processFolder (this, 2);
     assert fileCount == getFiles ().size ();
     setCatalogBlocks (catalogBlocks);
   }
 
   // ---------------------------------------------------------------------------------//
-  private void processFolder (int blockNo, AppleFile parent)
+  private void processFolder (AppleFile parent, int blockNo)
   // ---------------------------------------------------------------------------------//
   {
     AppleBlock catalogBlock = getBlock (blockNo);
@@ -145,7 +145,7 @@ public class FsProdos extends AbstractFileSystem
           case SUBDIRECTORY:
             FolderProdos folder = new FolderProdos (this, buffer, ptr);
             parent.addFile (folder);
-            processFolder (folder.keyPtr, folder);
+            processFolder (folder, folder.keyPtr);
             break;
 
           case SUBDIRECTORY_HEADER:
