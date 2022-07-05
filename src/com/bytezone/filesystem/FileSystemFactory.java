@@ -21,6 +21,8 @@ public class FileSystemFactory
   private static final byte[] WOZ_2 = { 0x57, 0x4F, 0x5A, 0x31, (byte) 0xFF, 0x0A, 0x0D, 0x0A };
   private static final int UNIDOS_SIZE = 409_600;
 
+  private static String[] twoIMGFormats = { "Dos", "Prodos", "NIB" };
+
   static BlockReader blockReader0 = new BlockReader (512, BLOCK, 0, 0);     // Prodos
   static BlockReader blockReader1 = new BlockReader (512, BLOCK, 1, 8);     // Prodos
   static BlockReader cpmReader = new BlockReader (1024, BLOCK, 2, 4);       // CPM
@@ -28,6 +30,9 @@ public class FileSystemFactory
   static BlockReader dos33Reader0 = new BlockReader (256, SECTOR, 0, 16);   // Dos 3.3
   static BlockReader dos33Reader1 = new BlockReader (256, SECTOR, 1, 16);   // Dos 3.3
   static BlockReader unidosReader = new BlockReader (256, SECTOR, 0, 32);   // UniDos
+
+  static BlockReader[] dos33Readers = { dos33Reader0, dos33Reader1 };
+  static BlockReader[] blockReaders = { blockReader0, blockReader1 };
 
   // ---------------------------------------------------------------------------------//
   private FileSystemFactory ()
@@ -49,8 +54,24 @@ public class FileSystemFactory
 
     if (Utility.isMagic (buffer, 0, TWO_IMG))
     {
-      offset = Utility.unsignedShort (buffer, 8);
-      length -= offset;
+      offset = Utility.unsignedLong (buffer, 24);
+      length = Utility.unsignedLong (buffer, 28);
+
+      if (false)
+      {
+        int headerSize = Utility.unsignedShort (buffer, 8);
+        int version = Utility.unsignedShort (buffer, 10);
+        int format = Utility.unsignedLong (buffer, 12);
+        int prodosBlocks = Utility.unsignedLong (buffer, 20);
+
+        System.out.println ();
+        System.out.printf ("Header size ... %d%n", headerSize);
+        System.out.printf ("Version ....... %d%n", version);
+        System.out.printf ("Format ........ %d  %s%n", format, twoIMGFormats[format]);
+        System.out.printf ("Blocks ........ %,d%n", prodosBlocks);
+        System.out.printf ("Data offset ... %d%n", offset);
+        System.out.printf ("Data size ..... %,d%n", length);
+      }
     }
     else if (Utility.isMagic (buffer, 0, NuFile))
     {
@@ -71,6 +92,8 @@ public class FileSystemFactory
       }
     }
 
+    assert offset + length <= buffer.length;
+
     try
     {
       // Prodos
@@ -85,8 +108,8 @@ public class FileSystemFactory
 
       if (length == 116_480)                  // Dos3.1
       {
-        FsDos dos = new FsDos (name, buffer, offset, length, dos31Reader);
-        if (dos.getTotalCatalogBlocks () > 0)
+        FsDos dos = getDos31 (name, buffer, offset, length);
+        if (dos != null)
           fileSystems.add (dos);
       }
       else if (length == 143_360)
@@ -96,15 +119,15 @@ public class FileSystemFactory
         if (dos != null)
           fileSystems.add (dos);
 
+        // Dos4
+        FsDos4 dos4 = getDos4 (name, buffer, offset, length);
+        if (dos4 != null)
+          fileSystems.add (dos4);
+
         // CPM
         FsCpm cpm = getCpm (name, buffer, offset, length);
         if (cpm != null)
           fileSystems.add (cpm);
-
-        // Dos4
-        FsDos4 dos4 = new FsDos4 (name, buffer, offset, length, dos33Reader0);
-        if (dos4.getTotalCatalogBlocks () > 0)
-          fileSystems.add (dos4);
       }
       else if (length == UNIDOS_SIZE * 2)       // Unidos
       {
@@ -141,17 +164,16 @@ public class FileSystemFactory
   {
     List<FsDos> disks = new ArrayList<> (2);
 
-    for (int i = 0; i < 2; i++)
+    for (BlockReader reader : dos33Readers)
       try
       {
-        FsDos fs = new FsDos (name, buffer, offset, length, (i == 0 ? dos33Reader0 : dos33Reader1));
+        FsDos fs = new FsDos (name, buffer, offset, length, reader);
 
         if (fs.getTotalCatalogBlocks () > 0)
           disks.add (fs);
       }
       catch (FileFormatException e)
       {
-        System.out.println (e);       // loop around
       }
 
     if (disks.size () == 0)
@@ -168,11 +190,10 @@ public class FileSystemFactory
   static FsProdos getProdos (String name, byte[] buffer, int offset, int length)
   // ---------------------------------------------------------------------------------//
   {
-    for (int i = 0; i < 2; i++)
+    for (BlockReader reader : blockReaders)
       try
       {
-        FsProdos prodos =
-            new FsProdos (name, buffer, offset, length, (i == 0 ? blockReader0 : blockReader1));
+        FsProdos prodos = new FsProdos (name, buffer, offset, length, reader);
 
         if (prodos.getTotalCatalogBlocks () > 0)
           return prodos;
@@ -188,11 +209,10 @@ public class FileSystemFactory
   static FsPascal getPascal (String name, byte[] buffer, int offset, int length)
   // ---------------------------------------------------------------------------------//
   {
-    for (int i = 0; i < 2; i++)
+    for (BlockReader reader : blockReaders)
       try
       {
-        FsPascal pascal =
-            new FsPascal (name, buffer, offset, length, (i == 0 ? blockReader0 : blockReader1));
+        FsPascal pascal = new FsPascal (name, buffer, offset, length, reader);
 
         if (pascal.getTotalCatalogBlocks () > 0)
           return pascal;
@@ -214,6 +234,40 @@ public class FileSystemFactory
 
       if (cpm.getTotalCatalogBlocks () > 0)
         return cpm;
+    }
+    catch (FileFormatException e)
+    {
+    }
+
+    return null;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  static FsDos getDos31 (String name, byte[] buffer, int offset, int length)
+  // ---------------------------------------------------------------------------------//
+  {
+    try
+    {
+      FsDos dos = new FsDos (name, buffer, offset, length, dos31Reader);
+      if (dos.getTotalCatalogBlocks () > 0)
+        return dos;
+    }
+    catch (FileFormatException e)
+    {
+    }
+
+    return null;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  static FsDos4 getDos4 (String name, byte[] buffer, int offset, int length)
+  // ---------------------------------------------------------------------------------//
+  {
+    try
+    {
+      FsDos4 dos4 = new FsDos4 (name, buffer, offset, length, dos33Reader0);
+      if (dos4.getTotalCatalogBlocks () > 0)
+        return dos4;
     }
     catch (FileFormatException e)
     {
