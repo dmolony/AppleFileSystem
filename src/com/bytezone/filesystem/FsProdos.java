@@ -133,7 +133,8 @@ public class FsProdos extends AbstractFileSystem
             byte[] fileBuffer = pascal.read ();
             FsPascal fs = FileSystemFactory.getPascal (pascal.name, fileBuffer, 1024,
                 fileBuffer.length - 1024);
-            parent.addFile (fs);
+            if (fs != null)
+              parent.addFile (fs);
             break;
 
           case GSOS_EXTENDED_FILE:

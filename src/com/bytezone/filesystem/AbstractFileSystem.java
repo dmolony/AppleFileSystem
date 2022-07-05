@@ -280,7 +280,7 @@ public abstract class AbstractFileSystem implements AppleFileSystem
     StringBuilder text = new StringBuilder ();
 
     text.append (String.format ("File system ........... %s%n", fileSystemName));
-    text.append (String.format ("Disk offset ........... %d%n", diskOffset));
+    text.append (String.format ("Disk offset ........... %,d%n", diskOffset));
     text.append (String.format ("Disk length ........... %,d%n", diskLength));
     text.append (String.format ("Total blocks .......... %,d%n", totalBlocks));
     text.append (String.format ("Block size ............ %d%n", blockReader.blockSize));

@@ -94,61 +94,23 @@ public class FileSystemFactory
 
     assert offset + length <= buffer.length;
 
-    try
-    {
-      // Prodos
-      FsProdos prodos = getProdos (name, buffer, offset, length);
-      if (prodos != null)
-        fileSystems.add (prodos);
-
-      // Pascal
-      FsPascal pascal = getPascal (name, buffer, offset, length);
-      if (pascal != null)
-        fileSystems.add (pascal);
-
-      if (length == 116_480)                  // Dos3.1
-      {
-        FsDos dos = getDos31 (name, buffer, offset, length);
-        if (dos != null)
-          fileSystems.add (dos);
-      }
-      else if (length == 143_360)
-      {
-        // Dos3.3
-        FsDos dos = getDos (name, buffer, offset, length);
-        if (dos != null)
-          fileSystems.add (dos);
-
-        // Dos4
-        FsDos4 dos4 = getDos4 (name, buffer, offset, length);
-        if (dos4 != null)
-          fileSystems.add (dos4);
-
-        // CPM
-        FsCpm cpm = getCpm (name, buffer, offset, length);
-        if (cpm != null)
-          fileSystems.add (cpm);
-      }
-      else if (length == UNIDOS_SIZE * 2)       // Unidos
-      {
-        FsDos fs1 = new FsDos (name, buffer, 0, UNIDOS_SIZE, unidosReader);
-        if (fs1 != null && fs1.getTotalCatalogBlocks () > 0)
-        {
-          FsDos fs2 = new FsDos (name, buffer, UNIDOS_SIZE, UNIDOS_SIZE, unidosReader);
-          if (fs2 != null && fs2.getTotalCatalogBlocks () > 0)
-          {
-            fileSystems.add (fs1);
-            fileSystems.add (fs2);
-          }
-        }
-      }
-    }
-    catch (FileFormatException e)
-    {
-      System.out.println (e);
-    }
+    add (fileSystems, getProdos (name, buffer, offset, length));
+    add (fileSystems, getPascal (name, buffer, offset, length));
+    add (fileSystems, getDos31 (name, buffer, offset, length));
+    add (fileSystems, getDos (name, buffer, offset, length));
+    add (fileSystems, getDos4 (name, buffer, offset, length));
+    add (fileSystems, getCpm (name, buffer, offset, length));
+    getUnidos (fileSystems, name, buffer, offset, length);
 
     return fileSystems;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  private static void add (List<AppleFileSystem> fileSystems, AppleFileSystem appleFileSystem)
+  // ---------------------------------------------------------------------------------//
+  {
+    if (appleFileSystem != null)
+      fileSystems.add (appleFileSystem);
   }
 
   // ---------------------------------------------------------------------------------//
@@ -164,17 +126,18 @@ public class FileSystemFactory
   {
     List<FsDos> disks = new ArrayList<> (2);
 
-    for (BlockReader reader : dos33Readers)
-      try
-      {
-        FsDos fs = new FsDos (name, buffer, offset, length, reader);
+    if (length == 143_360)
+      for (BlockReader reader : dos33Readers)
+        try
+        {
+          FsDos fs = new FsDos (name, buffer, offset, length, reader);
 
-        if (fs.getTotalCatalogBlocks () > 0)
-          disks.add (fs);
-      }
-      catch (FileFormatException e)
-      {
-      }
+          if (fs.getTotalCatalogBlocks () > 0)
+            disks.add (fs);
+        }
+        catch (FileFormatException e)
+        {
+        }
 
     if (disks.size () == 0)
       return null;
@@ -208,6 +171,7 @@ public class FileSystemFactory
   // ---------------------------------------------------------------------------------//
   static FsPascal getPascal (String name, byte[] buffer, int offset, int length)
   // ---------------------------------------------------------------------------------//
+  // This can be called from FsProdos if a PASCAL_ON_PROFILE is found
   {
     for (BlockReader reader : blockReaders)
       try
@@ -228,16 +192,17 @@ public class FileSystemFactory
   static FsCpm getCpm (String name, byte[] buffer, int offset, int length)
   // ---------------------------------------------------------------------------------//
   {
-    try
-    {
-      FsCpm cpm = new FsCpm (name, buffer, offset, length, cpmReader);
+    if (length == 143_360)
+      try
+      {
+        FsCpm cpm = new FsCpm (name, buffer, offset, length, cpmReader);
 
-      if (cpm.getTotalCatalogBlocks () > 0)
-        return cpm;
-    }
-    catch (FileFormatException e)
-    {
-    }
+        if (cpm.getTotalCatalogBlocks () > 0)
+          return cpm;
+      }
+      catch (FileFormatException e)
+      {
+      }
 
     return null;
   }
@@ -246,15 +211,16 @@ public class FileSystemFactory
   static FsDos getDos31 (String name, byte[] buffer, int offset, int length)
   // ---------------------------------------------------------------------------------//
   {
-    try
-    {
-      FsDos dos = new FsDos (name, buffer, offset, length, dos31Reader);
-      if (dos.getTotalCatalogBlocks () > 0)
-        return dos;
-    }
-    catch (FileFormatException e)
-    {
-    }
+    if (length == 116_480)                  // Dos3.1
+      try
+      {
+        FsDos dos = new FsDos (name, buffer, offset, length, dos31Reader);
+        if (dos.getTotalCatalogBlocks () > 0)
+          return dos;
+      }
+      catch (FileFormatException e)
+      {
+      }
 
     return null;
   }
@@ -263,16 +229,41 @@ public class FileSystemFactory
   static FsDos4 getDos4 (String name, byte[] buffer, int offset, int length)
   // ---------------------------------------------------------------------------------//
   {
-    try
-    {
-      FsDos4 dos4 = new FsDos4 (name, buffer, offset, length, dos33Reader0);
-      if (dos4.getTotalCatalogBlocks () > 0)
-        return dos4;
-    }
-    catch (FileFormatException e)
-    {
-    }
+    if (length == 143_360)
+      try
+      {
+        FsDos4 dos4 = new FsDos4 (name, buffer, offset, length, dos33Reader0);
+        if (dos4.getTotalCatalogBlocks () > 0)
+          return dos4;
+      }
+      catch (FileFormatException e)
+      {
+      }
 
     return null;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  static void getUnidos (List<AppleFileSystem> fileSystems, String name, byte[] buffer, int offset,
+      int length)
+  // ---------------------------------------------------------------------------------//
+  {
+    if (length == UNIDOS_SIZE * 2)
+      try
+      {
+        FsDos fs1 = new FsDos (name, buffer, 0, UNIDOS_SIZE, unidosReader);
+        if (fs1 != null && fs1.getTotalCatalogBlocks () > 0)
+        {
+          FsDos fs2 = new FsDos (name, buffer, UNIDOS_SIZE, UNIDOS_SIZE, unidosReader);
+          if (fs2 != null && fs2.getTotalCatalogBlocks () > 0)
+          {
+            fileSystems.add (fs1);
+            fileSystems.add (fs2);
+          }
+        }
+      }
+      catch (FileFormatException e)
+      {
+      }
   }
 }
