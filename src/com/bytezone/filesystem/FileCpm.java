@@ -106,8 +106,9 @@ public class FileCpm extends AbstractFile
   public String toString ()
   // ---------------------------------------------------------------------------------//
   {
-    return String.format ("%-8s %-3s  %s  %s  %2d %3d  %3d", name, type,
-        readOnly ? "*" : " ", systemFile ? "*" : " ", userNumber, dataBlocks.size (),
-        recordCount);
+    String fullName = type.isEmpty () ? name : name + "." + type;
+
+    return String.format ("%-12s  %s  %s  %2d %3d  %3d", fullName, readOnly ? "*" : " ",
+        systemFile ? "*" : " ", userNumber, dataBlocks.size (), recordCount);
   }
 }

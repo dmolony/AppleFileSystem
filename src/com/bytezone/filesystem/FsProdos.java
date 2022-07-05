@@ -137,6 +137,8 @@ public class FsProdos extends AbstractFileSystem
             break;
 
           case GSOS_EXTENDED_FILE:
+            file = new FileProdos (this, buffer, ptr);
+            parent.addFile (file);
             // add both forks
             break;
 
