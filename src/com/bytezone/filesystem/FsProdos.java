@@ -25,6 +25,8 @@ public class FsProdos extends AbstractFileSystem
   private int fileCount;
   private int bitmapPointer;
 
+  private FileSystemFactory factory;
+
   // ---------------------------------------------------------------------------------//
   public FsProdos (String name, byte[] buffer, BlockReader blockReader)
   // ---------------------------------------------------------------------------------//
@@ -118,8 +120,9 @@ public class FsProdos extends AbstractFileSystem
 
             if (file.fileType == ProdosConstants.FILE_TYPE_LBR && file.name.endsWith (".SHK"))
             {
-              List<AppleFileSystem> fsList =
-                  FileSystemFactory.getFileSystems (file.name, file.read ());
+              if (factory == null)
+                factory = new FileSystemFactory ();
+              List<AppleFileSystem> fsList = factory.getFileSystems (file.name, file.read ());
               if (fsList.size () > 0)
                 for (AppleFileSystem fs : fsList)
                   parent.addFile (fs);
@@ -131,8 +134,7 @@ public class FsProdos extends AbstractFileSystem
           case PASCAL_ON_PROFILE:
             FileProdos pascal = new FileProdos (this, buffer, ptr);
             byte[] fileBuffer = pascal.read ();
-            FsPascal fs = FileSystemFactory.getPascal (pascal.name, fileBuffer, 1024,
-                fileBuffer.length - 1024);
+            FsPascal fs = new FsPascal (pascal.name, fileBuffer, 1024, fileBuffer.length - 1024);
             if (fs != null)
               parent.addFile (fs);
             break;
@@ -140,7 +142,6 @@ public class FsProdos extends AbstractFileSystem
           case GSOS_EXTENDED_FILE:
             file = new FileProdos (this, buffer, ptr);
             parent.addFile (file);
-            // add both forks
             break;
 
           case SUBDIRECTORY:

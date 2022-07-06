@@ -1,5 +1,7 @@
 package com.bytezone.filesystem;
 
+import static com.bytezone.filesystem.BlockReader.AddressType.BLOCK;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -7,11 +9,19 @@ import java.util.List;
 public class FsPascal extends AbstractFileSystem
 // -----------------------------------------------------------------------------------//
 {
+  private static BlockReader blockReader = new BlockReader (512, BLOCK, 0, 0);
   private static final int CATALOG_ENTRY_SIZE = 26;
 
   private String volumeName;
   private int blocks;         // size of disk
   private int files;          // no of files on disk
+
+  // ---------------------------------------------------------------------------------//
+  public FsPascal (String name, byte[] buffer, int offset, int length)
+  // ---------------------------------------------------------------------------------//
+  {
+    this (name, buffer, offset, length, blockReader);
+  }
 
   // ---------------------------------------------------------------------------------//
   public FsPascal (String name, byte[] buffer, BlockReader blockReader)

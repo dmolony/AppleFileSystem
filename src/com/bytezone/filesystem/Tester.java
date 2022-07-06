@@ -3,14 +3,13 @@ package com.bytezone.filesystem;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
 import java.util.List;
 
 // -----------------------------------------------------------------------------------//
 public class Tester
 // -----------------------------------------------------------------------------------//
 {
-  String base = "/Users/denismolony/Documents/Examples/";
+  String base = System.getProperty ("user.home") + "/Documents/Examples/";
   String adi = base + "Apple Disk Images/";
   String adav = base + "apple_dos_all_versions/";
   String intl = base + "interleave/";
@@ -56,36 +55,32 @@ public class Tester
   Tester ()
   // ---------------------------------------------------------------------------------//
   {
-    List<AppleFileSystem> fileSystems = new ArrayList<> ();
+    FileSystemFactory factory = new FileSystemFactory ();
 
     for (int fileNo = 0; fileNo < fileNames.length; fileNo++)
     {
+      System.out.printf ("%n%d %s%n", fileNo, fileNames[fileNo].substring (base.length ()));
+
       Path path = Path.of (fileNames[fileNo]);
       String name = path.toFile ().getName ();
 
-      System.out.printf ("%n%d %s%n", fileNo, fileNames[fileNo].substring (base.length ()));
-
-      byte[] buffer = readAllBytes (path);
-      List<AppleFileSystem> fsList = FileSystemFactory.getFileSystems (name, buffer);
+      List<AppleFileSystem> fsList = factory.getFileSystems (name, readAllBytes (path));
 
       if (fsList.size () == 0)
+      {
         System.out.println ("Unknown disk format: " + name);
-      else
-        //        fileSystems.addAll (fsList);
-        for (AppleFileSystem fs : fsList)
-        {
-          System.out.println ();
-          System.out.println (fs.toText ());
-        }
-    }
+        continue;
+      }
 
-    //    for (AppleFileSystem fs : fileSystems)
-    //    {
-    //      System.out.println (fs.toText ());
-    //      System.out.println ();
-    //      System.out.println (fs.catalog ());
-    //      System.out.println ();
-    //    }
+      if (fileNo == 99)
+        System.out.println (fsList.get (0).catalog ());
+
+      for (AppleFileSystem fs : fsList)
+      {
+        System.out.println ();
+        System.out.println (fs.toText ());
+      }
+    }
   }
 
   // ---------------------------------------------------------------------------------//

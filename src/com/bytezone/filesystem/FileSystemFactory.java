@@ -34,23 +34,19 @@ public class FileSystemFactory
   static BlockReader[] dos33Readers = { dos33Reader0, dos33Reader1 };
   static BlockReader[] blockReaders = { blockReader0, blockReader1 };
 
-  // ---------------------------------------------------------------------------------//
-  private FileSystemFactory ()
-  // ---------------------------------------------------------------------------------//
-  {
-  }
+  List<AppleFileSystem> fileSystems = new ArrayList<> ();
 
   // ---------------------------------------------------------------------------------//
-  public static List<AppleFileSystem> getFileSystems (String name, byte[] buffer)
+  public List<AppleFileSystem> getFileSystems (String name, byte[] buffer)
   // ---------------------------------------------------------------------------------//
   {
+    fileSystems.clear ();
+
     int offset = 0;
     int length = buffer.length;
 
     if (length == 143_488)
       length = 143_360;
-
-    List<AppleFileSystem> fileSystems = new ArrayList<> ();
 
     if (Utility.isMagic (buffer, 0, TWO_IMG))
     {
@@ -94,19 +90,19 @@ public class FileSystemFactory
 
     assert offset + length <= buffer.length;
 
-    add (fileSystems, getProdos (name, buffer, offset, length));
-    add (fileSystems, getPascal (name, buffer, offset, length));
-    add (fileSystems, getDos31 (name, buffer, offset, length));
-    add (fileSystems, getDos (name, buffer, offset, length));
-    add (fileSystems, getDos4 (name, buffer, offset, length));
-    add (fileSystems, getCpm (name, buffer, offset, length));
-    getUnidos (fileSystems, name, buffer, offset, length);
+    add (getProdos (name, buffer, offset, length));
+    add (getPascal (name, buffer, offset, length));
+    add (getDos31 (name, buffer, offset, length));
+    add (getDos (name, buffer, offset, length));
+    add (getDos4 (name, buffer, offset, length));
+    add (getCpm (name, buffer, offset, length));
+    getUnidos (name, buffer, offset, length);
 
     return fileSystems;
   }
 
   // ---------------------------------------------------------------------------------//
-  private static void add (List<AppleFileSystem> fileSystems, AppleFileSystem appleFileSystem)
+  private void add (AppleFileSystem appleFileSystem)
   // ---------------------------------------------------------------------------------//
   {
     if (appleFileSystem != null)
@@ -114,14 +110,7 @@ public class FileSystemFactory
   }
 
   // ---------------------------------------------------------------------------------//
-  static FsDos getDos (String name, byte[] buffer)
-  // ---------------------------------------------------------------------------------//
-  {
-    return getDos (name, buffer, 0, buffer.length);
-  }
-
-  // ---------------------------------------------------------------------------------//
-  static FsDos getDos (String name, byte[] buffer, int offset, int length)
+  private FsDos getDos (String name, byte[] buffer, int offset, int length)
   // ---------------------------------------------------------------------------------//
   {
     List<FsDos> disks = new ArrayList<> (2);
@@ -139,18 +128,22 @@ public class FileSystemFactory
         {
         }
 
-    if (disks.size () == 0)
-      return null;
+    switch (disks.size ())
+    {
+      case 1:
+        return disks.get (0);
 
-    if (disks.size () == 1)
-      return disks.get (0);
+      case 2:
+        return disks.get (0).getTotalCatalogBlocks () > disks.get (1).getTotalCatalogBlocks ()
+            ? disks.get (0) : disks.get (1);
 
-    return disks.get (0).getTotalCatalogBlocks () > disks.get (1).getTotalCatalogBlocks ()
-        ? disks.get (0) : disks.get (1);
+      default:
+        return null;
+    }
   }
 
   // ---------------------------------------------------------------------------------//
-  static FsProdos getProdos (String name, byte[] buffer, int offset, int length)
+  private FsProdos getProdos (String name, byte[] buffer, int offset, int length)
   // ---------------------------------------------------------------------------------//
   {
     for (BlockReader reader : blockReaders)
@@ -169,9 +162,8 @@ public class FileSystemFactory
   }
 
   // ---------------------------------------------------------------------------------//
-  static FsPascal getPascal (String name, byte[] buffer, int offset, int length)
+  private FsPascal getPascal (String name, byte[] buffer, int offset, int length)
   // ---------------------------------------------------------------------------------//
-  // This can be called from FsProdos if a PASCAL_ON_PROFILE is found
   {
     for (BlockReader reader : blockReaders)
       try
@@ -189,7 +181,7 @@ public class FileSystemFactory
   }
 
   // ---------------------------------------------------------------------------------//
-  static FsCpm getCpm (String name, byte[] buffer, int offset, int length)
+  private FsCpm getCpm (String name, byte[] buffer, int offset, int length)
   // ---------------------------------------------------------------------------------//
   {
     if (length == 143_360)
@@ -208,7 +200,7 @@ public class FileSystemFactory
   }
 
   // ---------------------------------------------------------------------------------//
-  static FsDos getDos31 (String name, byte[] buffer, int offset, int length)
+  private FsDos getDos31 (String name, byte[] buffer, int offset, int length)
   // ---------------------------------------------------------------------------------//
   {
     if (length == 116_480)                  // Dos3.1
@@ -226,7 +218,7 @@ public class FileSystemFactory
   }
 
   // ---------------------------------------------------------------------------------//
-  static FsDos4 getDos4 (String name, byte[] buffer, int offset, int length)
+  private FsDos4 getDos4 (String name, byte[] buffer, int offset, int length)
   // ---------------------------------------------------------------------------------//
   {
     if (length == 143_360)
@@ -244,8 +236,7 @@ public class FileSystemFactory
   }
 
   // ---------------------------------------------------------------------------------//
-  static void getUnidos (List<AppleFileSystem> fileSystems, String name, byte[] buffer, int offset,
-      int length)
+  private void getUnidos (String name, byte[] buffer, int offset, int length)
   // ---------------------------------------------------------------------------------//
   {
     if (length == UNIDOS_SIZE * 2)
