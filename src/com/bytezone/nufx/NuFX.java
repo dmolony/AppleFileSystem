@@ -283,8 +283,8 @@ public class NuFX
     float pct = 0;
     if (totalUncompressedSize > 0)
       pct = totalCompressedSize * 100 / totalUncompressedSize;
-    text.append (String.format (" Uncomp:%7d  Comp:%7d  %%of orig:%3.0f%%%n%n",
-        totalUncompressedSize, totalCompressedSize, pct));
+    text.append (String.format (" Uncomp:%7d  Comp:%7d  %%of orig:%3.0f%%", totalUncompressedSize,
+        totalCompressedSize, pct));
 
     return text.toString ();
   }

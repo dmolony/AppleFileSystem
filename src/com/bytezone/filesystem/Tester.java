@@ -20,6 +20,8 @@ public class Tester
   String shk = base + "SHK/";
   String woz = base + "woz/wozaday_Wizardry/";
   String wiz = base + "Wizardry/";
+  String lbr = base + "LBR/";
+  String bin = base + "Binary II/";
 
   String[] fileNames = {                             //
       base + "dos/Assembler.dsk",                    // 0: 3.3 intl 0
@@ -43,12 +45,15 @@ public class Tester
       hybr + "HybridHuffin/IAC20.DSK",               // 18: hybrid pascal/dos
       hybr + "cpm/HYBRID.DSK",                       // 19: hybrid cpm/dos
       base + "dual dos/AAL-8603.DSK",                // 20: hybrid prodos/dos
-      cpm + "ARCHIVES 7.2mg",                        // 21: prodos with shk
-      sdk + "SCASM.II4.0.SDK",                       // 22: NuFx
-      shk + "DosMaster.shk",                         // 23: DosMaster shk
+      cpm + "ARCHIVES 7.2mg",                        // 21: 2mg / prodos / NuFX LBR files
+      sdk + "SCASM.II4.0.SDK",                       // 22: NuFX / Dos
+      shk + "DosMaster.shk",                         // 23: DosMaster NuFX
       wiz + "Wizardry/murasama.dsk",                 // 24: pascal wizardry
       woz + "Wizardry PGMO.woz",                     // 25: pascal wizardry woz
       wiz + "wizardry_IV/Version A/wiz4_d1.dsk",     // 26: wizardry IV disk 1
+      lbr + "crnch24s.lbr",                          // 27: LBR
+      bin + "GBBS.UTILS.BNY",                        // 28: binary II
+      bin + "GWFTP11B2.BXY",                         // 29: binary II / NuFX
   };
 
   // ---------------------------------------------------------------------------------//
@@ -72,8 +77,11 @@ public class Tester
         continue;
       }
 
-      if (fileNo == 99)
+      if (fileNo == 21)
+      {
+        System.out.println ();
         System.out.println (fsList.get (0).catalog ());
+      }
 
       for (AppleFileSystem fs : fsList)
       {

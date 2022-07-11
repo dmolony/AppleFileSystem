@@ -12,17 +12,17 @@ public class FileProdos extends AbstractFile
   private static final String NO_DATE = "<NO DATE>";
   private static final int GSOS_EXTENDED_FILE = 0x05;      // tech note #25
 
-  int storageType;
-  int fileType;
-  int keyPtr;
-  int size;
-  int eof;
-  int auxType;
-  int headerPtr;
+  private int storageType;
+  private int fileType;
+  private int keyPtr;
+  private int size;
+  private int eof;
+  private int auxType;
+  private int headerPtr;
 
-  LocalDateTime created;
-  LocalDateTime modified;
-  String dateC, timeC, dateM, timeM;
+  private LocalDateTime created;
+  private LocalDateTime modified;
+  private String dateC, timeC, dateM, timeM;
 
   private ForkProdos dataFork;
   private ForkProdos resourceFork;
@@ -83,6 +83,13 @@ public class FileProdos extends AbstractFile
   }
 
   // ---------------------------------------------------------------------------------//
+  public int getFileType ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return fileType;
+  }
+
+  // ---------------------------------------------------------------------------------//
   @Override
   public byte[] read ()
   // ---------------------------------------------------------------------------------//
@@ -102,7 +109,7 @@ public class FileProdos extends AbstractFile
   {
     if (storageType == GSOS_EXTENDED_FILE)
     {
-      return true ? dataFork.eof : resourceFork.eof;
+      return true ? dataFork.getEof () : resourceFork.getEof ();
     }
     else
       return eof;

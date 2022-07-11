@@ -17,11 +17,11 @@ public class ForkProdos
   static final int SEEDLING = 0x01;
   static final int FREE = 0x00;
 
-  FsProdos fileSystem;
-  int storageType;
-  int size;
-  int eof;
-  int keyPtr;
+  private FsProdos fileSystem;
+  private int storageType;
+  private int size;
+  private int eof;
+  private int keyPtr;
 
   private AppleBlock masterIndexBlock;
   private final List<AppleBlock> indexBlocks = new ArrayList<> ();
@@ -80,6 +80,13 @@ public class ForkProdos
       else
         dataBlocks.add (fileSystem.getBlock (blockNo));
     }
+  }
+
+  // ---------------------------------------------------------------------------------//
+  public int getEof ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return eof;
   }
 
   // ---------------------------------------------------------------------------------//

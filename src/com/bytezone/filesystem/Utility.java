@@ -87,6 +87,13 @@ public class Utility
   }
 
   // ---------------------------------------------------------------------------------//
+  static String format (byte[] buffer, int offset, int length)
+  // ---------------------------------------------------------------------------------//
+  {
+    return format (buffer, offset, length, true, 0);
+  }
+
+  // ---------------------------------------------------------------------------------//
   static String format (byte[] buffer, int offset, int length, boolean header, int startingAddress)
   // ---------------------------------------------------------------------------------//
   {

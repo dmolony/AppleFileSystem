@@ -118,7 +118,7 @@ public class FsProdos extends AbstractFileSystem
           case TREE:
             FileProdos file = new FileProdos (this, buffer, ptr);
 
-            if (file.fileType == ProdosConstants.FILE_TYPE_LBR && file.name.endsWith (".SHK"))
+            if (file.getFileType () == ProdosConstants.FILE_TYPE_LBR && file.name.endsWith (".SHK"))
             {
               if (factory == null)
                 factory = new FileSystemFactory ();
@@ -132,9 +132,9 @@ public class FsProdos extends AbstractFileSystem
             break;
 
           case PASCAL_ON_PROFILE:
-            FileProdos pascal = new FileProdos (this, buffer, ptr);
-            byte[] fileBuffer = pascal.read ();
-            FsPascal fs = new FsPascal (pascal.name, fileBuffer, 1024, fileBuffer.length - 1024);
+            file = new FileProdos (this, buffer, ptr);
+            byte[] fileBuffer = file.read ();
+            FsPascal fs = new FsPascal (file.name, fileBuffer, 1024, fileBuffer.length - 1024);
             if (fs != null)
               parent.addFile (fs);
             break;

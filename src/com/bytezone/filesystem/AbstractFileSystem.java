@@ -262,9 +262,16 @@ public abstract class AbstractFileSystem implements AppleFileSystem
 
     for (AppleFile file : files)
       if (file.isFileSystem () || file.isDirectory ())
-        text.append (file.catalog () + "\n");
+      {
+        text.append ("\n");
+        text.append (file.catalog ());
+        text.append ("\n");
+      }
       else
-        text.append (file + "\n");
+      {
+        text.append (file);
+        text.append ("\n");
+      }
 
     while (text.charAt (text.length () - 1) == '\n')
       text.deleteCharAt (text.length () - 1);

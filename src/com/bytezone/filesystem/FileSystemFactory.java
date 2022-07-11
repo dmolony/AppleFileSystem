@@ -19,6 +19,8 @@ public class FileSystemFactory
   private static final byte[] TWO_IMG = { 0x32, 0x49, 0x4D, 0x47 };
   private static final byte[] WOZ_1 = { 0x57, 0x4F, 0x5A, 0x32, (byte) 0xFF, 0x0A, 0x0D, 0x0A };
   private static final byte[] WOZ_2 = { 0x57, 0x4F, 0x5A, 0x31, (byte) 0xFF, 0x0A, 0x0D, 0x0A };
+  private static final byte[] Squeeze = { 0x76, (byte) 0xFF };
+
   private static final int UNIDOS_SIZE = 409_600;
 
   private static String[] twoIMGFormats = { "Dos", "Prodos", "NIB" };
@@ -30,11 +32,13 @@ public class FileSystemFactory
   static BlockReader dos33Reader0 = new BlockReader (256, SECTOR, 0, 16);   // Dos 3.3
   static BlockReader dos33Reader1 = new BlockReader (256, SECTOR, 1, 16);   // Dos 3.3
   static BlockReader unidosReader = new BlockReader (256, SECTOR, 0, 32);   // UniDos
+  static BlockReader lbrReader = new BlockReader (128, BLOCK, 0, 0);        // LBR
 
   static BlockReader[] dos33Readers = { dos33Reader0, dos33Reader1 };
   static BlockReader[] blockReaders = { blockReader0, blockReader1 };
 
   List<AppleFileSystem> fileSystems = new ArrayList<> ();
+  private boolean display = false;
 
   // ---------------------------------------------------------------------------------//
   public List<AppleFileSystem> getFileSystems (String name, byte[] buffer)
@@ -53,7 +57,7 @@ public class FileSystemFactory
       offset = Utility.unsignedLong (buffer, 24);
       length = Utility.unsignedLong (buffer, 28);
 
-      if (false)
+      if (display)
       {
         int headerSize = Utility.unsignedShort (buffer, 8);
         int version = Utility.unsignedShort (buffer, 10);
@@ -69,11 +73,22 @@ public class FileSystemFactory
         System.out.printf ("Data size ..... %,d%n", length);
       }
     }
+    else if (Utility.isMagic (buffer, 0, BIN2) && buffer[18] == 0x02)
+    {
+      String id = new String (buffer, 1, 2);
+      System.out.println ("Binary II : " + id);
+    }
     else if (Utility.isMagic (buffer, 0, NuFile))
     {
       NuFX nufx = new NuFX (buffer, name);
       buffer = nufx.getDiskBuffer ();
       length = buffer.length;
+
+      if (display)
+      {
+        System.out.println ();
+        System.out.println (nufx);
+      }
     }
     else if (Utility.isMagic (buffer, 0, WOZ_1) || Utility.isMagic (buffer, 0, WOZ_2))
     {
@@ -87,6 +102,10 @@ public class FileSystemFactory
         e.printStackTrace ();
       }
     }
+    else if (Utility.isMagic (buffer, 0, Squeeze))
+    {
+      System.out.println ("Squeeze?");
+    }
 
     assert offset + length <= buffer.length;
 
@@ -96,10 +115,24 @@ public class FileSystemFactory
     add (getDos (name, buffer, offset, length));
     add (getDos4 (name, buffer, offset, length));
     add (getCpm (name, buffer, offset, length));
+    add (getLbr (name, buffer, offset, length));
     getUnidos (name, buffer, offset, length);
 
     return fileSystems;
   }
+
+  // ---------------------------------------------------------------------------------//
+  //  private boolean count (byte[] buffer, byte value, int offset, int length)
+  //  // ---------------------------------------------------------------------------------//
+  //  {
+  //    while (length > 0 && offset < buffer.length && buffer[offset] == value)
+  //    {
+  //      ++offset;
+  //      --length;
+  //    }
+  //
+  //    return length == 0;
+  //  }
 
   // ---------------------------------------------------------------------------------//
   private void add (AppleFileSystem appleFileSystem)
@@ -195,6 +228,24 @@ public class FileSystemFactory
       catch (FileFormatException e)
       {
       }
+
+    return null;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  private FsLbr getLbr (String name, byte[] buffer, int offset, int length)
+  // ---------------------------------------------------------------------------------//
+  {
+    try
+    {
+      FsLbr lbr = new FsLbr (name, buffer, offset, length, lbrReader);
+
+      if (lbr.getTotalCatalogBlocks () > 0)
+        return lbr;
+    }
+    catch (FileFormatException e)
+    {
+    }
 
     return null;
   }
