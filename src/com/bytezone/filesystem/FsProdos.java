@@ -118,15 +118,9 @@ public class FsProdos extends AbstractFileSystem
           case TREE:
             FileProdos file = new FileProdos (this, buffer, ptr);
 
-            if (file.getFileType () == ProdosConstants.FILE_TYPE_LBR && file.name.endsWith (".SHK"))
-            {
-              if (factory == null)
-                factory = new FileSystemFactory ();
-              List<AppleFileSystem> fsList = factory.getFileSystems (file.name, file.read ());
-              if (fsList.size () > 0)
-                for (AppleFileSystem fs : fsList)
-                  parent.addFile (fs);
-            }
+            if (file.getFileType () == ProdosConstants.FILE_TYPE_LBR)
+              for (AppleFileSystem fs : checkLibraryFile (file))
+                parent.addFile (fs);
             else
               parent.addFile (file);
             break;
@@ -174,6 +168,29 @@ public class FsProdos extends AbstractFileSystem
       if (!catalogBlock.isValid ())
         throw new FileFormatException ("Invalid catalog");
     }
+  }
+
+  // ---------------------------------------------------------------------------------//
+  private List<AppleFileSystem> checkLibraryFile (FileProdos file)
+  // ---------------------------------------------------------------------------------//
+  {
+    String description = switch (file.getAuxType ())
+    {
+      case 0x0001 -> "AppleSingle file";
+      case 0x0005 -> "DiskCopy file";
+      case 0x0130 -> "2IMG file";
+      case 0x8000 -> "Binary II file";
+      case 0x8002 -> "Shrinkit (NuFX) file";
+      case 0x8004 -> "Davex file";
+      default -> "Unknown aux";
+    };
+
+    System.out.printf ("%04X  %s - %s%n", file.getAuxType (), file.name, description);
+
+    if (factory == null)
+      factory = new FileSystemFactory ();
+
+    return factory.getFileSystems (file.name, file.read ());
   }
 
   // ---------------------------------------------------------------------------------//

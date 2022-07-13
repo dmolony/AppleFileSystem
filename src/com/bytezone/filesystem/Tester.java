@@ -77,10 +77,13 @@ public class Tester
         continue;
       }
 
-      if (fileNo == 21)
+      if (fileNo >= 28)
       {
-        System.out.println ();
-        System.out.println (fsList.get (0).catalog ());
+        for (AppleFileSystem fs : fsList)
+        {
+          System.out.println ();
+          System.out.println (fs.catalog ());
+        }
       }
 
       for (AppleFileSystem fs : fsList)

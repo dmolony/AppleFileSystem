@@ -19,6 +19,7 @@ public class FileSystemFactory
   private static final byte[] TWO_IMG = { 0x32, 0x49, 0x4D, 0x47 };
   private static final byte[] WOZ_1 = { 0x57, 0x4F, 0x5A, 0x32, (byte) 0xFF, 0x0A, 0x0D, 0x0A };
   private static final byte[] WOZ_2 = { 0x57, 0x4F, 0x5A, 0x31, (byte) 0xFF, 0x0A, 0x0D, 0x0A };
+  private static final byte[] Crunch = { 0x76, (byte) 0xFE };
   private static final byte[] Squeeze = { 0x76, (byte) 0xFF };
 
   private static final int UNIDOS_SIZE = 409_600;
@@ -73,11 +74,11 @@ public class FileSystemFactory
         System.out.printf ("Data size ..... %,d%n", length);
       }
     }
-    else if (Utility.isMagic (buffer, 0, BIN2) && buffer[18] == 0x02)
-    {
-      String id = new String (buffer, 1, 2);
-      System.out.println ("Binary II : " + id);
-    }
+    //    else if (Utility.isMagic (buffer, 0, BIN2) && buffer[18] == 0x02)
+    //    {
+    //      String id = new String (buffer, 1, 2);
+    //      System.out.println ("Binary II : " + id);
+    //    }
     else if (Utility.isMagic (buffer, 0, NuFile))
     {
       NuFX nufx = new NuFX (buffer, name);
@@ -116,6 +117,7 @@ public class FileSystemFactory
     add (getDos4 (name, buffer, offset, length));
     add (getCpm (name, buffer, offset, length));
     add (getLbr (name, buffer, offset, length));
+    add (getBinary2 (name, buffer, offset, length));
     getUnidos (name, buffer, offset, length);
 
     return fileSystems;
@@ -246,6 +248,25 @@ public class FileSystemFactory
     catch (FileFormatException e)
     {
     }
+
+    return null;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  private FsBinary2 getBinary2 (String name, byte[] buffer, int offset, int length)
+  // ---------------------------------------------------------------------------------//
+  {
+    if (Utility.isMagic (buffer, 0, BIN2) && buffer[18] == 0x02)
+      try
+      {
+        FsBinary2 bin2 = new FsBinary2 (name, buffer, offset, length, lbrReader);
+
+        if (bin2.getFiles ().size () > 0)
+          return bin2;
+      }
+      catch (FileFormatException e)
+      {
+      }
 
     return null;
   }

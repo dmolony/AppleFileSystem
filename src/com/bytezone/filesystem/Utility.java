@@ -3,6 +3,7 @@ package com.bytezone.filesystem;
 import java.time.DateTimeException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 // -----------------------------------------------------------------------------------//
 public class Utility
@@ -226,6 +227,51 @@ public class Utility
     }
 
     return null;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  public static Optional<LocalDateTime> appleDateTime (byte[] buffer, int offset)
+  // ---------------------------------------------------------------------------------//
+  {
+    if (buffer[offset] == 0 && buffer[offset + 1] == 00)
+      return Optional.empty ();
+
+    int date = unsignedLong (buffer, offset);     // reverses bytes
+    int year = (date & 0xFE00) >>> 9;             // 7 bits (no sign extension)
+    int month = (date & 0x01E0) >> 5;             // 4 bits
+    int day = date & 0x001F;                      // 5 bits
+
+    int hour = (date & 0xFF000000) >>> 24;        // 5 bits (no sign extension)
+    int minute = (date & 0x00FF0000) >> 16;       // 6 bits
+
+    year += year < 70 ? 2000 : 1900;
+    if (minute >= 128)
+      minute -= 128;
+
+    try
+    {
+      while (month > 12)    // see PRODOS111_1.HDV
+      {
+        month -= 12;
+        year++;
+      }
+
+      if (hour == 0xFF && minute == 0)
+        return Optional.of (LocalDateTime.of (year, month, day, 0, 0));
+      return Optional.of (LocalDateTime.of (year, month, day, hour, minute));
+    }
+    catch (DateTimeException e)
+    {
+      System.out.println ("DateTimeException:");
+      System.out.printf ("Date: %02X%02X%n", buffer[offset] & 0xFF, buffer[offset + 1] & 0xFF);
+      System.out.printf ("Time: %02X%02X%n", buffer[offset + 2] & 0xFF, buffer[offset + 3] & 0xFF);
+      System.out.printf ("Year ..... %d%n", year);
+      System.out.printf ("Month .... %d%n", month);
+      System.out.printf ("Day ...... %d%n", day);
+      System.out.printf ("Hour ..... %02X%n", hour);
+      System.out.printf ("Minute ... %02X%n", minute);
+    }
+    return Optional.empty ();
   }
 
   // ---------------------------------------------------------------------------------//

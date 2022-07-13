@@ -57,7 +57,7 @@ public class FileDos extends AbstractFile
       case 0x10 -> "R";
       case 0x20 -> "X";
       case 0x40 -> "Y";
-      default -> "B";        // should never happen
+      default -> "B";                   // should never happen
     };
 
     int sectorsLeft = sectorCount;
@@ -127,7 +127,7 @@ public class FileDos extends AbstractFile
   public String toString ()
   // ---------------------------------------------------------------------------------//
   {
-    return String.format ("%s %s %03d %-30s", locked ? "*" : " ", fileTypeLetter,
-        sectorCount, name);
+    return String.format ("%s %s %03d %-30s", locked ? "*" : " ", fileTypeLetter, sectorCount,
+        name);
   }
 }

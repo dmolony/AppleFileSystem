@@ -8,7 +8,7 @@ public abstract class AbstractFile implements AppleFile
 // -----------------------------------------------------------------------------------//
 {
   final AppleFileSystem fileSystem;
-  String name;
+  protected String name;
 
   boolean isFile;
   boolean isFolder;
