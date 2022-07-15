@@ -5,7 +5,8 @@ import static com.bytezone.filesystem.ProdosConstants.fileTypes;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.bytezone.nufx.DateTime;
+import com.bytezone.utility.DateTime;
+import com.bytezone.utility.Utility;
 
 // -----------------------------------------------------------------------------------//
 public class FileNuFX extends AbstractFile
@@ -34,7 +35,7 @@ public class FileNuFX extends AbstractFile
   private final DateTime archived;
   private final int optionSize;
   private final int fileNameLength;
-  private final String fileName;
+  private String fileName;
 
   private boolean crcPassed;
   final List<NuFXThread> threads = new ArrayList<> ();
@@ -78,6 +79,17 @@ public class FileNuFX extends AbstractFile
       throw new FileFormatException ("Record CRC failed");
     }
 
+    int ptr = offset + attributeSectionLength + fileNameLength;
+    int threadsPtr = ptr;
+    ptr += totThreads * 16;           // beginning of data
+
+    for (int i = 0; i < totThreads; i++)
+    {
+      NuFXThread thread = new NuFXThread (buffer, threadsPtr + i * 16, ptr);
+      threads.add (thread);
+      ptr += thread.getCompressedEOF ();
+    }
+
     if (fileNameLength > 0)
     {
       int start = offset + attributeSectionLength;
@@ -87,22 +99,23 @@ public class FileNuFX extends AbstractFile
       fileName = new String (buffer, start, fileNameLength);
     }
     else
-      fileName = "";
+      for (int i = 0; i < totThreads; i++)
+      {
+        NuFXThread thread = threads.get (i);
+        if (thread.threadClass == 3 && thread.threadKind == 0)
+        {
+          fileName = thread.getDataString ();
+          break;
+        }
+      }
 
     System.out.println (this);
     System.out.println ();
 
-    int ptr = offset + attributeSectionLength + fileNameLength;
-    int threadsPtr = ptr;
-    ptr += totThreads * 16;           // beginning of data
-
     for (int i = 0; i < totThreads; i++)
     {
-      NuFXThread thread = new NuFXThread (buffer, threadsPtr + i * 16, ptr);
-      threads.add (thread);
-      System.out.println (thread);
+      System.out.println (threads.get (i));
       System.out.println ();
-      ptr += thread.getCompressedEOF ();
     }
 
     rawLength = ptr - offset;

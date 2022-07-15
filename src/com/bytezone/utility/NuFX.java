@@ -1,4 +1,4 @@
-package com.bytezone.nufx;
+package com.bytezone.utility;
 
 import static com.bytezone.filesystem.ProdosConstants.BLOCK_SIZE;
 

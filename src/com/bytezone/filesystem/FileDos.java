@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.bytezone.filesystem.FsDos.FileType;
+import com.bytezone.utility.Utility;
 
 // -----------------------------------------------------------------------------------//
 public class FileDos extends AbstractFile

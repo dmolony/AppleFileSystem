@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import com.bytezone.utility.Utility;
+
 // -----------------------------------------------------------------------------------//
 public class FileBinary2 extends AbstractFile
 // -----------------------------------------------------------------------------------//

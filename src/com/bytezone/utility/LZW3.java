@@ -1,4 +1,4 @@
-package com.bytezone.nufx;
+package com.bytezone.utility;
 
 // DreamGraphix LZW
 // code ported from CiderPress' DreamGraphix::UnpackDG()

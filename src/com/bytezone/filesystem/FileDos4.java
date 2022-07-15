@@ -3,6 +3,8 @@ package com.bytezone.filesystem;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.bytezone.utility.Utility;
+
 // -----------------------------------------------------------------------------------//
 public class FileDos4 extends AbstractFile
 // -----------------------------------------------------------------------------------//

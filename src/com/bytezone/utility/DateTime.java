@@ -1,4 +1,4 @@
-package com.bytezone.nufx;
+package com.bytezone.utility;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;

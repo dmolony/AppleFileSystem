@@ -9,7 +9,7 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
-import com.bytezone.filesystem.Utility;
+import com.bytezone.utility.Utility;
 
 // -----------------------------------------------------------------------------------//
 public class WozFile

@@ -2,13 +2,13 @@ package com.bytezone.prodos.write;
 
 import static com.bytezone.filesystem.ProdosConstants.BLOCK_SIZE;
 import static com.bytezone.filesystem.ProdosConstants.ENTRY_SIZE;
-import static com.bytezone.filesystem.Utility.getAppleDate;
-import static com.bytezone.filesystem.Utility.putAppleDate;
-import static com.bytezone.filesystem.Utility.unsignedShort;
-import static com.bytezone.filesystem.Utility.unsignedTriple;
-import static com.bytezone.filesystem.Utility.writeShort;
-import static com.bytezone.filesystem.Utility.writeTriple;
 import static com.bytezone.prodos.write.ProdosDisk.UNDERLINE;
+import static com.bytezone.utility.Utility.getAppleDate;
+import static com.bytezone.utility.Utility.putAppleDate;
+import static com.bytezone.utility.Utility.unsignedShort;
+import static com.bytezone.utility.Utility.unsignedTriple;
+import static com.bytezone.utility.Utility.writeShort;
+import static com.bytezone.utility.Utility.writeTriple;
 
 import java.time.LocalDateTime;
 

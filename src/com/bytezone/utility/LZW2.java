@@ -1,17 +1,21 @@
-package com.bytezone.nufx;
-
-import com.bytezone.filesystem.Utility;
+package com.bytezone.utility;
 
 // -----------------------------------------------------------------------------------//
-class LZW1 extends LZW
+class LZW2 extends LZW
 // -----------------------------------------------------------------------------------//
 {
+  private int nextEntry = 0x100;
+  private String prev = "";
+  private int codeWord;
+
   // ---------------------------------------------------------------------------------//
-  public LZW1 (byte[] buffer)
+  public LZW2 (byte[] buffer, int crc, int eof)
   // ---------------------------------------------------------------------------------//
   {
     super (buffer);
-    //    unpack ();
+
+    this.crc = crc;
+    this.v3eof = eof;
   }
 
   // ---------------------------------------------------------------------------------//
@@ -19,23 +23,33 @@ class LZW1 extends LZW
   void unpack ()
   // ---------------------------------------------------------------------------------//
   {
-    crc = Utility.unsignedShort (buffer, 0);
-    crcBase = 0;
+    crcBase = 0xFFFF;
+    codeWord = 0;
 
-    volume = buffer[2] & 0xFF;
-    runLengthChar = (byte) (buffer[3] & 0xFF);
-    int ptr = 4;
+    volume = buffer[0] & 0xFF;
+    runLengthChar = (byte) (buffer[1] & 0xFF);
+    int ptr = 2;
 
-    while (ptr < buffer.length - 2)
+    while (ptr < buffer.length - 1)
     {
       int rleLength = Utility.unsignedShort (buffer, ptr);
-      boolean lzwPerformed = (buffer[ptr + 2] & 0xFF) != 0;
-      ptr += 3;
+      boolean lzwPerformed = (rleLength & 0x8000) != 0;
+      ptr += 2;
 
       if (lzwPerformed)
       {
+        rleLength &= 0x0FFF;                // remove the LZW flag
+        if (rleLength == 0)
+          rleLength = TRACK_LENGTH;
+
+        int chunkLength = Utility.unsignedShort (buffer, ptr);
+        ptr += 2;
+
         setBuffer (ptr);                    // prepare to read n-bit integers
         byte[] lzwBuffer = undoLZW (rleLength);
+
+        if ((chunkLength - 4) != bytesRead ())
+          System.out.printf ("Invalid chunk length%n");
 
         if (rleLength == TRACK_LENGTH)      // no run length encoding
           chunks.add (lzwBuffer);
@@ -46,6 +60,10 @@ class LZW1 extends LZW
       }
       else
       {
+        nextEntry = 0x100;
+        if (rleLength == 0)
+          rleLength = TRACK_LENGTH;
+
         if (rleLength == TRACK_LENGTH)      // no run length encoding
         {
           byte[] originalBuffer = new byte[TRACK_LENGTH];
@@ -64,15 +82,20 @@ class LZW1 extends LZW
   byte[] undoLZW (int rleLength)
   // ---------------------------------------------------------------------------------//
   {
-    byte[] lzwBuffer = new byte[rleLength];       // must fill this array from input
+    byte[] lzwBuffer = new byte[rleLength];      // must fill this array from buffer
     int ptr = 0;
-
-    int nextEntry = 0x100;                        // always start with a fresh table
-    String prev = "";
 
     while (ptr < rleLength)
     {
-      int codeWord = readInt (width (nextEntry + 1));
+      codeWord = readInt (width (nextEntry + 1));
+
+      if (codeWord == 0x100)      // clear the table
+      {
+        nextEntry = 0x100;
+        codeWord = readInt (9);
+        prev = "";
+      }
+
       String s = (nextEntry == codeWord) ? prev + prev.charAt (0) : st[codeWord];
 
       if (nextEntry < st.length)
@@ -94,7 +117,6 @@ class LZW1 extends LZW
   {
     StringBuilder text = new StringBuilder ();
 
-    text.append (String.format ("  crc ............... %,d  (%04X)%n", crc, crc));
     text.append (String.format ("  volume ............ %,d%n", volume));
     text.append (String.format ("  RLE char .......... $%02X", runLengthChar));
 

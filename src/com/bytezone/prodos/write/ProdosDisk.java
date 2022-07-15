@@ -17,8 +17,8 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.TreeMap;
 
-import com.bytezone.filesystem.Utility;
 import com.bytezone.prodos.write.ExtendedKeyBlock.ForkType;
+import com.bytezone.utility.Utility;
 
 // -----------------------------------------------------------------------------------//
 public class ProdosDisk

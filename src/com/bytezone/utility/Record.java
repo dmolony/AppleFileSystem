@@ -1,4 +1,4 @@
-package com.bytezone.nufx;
+package com.bytezone.utility;
 
 import static com.bytezone.filesystem.ProdosConstants.fileTypes;
 
@@ -7,7 +7,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.bytezone.filesystem.FileFormatException;
-import com.bytezone.filesystem.Utility;
 
 // -----------------------------------------------------------------------------------//
 public class Record

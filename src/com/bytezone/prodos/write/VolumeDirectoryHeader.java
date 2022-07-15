@@ -1,6 +1,6 @@
 package com.bytezone.prodos.write;
 
-import com.bytezone.filesystem.Utility;
+import com.bytezone.utility.Utility;
 
 // -----------------------------------------------------------------------------------//
 public class VolumeDirectoryHeader extends DirectoryHeader

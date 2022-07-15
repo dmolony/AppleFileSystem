@@ -1,6 +1,4 @@
-package com.bytezone.nufx;
-
-import com.bytezone.filesystem.Utility;
+package com.bytezone.utility;
 
 // -----------------------------------------------------------------------------------//
 class Thread

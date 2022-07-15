@@ -1,5 +1,7 @@
 package com.bytezone.filesystem;
 
+import com.bytezone.utility.Utility;
+
 // -----------------------------------------------------------------------------------//
 public class NuFXThread
 // -----------------------------------------------------------------------------------//
@@ -7,13 +9,12 @@ public class NuFXThread
   private static String[] threadClassText = { "Message", "Control", "Data", "Filename" };
   private static String[] formatText = { "Uncompressed", "Huffman squeeze", "LZW/1", "LZW/2",
       "Unix 12-bit Compress", "Unix 16-bit Compress" };
-  private static String[][] threadKindText = { { "ASCII text", "predefined EOF", "IIgs icon" },
-      { "create directory", "undefined", "undefined" },
-      { "data fork", "disk image", "resource fork" }, { "filename", "undefined", "undefined" } };
 
-  private static final int DATA_FORK = 0;
-  private static final int DISK_IMAGE = 1;
-  private static final int RESOURCE_FORK = 2;
+  private static String[][] threadKindText = {            //
+      { "ASCII text", "predefined EOF", "IIgs icon" },    // message thread
+      { "create directory", "undefined", "undefined" },   // control thread
+      { "data fork", "disk image", "resource fork" },     // data thread
+      { "filename", "undefined", "undefined" } };         // filename thread
 
   final int threadClass;
   final int threadFormat;
@@ -23,15 +24,17 @@ public class NuFXThread
   final int uncompressedEOF;
   final int compressedEOF;
 
-  private final byte[] data;
+  private final byte[] compressedData;
+  private final byte[] uncompressedData;
+
   private String fileName;
   private String message;
   //  private LZW lzw;
 
-  private boolean hasDisk;
-  private boolean hasFile;
-  private boolean hasResource;
-  private boolean hasFileName;
+  //  private boolean hasDisk;
+  //  private boolean hasFile;
+  //  private boolean hasResource;
+  //  private boolean hasFileName;
 
   // ---------------------------------------------------------------------------------//
   public NuFXThread (byte[] buffer, int offset, int dataOffset)
@@ -45,8 +48,32 @@ public class NuFXThread
     uncompressedEOF = Utility.unsignedLong (buffer, offset + 8);
     compressedEOF = Utility.unsignedLong (buffer, offset + 12);
 
-    data = new byte[compressedEOF];
-    System.arraycopy (buffer, dataOffset, data, 0, data.length);
+    compressedData = new byte[compressedEOF];
+    uncompressedData = new byte[uncompressedEOF];
+
+    System.arraycopy (buffer, dataOffset, compressedData, 0, compressedData.length);
+
+    switch (threadFormat)
+    {
+      case 0:             // uncompressed
+        System.arraycopy (compressedData, 0, uncompressedData, 0, uncompressedEOF);
+        break;
+
+      case 1:             // Huffman squeeze
+        break;
+
+      case 2:             // Dynamic LZW/1 
+        break;
+
+      case 3:             // Dynamic LZW/2
+        break;
+
+      case 4:             // Unix 12-bit compress
+        break;
+
+      case 5:             // Unix 16-bit compress
+        break;
+    }
   }
 
   // ---------------------------------------------------------------------------------//
@@ -54,6 +81,20 @@ public class NuFXThread
   // ---------------------------------------------------------------------------------//
   {
     return compressedEOF;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  String getDataString ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return new String (uncompressedData);
+  }
+
+  // ---------------------------------------------------------------------------------//
+  byte[] getDataBuffer ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return uncompressedData;
   }
 
   // ---------------------------------------------------------------------------------//

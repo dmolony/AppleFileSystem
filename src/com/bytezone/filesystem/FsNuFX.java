@@ -3,7 +3,8 @@ package com.bytezone.filesystem;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.bytezone.nufx.DateTime;
+import com.bytezone.utility.DateTime;
+import com.bytezone.utility.Utility;
 
 // -----------------------------------------------------------------------------------//
 public class FsNuFX extends AbstractFileSystem

@@ -5,7 +5,7 @@ import static com.bytezone.filesystem.ProdosConstants.ENTRY_SIZE;
 
 import java.time.LocalDateTime;
 
-import com.bytezone.filesystem.Utility;
+import com.bytezone.utility.Utility;
 
 // -----------------------------------------------------------------------------------//
 public class SubdirectoryHeader extends DirectoryHeader

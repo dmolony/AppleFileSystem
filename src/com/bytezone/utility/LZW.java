@@ -1,10 +1,8 @@
-package com.bytezone.nufx;
+package com.bytezone.utility;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-
-import com.bytezone.filesystem.Utility;
 
 // -----------------------------------------------------------------------------------//
 abstract class LZW
