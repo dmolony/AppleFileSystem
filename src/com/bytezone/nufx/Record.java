@@ -10,7 +10,7 @@ import com.bytezone.filesystem.FileFormatException;
 import com.bytezone.filesystem.Utility;
 
 // -----------------------------------------------------------------------------------//
-class Record
+public class Record
 // -----------------------------------------------------------------------------------//
 {
   private static final byte[] NuFX = { 0x4E, (byte) 0xF5, 0x46, (byte) 0xD8 };

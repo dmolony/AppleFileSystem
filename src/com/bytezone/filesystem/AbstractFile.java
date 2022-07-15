@@ -7,7 +7,7 @@ import java.util.List;
 public abstract class AbstractFile implements AppleFile
 // -----------------------------------------------------------------------------------//
 {
-  final AppleFileSystem fileSystem;
+  protected final AppleFileSystem fileSystem;
   protected String name;
 
   boolean isFile;

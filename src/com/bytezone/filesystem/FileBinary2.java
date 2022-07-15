@@ -12,6 +12,8 @@ public class FileBinary2 extends AbstractFile
   private static String[] bin2Formats =
       { "Prodos or SOS", "Dos 3.3", "", "Dos 3.1 or 3.2", "Apple II Pascal" };
 
+  private int headerBlockNo;
+
   private int accessCode;
   private int fileType;
   private int auxType;
@@ -22,7 +24,6 @@ public class FileBinary2 extends AbstractFile
   private int createDate;
   private int createTime;
   private int eof;
-  private String name;
   private String nativeName;
 
   private int gAuxType;
@@ -40,23 +41,21 @@ public class FileBinary2 extends AbstractFile
   private int version;
   private int filesFollowing;
 
-  private int blockNo;
-
   private Optional<LocalDateTime> created = Optional.empty ();
   private Optional<LocalDateTime> modified = Optional.empty ();
 
   List<AppleBlock> dataBlocks = new ArrayList<> ();
 
   // ---------------------------------------------------------------------------------//
-  FileBinary2 (FsBinary2 fs, int blockNo)
+  FileBinary2 (FsBinary2 fs, int headerBlockNo)
   // ---------------------------------------------------------------------------------//
   {
     super (fs);
 
     isFile = true;
-    this.blockNo = blockNo;
+    this.headerBlockNo = headerBlockNo;
 
-    byte[] buffer = fs.getBlock (blockNo).read ();
+    byte[] buffer = fs.getBlock (headerBlockNo).read ();
 
     accessCode = buffer[3] & 0xFF;
     fileType = buffer[4] & 0xFF;
@@ -91,8 +90,9 @@ public class FileBinary2 extends AbstractFile
     version = buffer[126] & 0xFF;
     filesFollowing = buffer[127] & 0xFF;
 
-    int firstBlock = blockNo + 1;
+    int firstBlock = headerBlockNo + 1;
     int lastBlock = firstBlock + (eof - 1) / 128;
+    System.out.printf ("******************* %-15s %3d %3d%n", name, firstBlock, lastBlock);
 
     for (int block = firstBlock; block <= lastBlock; block++)
       dataBlocks.add (fs.getBlock (block));
@@ -131,7 +131,7 @@ public class FileBinary2 extends AbstractFile
   public byte[] read ()
   // ---------------------------------------------------------------------------------//
   {
-    System.out.println (toText ());
+    //    System.out.println (toText ());
     return fileSystem.readBlocks (dataBlocks);
   }
 
@@ -141,12 +141,13 @@ public class FileBinary2 extends AbstractFile
   {
     StringBuilder text = new StringBuilder ();
 
+    text.append (String.format ("Header block ...... %02X%n", headerBlockNo));
     text.append (String.format ("Access code ....... %02X%n", accessCode));
     text.append (String.format ("File type ......... %02X        %s%n", fileType,
         ProdosConstants.fileTypes[fileType]));
-    text.append (String.format ("Aux type .......... %04X  %<,9d%n", auxType));
+    text.append (String.format ("Aux type .......... %04X%n", auxType));
     text.append (String.format ("Storage type ...... %02X%n", storageType));
-    text.append (String.format ("File size ......... %02X      %<,7d%n", blocks));
+    text.append (String.format ("File size x 512 ... %02X      %<,7d%n", blocks));
     text.append (String.format ("Mod date .......... %04X    %s%n", modDate,
         modified.isPresent () ? modified.get () : ""));
     text.append (String.format ("Mod time .......... %04X%n", modTime));
@@ -181,7 +182,7 @@ public class FileBinary2 extends AbstractFile
   public String toString ()
   // ---------------------------------------------------------------------------------//
   {
-    return String.format ("%-20s  %02X  %04X %03X  %3d  %d", name, fileType, auxType, storageType,
-        blocks, eof);
+    return String.format ("%,6d  %-20s  %02X  %04X %03X  %3d  %d", dataBlocks.size (), name,
+        fileType, auxType, storageType, blocks, eof);
   }
 }

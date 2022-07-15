@@ -1,23 +1,68 @@
 package com.bytezone.filesystem;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import com.bytezone.nufx.DateTime;
+
 // -----------------------------------------------------------------------------------//
 public class FsNuFX extends AbstractFileSystem
 // -----------------------------------------------------------------------------------//
 {
+  private static final byte[] NuFile = { 0x4E, (byte) 0xF5, 0x46, (byte) 0xE9, 0x6C, (byte) 0xE5 };
+  //  private static final byte[] NuFX = { 0x4E, (byte) 0xF5, 0x46, (byte) 0xD8 };
+
+  private final int crc;
+  private final int totalRecords;
+  private final DateTime created;
+  private final DateTime modified;
+  private final int version;
+  private final int reserved1;            // v1 stores file type (0xE0)
+  private final int reserved2;            // v1 stores aux (0x8002)
+  private final int reserved3;
+  private final int reserved4;
+  private final int eof;
+
+  private final boolean crcPassed;
+
+  private final List<FileNuFX> files = new ArrayList<> ();
 
   // ---------------------------------------------------------------------------------//
-  public FsNuFX (String name, byte[] buffer, BlockReader blockReader)
+  public FsNuFX (String name, byte[] buffer, BlockReader reader)
   // ---------------------------------------------------------------------------------//
   {
-    this (name, buffer, 0, buffer.length, blockReader);
+    this (name, buffer, 0, buffer.length, reader);
   }
 
   // ---------------------------------------------------------------------------------//
-  public FsNuFX (String name, byte[] buffer, int offset, int length, BlockReader blockReader)
+  public FsNuFX (String name, byte[] buffer, int offset, int length, BlockReader reader)
   // ---------------------------------------------------------------------------------//
   {
-    super (name, buffer, offset, length, blockReader);
+    super (name, buffer, offset, length, reader);       // reader not used
+
     setFileSystemName ("NuFX - Shrinkit");
+    assert Utility.isMagic (buffer, 0, NuFile);
+
+    crc = Utility.unsignedShort (buffer, 6);
+    totalRecords = Utility.unsignedLong (buffer, 8);
+    created = new DateTime (buffer, 12);
+    modified = new DateTime (buffer, 20);
+    version = Utility.unsignedShort (buffer, 28);
+    reserved1 = Utility.unsignedLong (buffer, 30);
+    reserved2 = Utility.unsignedLong (buffer, 34);
+    eof = Utility.unsignedLong (buffer, 38);
+    reserved3 = Utility.unsignedLong (buffer, 42);
+    reserved4 = Utility.unsignedShort (buffer, 46);
+
+    byte[] crcBuffer = new byte[40];
+    System.arraycopy (buffer, 8, crcBuffer, 0, crcBuffer.length);
+    crcPassed = crc == Utility.getCRC (crcBuffer, crcBuffer.length, 0);
+    if (!crcPassed)
+      throw new FileFormatException ("Master CRC failed");
+
+    System.out.println (this);
+    System.out.println ();
+    readCatalog ();
   }
 
   // ---------------------------------------------------------------------------------//
@@ -25,6 +70,35 @@ public class FsNuFX extends AbstractFileSystem
   public void readCatalog ()
   // ---------------------------------------------------------------------------------//
   {
+    int ptr = 48;
 
+    for (int i = 0; i < totalRecords; i++)
+    {
+      FileNuFX file = new FileNuFX (this, getBuffer (), ptr);
+      files.add (file);
+      ptr += file.rawLength;
+    }
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
+  public String toString ()
+  // ---------------------------------------------------------------------------------//
+  {
+    StringBuilder text = new StringBuilder ();
+
+    text.append (
+        String.format ("Master CRC ..... %04X   %s%n", crc, crcPassed ? "Passed" : "** Failed **"));
+    text.append (String.format ("Records ........ %,d%n", totalRecords));
+    text.append (String.format ("Created ........ %s%n", created.format ()));
+    text.append (String.format ("Modified ....... %s%n", modified.format ()));
+    text.append (String.format ("Version ........ %,d%n", version));
+    text.append (String.format ("Reserved ....... %08X%n", reserved1));
+    text.append (String.format ("Reserved ....... %08X%n", reserved2));
+    text.append (String.format ("Master EOF ..... %,d%n", eof));
+    text.append (String.format ("Reserved ....... %08X%n", reserved3));
+    text.append (String.format ("Reserved ....... %04X", reserved4));
+
+    return text.toString ();
   }
 }

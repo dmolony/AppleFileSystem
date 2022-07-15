@@ -258,6 +258,7 @@ public class Utility
 
       if (hour == 0xFF && minute == 0)
         return Optional.of (LocalDateTime.of (year, month, day, 0, 0));
+
       return Optional.of (LocalDateTime.of (year, month, day, hour, minute));
     }
     catch (DateTimeException e)

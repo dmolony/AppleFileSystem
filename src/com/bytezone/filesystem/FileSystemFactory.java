@@ -6,7 +6,6 @@ import static com.bytezone.filesystem.BlockReader.AddressType.SECTOR;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.bytezone.nufx.NuFX;
 import com.bytezone.woz.DiskNibbleException;
 import com.bytezone.woz.WozFile;
 
@@ -79,18 +78,18 @@ public class FileSystemFactory
     //      String id = new String (buffer, 1, 2);
     //      System.out.println ("Binary II : " + id);
     //    }
-    else if (Utility.isMagic (buffer, 0, NuFile))
-    {
-      NuFX nufx = new NuFX (buffer, name);
-      buffer = nufx.getDiskBuffer ();
-      length = buffer.length;
-
-      if (display)
-      {
-        System.out.println ();
-        System.out.println (nufx);
-      }
-    }
+    //    else if (Utility.isMagic (buffer, 0, NuFile))
+    //    {
+    //      NuFX nufx = new NuFX (buffer, name);
+    //      buffer = nufx.getDiskBuffer ();
+    //      length = buffer.length;
+    //
+    //      if (display)
+    //      {
+    //        System.out.println ();
+    //        System.out.println (nufx);
+    //      }
+    //    }
     else if (Utility.isMagic (buffer, 0, WOZ_1) || Utility.isMagic (buffer, 0, WOZ_2))
     {
       try
@@ -117,6 +116,7 @@ public class FileSystemFactory
     add (getDos4 (name, buffer, offset, length));
     add (getCpm (name, buffer, offset, length));
     add (getLbr (name, buffer, offset, length));
+    add (getNuFx (name, buffer, offset, length));
     add (getBinary2 (name, buffer, offset, length));
     getUnidos (name, buffer, offset, length);
 
@@ -263,6 +263,25 @@ public class FileSystemFactory
 
         if (bin2.getFiles ().size () > 0)
           return bin2;
+      }
+      catch (FileFormatException e)
+      {
+      }
+
+    return null;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  private FsNuFX getNuFx (String name, byte[] buffer, int offset, int length)
+  // ---------------------------------------------------------------------------------//
+  {
+    if (Utility.isMagic (buffer, 0, NuFile))
+      try
+      {
+        FsNuFX nufx = new FsNuFX (name, buffer, offset, length, lbrReader);
+
+        if (nufx.getFiles ().size () > 0)
+          return nufx;
       }
       catch (FileFormatException e)
       {

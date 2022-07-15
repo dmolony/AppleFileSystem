@@ -19,7 +19,7 @@ public class NuFX
 {
   private static final String UNDERLINE =
       "------------------------------------------------------" + "-----------------------";
-  private MasterHeader masterHeader;
+  //  private MasterHeader masterHeader;
   private final byte[] buffer;
   private final boolean debug = false;
 
@@ -29,15 +29,6 @@ public class NuFX
   private int totalBlocks;
 
   private VolumeName volumeName;
-
-  // ---------------------------------------------------------------------------------//
-  //  public NuFX (Path path) throws FileFormatException, IOException
-  // ---------------------------------------------------------------------------------//
-  //  {
-  //    buffer = Files.readAllBytes (path);
-  //    volumeName = new VolumeName (path.getFileName ().toString ());
-  //    read (buffer);
-  //  }
 
   // ---------------------------------------------------------------------------------//
   public NuFX (byte[] buffer, String fileName)
@@ -53,44 +44,45 @@ public class NuFX
   void read (byte[] buffer)
   // ---------------------------------------------------------------------------------//
   {
-    masterHeader = new MasterHeader (buffer);
+    //    masterHeader = new MasterHeader (buffer);
 
-    int dataPtr = masterHeader.bin2 ? 176 : 48;
+    //    int dataPtr = masterHeader.bin2 ? 176 : 48;
+    int dataPtr = 48;
 
-    if (debug)
-      System.out.printf ("%s%n%n", masterHeader);
+    //    if (debug)
+    //      System.out.printf ("%s%n%n", masterHeader);
 
-    for (int rec = 0; rec < masterHeader.getTotalRecords (); rec++)
-    {
-      Record record = new Record (buffer, dataPtr);
-      records.add (record);
-
-      if (debug)
-        System.out.printf ("Record: %d%n%n%s%n%n", rec, record);
-
-      dataPtr += record.getAttributes () + record.getFileNameLength ();
-      int threadsPtr = dataPtr;
-      dataPtr += record.getTotalThreads () * 16;
-
-      for (int i = 0; i < record.getTotalThreads (); i++)
-      {
-        Thread thread = new Thread (buffer, threadsPtr + i * 16, dataPtr);
-        record.threads.add (thread);
-        dataPtr += thread.getCompressedEOF ();
-
-        if (debug)
-          System.out.printf ("Thread: %d%n%n%s%n%n", i, thread);
-      }
-
-      if (record.hasFile ())
-      {
-        ++totalFiles;
-        volumeName.storePath (record.getFileName ());
-      }
-
-      if (record.hasDisk ())
-        ++totalDisks;
-    }
+    //    for (int rec = 0; rec < masterHeader.getTotalRecords (); rec++)
+    //    {
+    //      Record record = new Record (buffer, dataPtr);
+    //      records.add (record);
+    //
+    //      if (debug)
+    //        System.out.printf ("Record: %d%n%n%s%n%n", rec, record);
+    //
+    //      dataPtr += record.getAttributes () + record.getFileNameLength ();
+    //      int threadsPtr = dataPtr;
+    //      dataPtr += record.getTotalThreads () * 16;
+    //
+    //      for (int i = 0; i < record.getTotalThreads (); i++)
+    //      {
+    //        Thread thread = new Thread (buffer, threadsPtr + i * 16, dataPtr);
+    //        record.threads.add (thread);
+    //        dataPtr += thread.getCompressedEOF ();
+    //
+    //        if (debug)
+    //          System.out.printf ("Thread: %d%n%n%s%n%n", i, thread);
+    //      }
+    //
+    //      if (record.hasFile ())
+    //      {
+    //        ++totalFiles;
+    //        volumeName.storePath (record.getFileName ());
+    //      }
+    //
+    //      if (record.hasDisk ())
+    //        ++totalDisks;
+    //    }
   }
 
   // ---------------------------------------------------------------------------------//
@@ -259,9 +251,9 @@ public class NuFX
   {
     StringBuilder text = new StringBuilder ();
 
-    text.append (String.format (" %-15.15s Created:%-17s Mod:%-17s   Recs:%5d%n%n",
-        volumeName.volumeName, masterHeader.getCreated2 (), masterHeader.getModified2 (),
-        masterHeader.getTotalRecords ()));
+    //    text.append (String.format (" %-15.15s Created:%-17s Mod:%-17s   Recs:%5d%n%n",
+    //        volumeName.volumeName, masterHeader.getCreated2 (), masterHeader.getModified2 (),
+    //        masterHeader.getTotalRecords ()));
 
     text.append (
         " Name                        Type Auxtyp Archived" + "         Fmat Size Un-Length\n");

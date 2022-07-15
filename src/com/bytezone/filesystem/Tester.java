@@ -62,7 +62,7 @@ public class Tester
   {
     FileSystemFactory factory = new FileSystemFactory ();
 
-    for (int fileNo = 0; fileNo < fileNames.length; fileNo++)
+    for (int fileNo = 29; fileNo < fileNames.length; fileNo++)
     {
       System.out.printf ("%n%d %s%n", fileNo, fileNames[fileNo].substring (base.length ()));
 
@@ -73,11 +73,11 @@ public class Tester
 
       if (fsList.size () == 0)
       {
-        System.out.println ("Unknown disk format: " + name);
+        System.out.println ("Unknown FS format: " + name);
         continue;
       }
 
-      if (fileNo >= 28)
+      if (fileNo >= 29)
       {
         for (AppleFileSystem fs : fsList)
         {
