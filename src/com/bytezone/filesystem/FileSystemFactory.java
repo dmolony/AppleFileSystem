@@ -157,6 +157,7 @@ public class FileSystemFactory
         {
           FsDos fs = new FsDos (name, buffer, offset, length, reader);
 
+          fs.readCatalog ();
           if (fs.getTotalCatalogBlocks () > 0)
             disks.add (fs);
         }
@@ -185,10 +186,11 @@ public class FileSystemFactory
     for (BlockReader reader : blockReaders)
       try
       {
-        FsProdos prodos = new FsProdos (name, buffer, offset, length, reader);
+        FsProdos fs = new FsProdos (name, buffer, offset, length, reader);
 
-        if (prodos.getTotalCatalogBlocks () > 0)
-          return prodos;
+        fs.readCatalog ();
+        if (fs.getTotalCatalogBlocks () > 0)
+          return fs;
       }
       catch (FileFormatException e)
       {
@@ -204,10 +206,11 @@ public class FileSystemFactory
     for (BlockReader reader : blockReaders)
       try
       {
-        FsPascal pascal = new FsPascal (name, buffer, offset, length, reader);
+        FsPascal fs = new FsPascal (name, buffer, offset, length, reader);
 
-        if (pascal.getTotalCatalogBlocks () > 0)
-          return pascal;
+        fs.readCatalog ();
+        if (fs.getTotalCatalogBlocks () > 0)
+          return fs;
       }
       catch (FileFormatException e)
       {
@@ -223,10 +226,11 @@ public class FileSystemFactory
     if (length == 143_360)
       try
       {
-        FsCpm cpm = new FsCpm (name, buffer, offset, length, cpmReader);
+        FsCpm fs = new FsCpm (name, buffer, offset, length, cpmReader);
 
-        if (cpm.getTotalCatalogBlocks () > 0)
-          return cpm;
+        fs.readCatalog ();
+        if (fs.getTotalCatalogBlocks () > 0)
+          return fs;
       }
       catch (FileFormatException e)
       {
@@ -241,10 +245,11 @@ public class FileSystemFactory
   {
     try
     {
-      FsLbr lbr = new FsLbr (name, buffer, offset, length, lbrReader);
+      FsLbr fs = new FsLbr (name, buffer, offset, length, lbrReader);
 
-      if (lbr.getTotalCatalogBlocks () > 0)
-        return lbr;
+      fs.readCatalog ();
+      if (fs.getTotalCatalogBlocks () > 0)
+        return fs;
     }
     catch (FileFormatException e)
     {
@@ -260,10 +265,11 @@ public class FileSystemFactory
     if (Utility.isMagic (buffer, 0, BIN2) && buffer[18] == 0x02)
       try
       {
-        FsBinary2 bin2 = new FsBinary2 (name, buffer, offset, length, lbrReader);
+        FsBinary2 fs = new FsBinary2 (name, buffer, offset, length, lbrReader);
 
-        if (bin2.getFiles ().size () > 0)
-          return bin2;
+        fs.readCatalog ();
+        if (fs.getFiles ().size () > 0)
+          return fs;
       }
       catch (FileFormatException e)
       {
@@ -279,10 +285,11 @@ public class FileSystemFactory
     if (Utility.isMagic (buffer, 0, NuFile))
       try
       {
-        FsNuFX nufx = new FsNuFX (name, buffer, offset, length, lbrReader);
+        FsNuFX fs = new FsNuFX (name, buffer, offset, length, lbrReader);
 
-        if (nufx.getFiles ().size () > 0)
-          return nufx;
+        fs.readCatalog ();
+        if (fs.getFiles ().size () > 0)
+          return fs;
       }
       catch (FileFormatException e)
       {
@@ -298,9 +305,11 @@ public class FileSystemFactory
     if (length == 116_480)                  // Dos3.1
       try
       {
-        FsDos dos = new FsDos (name, buffer, offset, length, dos31Reader);
-        if (dos.getTotalCatalogBlocks () > 0)
-          return dos;
+        FsDos fs = new FsDos (name, buffer, offset, length, dos31Reader);
+
+        fs.readCatalog ();
+        if (fs.getTotalCatalogBlocks () > 0)
+          return fs;
       }
       catch (FileFormatException e)
       {
@@ -316,9 +325,11 @@ public class FileSystemFactory
     if (length == 143_360)
       try
       {
-        FsDos4 dos4 = new FsDos4 (name, buffer, offset, length, dos33Reader0);
-        if (dos4.getTotalCatalogBlocks () > 0)
-          return dos4;
+        FsDos4 fs = new FsDos4 (name, buffer, offset, length, dos33Reader0);
+
+        fs.readCatalog ();
+        if (fs.getTotalCatalogBlocks () > 0)
+          return fs;
       }
       catch (FileFormatException e)
       {
@@ -335,9 +346,13 @@ public class FileSystemFactory
       try
       {
         FsDos fs1 = new FsDos (name, buffer, 0, UNIDOS_SIZE, unidosReader);
+        fs1.readCatalog ();
+
         if (fs1 != null && fs1.getTotalCatalogBlocks () > 0)
         {
           FsDos fs2 = new FsDos (name, buffer, UNIDOS_SIZE, UNIDOS_SIZE, unidosReader);
+          fs2.readCatalog ();
+
           if (fs2 != null && fs2.getTotalCatalogBlocks () > 0)
           {
             fileSystems.add (fs1);

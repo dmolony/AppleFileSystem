@@ -1,8 +1,5 @@
 package com.bytezone.filesystem;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.bytezone.utility.DateTime;
 import com.bytezone.utility.Utility;
 
@@ -25,8 +22,6 @@ public class FsNuFX extends AbstractFileSystem
   private final int eof;
 
   private final boolean crcPassed;
-
-  private final List<FileNuFX> files = new ArrayList<> ();
 
   // ---------------------------------------------------------------------------------//
   public FsNuFX (String name, byte[] buffer, BlockReader reader)
@@ -60,10 +55,6 @@ public class FsNuFX extends AbstractFileSystem
     crcPassed = crc == Utility.getCRC (crcBuffer, crcBuffer.length, 0);
     if (!crcPassed)
       throw new FileFormatException ("Master CRC failed");
-
-    System.out.println (this);
-    System.out.println ();
-    readCatalog ();
   }
 
   // ---------------------------------------------------------------------------------//
@@ -76,7 +67,7 @@ public class FsNuFX extends AbstractFileSystem
     for (int i = 0; i < totalRecords; i++)
     {
       FileNuFX file = new FileNuFX (this, getBuffer (), ptr);
-      files.add (file);
+      addFile (file);
       ptr += file.rawLength;
     }
   }

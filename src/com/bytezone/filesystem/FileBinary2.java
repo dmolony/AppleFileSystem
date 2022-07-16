@@ -94,7 +94,6 @@ public class FileBinary2 extends AbstractFile
 
     int firstBlock = headerBlockNo + 1;
     int lastBlock = firstBlock + (eof - 1) / 128;
-    System.out.printf ("******************* %-15s %3d %3d%n", name, firstBlock, lastBlock);
 
     for (int block = firstBlock; block <= lastBlock; block++)
       dataBlocks.add (fs.getBlock (block));
@@ -133,7 +132,6 @@ public class FileBinary2 extends AbstractFile
   public byte[] read ()
   // ---------------------------------------------------------------------------------//
   {
-    //    System.out.println (toText ());
     return fileSystem.readBlocks (dataBlocks);
   }
 

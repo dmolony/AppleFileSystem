@@ -6,8 +6,6 @@ import java.util.List;
 public class FsBinary2 extends AbstractFileSystem
 // -----------------------------------------------------------------------------------//
 {
-  //  private static final byte[] BIN2 = { 0x0A, 0x47, 0x4C };
-
   private FileSystemFactory factory;
 
   // ---------------------------------------------------------------------------------//

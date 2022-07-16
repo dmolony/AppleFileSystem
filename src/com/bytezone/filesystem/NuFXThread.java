@@ -1,5 +1,7 @@
 package com.bytezone.filesystem;
 
+import com.bytezone.utility.LZW1;
+import com.bytezone.utility.LZW2;
 import com.bytezone.utility.Utility;
 
 // -----------------------------------------------------------------------------------//
@@ -63,9 +65,12 @@ public class NuFXThread
         break;
 
       case 2:             // Dynamic LZW/1 
+        LZW1 lzw1 = new LZW1 (compressedData);
         break;
 
       case 3:             // Dynamic LZW/2
+        int crcLength = threadKind == 1 ? 0 : uncompressedEOF;
+        LZW2 lzw2 = new LZW2 (compressedData, threadCrc, crcLength);
         break;
 
       case 4:             // Unix 12-bit compress

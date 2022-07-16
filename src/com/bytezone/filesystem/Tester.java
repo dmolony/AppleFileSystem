@@ -62,7 +62,7 @@ public class Tester
   {
     FileSystemFactory factory = new FileSystemFactory ();
 
-    for (int fileNo = 29; fileNo < fileNames.length; fileNo++)
+    for (int fileNo = 0; fileNo < fileNames.length; fileNo++)
     {
       System.out.printf ("%n%d %s%n", fileNo, fileNames[fileNo].substring (base.length ()));
 
@@ -77,7 +77,7 @@ public class Tester
         continue;
       }
 
-      if (fileNo >= 29)
+      if (fileNo == 99)
       {
         for (AppleFileSystem fs : fsList)
         {

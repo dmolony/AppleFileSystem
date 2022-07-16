@@ -119,10 +119,8 @@ public class FsProdos extends AbstractFileSystem
           case SAPLING:
           case TREE:
             FileProdos file = new FileProdos (this, buffer, ptr);
-
             if (file.getFileType () == ProdosConstants.FILE_TYPE_LBR)
-              for (AppleFileSystem fs : checkLibraryFile (file))
-                parent.addFile (fs);
+              addFileSystem (parent, file);
             else
               parent.addFile (file);
             break;
@@ -136,8 +134,7 @@ public class FsProdos extends AbstractFileSystem
             break;
 
           case GSOS_EXTENDED_FILE:
-            file = new FileProdos (this, buffer, ptr);
-            parent.addFile (file);
+            parent.addFile (new FileProdos (this, buffer, ptr));
             break;
 
           case SUBDIRECTORY:
@@ -173,26 +170,31 @@ public class FsProdos extends AbstractFileSystem
   }
 
   // ---------------------------------------------------------------------------------//
-  private List<AppleFileSystem> checkLibraryFile (FileProdos file)
+  private void addFileSystem (AppleFile parent, FileProdos file)
   // ---------------------------------------------------------------------------------//
   {
-    String description = switch (file.getAuxType ())
-    {
-      case 0x0001 -> "AppleSingle file";
-      case 0x0005 -> "DiskCopy file";
-      case 0x0130 -> "2IMG file";
-      case 0x8000 -> "Binary II file";
-      case 0x8002 -> "Shrinkit (NuFX) file";
-      case 0x8004 -> "Davex file";
-      default -> "Unknown aux";
-    };
+    //    String description = switch (file.getAuxType ())
+    //    {
+    //      case 0x0001 -> "AppleSingle file";
+    //      case 0x0005 -> "DiskCopy file";
+    //      case 0x0130 -> "2IMG file";
+    //      case 0x8000 -> "Binary II file";
+    //      case 0x8002 -> "Shrinkit (NuFX) file";
+    //      case 0x8004 -> "Davex file";
+    //      default -> "Unknown aux";
+    //    };
 
-    System.out.printf ("%04X  %s - %s%n", file.getAuxType (), file.name, description);
+    //    System.out.printf ("%04X  %s - %s%n", file.getAuxType (), file.name, description);
 
     if (factory == null)
       factory = new FileSystemFactory ();
 
-    return factory.getFileSystems (file.name, file.read ());
+    List<AppleFileSystem> fileSystems = factory.getFileSystems (file.name, file.read ());
+    if (fileSystems.size () == 0)
+      parent.addFile (file);
+    else
+      for (AppleFileSystem fs : fileSystems)
+        parent.addFile (fs);
   }
 
   // ---------------------------------------------------------------------------------//

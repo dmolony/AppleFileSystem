@@ -1,7 +1,7 @@
 package com.bytezone.utility;
 
 // -----------------------------------------------------------------------------------//
-class LZW2 extends LZW
+public class LZW2 extends LZW
 // -----------------------------------------------------------------------------------//
 {
   private int nextEntry = 0x100;

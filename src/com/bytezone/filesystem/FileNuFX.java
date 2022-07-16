@@ -109,16 +109,32 @@ public class FileNuFX extends AbstractFile
         }
       }
 
-    System.out.println (this);
-    System.out.println ();
+    //    System.out.println (this);
+    //    System.out.println ();
 
-    for (int i = 0; i < totThreads; i++)
-    {
-      System.out.println (threads.get (i));
-      System.out.println ();
-    }
+    //    for (int i = 0; i < totThreads; i++)
+    //    {
+    //      System.out.println (threads.get (i));
+    //      System.out.println ();
+    //    }
 
     rawLength = ptr - offset;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
+  public byte[] read ()
+  // ---------------------------------------------------------------------------------//
+  {
+    for (NuFXThread thread : threads)
+    {
+      if (thread.threadClass == 2 && thread.threadKind == 0)
+      {
+        return thread.getDataBuffer ();
+      }
+
+    }
+    return null;
   }
 
   // ---------------------------------------------------------------------------------//

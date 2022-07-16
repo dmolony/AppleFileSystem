@@ -81,21 +81,22 @@ public class Utility
   }
 
   // ---------------------------------------------------------------------------------//
-  static String format (byte[] buffer)
+  public static String format (byte[] buffer)
   // ---------------------------------------------------------------------------------//
   {
     return format (buffer, 0, buffer.length, true, 0);
   }
 
   // ---------------------------------------------------------------------------------//
-  static String format (byte[] buffer, int offset, int length)
+  public static String format (byte[] buffer, int offset, int length)
   // ---------------------------------------------------------------------------------//
   {
     return format (buffer, offset, length, true, 0);
   }
 
   // ---------------------------------------------------------------------------------//
-  static String format (byte[] buffer, int offset, int length, boolean header, int startingAddress)
+  public static String format (byte[] buffer, int offset, int length, boolean header,
+      int startingAddress)
   // ---------------------------------------------------------------------------------//
   {
     StringBuilder line = new StringBuilder ();
