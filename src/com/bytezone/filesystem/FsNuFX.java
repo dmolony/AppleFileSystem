@@ -36,11 +36,12 @@ public class FsNuFX extends AbstractFileSystem
   {
     super (name, buffer, offset, length, reader);       // reader not used
 
-    setFileSystemName ("NuFX - Shrinkit");
+    setFileSystemName ("NuFX");
+
     assert Utility.isMagic (buffer, 0, NuFile);
 
     crc = Utility.unsignedShort (buffer, 6);
-    totalRecords = Utility.unsignedLong (buffer, 8);
+    totalRecords = Utility.unsignedLong (buffer, 8);        // no of FileNuFX
     created = new DateTime (buffer, 12);
     modified = new DateTime (buffer, 20);
     version = Utility.unsignedShort (buffer, 28);
@@ -74,7 +75,7 @@ public class FsNuFX extends AbstractFileSystem
 
   // ---------------------------------------------------------------------------------//
   @Override
-  public String toString ()
+  public String toText ()
   // ---------------------------------------------------------------------------------//
   {
     StringBuilder text = new StringBuilder ();

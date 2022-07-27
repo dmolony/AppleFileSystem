@@ -41,6 +41,13 @@ public class FileNuFX extends AbstractFile
   final List<NuFXThread> threads = new ArrayList<> ();
   int rawLength;
 
+  private int messageThreads;
+  private int controlThreads;
+  private int dataThreads;
+  private int filenameThreads;
+  private String threadKindText = "";
+
+  // A Record  
   // ---------------------------------------------------------------------------------//
   FileNuFX (FsNuFX fs, byte[] buffer, int offset)
   // ---------------------------------------------------------------------------------//
@@ -90,33 +97,21 @@ public class FileNuFX extends AbstractFile
       ptr += thread.getCompressedEOF ();
     }
 
-    if (fileNameLength > 0)
+    fileName = getFileName (buffer, offset);
+    countThreadTypes ();
+
+    assert totThreads == messageThreads + controlThreads + dataThreads + filenameThreads;
+
+    if (false)
     {
-      int start = offset + attributeSectionLength;
-      int end = start + fileNameLength;
-      for (int i = start; i < end; i++)
-        buffer[i] &= 0x7F;
-      fileName = new String (buffer, start, fileNameLength);
-    }
-    else
+      System.out.println (this);
+      System.out.println ();
       for (int i = 0; i < totThreads; i++)
       {
-        NuFXThread thread = threads.get (i);
-        if (thread.threadClass == 3 && thread.threadKind == 0)
-        {
-          fileName = thread.getDataString ();
-          break;
-        }
+        System.out.println (threads.get (i));
+        System.out.println ();
       }
-
-    //    System.out.println (this);
-    //    System.out.println ();
-
-    //    for (int i = 0; i < totThreads; i++)
-    //    {
-    //      System.out.println (threads.get (i));
-    //      System.out.println ();
-    //    }
+    }
 
     rawLength = ptr - offset;
   }
@@ -128,13 +123,71 @@ public class FileNuFX extends AbstractFile
   {
     for (NuFXThread thread : threads)
     {
-      if (thread.threadClass == 2 && thread.threadKind == 0)
+      if (thread.threadClass == NuFXThread.CLASS_DATA
+          && thread.threadKind == NuFXThread.KIND_DATA_FORK)
       {
         return thread.getDataBuffer ();
       }
 
     }
     return null;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  private String getFileName (byte[] buffer, int offset)
+  // ---------------------------------------------------------------------------------//
+  {
+    if (fileNameLength > 0)
+    {
+      int start = offset + attributeSectionLength;
+      int end = start + fileNameLength;
+
+      for (int i = start; i < end; i++)
+        buffer[i] &= 0x7F;
+
+      return new String (buffer, start, fileNameLength);
+    }
+
+    for (NuFXThread thread : threads)
+      if (thread.threadClass == NuFXThread.CLASS_FILENAME
+          && thread.threadKind == NuFXThread.KIND_FILENAME)
+        return thread.getDataString ();
+
+    return "** Filename not found **";
+  }
+
+  // ---------------------------------------------------------------------------------//
+  private void countThreadTypes ()
+  // ---------------------------------------------------------------------------------//
+  {
+    StringBuilder text = new StringBuilder ();
+
+    for (NuFXThread thread : threads)
+      switch (thread.threadClass)
+      {
+        case NuFXThread.CLASS_MESSAGE:
+          ++messageThreads;
+          break;
+
+        case NuFXThread.CLASS_CONTROL:
+          ++controlThreads;
+          break;
+
+        case NuFXThread.CLASS_DATA:
+          ++dataThreads;
+          text.append (thread.getKindText () + "/");
+          break;
+
+        case NuFXThread.CLASS_FILENAME:
+          ++filenameThreads;
+          break;
+
+        default:
+          System.out.println ("Unknown thread class: " + thread.threadClass);
+      }
+
+    text.deleteCharAt (text.length () - 1);
+    threadKindText = "(" + text.toString () + ")";
   }
 
   // ---------------------------------------------------------------------------------//
@@ -148,35 +201,41 @@ public class FileNuFX extends AbstractFile
     bits = bits.substring (bits.length () - 8);
     String decode = Utility.matchFlags (access, accessChars);
 
-    text.append (
-        String.format ("Header CRC ..... %04X   %s%n", crc, crcPassed ? "Passed" : "** Failed **"));
-    text.append (String.format ("Attributes ..... %d%n", attributeSectionLength));
-    text.append (String.format ("Version ........ %d%n", version));
-    text.append (String.format ("Threads ........ %d%n", totThreads));
-    text.append (
-        String.format ("File sys id .... %02X     %s%n", fileSystemID, fileSystems[fileSystemID]));
-    text.append (String.format ("Separator ...... %s%n", separator));
-    text.append (String.format ("Access ......... %s  %s%n", bits, decode));
+    text.append (String.format ("Header CRC ......... %04X   %s%n", crc,
+        crcPassed ? "Passed" : "** Failed **"));
+    text.append (String.format ("Attributes ......... %d%n", attributeSectionLength));
+    text.append (String.format ("Version ............ %d%n", version));
+    text.append (String.format ("Threads ............ %d%n", totThreads));
+    text.append (String.format ("File sys id ........ %02X     %s%n", fileSystemID,
+        fileSystems[fileSystemID]));
+    text.append (String.format ("Separator .......... %s%n", separator));
+    text.append (String.format ("Access ............. %s  %s%n", bits, decode));
 
     if (storType < 16)
     {
-      text.append (String.format ("File type ...... %02X     %s%n", fileType, fileTypes[fileType]));
-      text.append (String.format ("Aux type ....... %04X%n", auxType));
-      text.append (String.format ("Stor type ...... %02X     %s%n", storType, storage[storType]));
+      text.append (
+          String.format ("File type .......... %02X     %s%n", fileType, fileTypes[fileType]));
+      text.append (String.format ("Aux type ........... %04X%n", auxType));
+      text.append (
+          String.format ("Storage type ....... %02X     %s%n", storType, storage[storType]));
     }
     else
     {
-      text.append (String.format ("Zero ........... %,d%n", fileType));
-      text.append (String.format ("Total blocks ... %,d%n", auxType));
-      text.append (String.format ("Block size ..... %,d%n", storType));
+      text.append (String.format ("Zero ............... %,d%n", fileType));
+      text.append (String.format ("Total blocks ....... %,d%n", auxType));
+      text.append (String.format ("Block size ......... %,d%n", storType));
     }
 
-    text.append (String.format ("Created ........ %s%n", created.format ()));
-    text.append (String.format ("Modified ....... %s%n", modified.format ()));
-    text.append (String.format ("Archived ....... %s%n", archived.format ()));
-    text.append (String.format ("Option size .... %,d%n", optionSize));
-    text.append (String.format ("Filename len ... %,d%n", fileNameLength));
-    text.append (String.format ("Filename ....... %s", fileName));
+    text.append (String.format ("Created ............ %s%n", created.format ()));
+    text.append (String.format ("Modified ........... %s%n", modified.format ()));
+    text.append (String.format ("Archived ........... %s%n", archived.format ()));
+    text.append (String.format ("Option size ........ %,d%n", optionSize));
+    text.append (String.format ("Filename len ....... %,d%n", fileNameLength));
+    text.append (String.format ("Filename ........... %s%n", fileName));
+    text.append (String.format ("Message threads .... %s%n", messageThreads));
+    text.append (String.format ("Control threads .... %s%n", controlThreads));
+    text.append (String.format ("Data threads ....... %s  %s%n", dataThreads, threadKindText));
+    text.append (String.format ("Filename threads ... %s", filenameThreads));
 
     return text.toString ();
   }

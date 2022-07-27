@@ -173,7 +173,7 @@ public class Record
         String fileName = thread.getFileName ();
         if (separator != '/')
           return fileName.replace (separator, '/');
-        return thread.getFileName ();
+        return fileName;
       }
 
     return "";

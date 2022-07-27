@@ -18,6 +18,17 @@ public class NuFXThread
       { "data fork", "disk image", "resource fork" },     // data thread
       { "filename", "undefined", "undefined" } };         // filename thread
 
+  public static final int CLASS_MESSAGE = 0;
+  public static final int CLASS_CONTROL = 1;
+  public static final int CLASS_DATA = 2;
+  public static final int CLASS_FILENAME = 3;
+
+  public static final int KIND_DATA_FORK = 0;
+  public static final int KIND_DISK_IMAGE = 1;
+  public static final int KIND_RESOURCE_FORK = 2;
+
+  public static final int KIND_FILENAME = 0;
+
   final int threadClass;
   final int threadFormat;
   final int threadKind;
@@ -32,11 +43,6 @@ public class NuFXThread
   private String fileName;
   private String message;
   //  private LZW lzw;
-
-  //  private boolean hasDisk;
-  //  private boolean hasFile;
-  //  private boolean hasResource;
-  //  private boolean hasFileName;
 
   // ---------------------------------------------------------------------------------//
   public NuFXThread (byte[] buffer, int offset, int dataOffset)
@@ -54,31 +60,6 @@ public class NuFXThread
     uncompressedData = new byte[uncompressedEOF];
 
     System.arraycopy (buffer, dataOffset, compressedData, 0, compressedData.length);
-
-    switch (threadFormat)
-    {
-      case 0:             // uncompressed
-        System.arraycopy (compressedData, 0, uncompressedData, 0, uncompressedEOF);
-        break;
-
-      case 1:             // Huffman squeeze
-        break;
-
-      case 2:             // Dynamic LZW/1 
-        LZW1 lzw1 = new LZW1 (compressedData);
-        break;
-
-      case 3:             // Dynamic LZW/2
-        int crcLength = threadKind == 1 ? 0 : uncompressedEOF;
-        LZW2 lzw2 = new LZW2 (compressedData, threadCrc, crcLength);
-        break;
-
-      case 4:             // Unix 12-bit compress
-        break;
-
-      case 5:             // Unix 16-bit compress
-        break;
-    }
   }
 
   // ---------------------------------------------------------------------------------//
@@ -89,17 +70,56 @@ public class NuFXThread
   }
 
   // ---------------------------------------------------------------------------------//
-  String getDataString ()
-  // ---------------------------------------------------------------------------------//
-  {
-    return new String (uncompressedData);
-  }
-
-  // ---------------------------------------------------------------------------------//
   byte[] getDataBuffer ()
   // ---------------------------------------------------------------------------------//
   {
     return uncompressedData;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  String getDataString ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return new String (getData ());
+  }
+
+  // ---------------------------------------------------------------------------------//
+  byte[] getData ()
+  // ---------------------------------------------------------------------------------//
+  {
+    switch (threadFormat)
+    {
+      case 0:             // uncompressed
+        return compressedData;
+
+      case 1:             // Huffman squeeze
+        System.out.println ("Squeeze");
+        break;
+
+      case 2:             // Dynamic LZW/1 
+        LZW1 lzw1 = new LZW1 (compressedData);
+        return lzw1.getData ();
+
+      case 3:             // Dynamic LZW/2
+        int crcLength = threadKind == 1 ? 0 : uncompressedEOF;
+        LZW2 lzw2 = new LZW2 (compressedData, threadCrc, crcLength);
+        return lzw2.getData ();
+
+      case 4:             // Unix 12-bit compress
+        break;
+
+      case 5:             // Unix 16-bit compress
+        break;
+    }
+
+    return uncompressedData;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  String getKindText ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return threadKindText[threadClass][threadKind];
   }
 
   // ---------------------------------------------------------------------------------//
@@ -113,8 +133,8 @@ public class NuFXThread
         threadClassText[threadClass]));
     text.append (String.format ("  format ............ %d          %s%n", threadFormat,
         formatText[threadFormat]));
-    text.append (String.format ("  kind .............. %d          %s%n", threadKind,
-        threadKindText[threadClass][threadKind]));
+    text.append (
+        String.format ("  kind .............. %d          %s%n", threadKind, getKindText ()));
     text.append (String.format ("  crc ............... %04X%n", threadCrc));
     text.append (String.format ("  uncompressedEOF ... %08X %<,7d%n", uncompressedEOF));
     text.append (String.format ("  compressedEOF ..... %08X %<,7d", compressedEOF));

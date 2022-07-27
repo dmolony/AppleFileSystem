@@ -5,6 +5,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 
+// see: https://github.com/zeek/bromagic/blob/master/database/apple
 // -----------------------------------------------------------------------------------//
 public class Tester
 // -----------------------------------------------------------------------------------//
@@ -16,12 +17,16 @@ public class Tester
   String euro = base + "Apple_IIgs_European_Disk_Collection/";
   String hybr = base + "AppleHybrid/";
   String cpm = base + "cpm/CPM collection (37 disks) and more/";
-  String sdk = base + "SDK/";
-  String shk = base + "SHK/";
   String woz = base + "woz/wozaday_Wizardry/";
   String wiz = base + "Wizardry/";
-  String lbr = base + "LBR/";
-  String bin = base + "Binary II/";
+  String cmp = base + "compressed/";
+  String sdk = cmp + "SDK/";
+  String shk = cmp + "SHK/";
+  String lbr = cmp + "LBR/";
+  String bny = cmp + "BNY/";
+  String bxy = cmp + "BXY/";
+  String bqy = cmp + "BQY/";
+  String bsq = cmp + "BSQ/";
 
   String[] fileNames = {                             //
       base + "dos/Assembler.dsk",                    // 0: 3.3 intl 0
@@ -52,8 +57,10 @@ public class Tester
       woz + "Wizardry PGMO.woz",                     // 25: pascal wizardry woz
       wiz + "wizardry_IV/Version A/wiz4_d1.dsk",     // 26: wizardry IV disk 1
       lbr + "crnch24s.lbr",                          // 27: LBR
-      bin + "GBBS.UTILS.BNY",                        // 28: binary II
-      bin + "GWFTP11B2.BXY",                         // 29: binary II / NuFX
+      bny + "GBBS.UTILS.BNY",                        // 28: binary II
+      bxy + "GWFTP11B2.BXY",                         // 29: binary II / NuFX
+      bqy + "NW.PROTALK1.BQY",                       // 30: binary II / Squeeze
+      //      bsq + "fsm30.bsq",                             // 31: 
   };
 
   // ---------------------------------------------------------------------------------//
@@ -61,10 +68,15 @@ public class Tester
   // ---------------------------------------------------------------------------------//
   {
     FileSystemFactory factory = new FileSystemFactory ();
+    //    System.out.println ("Default locale:" + Locale.getDefault ().toString ());
+    //    Locale swedishLocale = new Locale ("en", "US");
+    //    Locale.setDefault (swedishLocale);
+    //    System.out.println ("Default locale:" + Locale.getDefault ().toString ());
 
     for (int fileNo = 0; fileNo < fileNames.length; fileNo++)
+    //    for (int fileNo = 30; fileNo <= 30; fileNo++)
     {
-      System.out.printf ("%n%d %s%n", fileNo, fileNames[fileNo].substring (base.length ()));
+      //      System.out.printf ("%n%d %s%n", fileNo, fileNames[fileNo].substring (base.length ()));
 
       Path path = Path.of (fileNames[fileNo]);
       String name = path.toFile ().getName ();
@@ -86,12 +98,24 @@ public class Tester
         }
       }
 
-      for (AppleFileSystem fs : fsList)
+      //      System.out.println ();
+      listFileSystems (fsList, 0);
+    }
+  }
+
+  // ---------------------------------------------------------------------------------//
+  private void listFileSystems (List<? extends AppleFile> files, int depth)
+  // ---------------------------------------------------------------------------------//
+  {
+    for (AppleFile fs : files)
+    {
+      if (fs.isFileSystem ())
       {
-        System.out.println ();
-        System.out.println (fs.toText ());
+        System.out.printf ("%2d  %s%n", depth, fs);
+        listFileSystems (fs.getFiles (), depth + 1);
       }
     }
+
   }
 
   // ---------------------------------------------------------------------------------//

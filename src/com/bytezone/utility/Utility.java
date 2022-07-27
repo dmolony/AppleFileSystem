@@ -350,15 +350,16 @@ public class Utility
     return text.toString ();
   }
 
+  // Used by FsNuFX and FileNuFX
   // ---------------------------------------------------------------------------------//
   public static int getCRC (final byte[] buffer, int length, int initialValue)
   // ---------------------------------------------------------------------------------//
   {
     int crc = initialValue;
-    for (int j = 0; j < length; j++)
+    for (int i = 0; i < length; i++)
     {
       crc = ((crc >>> 8) | (crc << 8)) & 0xFFFF;
-      crc ^= (buffer[j] & 0xFF);
+      crc ^= (buffer[i] & 0xFF);
       crc ^= ((crc & 0xFF) >>> 4);
       crc ^= (crc << 12) & 0xFFFF;
       crc ^= ((crc & 0xFF) << 5) & 0xFFFF;
@@ -369,6 +370,7 @@ public class Utility
     return crc;
   }
 
+  // Used by WozFile
   // ---------------------------------------------------------------------------------//
   public static int crc32 (byte[] buffer, int offset, int length)
   // ---------------------------------------------------------------------------------//

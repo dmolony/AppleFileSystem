@@ -42,6 +42,13 @@ public class FileSystemFactory
   private boolean display = false;
 
   // ---------------------------------------------------------------------------------//
+  public List<AppleFileSystem> getFileSystems (AppleFile file)
+  // ---------------------------------------------------------------------------------//
+  {
+    return getFileSystems (file.getName (), file.read ());
+  }
+
+  // ---------------------------------------------------------------------------------//
   public List<AppleFileSystem> getFileSystems (String name, byte[] buffer)
   // ---------------------------------------------------------------------------------//
   {

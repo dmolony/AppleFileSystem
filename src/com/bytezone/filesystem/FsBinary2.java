@@ -7,6 +7,7 @@ public class FsBinary2 extends AbstractFileSystem
 // -----------------------------------------------------------------------------------//
 {
   private FileSystemFactory factory;
+  private String suffix;
 
   // ---------------------------------------------------------------------------------//
   public FsBinary2 (String name, byte[] buffer, BlockReader blockReader)
@@ -21,7 +22,33 @@ public class FsBinary2 extends AbstractFileSystem
   {
     super (name, buffer, offset, length, blockReader);
 
-    setFileSystemName ("Binary II");
+    setFileSystemName ("Bin II");
+
+    int pos = name.lastIndexOf ('.');
+    if (pos > 0)
+      suffix = name.substring (pos + 1).toLowerCase ();
+
+    //    switch (suffix)
+    //    {
+    //      case "bny":
+    //        System.out.println ("--> binary II");
+    //        break;
+    //
+    //      case "bxy":
+    //        System.out.println ("--> binary II / NuFX");
+    //        break;
+    //
+    //      case "bqy":
+    //        System.out.println ("--> binary II / Squeeze");
+    //        break;
+    //    }
+  }
+
+  // ---------------------------------------------------------------------------------//
+  public String getSuffix ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return suffix;
   }
 
   // ---------------------------------------------------------------------------------//
@@ -37,8 +64,7 @@ public class FsBinary2 extends AbstractFileSystem
       file = new FileBinary2 (this, nextBlock);
 
       if (file.getFileType () == ProdosConstants.FILE_TYPE_LBR)
-        for (AppleFileSystem fs : checkLibraryFile (file))
-          addFile (fs);
+        addFileSystem (file);
       else
         addFile (file);
 
@@ -47,25 +73,34 @@ public class FsBinary2 extends AbstractFileSystem
   }
 
   // ---------------------------------------------------------------------------------//
-  private List<AppleFileSystem> checkLibraryFile (FileBinary2 file)
+  private void addFileSystem (FileBinary2 file)
   // ---------------------------------------------------------------------------------//
   {
-    //    String description = switch (file.getAuxType ())
-    //    {
-    //      case 0x0001 -> "AppleSingle file";
-    //      case 0x0005 -> "DiskCopy file";
-    //      case 0x0130 -> "2IMG file";
-    //      case 0x8000 -> "Binary II file";
-    //      case 0x8002 -> "Shrinkit (NuFX) file";
-    //      case 0x8004 -> "Davex file";
-    //      default -> "Unknown aux";
-    //    };
+    if (false)
+    {
+      String description = switch (file.getAuxType ())
+      {
+        case 0x0001 -> "AppleSingle file";
+        case 0x0005 -> "DiskCopy file";
+        case 0x0130 -> "2IMG file";
+        case 0x8000 -> "Binary II file";
+        case 0x8002 -> "Shrinkit (NuFX) file";
+        case 0x8004 -> "Davex file";
+        default -> "Unknown aux";
+      };
 
-    //    System.out.printf ("%04X  %s - %s%n", file.getAuxType (), file.getName (), description);
+      System.out.printf ("%04X  %s - %s%n", file.getAuxType (), file.getName (), description);
+    }
 
     if (factory == null)
       factory = new FileSystemFactory ();
 
-    return factory.getFileSystems (file.getName (), file.read ());
+    List<AppleFileSystem> fileSystems = factory.getFileSystems (file);
+
+    if (fileSystems.size () == 0)
+      addFile (file);
+    else
+      for (AppleFileSystem fs : fileSystems)
+        addFile (fs);
   }
 }

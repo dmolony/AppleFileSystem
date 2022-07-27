@@ -79,7 +79,10 @@ public class FsProdos extends AbstractFileSystem
         bitmapPointer = Utility.unsignedShort (buffer, 0x27);     // 6
 
         int totalBlocks = Utility.unsignedShort (buffer, 0x29);
-        assert getSize () == totalBlocks;
+
+        // hybrid disks will fail this test
+        //        if (getSize () != totalBlocks)
+        //          System.out.printf ("Size (%,d != totalBlocks (%,d)%n", getSize (), totalBlocks);
       }
 
       prevBlockNo = Utility.unsignedShort (buffer, 0);
@@ -189,7 +192,8 @@ public class FsProdos extends AbstractFileSystem
     if (factory == null)
       factory = new FileSystemFactory ();
 
-    List<AppleFileSystem> fileSystems = factory.getFileSystems (file.name, file.read ());
+    List<AppleFileSystem> fileSystems = factory.getFileSystems (file);
+
     if (fileSystems.size () == 0)
       parent.addFile (file);
     else

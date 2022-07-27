@@ -13,6 +13,7 @@ public class FileBinary2 extends AbstractFile
 {
   private static String[] bin2Formats =
       { "Prodos or SOS", "Dos 3.3", "", "Dos 3.1 or 3.2", "Apple II Pascal" };
+  private static String[] flags = { "compressed", "encrypted", "", "", "", "", "", "sparse" };
 
   private int headerBlockNo;
 
@@ -46,7 +47,7 @@ public class FileBinary2 extends AbstractFile
   private Optional<LocalDateTime> created = Optional.empty ();
   private Optional<LocalDateTime> modified = Optional.empty ();
 
-  List<AppleBlock> dataBlocks = new ArrayList<> ();
+  private List<AppleBlock> dataBlocks = new ArrayList<> ();
 
   // ---------------------------------------------------------------------------------//
   FileBinary2 (FsBinary2 fs, int headerBlockNo)
@@ -128,11 +129,49 @@ public class FileBinary2 extends AbstractFile
   }
 
   // ---------------------------------------------------------------------------------//
+  public boolean isCompressed ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return (dataFlags & 0x80) != 0;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  private String getFlagsText (int dataFlags)
+  // ---------------------------------------------------------------------------------//
+  {
+    int mask = 0x80;
+    StringBuilder text = new StringBuilder ();
+    for (int i = 0; i < flags.length; i++)
+    {
+      if ((dataFlags & mask) != 0)
+      {
+        text.append (flags[i] + ", ");
+      }
+      mask >>>= 1;
+    }
+
+    if (text.length () > 0)
+      text.delete (text.length () - 2, text.length ());
+
+    return text.toString ();
+  }
+
+  // ---------------------------------------------------------------------------------//
   @Override
   public byte[] read ()
   // ---------------------------------------------------------------------------------//
   {
+    if (isCompressed () && ((FsBinary2) fileSystem).getSuffix ().equals ("bqy"))
+      return unSqueeze (fileSystem.readBlocks (dataBlocks));
+
     return fileSystem.readBlocks (dataBlocks);
+  }
+
+  // ---------------------------------------------------------------------------------//
+  private byte[] unSqueeze (byte[] buffer)
+  // ---------------------------------------------------------------------------------//
+  {
+    return "Not finished".getBytes ();
   }
 
   // ---------------------------------------------------------------------------------//
@@ -170,7 +209,8 @@ public class FileBinary2 extends AbstractFile
         (osType >= 0 && osType < bin2Formats.length) ? bin2Formats[osType] : ""));
     text.append (String.format ("Native file type .. %04X%n", nativeFileType));
     text.append (String.format ("Phantom file ...... %02X%n", phantomFile));
-    text.append (String.format ("Data flags ........ %02X%n", dataFlags));
+    text.append (
+        String.format ("Data flags ........ %02X %s%n", dataFlags, getFlagsText (dataFlags)));
     text.append (String.format ("Version ........... %02X%n", version));
     text.append (String.format ("Files following ... %02X%n", filesFollowing));
 
@@ -182,7 +222,7 @@ public class FileBinary2 extends AbstractFile
   public String toString ()
   // ---------------------------------------------------------------------------------//
   {
-    return String.format ("%,6d  %-20s  %02X  %04X %03X  %3d  %d", dataBlocks.size (), name,
+    return String.format ("%,6d  %-20s  %02X  %04X %03X  %3d  %,8d", dataBlocks.size (), name,
         fileType, auxType, storageType, blocks, eof);
   }
 }
