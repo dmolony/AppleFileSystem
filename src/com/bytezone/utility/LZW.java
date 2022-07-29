@@ -149,7 +149,7 @@ abstract class LZW
 
     int length = v3eof != 0 ? v3eof : buffer.length;
 
-    int calculatedCrc = Utility.getCRC (buffer, length, crcBase);
+    int calculatedCrc = Utility.crc16 (buffer, length, crcBase);
     if (crc != calculatedCrc)
     {
       System.out.printf ("%n*** Thread CRC failed ***  %04X  %04X%n", crc, calculatedCrc);

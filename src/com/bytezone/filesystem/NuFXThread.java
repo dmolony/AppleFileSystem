@@ -2,6 +2,7 @@ package com.bytezone.filesystem;
 
 import com.bytezone.utility.LZW1;
 import com.bytezone.utility.LZW2;
+import com.bytezone.utility.Squeeze;
 import com.bytezone.utility.Utility;
 
 // -----------------------------------------------------------------------------------//
@@ -93,8 +94,9 @@ public class NuFXThread
         return compressedData;
 
       case 1:             // Huffman squeeze
-        System.out.println ("Squeeze");
-        break;
+        System.out.println ("Squeeze in NuFX");
+        Squeeze squeeze = new Squeeze ();
+        return squeeze.unSqueeze (compressedData);
 
       case 2:             // Dynamic LZW/1 
         LZW1 lzw1 = new LZW1 (compressedData);

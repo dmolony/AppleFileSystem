@@ -68,13 +68,9 @@ public class Tester
   // ---------------------------------------------------------------------------------//
   {
     FileSystemFactory factory = new FileSystemFactory ();
-    //    System.out.println ("Default locale:" + Locale.getDefault ().toString ());
-    //    Locale swedishLocale = new Locale ("en", "US");
-    //    Locale.setDefault (swedishLocale);
-    //    System.out.println ("Default locale:" + Locale.getDefault ().toString ());
 
-    for (int fileNo = 0; fileNo < fileNames.length; fileNo++)
-    //    for (int fileNo = 30; fileNo <= 30; fileNo++)
+    //    for (int fileNo = 0; fileNo < fileNames.length; fileNo++)
+    for (int fileNo = 30; fileNo <= 30; fileNo++)
     {
       //      System.out.printf ("%n%d %s%n", fileNo, fileNames[fileNo].substring (base.length ()));
 
@@ -89,12 +85,20 @@ public class Tester
         continue;
       }
 
-      if (fileNo == 99)
+      if (fileNo == 30)
       {
         for (AppleFileSystem fs : fsList)
         {
           System.out.println ();
           System.out.println (fs.catalog ());
+
+          //          for (AppleFile file : fs.getFiles ())
+          //            if (file.getName ().equals ("NET.CONFIG.S.QQ"))
+          //            {
+          //              byte[] buffer = file.read ();
+          //              System.out.println (Utility.format (buffer));
+          //              break;
+          //            }
         }
       }
 

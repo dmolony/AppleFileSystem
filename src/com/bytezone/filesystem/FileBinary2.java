@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import com.bytezone.utility.Squeeze;
 import com.bytezone.utility.Utility;
 
 // -----------------------------------------------------------------------------------//
@@ -162,16 +163,12 @@ public class FileBinary2 extends AbstractFile
   // ---------------------------------------------------------------------------------//
   {
     if (isCompressed () && ((FsBinary2) fileSystem).getSuffix ().equals ("bqy"))
-      return unSqueeze (fileSystem.readBlocks (dataBlocks));
+    {
+      Squeeze squeeze = new Squeeze ();
+      return squeeze.unSqueeze (fileSystem.readBlocks (dataBlocks));
+    }
 
     return fileSystem.readBlocks (dataBlocks);
-  }
-
-  // ---------------------------------------------------------------------------------//
-  private byte[] unSqueeze (byte[] buffer)
-  // ---------------------------------------------------------------------------------//
-  {
-    return "Not finished".getBytes ();
   }
 
   // ---------------------------------------------------------------------------------//

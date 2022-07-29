@@ -70,7 +70,7 @@ public class Record
     byte[] crcBuffer = new byte[len + totThreads * 16];
     System.arraycopy (buffer, dataPtr + 6, crcBuffer, 0, crcBuffer.length);
 
-    if (crc != Utility.getCRC (crcBuffer, crcBuffer.length, 0))
+    if (crc != Utility.crc16 (crcBuffer, crcBuffer.length, 0))
     {
       System.out.println ("***** Record CRC mismatch *****");
       throw new FileFormatException ("Record CRC failed");

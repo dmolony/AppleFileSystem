@@ -79,7 +79,7 @@ public class FileNuFX extends AbstractFile
     byte[] crcBuffer = new byte[len + totThreads * 16];
     System.arraycopy (buffer, offset + 6, crcBuffer, 0, crcBuffer.length);
 
-    crcPassed = crc == Utility.getCRC (crcBuffer, crcBuffer.length, 0);
+    crcPassed = crc == Utility.crc16 (crcBuffer, crcBuffer.length, 0);
     if (!crcPassed)
     {
       System.out.println ("***** Record CRC mismatch *****");

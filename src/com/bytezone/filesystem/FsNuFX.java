@@ -3,6 +3,7 @@ package com.bytezone.filesystem;
 import com.bytezone.utility.DateTime;
 import com.bytezone.utility.Utility;
 
+// Shrinkit archive
 // -----------------------------------------------------------------------------------//
 public class FsNuFX extends AbstractFileSystem
 // -----------------------------------------------------------------------------------//
@@ -53,7 +54,7 @@ public class FsNuFX extends AbstractFileSystem
 
     byte[] crcBuffer = new byte[40];
     System.arraycopy (buffer, 8, crcBuffer, 0, crcBuffer.length);
-    crcPassed = crc == Utility.getCRC (crcBuffer, crcBuffer.length, 0);
+    crcPassed = crc == Utility.crc16 (crcBuffer, crcBuffer.length, 0);
     if (!crcPassed)
       throw new FileFormatException ("Master CRC failed");
   }
