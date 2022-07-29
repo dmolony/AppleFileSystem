@@ -49,6 +49,7 @@ public class FileBinary2 extends AbstractFile
   private Optional<LocalDateTime> modified = Optional.empty ();
 
   private List<AppleBlock> dataBlocks = new ArrayList<> ();
+  private String squeezeName;
 
   // ---------------------------------------------------------------------------------//
   FileBinary2 (FsBinary2 fs, int headerBlockNo)
@@ -99,6 +100,21 @@ public class FileBinary2 extends AbstractFile
 
     for (int block = firstBlock; block <= lastBlock; block++)
       dataBlocks.add (fs.getBlock (block));
+
+    if (isCompressed ())
+    {
+      buffer = fs.getBlock (headerBlockNo + 1).read ();
+      if (buffer[0] == 0x76 && buffer[1] == (byte) 0xFF)      // squeeze
+        squeezeName = Utility.getCString (buffer, 4);
+    }
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
+  public String getName ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return squeezeName == null ? super.getName () : squeezeName;
   }
 
   // ---------------------------------------------------------------------------------//
@@ -219,7 +235,7 @@ public class FileBinary2 extends AbstractFile
   public String toString ()
   // ---------------------------------------------------------------------------------//
   {
-    return String.format ("%,6d  %-20s  %02X  %04X %03X  %3d  %,8d", dataBlocks.size (), name,
+    return String.format ("%,6d  %-20s  %02X  %04X %03X  %3d  %,8d", dataBlocks.size (), getName (),
         fileType, auxType, storageType, blocks, eof);
   }
 }
