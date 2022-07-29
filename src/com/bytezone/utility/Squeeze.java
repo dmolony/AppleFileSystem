@@ -3,6 +3,7 @@ package com.bytezone.utility;
 import com.bytezone.filesystem.FileFormatException;
 
 // see http://fileformats.archiveteam.org/wiki/Squeeze
+// see http://fileformats.archiveteam.org/wiki/RLE90
 // -----------------------------------------------------------------------------------//
 public class Squeeze
 // -----------------------------------------------------------------------------------//
@@ -10,7 +11,6 @@ public class Squeeze
   private static final byte[] Squeeze = { 0x76, (byte) 0xFF };
   private static int RLE_DELIMITER = 0x90;
   private static int EOF_TOKEN = 0x100;
-  private static int TOT_VALUES = EOF_TOKEN + 1;
 
   private int bits;
   private int bitPos = 7;
@@ -48,8 +48,6 @@ public class Squeeze
 
     boolean repeating = false;
     int lastVal = 0;
-    int checksum = 0;
-    //    int count = 0;
     int sum = 0;
 
     while (true)
@@ -70,7 +68,6 @@ public class Squeeze
 
         while (--val != 0)
         {
-          checksum = Utility.calcCrc16 (checksum, lastVal);
           sum += lastVal;
           uncompressed[uncPtr++] = (byte) lastVal;
         }
@@ -82,7 +79,6 @@ public class Squeeze
         else
         {
           lastVal = val;
-          checksum = Utility.calcCrc16 (checksum, lastVal);
           sum += lastVal;
           uncompressed[uncPtr++] = (byte) lastVal;
         }
