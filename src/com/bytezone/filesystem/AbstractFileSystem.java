@@ -10,20 +10,20 @@ import com.bytezone.filesystem.BlockReader.AddressType;
 public abstract class AbstractFileSystem implements AppleFileSystem
 // -----------------------------------------------------------------------------------//
 {
-  private final String fileName;
+  protected final String fileName;
 
   private final byte[] diskBuffer;      // entire buffer including any header or other disks
-  private final int fileOffset;         // start of this disk
+  protected final int fileOffset;         // start of this disk
   private final int fileLength;         // length of this disk
 
-  private final BlockReader blockReader;
+  protected final BlockReader blockReader;
 
-  private final int totalBlocks;
-  private int catalogBlocks;
+  protected final int totalBlocks;
+  protected int catalogBlocks;
 
-  private List<AppleFile> files = new ArrayList<> ();
+  protected List<AppleFile> files = new ArrayList<> ();
 
-  private String fileSystemName;        // DosX.X, Prodos, Pascal, CPM, Data
+  protected String fileSystemName;        // DosX.X, Prodos, Pascal, CPM, Data
 
   // ---------------------------------------------------------------------------------//
   public AbstractFileSystem (String fileName, byte[] buffer, int offset, int length,

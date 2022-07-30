@@ -41,10 +41,6 @@ public class NuFXThread
   private final byte[] compressedData;
   private final byte[] uncompressedData;
 
-  private String fileName;
-  private String message;
-  //  private LZW lzw;
-
   // ---------------------------------------------------------------------------------//
   public NuFXThread (byte[] buffer, int offset, int dataOffset)
   // ---------------------------------------------------------------------------------//
@@ -81,7 +77,7 @@ public class NuFXThread
   String getDataString ()
   // ---------------------------------------------------------------------------------//
   {
-    return new String (getData ());
+    return new String (getData ()).trim ();     // trim removes the trailing nulls
   }
 
   // ---------------------------------------------------------------------------------//
@@ -94,7 +90,6 @@ public class NuFXThread
         return compressedData;
 
       case 1:             // Huffman squeeze
-        System.out.println ("Squeeze in NuFX");
         Squeeze squeeze = new Squeeze ();
         return squeeze.unSqueeze (compressedData);
 
@@ -141,15 +136,8 @@ public class NuFXThread
     text.append (String.format ("  uncompressedEOF ... %08X %<,7d%n", uncompressedEOF));
     text.append (String.format ("  compressedEOF ..... %08X %<,7d", compressedEOF));
 
-    if (fileName != null)
-      text.append ("\n  filename .......... " + fileName);
-    else if (message != null)
-      text.append ("\n  message ........... " + message);
-    //    else if (lzw != null)
-    //    {
-    //      text.append ("\n");
-    //      text.append (lzw);
-    //    }
+    if (threadFormat == 0)
+      text.append ("\n  data .............. " + getDataString ());
 
     return text.toString ();
   }

@@ -34,7 +34,7 @@ public class FilePascal extends AbstractFile
 
     name = Utility.getPascalString (buffer, ptr + 6);
     bytesUsedInLastBlock = Utility.unsignedShort (buffer, ptr + 22);
-    date = Utility.getPascalDate (buffer, ptr + 24);
+    date = Utility.getPascalLocalDate (buffer, ptr + 24);             // could return null
 
     for (int i = firstBlock; i < lastBlock; i++)
       dataBlocks.add (fs.getBlock (i));

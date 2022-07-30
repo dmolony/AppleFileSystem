@@ -1,5 +1,7 @@
 package com.bytezone.filesystem;
 
+import java.util.List;
+
 import com.bytezone.utility.DateTime;
 import com.bytezone.utility.Utility;
 
@@ -8,8 +10,7 @@ import com.bytezone.utility.Utility;
 public class FsNuFX extends AbstractFileSystem
 // -----------------------------------------------------------------------------------//
 {
-  private static final byte[] NuFile = { 0x4E, (byte) 0xF5, 0x46, (byte) 0xE9, 0x6C, (byte) 0xE5 };
-  //  private static final byte[] NuFX = { 0x4E, (byte) 0xF5, 0x46, (byte) 0xD8 };
+  static final byte[] NuFile = { 0x4E, (byte) 0xF5, 0x46, (byte) 0xE9, 0x6C, (byte) 0xE5 };
 
   private final int crc;
   private final int totalRecords;
@@ -23,6 +24,9 @@ public class FsNuFX extends AbstractFileSystem
   private final int eof;
 
   private final boolean crcPassed;
+
+  private FileSystemFactory factory;
+  private int totalFileSystems = 0;
 
   // ---------------------------------------------------------------------------------//
   public FsNuFX (String name, byte[] buffer, BlockReader reader)
@@ -69,8 +73,32 @@ public class FsNuFX extends AbstractFileSystem
     for (int i = 0; i < totalRecords; i++)
     {
       FileNuFX file = new FileNuFX (this, getBuffer (), ptr);
-      addFile (file);
+
+      if (file.hasDiskImage ())
+        addFileSystem (this, file);
+      else
+        addFile (file);
+
       ptr += file.rawLength;
+    }
+  }
+
+  // ---------------------------------------------------------------------------------//
+  private void addFileSystem (AppleFile parent, FileNuFX file)
+  // ---------------------------------------------------------------------------------//
+  {
+    if (factory == null)
+      factory = new FileSystemFactory ();
+
+    List<AppleFileSystem> fileSystems = factory.getFileSystems (file);
+
+    if (fileSystems.size () == 0)
+      parent.addFile (file);
+    else
+    {
+      ++totalFileSystems;
+      for (AppleFileSystem fs : fileSystems)
+        parent.addFile (fs);
     }
   }
 
@@ -94,5 +122,15 @@ public class FsNuFX extends AbstractFileSystem
     text.append (String.format ("Reserved ....... %04X", reserved4));
 
     return text.toString ();
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
+  public String toString ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return String.format ("%-20.20s %-6s %,8d  %d %,7d  %4d  %3d  %2d", fileName, fileSystemName,
+        fileOffset, blockReader.interleave, totalBlocks, blockReader.blockSize, files.size (),
+        totalFileSystems);
   }
 }

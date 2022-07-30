@@ -118,18 +118,35 @@ public class FileNuFX extends AbstractFile
 
   // ---------------------------------------------------------------------------------//
   @Override
+  public String getName ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return fileName;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  boolean hasDiskImage ()
+  // ---------------------------------------------------------------------------------//
+  {
+    for (NuFXThread thread : threads)
+      if (thread.threadClass == NuFXThread.CLASS_DATA
+          && thread.threadKind == NuFXThread.KIND_DISK_IMAGE)
+        return true;
+
+    return false;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
   public byte[] read ()
   // ---------------------------------------------------------------------------------//
   {
     for (NuFXThread thread : threads)
-    {
       if (thread.threadClass == NuFXThread.CLASS_DATA
-          && thread.threadKind == NuFXThread.KIND_DATA_FORK)
-      {
-        return thread.getDataBuffer ();
-      }
+          && (thread.threadKind == NuFXThread.KIND_DATA_FORK
+              || thread.threadKind == NuFXThread.KIND_DISK_IMAGE))
+        return thread.getData ();
 
-    }
     return null;
   }
 
@@ -191,8 +208,7 @@ public class FileNuFX extends AbstractFile
   }
 
   // ---------------------------------------------------------------------------------//
-  @Override
-  public String toString ()
+  public String toText ()
   // ---------------------------------------------------------------------------------//
   {
     StringBuilder text = new StringBuilder ();
@@ -238,5 +254,13 @@ public class FileNuFX extends AbstractFile
     text.append (String.format ("Filename threads ... %s", filenameThreads));
 
     return text.toString ();
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
+  public String toString ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return String.format ("%-30s  %-3s  %04X", fileName, fileTypes[fileType], auxType);
   }
 }

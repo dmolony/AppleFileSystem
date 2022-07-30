@@ -13,7 +13,7 @@ public class Squeeze
   private static int EOF_TOKEN = 0x100;
 
   private int bits;
-  private int bitPos = 7;
+  private int bitPos = 7;         // trigger the first read
   private int ptr;
   private byte[] buffer;
   private Node[] nodes;

@@ -324,10 +324,14 @@ public class Utility
   }
 
   // ---------------------------------------------------------------------------------//
-  public static LocalDate getPascalDate (byte[] buffer, int offset)
+  public static LocalDate getPascalLocalDate (byte[] buffer, int offset)
   // ---------------------------------------------------------------------------------//
   {
-    int date = unsignedShort (buffer, offset);
+    int date = Utility.unsignedShort (buffer, offset);
+
+    if (date == 0)
+      return null;
+
     int month = date & 0x0F;
     int day = (date & 0x1F0) >>> 4;
     int year = (date & 0xFE00) >>> 9;
@@ -337,7 +341,14 @@ public class Utility
     else
       year += 1900;
 
-    return LocalDate.of (year, month, day);
+    try
+    {
+      return LocalDate.of (year, month, day);
+    }
+    catch (DateTimeException e)
+    {
+      return null;
+    }
   }
 
   // ---------------------------------------------------------------------------------//

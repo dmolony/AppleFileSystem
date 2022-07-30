@@ -27,21 +27,6 @@ public class FsBinary2 extends AbstractFileSystem
     int pos = name.lastIndexOf ('.');
     if (pos > 0)
       suffix = name.substring (pos + 1).toLowerCase ();
-
-    //    switch (suffix)
-    //    {
-    //      case "bny":
-    //        System.out.println ("--> binary II");
-    //        break;
-    //
-    //      case "bxy":
-    //        System.out.println ("--> binary II / NuFX");
-    //        break;
-    //
-    //      case "bqy":
-    //        System.out.println ("--> binary II / Squeeze");
-    //        break;
-    //    }
   }
 
   // ---------------------------------------------------------------------------------//
