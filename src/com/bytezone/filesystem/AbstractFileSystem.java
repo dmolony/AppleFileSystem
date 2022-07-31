@@ -301,7 +301,7 @@ public abstract class AbstractFileSystem implements AppleFileSystem
   public String toString ()
   // ---------------------------------------------------------------------------------//
   {
-    return String.format ("%-20.20s %-6s %,8d  %d %,7d  %4d %2d  %3d", fileName, fileSystemName,
+    return String.format ("%-20.20s %-6s %,8d  %d %,7d  %4d %3d %3d", fileName, fileSystemName,
         fileOffset, blockReader.interleave, totalBlocks, blockReader.blockSize, catalogBlocks,
         files.size ());
   }

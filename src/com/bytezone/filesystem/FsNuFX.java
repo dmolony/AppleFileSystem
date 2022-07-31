@@ -93,6 +93,9 @@ public class FsNuFX extends AbstractFileSystem
     List<AppleFileSystem> fileSystems = factory.getFileSystems (file);
 
     if (fileSystems.size () == 0)
+      System.out.println ("No file systems found");
+
+    if (fileSystems.size () == 0)
       parent.addFile (file);
     else
     {
@@ -129,7 +132,7 @@ public class FsNuFX extends AbstractFileSystem
   public String toString ()
   // ---------------------------------------------------------------------------------//
   {
-    return String.format ("%-20.20s %-6s %,8d  %d %,7d  %4d  %3d  %2d", fileName, fileSystemName,
+    return String.format ("%-20.20s %-6s %,8d  %d %,7d  %4d %3d  %2d", fileName, fileSystemName,
         fileOffset, blockReader.interleave, totalBlocks, blockReader.blockSize, files.size (),
         totalFileSystems);
   }

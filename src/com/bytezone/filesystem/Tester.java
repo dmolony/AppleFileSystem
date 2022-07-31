@@ -50,7 +50,7 @@ public class Tester
       hybr + "HybridHuffin/IAC20.DSK",               // 18: hybrid pascal/dos
       hybr + "cpm/HYBRID.DSK",                       // 19: hybrid cpm/dos
       base + "dual dos/AAL-8603.DSK",                // 20: hybrid prodos/dos
-      cpm + "ARCHIVES 7.2mg",                        // 21: 2mg / prodos / NuFX LBR files
+      cmp + "ARCHIVES 7.2mg",                        // 21: 2mg / prodos / NuFX LBR files
       sdk + "SCASM.II4.0.SDK",                       // 22: NuFX / Dos
       shk + "DosMaster.shk",                         // 23: DosMaster NuFX
       wiz + "Wizardry/murasama.dsk",                 // 24: pascal wizardry
@@ -60,7 +60,8 @@ public class Tester
       bny + "GBBS.UTILS.BNY",                        // 28: binary II
       bxy + "GWFTP11B2.BXY",                         // 29: binary II / NuFX
       bqy + "NW.PROTALK1.BQY",                       // 30: binary II / Squeeze
-      //      bsq + "fsm30.bsq",                             // 31: 
+      sdk + "tdbt12d1.sdk",                          // 31: 
+      cmp + "binscii.dsk",                           // 32:
   };
 
   // ---------------------------------------------------------------------------------//
@@ -69,8 +70,8 @@ public class Tester
   {
     FileSystemFactory factory = new FileSystemFactory ();
 
-    //    for (int fileNo = 0; fileNo < fileNames.length; fileNo++)
-    for (int fileNo = 21; fileNo <= 21; fileNo++)
+    for (int fileNo = 0; fileNo < fileNames.length; fileNo++)
+    //    for (int fileNo = 31; fileNo <= 31; fileNo++)
     {
       //      System.out.printf ("%n%d %s%n", fileNo, fileNames[fileNo].substring (base.length ()));
 
@@ -85,7 +86,7 @@ public class Tester
         continue;
       }
 
-      if (fileNo == 21)
+      if (fileNo == 99)
       {
         for (AppleFileSystem fs : fsList)
         {
@@ -102,7 +103,7 @@ public class Tester
         }
       }
 
-      //      System.out.println ();
+      System.out.println ();
       listFileSystems (fsList, 0);
     }
   }
@@ -119,7 +120,6 @@ public class Tester
         listFileSystems (fs.getFiles (), depth + 1);
       }
     }
-
   }
 
   // ---------------------------------------------------------------------------------//

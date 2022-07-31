@@ -18,6 +18,7 @@ public class FsCpm extends AbstractFileSystem
   // ---------------------------------------------------------------------------------//
   {
     super (name, buffer, offset, length, blockReader);
+
     setFileSystemName ("CPM");
   }
 
@@ -30,7 +31,7 @@ public class FsCpm extends AbstractFileSystem
     int catalogBlocks = 0;
     FileCpm currentFile = null;
 
-    for (int i = 0; i < 2; i++)
+    out: for (int i = 0; i < 2; i++)
     {
       AppleBlock vtoc = getBlock (12 + i);
 
@@ -42,11 +43,13 @@ public class FsCpm extends AbstractFileSystem
         if (b1 == EMPTY_BYTE_VALUE)         // deleted file??
           continue;
         if (b1 > 31)
-          throw new FileFormatException ("bad user number");
+          //          throw new FileFormatException ("bad user number: " + b1);
+          break out;
 
         int b2 = buffer[j + 1] & 0xFF;      // first letter of filename
-        if (b2 < 32 || (b2 > 126 && b2 != EMPTY_BYTE_VALUE))
-          throw new FileFormatException ("bad name value");
+        if (b2 <= 32 || (b2 > 126 && b2 != EMPTY_BYTE_VALUE))
+          //          throw new FileFormatException ("bad name value");
+          break out;
 
         if (currentFile == null || currentFile.isComplete ())
         {

@@ -8,7 +8,6 @@ public class FileCpm extends AbstractFile
 // -----------------------------------------------------------------------------------//
 {
   private final int userNumber;
-  private final String name;
   private final String type;
 
   private final boolean readOnly;
@@ -103,12 +102,18 @@ public class FileCpm extends AbstractFile
 
   // ---------------------------------------------------------------------------------//
   @Override
+  public String getName ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return type.isEmpty () ? name : name + "." + type;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
   public String toString ()
   // ---------------------------------------------------------------------------------//
   {
-    String fullName = type.isEmpty () ? name : name + "." + type;
-
-    return String.format ("%-12s  %s  %s  %2d %3d  %3d", fullName, readOnly ? "*" : " ",
+    return String.format ("%-12s  %s  %s  %2d %3d  %3d", getName (), readOnly ? "*" : " ",
         systemFile ? "*" : " ", userNumber, dataBlocks.size (), recordCount);
   }
 }

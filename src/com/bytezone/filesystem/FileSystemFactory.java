@@ -39,6 +39,7 @@ public class FileSystemFactory
 
   List<AppleFileSystem> fileSystems = new ArrayList<> ();
   private boolean display = false;
+  private boolean debug = false;
 
   // ---------------------------------------------------------------------------------//
   public List<AppleFileSystem> getFileSystems (AppleFile file)
@@ -136,6 +137,8 @@ public class FileSystemFactory
         }
         catch (FileFormatException e)
         {
+          if (debug)
+            System.out.println (e);
         }
 
     switch (disks.size ())
@@ -167,6 +170,8 @@ public class FileSystemFactory
       }
       catch (FileFormatException e)
       {
+        if (debug)
+          System.out.println (e);
       }
 
     return null;
@@ -187,6 +192,8 @@ public class FileSystemFactory
       }
       catch (FileFormatException e)
       {
+        if (debug)
+          System.out.println (e);
       }
 
     return null;
@@ -207,6 +214,8 @@ public class FileSystemFactory
       }
       catch (FileFormatException e)
       {
+        if (debug)
+          System.out.println (e);
       }
 
     return null;
@@ -226,6 +235,8 @@ public class FileSystemFactory
     }
     catch (FileFormatException e)
     {
+      if (debug)
+        System.out.println (e);
     }
 
     return null;
@@ -246,6 +257,8 @@ public class FileSystemFactory
       }
       catch (FileFormatException e)
       {
+        if (debug)
+          System.out.println (e);
       }
 
     return null;
