@@ -1,12 +1,9 @@
 package com.bytezone.filesystem;
 
-import java.util.List;
-
 // -----------------------------------------------------------------------------------//
 public class FsBinary2 extends AbstractFileSystem
 // -----------------------------------------------------------------------------------//
 {
-  private FileSystemFactory factory;
   private String suffix;
 
   // ---------------------------------------------------------------------------------//
@@ -49,43 +46,42 @@ public class FsBinary2 extends AbstractFileSystem
       file = new FileBinary2 (this, nextBlock);
 
       if (file.getFileType () == ProdosConstants.FILE_TYPE_LBR)
-        addFileSystem (file);
+        addFileSystem (this, file);
       else
+      {
         addFile (file);
+        ++totalFiles;
+      }
 
       nextBlock += ((file.getEof () - 1) / 128 + 2);
     } while (file.getFilesFollowing () > 0);
   }
 
   // ---------------------------------------------------------------------------------//
-  private void addFileSystem (FileBinary2 file)
+  private void showDetails (FileBinary2 file)
   // ---------------------------------------------------------------------------------//
   {
-    if (false)
+    String description = switch (file.getAuxType ())
     {
-      String description = switch (file.getAuxType ())
-      {
-        case 0x0001 -> "AppleSingle file";
-        case 0x0005 -> "DiskCopy file";
-        case 0x0130 -> "2IMG file";
-        case 0x8000 -> "Binary II file";
-        case 0x8002 -> "Shrinkit (NuFX) file";
-        case 0x8004 -> "Davex file";
-        default -> "Unknown aux";
-      };
+      case 0x0001 -> "AppleSingle file";
+      case 0x0005 -> "DiskCopy file";
+      case 0x0130 -> "2IMG file";
+      case 0x8000 -> "Binary II file";
+      case 0x8002 -> "Shrinkit (NuFX) file";
+      case 0x8004 -> "Davex file";
+      default -> "Unknown aux";
+    };
 
-      System.out.printf ("%04X  %s - %s%n", file.getAuxType (), file.getName (), description);
-    }
+    System.out.printf ("%04X  %s - %s%n", file.getAuxType (), file.getName (), description);
+  }
 
-    if (factory == null)
-      factory = new FileSystemFactory ();
-
-    List<AppleFileSystem> fileSystems = factory.getFileSystems (file);
-
-    if (fileSystems.size () == 0)
-      addFile (file);
-    else
-      for (AppleFileSystem fs : fileSystems)
-        addFile (fs);
+  // ---------------------------------------------------------------------------------//
+  @Override
+  public String toString ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return String.format ("%-20.20s %-6s %,8d  %d %,7d  %4d %3d  %2d  %2d", fileName,
+        fileSystemName, fileOffset, blockReader.interleave, totalBlocks, blockReader.blockSize,
+        files.size (), totalFileSystems, totalFiles);
   }
 }

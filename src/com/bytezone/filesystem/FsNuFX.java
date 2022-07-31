@@ -1,7 +1,5 @@
 package com.bytezone.filesystem;
 
-import java.util.List;
-
 import com.bytezone.utility.DateTime;
 import com.bytezone.utility.Utility;
 
@@ -24,9 +22,6 @@ public class FsNuFX extends AbstractFileSystem
   private final int eof;
 
   private final boolean crcPassed;
-
-  private FileSystemFactory factory;
-  private int totalFileSystems = 0;
 
   // ---------------------------------------------------------------------------------//
   public FsNuFX (String name, byte[] buffer, BlockReader reader)
@@ -77,31 +72,12 @@ public class FsNuFX extends AbstractFileSystem
       if (file.hasDiskImage ())
         addFileSystem (this, file);
       else
+      {
         addFile (file);
+        ++totalFiles;
+      }
 
       ptr += file.rawLength;
-    }
-  }
-
-  // ---------------------------------------------------------------------------------//
-  private void addFileSystem (AppleFile parent, FileNuFX file)
-  // ---------------------------------------------------------------------------------//
-  {
-    if (factory == null)
-      factory = new FileSystemFactory ();
-
-    List<AppleFileSystem> fileSystems = factory.getFileSystems (file);
-
-    if (fileSystems.size () == 0)
-      System.out.println ("No file systems found");
-
-    if (fileSystems.size () == 0)
-      parent.addFile (file);
-    else
-    {
-      ++totalFileSystems;
-      for (AppleFileSystem fs : fileSystems)
-        parent.addFile (fs);
     }
   }
 
@@ -132,8 +108,8 @@ public class FsNuFX extends AbstractFileSystem
   public String toString ()
   // ---------------------------------------------------------------------------------//
   {
-    return String.format ("%-20.20s %-6s %,8d  %d %,7d  %4d %3d  %2d", fileName, fileSystemName,
-        fileOffset, blockReader.interleave, totalBlocks, blockReader.blockSize, files.size (),
-        totalFileSystems);
+    return String.format ("%-20.20s %-6s %,8d  %d %,7d  %4d %3d  %2d  %2d", fileName,
+        fileSystemName, fileOffset, blockReader.interleave, totalBlocks, blockReader.blockSize,
+        files.size (), totalFileSystems, totalFiles);
   }
 }

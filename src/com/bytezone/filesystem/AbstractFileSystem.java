@@ -25,6 +25,10 @@ public abstract class AbstractFileSystem implements AppleFileSystem
 
   protected String fileSystemName;        // DosX.X, Prodos, Pascal, CPM, Data
 
+  protected FileSystemFactory factory;
+  protected int totalFileSystems = 0;
+  protected int totalFiles = 0;
+
   // ---------------------------------------------------------------------------------//
   public AbstractFileSystem (String fileName, byte[] buffer, int offset, int length,
       BlockReader blockReader)
@@ -247,6 +251,29 @@ public abstract class AbstractFileSystem implements AppleFileSystem
   // ---------------------------------------------------------------------------------//
   {
     return totalBlocks;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  protected void addFileSystem (AppleFile parent, AbstractFile file)
+  // ---------------------------------------------------------------------------------//
+  {
+    if (factory == null)
+      factory = new FileSystemFactory ();
+
+    List<AppleFileSystem> fileSystems = factory.getFileSystems (file);
+
+    if (fileSystems.size () == 0)
+    {
+      System.out.println ("No file systems found");
+      parent.addFile (file);
+      ++totalFiles;
+    }
+    else
+      for (AppleFileSystem fs : fileSystems)
+      {
+        parent.addFile (fs);
+        ++totalFileSystems;
+      }
   }
 
   // ---------------------------------------------------------------------------------//

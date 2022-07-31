@@ -1,7 +1,5 @@
 package com.bytezone.filesystem;
 
-import java.util.List;
-
 import com.bytezone.utility.Utility;
 
 // -----------------------------------------------------------------------------------//
@@ -26,8 +24,6 @@ public class FsProdos extends AbstractFileSystem
   private int entriesPerBlock;
   private int fileCount;
   private int bitmapPointer;
-
-  private FileSystemFactory factory;
 
   // ---------------------------------------------------------------------------------//
   public FsProdos (String name, byte[] buffer, BlockReader blockReader)
@@ -170,35 +166,6 @@ public class FsProdos extends AbstractFileSystem
       if (!catalogBlock.isValid ())
         throw new FileFormatException ("Invalid catalog");
     }
-  }
-
-  // ---------------------------------------------------------------------------------//
-  private void addFileSystem (AppleFile parent, FileProdos file)
-  // ---------------------------------------------------------------------------------//
-  {
-    //    String description = switch (file.getAuxType ())
-    //    {
-    //      case 0x0001 -> "AppleSingle file";
-    //      case 0x0005 -> "DiskCopy file";
-    //      case 0x0130 -> "2IMG file";
-    //      case 0x8000 -> "Binary II file";
-    //      case 0x8002 -> "Shrinkit (NuFX) file";
-    //      case 0x8004 -> "Davex file";
-    //      default -> "Unknown aux";
-    //    };
-
-    //    System.out.printf ("%04X  %s - %s%n", file.getAuxType (), file.name, description);
-
-    if (factory == null)
-      factory = new FileSystemFactory ();
-
-    List<AppleFileSystem> fileSystems = factory.getFileSystems (file);
-
-    if (fileSystems.size () == 0)
-      parent.addFile (file);
-    else
-      for (AppleFileSystem fs : fileSystems)
-        parent.addFile (fs);
   }
 
   // ---------------------------------------------------------------------------------//
