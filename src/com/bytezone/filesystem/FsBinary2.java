@@ -74,14 +74,4 @@ public class FsBinary2 extends AbstractFileSystem
 
     System.out.printf ("%04X  %s - %s%n", file.getAuxType (), file.getName (), description);
   }
-
-  // ---------------------------------------------------------------------------------//
-  @Override
-  public String toString ()
-  // ---------------------------------------------------------------------------------//
-  {
-    return String.format ("%-20.20s %-6s %,8d  %d %,7d  %4d %3d  %2d  %2d", fileName,
-        fileSystemName, fileOffset, blockReader.interleave, totalBlocks, blockReader.blockSize,
-        files.size (), totalFileSystems, totalFiles);
-  }
 }

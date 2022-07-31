@@ -12,9 +12,9 @@ public abstract class AbstractFileSystem implements AppleFileSystem
 {
   protected final String fileName;
 
-  private final byte[] diskBuffer;      // entire buffer including any header or other disks
+  protected final byte[] diskBuffer;      // entire buffer including any header or other disks
   protected final int fileOffset;         // start of this disk
-  private final int fileLength;         // length of this disk
+  protected final int fileLength;         // length of this disk
 
   protected final BlockReader blockReader;
 
@@ -328,8 +328,8 @@ public abstract class AbstractFileSystem implements AppleFileSystem
   public String toString ()
   // ---------------------------------------------------------------------------------//
   {
-    return String.format ("%-20.20s %-6s %,8d  %d %,7d  %4d %3d %3d", fileName, fileSystemName,
+    return String.format ("%-20.20s %-6s %,8d  %d %,7d  %4d %3d %4d %3d", fileName, fileSystemName,
         fileOffset, blockReader.interleave, totalBlocks, blockReader.blockSize, catalogBlocks,
-        files.size ());
+        totalFiles, totalFileSystems);
   }
 }

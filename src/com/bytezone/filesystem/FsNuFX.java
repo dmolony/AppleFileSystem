@@ -15,7 +15,7 @@ public class FsNuFX extends AbstractFileSystem
   private final DateTime created;
   private final DateTime modified;
   private final int version;
-  private final int reserved1;            // v1 stores file type (0xE0)
+  private final int reserved1;            // v1 stores file type (0xE0 - LBR)
   private final int reserved2;            // v1 stores aux (0x8002)
   private final int reserved3;
   private final int reserved4;
@@ -101,15 +101,5 @@ public class FsNuFX extends AbstractFileSystem
     text.append (String.format ("Reserved ....... %04X", reserved4));
 
     return text.toString ();
-  }
-
-  // ---------------------------------------------------------------------------------//
-  @Override
-  public String toString ()
-  // ---------------------------------------------------------------------------------//
-  {
-    return String.format ("%-20.20s %-6s %,8d  %d %,7d  %4d %3d  %2d  %2d", fileName,
-        fileSystemName, fileOffset, blockReader.interleave, totalBlocks, blockReader.blockSize,
-        files.size (), totalFileSystems, totalFiles);
   }
 }

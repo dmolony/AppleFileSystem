@@ -62,23 +62,16 @@ public class FsProdos extends AbstractFileSystem
         if (type != VOLUME_HEADER)
           throw new FileFormatException ("No Volume Header");
 
-        if (buffer[0x23] != ENTRY_SIZE || buffer[0x24] != ENTRIES_PER_BLOCK)
-          throw new FileFormatException ("Invalid entry data");
-
-        int bitMapBlock = Utility.unsignedShort (buffer, 0x27);
-        if (bitMapBlock < 3 || bitMapBlock > 10)
-          throw new FileFormatException ("Invalid bitmap block value: " + bitMapBlock);
-
         entryLength = buffer[0x23] & 0xFF;                        // 39
         entriesPerBlock = buffer[0x24] & 0xFF;                    // 13
         fileCount = Utility.unsignedShort (buffer, 0x25);
         bitmapPointer = Utility.unsignedShort (buffer, 0x27);     // 6
 
-        int totalBlocks = Utility.unsignedShort (buffer, 0x29);
+        if (entryLength != ENTRY_SIZE || entriesPerBlock != ENTRIES_PER_BLOCK)
+          throw new FileFormatException ("Invalid entry data");
 
-        // hybrid disks will fail this test
-        //        if (getSize () != totalBlocks)
-        //          System.out.printf ("Size (%,d != totalBlocks (%,d)%n", getSize (), totalBlocks);
+        if (bitmapPointer < 3 || bitmapPointer > 10)
+          throw new FileFormatException ("Invalid bitmap block value: " + bitmapPointer);
       }
 
       prevBlockNo = Utility.unsignedShort (buffer, 0);
@@ -121,19 +114,31 @@ public class FsProdos extends AbstractFileSystem
             if (file.getFileType () == ProdosConstants.FILE_TYPE_LBR)
               addFileSystem (parent, file);
             else
+            {
               parent.addFile (file);
+              ++totalFiles;
+            }
             break;
 
           case PASCAL_ON_PROFILE:
             file = new FileProdos (this, buffer, ptr);
             byte[] fileBuffer = file.read ();
             FsPascal fs = new FsPascal (file.name, fileBuffer, 1024, fileBuffer.length - 1024);
-            if (fs != null)
+            if (fs == null)
+            {
+              parent.addFile (file);
+              ++totalFiles;
+            }
+            else
+            {
               parent.addFile (fs);
+              ++totalFileSystems;
+            }
             break;
 
           case GSOS_EXTENDED_FILE:
             parent.addFile (new FileProdos (this, buffer, ptr));
+            ++totalFiles;
             break;
 
           case SUBDIRECTORY:
@@ -143,15 +148,7 @@ public class FsProdos extends AbstractFileSystem
             break;
 
           case SUBDIRECTORY_HEADER:
-            //            ((ProdosFolder) parent).addSubdirectoryDetails (buffer, ptr);
-            break;
-
           case VOLUME_HEADER:
-            //            folder = new ProdosFolder (this, buffer, ptr);
-            //            parent.addFile (folder);
-            //            parent = folder;             // replace parameter
-            break;
-
           case FREE:
             break;
 
