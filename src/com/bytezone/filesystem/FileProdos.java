@@ -12,7 +12,6 @@ public class FileProdos extends AbstractFile
   private static final DateTimeFormatter sdf = DateTimeFormatter.ofPattern ("d-LLL-yy");
   private static final DateTimeFormatter stf = DateTimeFormatter.ofPattern ("H:mm");
   private static final String NO_DATE = "<NO DATE>";
-  private static final int GSOS_EXTENDED_FILE = 0x05;      // tech note #25
 
   private int storageType;
   private int fileType;
@@ -58,7 +57,7 @@ public class FileProdos extends AbstractFile
     dateM = modified == null ? NO_DATE : modified.format (sdf);
     timeM = modified == null ? "" : modified.format (stf);
 
-    if (storageType == GSOS_EXTENDED_FILE)
+    if (storageType == FsProdos.GSOS_EXTENDED_FILE)
       createBothForks ();
     else
       dataFork = new ForkProdos (fs, keyPtr, storageType, size, eof);
@@ -103,7 +102,7 @@ public class FileProdos extends AbstractFile
   public byte[] read ()
   // ---------------------------------------------------------------------------------//
   {
-    if (storageType == GSOS_EXTENDED_FILE)
+    if (storageType == FsProdos.GSOS_EXTENDED_FILE)
     {
       return true ? dataFork.read () : resourceFork.read ();
     }
@@ -116,7 +115,7 @@ public class FileProdos extends AbstractFile
   public int getLength ()                 // in bytes (eof)
   // ---------------------------------------------------------------------------------//
   {
-    if (storageType == GSOS_EXTENDED_FILE)
+    if (storageType == FsProdos.GSOS_EXTENDED_FILE)
     {
       return true ? dataFork.getEof () : resourceFork.getEof ();
     }
@@ -129,7 +128,7 @@ public class FileProdos extends AbstractFile
   public int getSize ()                   // in blocks
   // ---------------------------------------------------------------------------------//
   {
-    if (storageType == GSOS_EXTENDED_FILE)
+    if (storageType == FsProdos.GSOS_EXTENDED_FILE)
     {
       return size;
     }
