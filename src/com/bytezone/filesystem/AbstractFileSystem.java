@@ -257,10 +257,7 @@ public abstract class AbstractFileSystem implements AppleFileSystem
   protected void addFileSystem (AppleFile parent, AbstractFile file)
   // ---------------------------------------------------------------------------------//
   {
-    if (factory == null)
-      factory = new FileSystemFactory ();
-
-    List<AppleFileSystem> fileSystems = factory.getFileSystems (file);
+    List<AppleFileSystem> fileSystems = addFileSystem (parent, file.getName (), file.read ());
 
     if (fileSystems.size () == 0)
     {
@@ -268,12 +265,32 @@ public abstract class AbstractFileSystem implements AppleFileSystem
       parent.addFile (file);
       ++totalFiles;
     }
-    else
-      for (AppleFileSystem fs : fileSystems)
-      {
-        parent.addFile (fs);
-        ++totalFileSystems;
-      }
+  }
+
+  // ---------------------------------------------------------------------------------//
+  protected List<AppleFileSystem> addFileSystem (AppleFile parent, String name, byte[] buffer)
+  // ---------------------------------------------------------------------------------//
+  {
+    return addFileSystem (parent, name, buffer, 0, buffer.length);
+  }
+
+  // ---------------------------------------------------------------------------------//
+  protected List<AppleFileSystem> addFileSystem (AppleFile parent, String name, byte[] buffer,
+      int offset, int length)
+  // ---------------------------------------------------------------------------------//
+  {
+    if (factory == null)
+      factory = new FileSystemFactory ();
+
+    List<AppleFileSystem> fileSystems = factory.getFileSystems (name, buffer, offset, length);
+
+    for (AppleFileSystem fs : fileSystems)
+    {
+      parent.addFile (fs);
+      ++totalFileSystems;
+    }
+
+    return fileSystems;
   }
 
   // ---------------------------------------------------------------------------------//

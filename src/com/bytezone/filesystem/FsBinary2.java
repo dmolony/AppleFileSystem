@@ -1,9 +1,13 @@
 package com.bytezone.filesystem;
 
+import com.bytezone.utility.Utility;
+
 // -----------------------------------------------------------------------------------//
 public class FsBinary2 extends AbstractFileSystem
 // -----------------------------------------------------------------------------------//
 {
+  static final byte[] BIN2 = { 0x0A, 0x47, 0x4C };
+
   private String suffix;
 
   // ---------------------------------------------------------------------------------//
@@ -20,6 +24,8 @@ public class FsBinary2 extends AbstractFileSystem
     super (name, buffer, offset, length, blockReader);
 
     setFileSystemName ("Bin II");
+
+    assert Utility.isMagic (buffer, 0, BIN2);
 
     int pos = name.lastIndexOf ('.');
     if (pos > 0)

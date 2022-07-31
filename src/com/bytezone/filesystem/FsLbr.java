@@ -37,19 +37,20 @@ public class FsLbr extends AbstractFileSystem
       {
         FileLbr file = new FileLbr (this, buffer, j * 32);
 
-        if (count++ == 0)               // directory entry
+        if (count++ == 0)                           // directory entry
         {
           if (file.status != 0 || !file.name.isBlank () || !file.extension.isBlank ())
             return;
-          max = file.totalBlocks;
+
+          max = file.totalBlocks;                   // change outer loop
           setCatalogBlocks (file.totalBlocks);
           continue;
         }
 
         if (file.status == 0 && file.totalBlocks > 0)
         {
-          //          System.out.println (file);
           addFile (file);
+          ++totalFiles;
         }
       }
     }

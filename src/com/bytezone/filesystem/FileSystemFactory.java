@@ -14,16 +14,10 @@ import com.bytezone.woz.WozFile;
 public class FileSystemFactory
 // -----------------------------------------------------------------------------------//
 {
-  private static final byte[] BIN2 = { 0x0A, 0x47, 0x4C };
-  private static final byte[] TWO_IMG = { 0x32, 0x49, 0x4D, 0x47 };
   private static final byte[] WOZ_1 = { 0x57, 0x4F, 0x5A, 0x32, (byte) 0xFF, 0x0A, 0x0D, 0x0A };
   private static final byte[] WOZ_2 = { 0x57, 0x4F, 0x5A, 0x31, (byte) 0xFF, 0x0A, 0x0D, 0x0A };
-  //  private static final byte[] Crunch = { 0x76, (byte) 0xFE };
-  //  private static final byte[] Squeeze = { 0x76, (byte) 0xFF };
 
   private static final int UNIDOS_SIZE = 409_600;
-
-  private static String[] twoIMGFormats = { "Dos", "Prodos", "NIB" };
 
   static BlockReader blockReader0 = new BlockReader (512, BLOCK, 0, 0);     // Prodos
   static BlockReader blockReader1 = new BlockReader (512, BLOCK, 1, 8);     // Prodos
@@ -38,7 +32,6 @@ public class FileSystemFactory
   static BlockReader[] blockReaders = { blockReader0, blockReader1 };
 
   List<AppleFileSystem> fileSystems = new ArrayList<> ();
-  private boolean display = false;
   private boolean debug = false;
 
   // ---------------------------------------------------------------------------------//
@@ -52,36 +45,19 @@ public class FileSystemFactory
   public List<AppleFileSystem> getFileSystems (String name, byte[] buffer)
   // ---------------------------------------------------------------------------------//
   {
-    fileSystems.clear ();
+    return getFileSystems (name, buffer, 0, buffer.length);
+  }
 
-    int offset = 0;
-    int length = buffer.length;
+  // ---------------------------------------------------------------------------------//
+  public List<AppleFileSystem> getFileSystems (String name, byte[] buffer, int offset, int length)
+  // ---------------------------------------------------------------------------------//
+  {
+    fileSystems.clear ();
 
     if (length == 143_488)
       length = 143_360;
 
-    if (Utility.isMagic (buffer, 0, TWO_IMG))
-    {
-      offset = Utility.unsignedLong (buffer, 24);
-      length = Utility.unsignedLong (buffer, 28);
-
-      if (display)
-      {
-        int headerSize = Utility.unsignedShort (buffer, 8);
-        int version = Utility.unsignedShort (buffer, 10);
-        int format = Utility.unsignedLong (buffer, 12);
-        int prodosBlocks = Utility.unsignedLong (buffer, 20);
-
-        System.out.println ();
-        System.out.printf ("Header size ... %d%n", headerSize);
-        System.out.printf ("Version ....... %d%n", version);
-        System.out.printf ("Format ........ %d  %s%n", format, twoIMGFormats[format]);
-        System.out.printf ("Blocks ........ %,d%n", prodosBlocks);
-        System.out.printf ("Data offset ... %d%n", offset);
-        System.out.printf ("Data size ..... %,d%n", length);
-      }
-    }
-    else if (Utility.isMagic (buffer, 0, WOZ_1) || Utility.isMagic (buffer, 0, WOZ_2))
+    if (Utility.isMagic (buffer, 0, WOZ_1) || Utility.isMagic (buffer, offset, WOZ_2))
     {
       try
       {
@@ -105,6 +81,7 @@ public class FileSystemFactory
     add (getLbr (name, buffer, offset, length));
     add (getNuFx (name, buffer, offset, length));
     add (getBinary2 (name, buffer, offset, length));
+    add (get2img (name, buffer, offset, length));
 
     getUnidos (name, buffer, offset, length);
 
@@ -130,8 +107,8 @@ public class FileSystemFactory
         try
         {
           FsDos fs = new FsDos (name, buffer, offset, length, reader);
-
           fs.readCatalog ();
+
           if (fs.getTotalCatalogBlocks () > 0)
             disks.add (fs);
         }
@@ -163,8 +140,8 @@ public class FileSystemFactory
       try
       {
         FsProdos fs = new FsProdos (name, buffer, offset, length, reader);
-
         fs.readCatalog ();
+
         if (fs.getTotalCatalogBlocks () > 0)
           return fs;
       }
@@ -185,8 +162,8 @@ public class FileSystemFactory
       try
       {
         FsPascal fs = new FsPascal (name, buffer, offset, length, reader);
-
         fs.readCatalog ();
+
         if (fs.getTotalCatalogBlocks () > 0)
           return fs;
       }
@@ -207,8 +184,8 @@ public class FileSystemFactory
       try
       {
         FsCpm fs = new FsCpm (name, buffer, offset, length, cpmReader);
-
         fs.readCatalog ();
+
         if (fs.getTotalCatalogBlocks () > 0)
           return fs;
       }
@@ -228,8 +205,8 @@ public class FileSystemFactory
     try
     {
       FsLbr fs = new FsLbr (name, buffer, offset, length, lbrReader);
-
       fs.readCatalog ();
+
       if (fs.getTotalCatalogBlocks () > 0)
         return fs;
     }
@@ -246,12 +223,12 @@ public class FileSystemFactory
   private FsBinary2 getBinary2 (String name, byte[] buffer, int offset, int length)
   // ---------------------------------------------------------------------------------//
   {
-    if (Utility.isMagic (buffer, 0, BIN2) && buffer[18] == 0x02)
+    if (Utility.isMagic (buffer, offset, FsBinary2.BIN2) && buffer[offset + 18] == 0x02)
       try
       {
         FsBinary2 fs = new FsBinary2 (name, buffer, offset, length, lbrReader);
-
         fs.readCatalog ();
+
         if (fs.getFiles ().size () > 0)
           return fs;
       }
@@ -268,17 +245,41 @@ public class FileSystemFactory
   private FsNuFX getNuFx (String name, byte[] buffer, int offset, int length)
   // ---------------------------------------------------------------------------------//
   {
-    if (Utility.isMagic (buffer, 0, FsNuFX.NuFile))
+    if (Utility.isMagic (buffer, offset, FsNuFX.NuFile))
       try
       {
         FsNuFX fs = new FsNuFX (name, buffer, offset, length, lbrReader);
-
         fs.readCatalog ();
+
         if (fs.getFiles ().size () > 0)
           return fs;
       }
       catch (FileFormatException e)
       {
+        if (debug)
+          System.out.println (e);
+      }
+
+    return null;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  private Fs2img get2img (String name, byte[] buffer, int offset, int length)
+  // ---------------------------------------------------------------------------------//
+  {
+    if (Utility.isMagic (buffer, offset, Fs2img.TWO_IMG))
+      try
+      {
+        Fs2img fs = new Fs2img (name, buffer, offset, length, lbrReader);
+        fs.readCatalog ();
+
+        if (fs.getFiles ().size () > 0)
+          return fs;
+      }
+      catch (FileFormatException e)
+      {
+        if (debug)
+          System.out.println (e);
       }
 
     return null;
@@ -292,13 +293,15 @@ public class FileSystemFactory
       try
       {
         FsDos fs = new FsDos (name, buffer, offset, length, dos31Reader);
-
         fs.readCatalog ();
+
         if (fs.getTotalCatalogBlocks () > 0)
           return fs;
       }
       catch (FileFormatException e)
       {
+        if (debug)
+          System.out.println (e);
       }
 
     return null;
@@ -312,13 +315,15 @@ public class FileSystemFactory
       try
       {
         FsDos4 fs = new FsDos4 (name, buffer, offset, length, dos33Reader0);
-
         fs.readCatalog ();
+
         if (fs.getTotalCatalogBlocks () > 0)
           return fs;
       }
       catch (FileFormatException e)
       {
+        if (debug)
+          System.out.println (e);
       }
 
     return null;
@@ -331,12 +336,12 @@ public class FileSystemFactory
     if (length == UNIDOS_SIZE * 2)
       try
       {
-        FsDos fs1 = new FsDos (name, buffer, 0, UNIDOS_SIZE, unidosReader);
+        FsDos fs1 = new FsDos (name, buffer, offset, UNIDOS_SIZE, unidosReader);
         fs1.readCatalog ();
 
         if (fs1 != null && fs1.getTotalCatalogBlocks () > 0)
         {
-          FsDos fs2 = new FsDos (name, buffer, UNIDOS_SIZE, UNIDOS_SIZE, unidosReader);
+          FsDos fs2 = new FsDos (name, buffer, offset + UNIDOS_SIZE, UNIDOS_SIZE, unidosReader);
           fs2.readCatalog ();
 
           if (fs2 != null && fs2.getTotalCatalogBlocks () > 0)
@@ -348,6 +353,8 @@ public class FileSystemFactory
       }
       catch (FileFormatException e)
       {
+        if (debug)
+          System.out.println (e);
       }
   }
 }

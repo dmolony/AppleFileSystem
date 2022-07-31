@@ -50,18 +50,18 @@ public class Tester
       hybr + "HybridHuffin/IAC20.DSK",               // 18: hybrid pascal/dos
       hybr + "cpm/HYBRID.DSK",                       // 19: hybrid cpm/dos
       base + "dual dos/AAL-8603.DSK",                // 20: hybrid prodos/dos
-      cmp + "ARCHIVES 7.2mg",                        // 21: 2mg / prodos / NuFX LBR files
-      sdk + "SCASM.II4.0.SDK",                       // 22: NuFX / Dos
-      shk + "DosMaster.shk",                         // 23: DosMaster NuFX
-      wiz + "Wizardry/murasama.dsk",                 // 24: pascal wizardry
-      woz + "Wizardry PGMO.woz",                     // 25: pascal wizardry woz
-      wiz + "wizardry_IV/Version A/wiz4_d1.dsk",     // 26: wizardry IV disk 1
-      lbr + "crnch24s.lbr",                          // 27: LBR
-      bny + "GBBS.UTILS.BNY",                        // 28: binary II
-      bxy + "GWFTP11B2.BXY",                         // 29: binary II / NuFX
-      bqy + "NW.PROTALK1.BQY",                       // 30: binary II / Squeeze
-      sdk + "tdbt12d1.sdk",                          // 31: 
-      cmp + "binscii.dsk",                           // 32:
+      wiz + "Wizardry/murasama.dsk",                 // 21: pascal wizardry
+      woz + "Wizardry PGMO.woz",                     // 22: pascal wizardry woz
+      wiz + "wizardry_IV/Version A/wiz4_d1.dsk",     // 23: wizardry IV disk 1
+      cmp + "ARCHIVES 7.2mg",                        // 24: 2mg / prodos / NuFX LBR files
+      sdk + "SCASM.II4.0.SDK",                       // 25: NuFX / Dos
+      sdk + "tdbt12d1.sdk",                          // 26: NuFX / CPM
+      shk + "DosMaster.shk",                         // 27: DosMaster NuFX
+      lbr + "crnch24s.lbr",                          // 28: LBR
+      bny + "GBBS.UTILS.BNY",                        // 29: binary II
+      bxy + "GWFTP11B2.BXY",                         // 30: binary II / NuFX
+      bqy + "NW.PROTALK1.BQY",                       // 31: binary II / Squeeze
+      //      cmp + "binscii.dsk",                           // 32:
   };
 
   // ---------------------------------------------------------------------------------//
