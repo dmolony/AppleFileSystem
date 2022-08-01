@@ -8,20 +8,27 @@ public class Fs2img extends AbstractFileSystem
 {
   static final byte[] TWO_IMG = { 0x32, 0x49, 0x4D, 0x47 };
   private static String[] twoIMGFormats = { "Dos", "Prodos", "NIB" };
+  private static String[] creatorCodes = { "!nfc", "B2TR", "CTKG", "ShIm", "WOOF", "XGS!", "CdrP" };
+  private static String[] creatorNames = { "ASIMOV2", "Bernie ][ the Rescue", "Catakig",
+      "Sheppy's ImageMaker", "Sweet 16", "XGS", "CiderPress" };
 
-  String creator;
-  int offset;
-  int length;
-  int headerSize;
-  int version;
-  int format;
-  int prodosBlocks;
-  int flags;
-  int commentOffset;
-  int commentLength;
-  int creatorDataOffset;
-  int creatorDataLength;
-  String comment;
+  private String creator;
+  private int offset;
+  private int length;
+  private int headerSize;
+  private int version;
+  private int format;
+  private int prodosBlocks;
+  private int flags;
+  private int commentOffset;
+  private int commentLength;
+  private int creatorDataOffset;
+  private int creatorDataLength;
+  private String comment;
+
+  private boolean locked;
+  private boolean hasDosVolumeNumber;
+  private int volumeNumber;
 
   // ---------------------------------------------------------------------------------//
   public Fs2img (String name, byte[] buffer, BlockReader blockReader)
@@ -53,6 +60,10 @@ public class Fs2img extends AbstractFileSystem
     creatorDataOffset = Utility.unsignedLong (buffer, offset + 40);
     creatorDataLength = Utility.unsignedLong (buffer, offset + 44);
     comment = commentOffset == 0 ? "" : new String (buffer, offset + commentOffset, commentLength);
+
+    locked = (flags & 0x8000) != 0;
+    hasDosVolumeNumber = (flags & 0x0100) != 0;
+    volumeNumber = flags & 0x00FF;
   }
 
   // ---------------------------------------------------------------------------------//
@@ -64,17 +75,31 @@ public class Fs2img extends AbstractFileSystem
   }
 
   // ---------------------------------------------------------------------------------//
+  private String getCreator (String code)
+  // ---------------------------------------------------------------------------------//
+  {
+    for (int i = 0; i < creatorCodes.length; i++)
+      if (creatorCodes[i].equals (code))
+        return creatorNames[i];
+
+    return "";
+  }
+
+  // ---------------------------------------------------------------------------------//
   @Override
   public String toText ()
   // ---------------------------------------------------------------------------------//
   {
     StringBuilder text = new StringBuilder ();
 
-    text.append (String.format ("Creator ............... %s%n", creator));
+    text.append (String.format ("Creator ............... %s  %s%n", creator, getCreator (creator)));
     text.append (String.format ("Header size ........... %d%n", headerSize));
     text.append (String.format ("Version ............... %d%n", version));
     text.append (String.format ("Format ................ %d  %s%n", format, twoIMGFormats[format]));
     text.append (String.format ("Flags ................. %08X%n", flags));
+    text.append (String.format ("  locked .............. %s%n", locked));
+    text.append (String.format ("  has Dos Volume no ... %s%n", hasDosVolumeNumber));
+    text.append (String.format ("  Dos Volume no ....... %d%n", volumeNumber));
     text.append (String.format ("Blocks ................ %,d%n", prodosBlocks));
     text.append (String.format ("Data offset ........... %d%n", offset));
     text.append (String.format ("Data size ............. %,d%n", length));
