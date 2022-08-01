@@ -123,17 +123,7 @@ public class FsProdos extends AbstractFileSystem
           case PASCAL_ON_PROFILE:
             file = new FileProdos (this, buffer, ptr);
             byte[] fileBuffer = file.read ();
-            FsPascal fs = new FsPascal (file.name, fileBuffer, 1024, fileBuffer.length - 1024);
-            if (fs == null)
-            {
-              parent.addFile (file);
-              ++totalFiles;
-            }
-            else
-            {
-              parent.addFile (fs);
-              ++totalFileSystems;
-            }
+            addFileSystem (parent, file.getName (), fileBuffer, 1024, fileBuffer.length - 1024);
             break;
 
           case GSOS_EXTENDED_FILE:

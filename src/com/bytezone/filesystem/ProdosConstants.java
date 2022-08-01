@@ -56,44 +56,52 @@ public interface ProdosConstants
   static int FREE = 0;
 
   static String[] fileTypes = { //
-                               "NON", "BAD", "PCD", "PTX", "TXT", "PDA", "BIN", "FNT", //
-                               "FOT", "BA3", "DA3", "WPF", "SOS", "$0D", "$0E", "DIR", //
-                               "RPD", "RPI", "AFD", "AFM", "AFR", "SCL", "PFS", "$17", //
-                               "$18", "ADB", "AWP", "ASP", "$1C", "$1D", "$1E", "$1F", //
-                               "TDM", "IPS", "UPV", "$23", "$24", "$25", "$26", "$27", //
-                               "$28", "3SD", "8SC", "8OB", "8IC", "8LD", "P8C", "$2F", //
-                               "$30", "$31", "$32", "$33", "$34", "$35", "$36", "$37", //
-                               "$38", "$39", "$3A", "$3B", "$3C", "$3D", "$3E", "$3F", //
-                               "DIC", "OCR", "FTD", "$43", "$44", "$45", "$46", "$47", //
-                               "$48", "$49", "$4A", "$4B", "$4C", "$4D", "$4E", "$4F", //
-                               "GWP", "GSS", "GDB", "DRW", "GDP", "HMD", "EDU", "STN", //
-                               "HLP", "COM", "CFG", "ANM", "MUM", "ENT", "DVU", "FIN", //
-                               "PRE", "$61", "$62", "$63", "$64", "$65", "NCF", "$67", //
-                               "$68", "$69", "$6A", "BIO", "$6C", "TDR", "PRE", "HDV", //
-                               "SN2", "KMT", "DSR", "BAN", "CG7", "TNJ", "SA7", "KES", //
-                               "JAP", "CSL", "TME", "TLB", "MR7", "MLR", "MMM", "JCP", //
-                               "GES", "GEA", "GEO", "GED", "GEF", "GEP", "GEI", "GEX", //
-                               "$88", "GEV", "$8A", "GEC", "GEK", "GEW", "$8E", "$8F", //
-                               "$90", "$91", "$92", "$93", "$94", "$95", "$96", "$97", //
-                               "$98", "$99", "$9A", "$9B", "$9C", "$9D", "$9E", "$9F", //
-                               "WPJ", "$A1", "$A2", "$A3", "$A4", "$A5", "$A6", "$A7", //
-                               "$A8", "$A9", "$AA", "GSB", "TDF", "BDF", "$AE", "$AF", //
-                               "SRC", "OBJ", "LIB", "S16", "RTL", "EXE", "PIF", "TIF", //
-                               "NDA", "CDA", "TOL", "DVR", "LDF", "FST", "$BE", "DOC", //
-                               "PNT", "PIC", "ANI", "PAL", "$C4", "OOG", "SCR", "CDV", //
-                               "FON", "FND", "ICN", "$CB", "$CC", "$CD", "$CE", "$CF", //
-                               "$D0", "$D1", "$D2", "$D3", "$D4", "MUS", "INS", "MDI", //
-                               "SND", "$D9", "$DA", "DBM", "$DC", "DDD", "$DE", "$DF", //
-                               "LBR", "$E1", "ATK", "$E3", "$E4", "$E5", "$E6", "$E7", //
-                               "$E8", "$E9", "$EA", "$EB", "$EC", "$ED", "R16", "PAR", //
-                               "CMD", "OVL", "UD2", "UD3", "UD4", "BAT", "UD6", "UD7", //
-                               "PRG", "P16", "INT", "IVR", "BAS", "VAR", "REL", "SYS" };
+      "NON", "BAD", "PCD", "PTX", "TXT", "PDA", "BIN", "FNT", //
+      "FOT", "BA3", "DA3", "WPF", "SOS", "$0D", "$0E", "DIR", //
+      "RPD", "RPI", "AFD", "AFM", "AFR", "SCL", "PFS", "$17", //
+      "$18", "ADB", "AWP", "ASP", "$1C", "$1D", "$1E", "$1F", //
+      "TDM", "IPS", "UPV", "$23", "$24", "$25", "$26", "$27", //
+      "$28", "3SD", "8SC", "8OB", "8IC", "8LD", "P8C", "$2F", //
+      "$30", "$31", "$32", "$33", "$34", "$35", "$36", "$37", //
+      "$38", "$39", "$3A", "$3B", "$3C", "$3D", "$3E", "$3F", //
+      "DIC", "OCR", "FTD", "$43", "$44", "$45", "$46", "$47", //
+      "$48", "$49", "$4A", "$4B", "$4C", "$4D", "$4E", "$4F", //
+      "GWP", "GSS", "GDB", "DRW", "GDP", "HMD", "EDU", "STN", //
+      "HLP", "COM", "CFG", "ANM", "MUM", "ENT", "DVU", "FIN", //
+      "PRE", "$61", "$62", "$63", "$64", "$65", "NCF", "$67", //
+      "$68", "$69", "$6A", "BIO", "$6C", "TDR", "PRE", "HDV", //
+      "SN2", "KMT", "DSR", "BAN", "CG7", "TNJ", "SA7", "KES", //
+      "JAP", "CSL", "TME", "TLB", "MR7", "MLR", "MMM", "JCP", //
+      "GES", "GEA", "GEO", "GED", "GEF", "GEP", "GEI", "GEX", //
+      "$88", "GEV", "$8A", "GEC", "GEK", "GEW", "$8E", "$8F", //
+      "$90", "$91", "$92", "$93", "$94", "$95", "$96", "$97", //
+      "$98", "$99", "$9A", "$9B", "$9C", "$9D", "$9E", "$9F", //
+      "WPJ", "$A1", "$A2", "$A3", "$A4", "$A5", "$A6", "$A7", //
+      "$A8", "$A9", "$AA", "GSB", "TDF", "BDF", "$AE", "$AF", //
+      "SRC", "OBJ", "LIB", "S16", "RTL", "EXE", "PIF", "TIF", //
+      "NDA", "CDA", "TOL", "DVR", "LDF", "FST", "$BE", "DOC", //
+      "PNT", "PIC", "ANI", "PAL", "$C4", "OOG", "SCR", "CDV", //
+      "FON", "FND", "ICN", "$CB", "$CC", "$CD", "$CE", "$CF", //
+      "$D0", "$D1", "$D2", "$D3", "$D4", "MUS", "INS", "MDI", //
+      "SND", "$D9", "$DA", "DBM", "$DC", "DDD", "$DE", "$DF", //
+      "LBR", "$E1", "ATK", "$E3", "$E4", "$E5", "$E6", "$E7", //
+      "$E8", "$E9", "$EA", "$EB", "$EC", "$ED", "R16", "PAR", //
+      "CMD", "OVL", "UD2", "UD3", "UD4", "BAT", "UD6", "UD7", //
+      "PRG", "P16", "INT", "IVR", "BAS", "VAR", "REL", "SYS" };
 
   static int BLOCK_SIZE = 0x200;
   static int ENTRY_SIZE = 0x27;
   static int ENTRIES_PER_BLOCK = 0x0D;
   static int BLOCK_ENTRY_SIZE = ENTRY_SIZE * ENTRIES_PER_BLOCK;
 }
+
+// LBR file aux
+// 0x0001 -> "AppleSingle file";
+// 0x0005 -> "DiskCopy file";
+// 0x0130 -> "2IMG file";
+// 0x8000 -> "Binary II file";
+// 0x8002 -> "Shrinkit (NuFX) file";
+// 0x8004 -> "Davex file";
 
 /* http://www.kreativekorp.com/miscpages/a2info/filetypes.shtml
  *
