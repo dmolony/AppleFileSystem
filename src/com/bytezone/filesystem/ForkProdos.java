@@ -35,9 +35,9 @@ public class ForkProdos
   {
     this.fileSystem = fileSystem;
     this.storageType = storageType;
+    this.keyPtr = keyPtr;
     this.size = size;
     this.eof = eof;
-    this.keyPtr = keyPtr;
 
     List<Integer> blockNos = new ArrayList<> ();
     AppleBlock dataBlock = fileSystem.getBlock (keyPtr);
@@ -87,6 +87,13 @@ public class ForkProdos
   // ---------------------------------------------------------------------------------//
   {
     return eof;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  public int getSize ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return size;
   }
 
   // ---------------------------------------------------------------------------------//

@@ -79,8 +79,8 @@ public class ExtendedKeyBlock
   // ---------------------------------------------------------------------------------//
   {
     byte storageType;       // uses low nibble
-    int keyBlock;
-    int blocksUsed;
+    int keyPtr;
+    int size;
     int eof;
 
     // -------------------------------------------------------------------------------//
@@ -95,8 +95,8 @@ public class ExtendedKeyBlock
     // -------------------------------------------------------------------------------//
     {
       this.storageType = storageType;
-      this.keyBlock = keyBlock;
-      this.blocksUsed = blocksUsed;
+      this.keyPtr = keyBlock;
+      this.size = blocksUsed;
       this.eof = eof;
     }
 
@@ -105,8 +105,8 @@ public class ExtendedKeyBlock
     // -------------------------------------------------------------------------------//
     {
       storageType = buffer[ptr];
-      keyBlock = Utility.unsignedShort (buffer, ptr + 1);
-      blocksUsed = Utility.unsignedShort (buffer, ptr + 3);
+      keyPtr = Utility.unsignedShort (buffer, ptr + 1);
+      size = Utility.unsignedShort (buffer, ptr + 3);
       eof = Utility.unsignedTriple (buffer, ptr + 5);
     }
 
@@ -115,8 +115,8 @@ public class ExtendedKeyBlock
     // -------------------------------------------------------------------------------//
     {
       buffer[ptr] = storageType;
-      Utility.writeShort (buffer, ptr + 1, keyBlock);
-      Utility.writeShort (buffer, ptr + 3, blocksUsed);
+      Utility.writeShort (buffer, ptr + 1, keyPtr);
+      Utility.writeShort (buffer, ptr + 3, size);
       Utility.writeTriple (buffer, ptr + 5, eof);
     }
   }

@@ -32,6 +32,11 @@ public class FileProdos extends AbstractFile
   private ForkProdos dataFork;
   private ForkProdos resourceFork;
 
+  enum ForkType
+  {
+    DATA, RESOURCE;
+  }
+
   // ---------------------------------------------------------------------------------//
   FileProdos (FsProdos fs, byte[] buffer, int ptr)
   // ---------------------------------------------------------------------------------//
@@ -110,11 +115,19 @@ public class FileProdos extends AbstractFile
   // ---------------------------------------------------------------------------------//
   {
     if (storageType == FsProdos.GSOS_EXTENDED_FILE)
-    {
-      return true ? dataFork.read () : resourceFork.read ();
-    }
-    else
-      return dataFork.read ();
+      throw new FileFormatException ("File type is GS Extended");
+
+    return dataFork.read ();
+  }
+
+  // ---------------------------------------------------------------------------------//
+  public byte[] read (ForkType forkType)
+  // ---------------------------------------------------------------------------------//
+  {
+    if (storageType != FsProdos.GSOS_EXTENDED_FILE)
+      throw new FileFormatException ("File type not GS Extended");
+
+    return forkType == ForkType.DATA ? dataFork.read () : resourceFork.read ();
   }
 
   // ---------------------------------------------------------------------------------//
@@ -123,11 +136,19 @@ public class FileProdos extends AbstractFile
   // ---------------------------------------------------------------------------------//
   {
     if (storageType == FsProdos.GSOS_EXTENDED_FILE)
-    {
-      return true ? dataFork.getEof () : resourceFork.getEof ();
-    }
-    else
-      return eof;
+      throw new FileFormatException ("File type is GS Extended");
+
+    return eof;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  public int getLength (ForkType forkType)                 // in bytes (eof)
+  // ---------------------------------------------------------------------------------//
+  {
+    if (storageType != FsProdos.GSOS_EXTENDED_FILE)
+      throw new FileFormatException ("File type not GS Extended");
+
+    return forkType == ForkType.DATA ? dataFork.getEof () : resourceFork.getEof ();
   }
 
   // ---------------------------------------------------------------------------------//
@@ -135,12 +156,17 @@ public class FileProdos extends AbstractFile
   public int getSize ()                   // in blocks
   // ---------------------------------------------------------------------------------//
   {
-    if (storageType == FsProdos.GSOS_EXTENDED_FILE)
-    {
-      return size;
-    }
-    else
-      return size;
+    return size;              // size of both forks if GSOS extended
+  }
+
+  // ---------------------------------------------------------------------------------//
+  public int getSize (ForkType forkType)                   // in blocks
+  // ---------------------------------------------------------------------------------//
+  {
+    if (storageType != FsProdos.GSOS_EXTENDED_FILE)
+      throw new FileFormatException ("File type not GS Extended");
+
+    return forkType == ForkType.DATA ? dataFork.getSize () : resourceFork.getSize ();
   }
 
   // ---------------------------------------------------------------------------------//
