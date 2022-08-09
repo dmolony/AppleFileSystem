@@ -22,17 +22,17 @@ public class FileEntry
 
   String fileName;
   byte storageType;
-  LocalDateTime creationDate;
-  LocalDateTime modifiedDate;
+  LocalDateTime created;
+  LocalDateTime modified;
   byte fileType;
-  int keyPointer;
-  int blocksUsed;
+  int keyPtr;
+  int size;
   int eof;
   byte version = 0x00;
   byte minVersion = 0x00;
   byte access = (byte) 0xE3;
   int auxType;
-  int headerPointer;
+  int headerPtr;
 
   // ---------------------------------------------------------------------------------//
   public FileEntry (ProdosDisk disk, int ptr)
@@ -70,18 +70,18 @@ public class FileEntry
       fileName = "";
 
     fileType = buffer[ptr + 0x10];
-    keyPointer = unsignedShort (buffer, ptr + 0x11);
-    blocksUsed = unsignedShort (buffer, ptr + 0x13);
+    keyPtr = unsignedShort (buffer, ptr + 0x11);
+    size = unsignedShort (buffer, ptr + 0x13);
     eof = unsignedTriple (buffer, ptr + 0x15);
-    creationDate = getAppleDate (buffer, ptr + 0x18);
+    created = getAppleDate (buffer, ptr + 0x18);
 
     version = buffer[ptr + 0x1C];
     minVersion = buffer[ptr + 0x1D];
     access = buffer[ptr + 0x1E];
 
     auxType = unsignedShort (buffer, ptr + 0x1F);
-    modifiedDate = getAppleDate (buffer, ptr + 0x21);
-    headerPointer = unsignedShort (buffer, ptr + 0x25);
+    modified = getAppleDate (buffer, ptr + 0x21);
+    headerPtr = unsignedShort (buffer, ptr + 0x25);
   }
 
   // ---------------------------------------------------------------------------------//
@@ -92,18 +92,18 @@ public class FileEntry
     System.arraycopy (fileName.getBytes (), 0, buffer, ptr + 1, fileName.length ());
 
     buffer[ptr + 0x10] = fileType;
-    writeShort (buffer, ptr + 0x11, keyPointer);
-    writeShort (buffer, ptr + 0x13, blocksUsed);
+    writeShort (buffer, ptr + 0x11, keyPtr);
+    writeShort (buffer, ptr + 0x13, size);
     writeTriple (buffer, ptr + 0x15, eof);
-    putAppleDate (buffer, ptr + 0x18, creationDate);
+    putAppleDate (buffer, ptr + 0x18, created);
 
     buffer[ptr + 0x1C] = version;
     buffer[ptr + 0x1D] = minVersion;
     buffer[ptr + 0x1E] = access;
 
     writeShort (buffer, ptr + 0x1F, auxType);
-    putAppleDate (buffer, ptr + 0x21, modifiedDate);
-    writeShort (buffer, ptr + 0x25, headerPointer);
+    putAppleDate (buffer, ptr + 0x21, modified);
+    writeShort (buffer, ptr + 0x25, headerPtr);
   }
 
   // ---------------------------------------------------------------------------------//
@@ -114,7 +114,7 @@ public class FileEntry
     int entry = ((ptr % BLOCK_SIZE) - 4) / 39 + 1;
 
     return String.format ("%04X:%02X %-15s %02X %04X %02X %04X %04X", block, entry, fileName,
-        storageType, blocksUsed, fileType, keyPointer, headerPointer);
+        storageType, size, fileType, keyPtr, headerPtr);
   }
 
   // ---------------------------------------------------------------------------------//
@@ -135,16 +135,16 @@ public class FileEntry
     text.append (String.format ("Name length ...... %02X%n", fileName.length ()));
     text.append (String.format ("File name ........ %s%n", fileName));
     text.append (String.format ("File type ........ %02X%n", fileType));
-    text.append (String.format ("Key pointer ...... %04X%n", keyPointer));
-    text.append (String.format ("Blocks used ...... %d%n", blocksUsed));
+    text.append (String.format ("Key pointer ...... %04X%n", keyPtr));
+    text.append (String.format ("Blocks used ...... %d%n", size));
     text.append (String.format ("EOF .............. %d%n", eof));
-    text.append (String.format ("Created .......... %s%n", creationDate));
+    text.append (String.format ("Created .......... %s%n", created));
     text.append (String.format ("Version .......... %02X%n", version));
     text.append (String.format ("Min version ...... %02X%n", minVersion));
     text.append (String.format ("Access ........... %02X%n", access));
     text.append (String.format ("Aux .............. %d%n", auxType));
-    text.append (String.format ("Modified ......... %s%n", modifiedDate));
-    text.append (String.format ("Header ptr ....... %04X%n", headerPointer));
+    text.append (String.format ("Modified ......... %s%n", modified));
+    text.append (String.format ("Header ptr ....... %04X%n", headerPtr));
     text.append (UNDERLINE);
 
     return text.toString ();

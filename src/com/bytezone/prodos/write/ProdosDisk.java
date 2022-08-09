@@ -171,22 +171,22 @@ public class ProdosDisk
       fileEntry.fileName = fileName;
       fileEntry.version = 0x00;
       fileEntry.minVersion = 0x00;
-      fileEntry.headerPointer = catalogBlockNo;     // block containing catalog header
+      fileEntry.headerPtr = catalogBlockNo;     // block containing catalog header
       fileEntry.fileType = type;
       fileEntry.auxType = auxType;
-      fileEntry.creationDate = created;
-      fileEntry.modifiedDate = modified;
+      fileEntry.created = created;
+      fileEntry.modified = modified;
 
       FileWriter fileWriter = new FileWriter (this);
       fileWriter.writeFile (fileBuffer, eof);
 
       fileEntry.storageType = fileWriter.storageType;
-      fileEntry.keyPointer = fileWriter.keyPointer;
-      fileEntry.blocksUsed = fileWriter.blocksUsed;
+      fileEntry.keyPtr = fileWriter.keyPointer;
+      fileEntry.size = fileWriter.blocksUsed;
       fileEntry.eof = fileWriter.eof;
 
       fileEntry.write ();
-      updateFileCount (fileEntry.headerPointer);
+      updateFileCount (fileEntry.headerPtr);
     }
 
     return fileEntry;
@@ -209,7 +209,7 @@ public class ProdosDisk
       else
         fileEntry = fileEntryOpt.get ();
 
-      catalogBlockNo = fileEntry.keyPointer;
+      catalogBlockNo = fileEntry.keyPtr;
     }
 
     return catalogBlockNo;
@@ -230,9 +230,9 @@ public class ProdosDisk
     extendedKeyBlock.addMiniEntry (ForkType.DATA, fileEntry);
     extendedKeyBlock.addMiniEntry (ForkType.RESOURCE, fileWriter);
 
-    fileEntry.keyPointer = blockNo;                     // extended key block
+    fileEntry.keyPtr = blockNo;                     // extended key block
     fileEntry.storageType = 0x05;                       // extended
-    fileEntry.blocksUsed += fileWriter.blocksUsed + 1;
+    fileEntry.size += fileWriter.blocksUsed + 1;
     fileEntry.eof = BLOCK_SIZE;
 
     fileEntry.write ();
@@ -274,7 +274,7 @@ public class ProdosDisk
 
       fileEntry = fileEntryOpt.get ();
 
-      catalogBlockNo = fileEntry.keyPointer;
+      catalogBlockNo = fileEntry.keyPtr;
     }
 
     // check that the file already exists
@@ -389,20 +389,20 @@ public class ProdosDisk
 
     fileEntry.storageType = SUBDIRECTORY;
     fileEntry.fileName = name;
-    fileEntry.keyPointer = allocateNextBlock (); // allocate block for the subdirectory header
-    fileEntry.blocksUsed = 1;
+    fileEntry.keyPtr = allocateNextBlock (); // allocate block for the subdirectory header
+    fileEntry.size = 1;
     fileEntry.eof = BLOCK_SIZE;
     fileEntry.fileType = FILE_TYPE_DIRECTORY;
-    fileEntry.headerPointer = blockNo;
-    fileEntry.creationDate = LocalDateTime.now ();
-    fileEntry.modifiedDate = LocalDateTime.now ();
+    fileEntry.headerPtr = blockNo;
+    fileEntry.created = LocalDateTime.now ();
+    fileEntry.modified = LocalDateTime.now ();
 
     fileEntry.write ();
 
-    updateFileCount (fileEntry.headerPointer);
+    updateFileCount (fileEntry.headerPtr);
 
     SubdirectoryHeader subdirectoryHeader =
-        new SubdirectoryHeader (this, fileEntry.keyPointer * BLOCK_SIZE + 4);
+        new SubdirectoryHeader (this, fileEntry.keyPtr * BLOCK_SIZE + 4);
 
     subdirectoryHeader.fileName = name;
     subdirectoryHeader.creationDate = LocalDateTime.now ();
@@ -411,7 +411,7 @@ public class ProdosDisk
 
     subdirectoryHeader.write ();
 
-    subdirectoryHeaders.put (fileEntry.keyPointer, subdirectoryHeader);
+    subdirectoryHeaders.put (fileEntry.keyPtr, subdirectoryHeader);
 
     return fileEntry;
   }

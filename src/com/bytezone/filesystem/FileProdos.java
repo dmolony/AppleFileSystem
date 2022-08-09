@@ -21,6 +21,10 @@ public class FileProdos extends AbstractFile
   private int auxType;
   private int headerPtr;
 
+  private byte version = 0x00;
+  private byte minVersion = 0x00;
+  private byte access = (byte) 0xE3;
+
   private LocalDateTime created;
   private LocalDateTime modified;
   private String dateC, timeC, dateM, timeM;
@@ -46,14 +50,17 @@ public class FileProdos extends AbstractFile
     size = Utility.unsignedShort (buffer, ptr + 0x13);
     eof = Utility.unsignedTriple (buffer, ptr + 0x15);
 
+    created = Utility.getAppleDate (buffer, ptr + 0x18);
+    version = buffer[ptr + 0x1C];
+    minVersion = buffer[ptr + 0x1D];
+    access = buffer[ptr + 0x1E];
+
     auxType = Utility.unsignedShort (buffer, ptr + 0x1F);
+    modified = Utility.getAppleDate (buffer, ptr + 0x21);
     headerPtr = Utility.unsignedShort (buffer, ptr + 0x25);
 
-    created = Utility.getAppleDate (buffer, ptr + 0x18);
     dateC = created == null ? NO_DATE : created.format (sdf);
     timeC = created == null ? "" : created.format (stf);
-
-    modified = Utility.getAppleDate (buffer, ptr + 0x21);
     dateM = modified == null ? NO_DATE : modified.format (sdf);
     timeM = modified == null ? "" : modified.format (stf);
 

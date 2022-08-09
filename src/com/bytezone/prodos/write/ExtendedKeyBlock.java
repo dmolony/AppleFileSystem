@@ -29,7 +29,7 @@ public class ExtendedKeyBlock
   void addMiniEntry (ForkType type, FileEntry fileEntry)
   // ---------------------------------------------------------------------------------//
   {
-    addMiniEntry (type, fileEntry.storageType, fileEntry.keyPointer, fileEntry.blocksUsed,
+    addMiniEntry (type, fileEntry.storageType, fileEntry.keyPtr, fileEntry.size,
         fileEntry.eof);
   }
 

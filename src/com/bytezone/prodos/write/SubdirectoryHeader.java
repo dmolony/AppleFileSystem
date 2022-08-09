@@ -50,9 +50,9 @@ public class SubdirectoryHeader extends DirectoryHeader
   // ---------------------------------------------------------------------------------//
   {
     FileEntry fileEntry = getParentFileEntry ();
-    fileEntry.blocksUsed++;
+    fileEntry.size++;
     fileEntry.eof += BLOCK_SIZE;
-    fileEntry.modifiedDate = LocalDateTime.now ();
+    fileEntry.modified = LocalDateTime.now ();
     fileEntry.write ();
   }
 
