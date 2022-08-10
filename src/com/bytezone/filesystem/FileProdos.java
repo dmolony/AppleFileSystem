@@ -88,10 +88,11 @@ public class FileProdos extends AbstractFile
       int size = Utility.unsignedShort (buffer, ptr + 3);
       int eof = Utility.unsignedTriple (buffer, ptr + 5);
 
-      if (ptr == 0)
-        dataFork = new ForkProdos ((FsProdos) fileSystem, keyPtr, storageType, size, eof);
-      else
-        resourceFork = new ForkProdos ((FsProdos) fileSystem, keyPtr, storageType, size, eof);
+      if (keyPtr > 0)
+        if (ptr == 0)
+          dataFork = new ForkProdos ((FsProdos) fileSystem, keyPtr, storageType, size, eof);
+        else
+          resourceFork = new ForkProdos ((FsProdos) fileSystem, keyPtr, storageType, size, eof);
     }
   }
 
@@ -132,13 +133,13 @@ public class FileProdos extends AbstractFile
 
   // ---------------------------------------------------------------------------------//
   @Override
-  public int getLength ()                 // in bytes (eof)
+  public int getLength ()                                  // in bytes (eof)
   // ---------------------------------------------------------------------------------//
   {
     if (storageType == FsProdos.GSOS_EXTENDED_FILE)
       throw new FileFormatException ("File type is GS Extended");
 
-    return eof;
+    return dataFork.getEof ();
   }
 
   // ---------------------------------------------------------------------------------//
@@ -153,7 +154,7 @@ public class FileProdos extends AbstractFile
 
   // ---------------------------------------------------------------------------------//
   @Override
-  public int getSize ()                   // in blocks
+  public int getSize ()                                    // in blocks
   // ---------------------------------------------------------------------------------//
   {
     return size;              // size of both forks if GSOS extended

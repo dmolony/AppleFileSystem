@@ -95,8 +95,12 @@ public class BlockReader
       case BLOCK:
         if (interleave == 0)
         {
-          System.arraycopy (diskBuffer, diskOffset + block.getBlockNo () * blockSize, blockBuffer,
-              bufferOffset, blockSize);
+          int max = diskBuffer.length;
+          int start = diskOffset + block.getBlockNo () * blockSize;
+          if (start + blockSize < max)
+            System.arraycopy (diskBuffer, start, blockBuffer, bufferOffset, blockSize);
+          else
+            System.out.printf ("Block %d out of range%n", block.getBlockNo ());
           break;
         }
 

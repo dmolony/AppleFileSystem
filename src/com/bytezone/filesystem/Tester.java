@@ -5,6 +5,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 
+import com.bytezone.utility.Utility;
+
 // see: https://github.com/zeek/bromagic/blob/master/database/apple
 // -----------------------------------------------------------------------------------//
 public class Tester
@@ -60,8 +62,8 @@ public class Tester
       lbr + "crnch24s.lbr",                          // 28: LBR
       bny + "GBBS.UTILS.BNY",                        // 29: binary II
       bxy + "GWFTP11B2.BXY",                         // 30: binary II / NuFX
-      bqy + "NW.PROTALK1.BQY",                       // 31: binary II / Squeeze
-      //      cmp + "binscii.dsk",                           // 32:
+      bqy + "NW.PROTALK5.BQY",                       // 31: binary II / Squeeze
+      //      shk + "mousetrap.shk",                           // 32:
   };
 
   // ---------------------------------------------------------------------------------//
@@ -70,8 +72,8 @@ public class Tester
   {
     FileSystemFactory factory = new FileSystemFactory ();
 
-    for (int fileNo = 0; fileNo < fileNames.length; fileNo++)
-    //    for (int fileNo = 31; fileNo <= 31; fileNo++)
+    //    for (int fileNo = 0; fileNo < fileNames.length; fileNo++)
+    for (int fileNo = 31; fileNo <= 31; fileNo++)
     {
       //      System.out.printf ("%n%d %s%n", fileNo, fileNames[fileNo].substring (base.length ()));
 
@@ -86,20 +88,20 @@ public class Tester
         continue;
       }
 
-      if (fileNo == 99)
+      if (fileNo == 31)
       {
         for (AppleFileSystem fs : fsList)
         {
           System.out.println ();
           System.out.println (fs.catalog ());
 
-          //          for (AppleFile file : fs.getFiles ())
-          //            if (file.getName ().equals ("NET.CONFIG.S.QQ"))
-          //            {
-          //              byte[] buffer = file.read ();
-          //              System.out.println (Utility.format (buffer));
-          //              break;
-          //            }
+          for (AppleFile file : fs.getFiles ())
+            if (file.getName ().equals ("NET.CONFIG.S.QQ"))
+            {
+              byte[] buffer = file.read ();
+              System.out.println (Utility.format (buffer));
+              break;
+            }
         }
       }
 

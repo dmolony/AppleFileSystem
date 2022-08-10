@@ -50,6 +50,8 @@ public class FileBinary2 extends AbstractFile
 
   private List<AppleBlock> dataBlocks = new ArrayList<> ();
   private String squeezeName;
+  private boolean debug = false;
+  private boolean validBlocks = true;
 
   // ---------------------------------------------------------------------------------//
   FileBinary2 (FsBinary2 fs, int headerBlockNo)
@@ -99,14 +101,34 @@ public class FileBinary2 extends AbstractFile
     int lastBlock = firstBlock + (eof - 1) / 128;
 
     for (int block = firstBlock; block <= lastBlock; block++)
-      dataBlocks.add (fs.getBlock (block));
+    {
+      if (!fs.isValidBlockNo (block))
+      {
+        if (debug)
+          System.out.printf ("Invalid block %d in %s%n", block, getName ());
+        validBlocks = false;
+        break;
+      }
 
-    if (isCompressed ())
+      dataBlocks.add (fs.getBlock (block));
+    }
+
+    if (isCompressed () && validBlocks)
     {
       buffer = fs.getBlock (headerBlockNo + 1).read ();
       if (buffer[0] == 0x76 && buffer[1] == (byte) 0xFF)      // squeeze
         squeezeName = Utility.getCString (buffer, 4);
     }
+
+    if (debug)
+      System.out.println (toText ());
+  }
+
+  // ---------------------------------------------------------------------------------//
+  boolean isValid ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return validBlocks;
   }
 
   // ---------------------------------------------------------------------------------//

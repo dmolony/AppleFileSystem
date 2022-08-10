@@ -5,6 +5,10 @@ import static com.bytezone.filesystem.ProdosConstants.SAPLING;
 import static com.bytezone.filesystem.ProdosConstants.SEEDLING;
 import static com.bytezone.filesystem.ProdosConstants.TREE;
 
+// Assumptions:
+// - file does not already exist
+// - disk is not interleaved 
+// - blocks are 512 contiguous bytes
 // -----------------------------------------------------------------------------------//
 public class FileWriter
 // -----------------------------------------------------------------------------------//
@@ -37,8 +41,7 @@ public class FileWriter
 
     while (dataPtr < this.eof)
     {
-      int actualBlockNo = allocateNextBlock ();
-      map (dataPtr / BLOCK_SIZE, actualBlockNo);
+      int actualBlockNo = register (dataPtr / BLOCK_SIZE);
 
       int bufferPtr = actualBlockNo * BLOCK_SIZE;
       int transfer = Math.min (remaining, BLOCK_SIZE);
@@ -86,47 +89,6 @@ public class FileWriter
   }
 
   // ---------------------------------------------------------------------------------//
-  private int allocateNextBlock () throws DiskFullException
-  // ---------------------------------------------------------------------------------//
-  {
-    blocksUsed++;
-    return disk.allocateNextBlock ();
-  }
-
-  // ---------------------------------------------------------------------------------//
-  private int getActualBlockNo (int logicalBlockNo) throws DiskFullException
-  // ---------------------------------------------------------------------------------//
-  {
-    int actualBlockNo = 0;
-
-    switch (storageType)
-    {
-      case TREE:
-        actualBlockNo =
-            masterIndexBlock.get (logicalBlockNo / 0x100).getPosition (logicalBlockNo % 0x100);
-        break;
-
-      case SAPLING:
-        if (logicalBlockNo < 0x100)
-          actualBlockNo = indexBlock.getPosition (logicalBlockNo);
-        break;
-
-      case SEEDLING:
-        if (logicalBlockNo == 0)
-          actualBlockNo = keyPointer;
-        break;
-    }
-
-    if (actualBlockNo == 0)
-    {
-      actualBlockNo = allocateNextBlock ();
-      map (logicalBlockNo, actualBlockNo);
-    }
-
-    return actualBlockNo;
-  }
-
-  // ---------------------------------------------------------------------------------//
   private void writeIndices ()
   // ---------------------------------------------------------------------------------//
   {
@@ -137,14 +99,49 @@ public class FileWriter
   }
 
   // ---------------------------------------------------------------------------------//
-  private void map (int logicalBlockNo, int actualBlockNo) throws DiskFullException
+  private int allocateNextBlock () throws DiskFullException
   // ---------------------------------------------------------------------------------//
   {
+    blocksUsed++;
+
+    return disk.allocateNextBlock ();
+  }
+
+  // ---------------------------------------------------------------------------------//
+  private int getActualBlockNo (int logicalBlockNo) throws DiskFullException
+  // ---------------------------------------------------------------------------------//
+  {
+    switch (storageType)
+    {
+      case TREE:
+        return masterIndexBlock.get (logicalBlockNo / 0x100).getPosition (logicalBlockNo % 0x100);
+
+      case SAPLING:
+        if (logicalBlockNo < 0x100)
+          return indexBlock.getPosition (logicalBlockNo);
+        break;
+
+      case SEEDLING:
+        if (logicalBlockNo == 0)
+          return keyPointer;
+        break;
+    }
+
+    return register (logicalBlockNo);
+  }
+
+  // ---------------------------------------------------------------------------------//
+  private int register (int logicalBlockNo) throws DiskFullException
+  // ---------------------------------------------------------------------------------//
+  {
+    int nextBlockNo = allocateNextBlock ();
+
     if (logicalBlockNo >= 0x100)                       // potential TREE
     {
       if (storageType != TREE)
       {
-        masterIndexBlock = new MasterIndexBlock (allocateNextBlock ());
+        masterIndexBlock = new MasterIndexBlock (nextBlockNo);
+        nextBlockNo = allocateNextBlock ();
 
         if (storageType == SAPLING)                   // sapling -> tree
         {
@@ -152,7 +149,9 @@ public class FileWriter
         }
         else if (storageType == SEEDLING)             // seedling -> sapling -> tree
         {
-          indexBlock = new IndexBlock (allocateNextBlock ());
+          indexBlock = new IndexBlock (nextBlockNo);
+          nextBlockNo = allocateNextBlock ();
+
           indexBlock.setPosition (0, keyPointer);
           masterIndexBlock.set (0, indexBlock);
         }
@@ -162,47 +161,51 @@ public class FileWriter
         indexBlock = null;
       }
 
-      getIndexBlock (logicalBlockNo / 0x100).setPosition (logicalBlockNo % 0x100, actualBlockNo);
+      getIndexBlock (logicalBlockNo / 0x100).setPosition (logicalBlockNo % 0x100, nextBlockNo);
     }
     else if (logicalBlockNo > 0)                      // potential SAPLING
     {
       if (storageType == TREE)                        // already a tree
       {
-        getIndexBlock (0).setPosition (logicalBlockNo, actualBlockNo);
+        getIndexBlock (0).setPosition (logicalBlockNo, nextBlockNo);
       }
       else if (storageType == SAPLING)                // already a sapling
       {
-        indexBlock.setPosition (logicalBlockNo, actualBlockNo);
+        indexBlock.setPosition (logicalBlockNo, nextBlockNo);
       }
       else                                            // new file or already a seedling
       {
-        indexBlock = new IndexBlock (allocateNextBlock ());
+        indexBlock = new IndexBlock (nextBlockNo);
+        nextBlockNo = allocateNextBlock ();
+
         if (storageType == SEEDLING)                  // seedling -> sapling
           indexBlock.setPosition (0, keyPointer);
 
         keyPointer = indexBlock.blockNo;
         storageType = SAPLING;
-        indexBlock.setPosition (logicalBlockNo, actualBlockNo);
+        indexBlock.setPosition (logicalBlockNo, nextBlockNo);
       }
     }
     else if (logicalBlockNo == 0)                     // potential SEEDLING
     {
       if (storageType == TREE)                        // already a tree
       {
-        getIndexBlock (0).setPosition (0, actualBlockNo);
+        getIndexBlock (0).setPosition (0, nextBlockNo);
       }
       else if (storageType == SAPLING)                // already a sapling
       {
-        indexBlock.setPosition (0, actualBlockNo);
+        indexBlock.setPosition (0, nextBlockNo);
       }
       else
       {
-        keyPointer = actualBlockNo;
+        keyPointer = nextBlockNo;
         storageType = SEEDLING;
       }
     }
     else
       System.out.println ("Error: " + logicalBlockNo);
+
+    return nextBlockNo;
   }
 
   // ---------------------------------------------------------------------------------//
