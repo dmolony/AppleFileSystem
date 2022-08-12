@@ -46,13 +46,22 @@ public class FsBinary2 extends AbstractFileSystem
   {
     int nextBlock = 0;
     FileBinary2 file = null;
+    int filesRemaining = 0;
 
     do
     {
+      if (!isValidBlockNo (nextBlock))
+      {
+        System.out.printf ("Invalid block number %d in %s%n", nextBlock, getName ());
+        break;
+      }
+
       file = new FileBinary2 (this, nextBlock);
 
       if (!file.isValid ())         // not all the blocks are available
         break;
+
+      filesRemaining = file.getFilesFollowing ();
 
       if (file.getFileType () == ProdosConstants.FILE_TYPE_LBR)
         addFileSystem (this, file);
@@ -64,11 +73,9 @@ public class FsBinary2 extends AbstractFileSystem
 
       nextBlock += ((file.getEof () - 1) / 128 + 2);
 
-      if (!isValidBlockNo (nextBlock))
-      {
-        System.out.printf ("Invalid block number %d in FsBinary2%n", nextBlock);
-        break;
-      }
-    } while (file.getFilesFollowing () > 0);
+    } while (filesRemaining > 0);
+
+    if (filesRemaining > 0)
+      System.out.println (filesRemaining + " files unavailable");
   }
 }

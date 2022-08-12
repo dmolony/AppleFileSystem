@@ -31,7 +31,7 @@ public class FileSystemFactory
   static BlockReader[] dos33Readers = { dos33Reader0, dos33Reader1 };
   static BlockReader[] blockReaders = { blockReader0, blockReader1 };
 
-  List<AppleFileSystem> fileSystems = new ArrayList<> ();
+  List<AppleFileSystem> fileSystems;
   private boolean debug = false;
 
   // ---------------------------------------------------------------------------------//
@@ -52,7 +52,9 @@ public class FileSystemFactory
   public List<AppleFileSystem> getFileSystems (String name, byte[] buffer, int offset, int length)
   // ---------------------------------------------------------------------------------//
   {
-    fileSystems.clear ();
+    fileSystems = new ArrayList<> ();
+    //    System.out.println ("Checking: " + name);
+    //    System.out.println (Utility.format (buffer, offset, 100));
 
     if (length == 143_488)
       length = 143_360;
@@ -81,6 +83,7 @@ public class FileSystemFactory
     add (getLbr (name, buffer, offset, length));
     add (getNuFx (name, buffer, offset, length));
     add (getBinary2 (name, buffer, offset, length));
+    add (getZip (name, buffer, offset, length));
     add (get2img (name, buffer, offset, length));
 
     getUnidos (name, buffer, offset, length);
@@ -270,6 +273,8 @@ public class FileSystemFactory
     if (Utility.isMagic (buffer, offset, Fs2img.TWO_IMG))
       try
       {
+        if (debug)
+          System.out.println ("Checking 2img");
         Fs2img fs = new Fs2img (name, buffer, offset, length, lbrReader);
         fs.readCatalog ();
 
@@ -318,6 +323,28 @@ public class FileSystemFactory
         fs.readCatalog ();
 
         if (fs.getTotalCatalogBlocks () > 0)
+          return fs;
+      }
+      catch (FileFormatException e)
+      {
+        if (debug)
+          System.out.println (e);
+      }
+
+    return null;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  private FsZip getZip (String name, byte[] buffer, int offset, int length)
+  // ---------------------------------------------------------------------------------//
+  {
+    if (Utility.isMagic (buffer, offset, FsZip.ZIP))
+      try
+      {
+        FsZip fs = new FsZip (name, buffer, offset, length, lbrReader);
+        fs.readCatalog ();
+
+        if (fs.getFiles ().size () > 0)
           return fs;
       }
       catch (FileFormatException e)

@@ -50,11 +50,12 @@ public class FsDos extends AbstractFileSystem
 
     AppleBlock vtoc = getSector (17, 0);
     if (!vtoc.isValid ())
-      return;
+      throw new FileFormatException ("Dos: Invalid VTOC");
+
     byte[] buffer = vtoc.read ();
 
     if (buffer[3] < 0x01 || buffer[3] > 0x03)
-      return;
+      throw new FileFormatException ("Dos: byte 3 invalid");
 
     setVersion (buffer[3]);
 
@@ -68,7 +69,7 @@ public class FsDos extends AbstractFileSystem
 
       AppleBlock catalogSector = getSector (track, sector);
       if (!catalogSector.isValid ())
-        return;
+        throw new FileFormatException ("Dos: Invalid catalog sector");
 
       buffer = catalogSector.read ();
 

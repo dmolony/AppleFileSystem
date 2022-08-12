@@ -17,6 +17,7 @@ public class Tester
   String adav = base + "apple_dos_all_versions/";
   String intl = base + "interleave/";
   String euro = base + "Apple_IIgs_European_Disk_Collection/";
+  String java = base + "VM02 Disk Image Collection/";
   String hybr = base + "AppleHybrid/";
   String cpm = base + "cpm/CPM collection (37 disks) and more/";
   String woz = base + "woz/wozaday_Wizardry/";
@@ -63,7 +64,8 @@ public class Tester
       bny + "GBBS.UTILS.BNY",                        // 29: binary II
       bxy + "GWFTP11B2.BXY",                         // 30: binary II / NuFX
       bqy + "NW.PROTALK5.BQY",                       // 31: binary II / Squeeze
-      //      shk + "mousetrap.shk",                           // 32:
+      java + "vm02alpha1.dsk.zip",                   // 32: zip
+      java + "vm02alpha1.dsk",                       // 33: 
   };
 
   // ---------------------------------------------------------------------------------//
@@ -73,7 +75,7 @@ public class Tester
     FileSystemFactory factory = new FileSystemFactory ();
 
     //    for (int fileNo = 0; fileNo < fileNames.length; fileNo++)
-    for (int fileNo = 31; fileNo <= 31; fileNo++)
+    for (int fileNo = 32; fileNo <= 32; fileNo++)
     {
       //      System.out.printf ("%n%d %s%n", fileNo, fileNames[fileNo].substring (base.length ()));
 

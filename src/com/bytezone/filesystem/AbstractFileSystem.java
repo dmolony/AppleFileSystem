@@ -13,8 +13,8 @@ public abstract class AbstractFileSystem implements AppleFileSystem
   protected final String fileName;
 
   protected final byte[] diskBuffer;      // entire buffer including any header or other disks
-  protected final int fileOffset;         // start of this disk
-  protected final int fileLength;         // length of this disk
+  protected final int fileOffset;         // start of this file system
+  protected final int fileLength;         // length of this file system
 
   protected final BlockReader blockReader;
 
@@ -23,7 +23,7 @@ public abstract class AbstractFileSystem implements AppleFileSystem
 
   protected List<AppleFile> files = new ArrayList<> ();
 
-  protected String fileSystemName;        // DosX.X, Prodos, Pascal, CPM, Data
+  protected String fileSystemName;        // DosX.X, Prodos, Pascal, CPM, NuFX, 2img, Bin2, Data
 
   protected FileSystemFactory factory;
   protected int totalFileSystems = 0;
@@ -43,8 +43,10 @@ public abstract class AbstractFileSystem implements AppleFileSystem
     this.blockReader = Objects.requireNonNull (blockReader);
 
     totalBlocks = fileLength / blockReader.blockSize;
+    //    System.out.println (this.toText ());
+    //    System.out.println ();
 
-    assert totalBlocks > 0;
+    //    assert totalBlocks > 0;
   }
 
   // ---------------------------------------------------------------------------------//

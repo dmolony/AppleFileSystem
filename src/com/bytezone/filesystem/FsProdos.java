@@ -60,7 +60,7 @@ public class FsProdos extends AbstractFileSystem
       {
         int type = (buffer[0x04] & 0xF0) >>> 4;
         if (type != VOLUME_HEADER)
-          throw new FileFormatException ("No Volume Header");
+          throw new FileFormatException ("FsProdos: No Volume Header");
 
         entryLength = buffer[0x23] & 0xFF;                        // 39
         entriesPerBlock = buffer[0x24] & 0xFF;                    // 13
@@ -68,19 +68,19 @@ public class FsProdos extends AbstractFileSystem
         bitmapPointer = Utility.unsignedShort (buffer, 0x27);     // 6
 
         if (entryLength != ENTRY_SIZE || entriesPerBlock != ENTRIES_PER_BLOCK)
-          throw new FileFormatException ("Invalid entry data");
+          throw new FileFormatException ("FsProdos: Invalid entry data");
 
         if (bitmapPointer < 3 || bitmapPointer > 10)
-          throw new FileFormatException ("Invalid bitmap block value: " + bitmapPointer);
+          throw new FileFormatException ("FsProdos: Invalid bitmap block value: " + bitmapPointer);
       }
 
       prevBlockNo = Utility.unsignedShort (buffer, 0);
       nextBlockNo = Utility.unsignedShort (buffer, 2);
 
       if (!isValidBlockNo (prevBlockNo))
-        throw new FileFormatException ("Invalid catalog previous block");
+        throw new FileFormatException ("FsProdos: Invalid catalog previous block - " + prevBlockNo);
       if (!isValidBlockNo (nextBlockNo))
-        throw new FileFormatException ("Invalid catalog next block");
+        throw new FileFormatException ("FsProdos: Invalid catalog next block - " + nextBlockNo);
 
       ++catalogBlocks;
     }
@@ -151,7 +151,7 @@ public class FsProdos extends AbstractFileSystem
       catalogBlock = getBlock (Utility.unsignedShort (buffer, 2));
 
       if (!catalogBlock.isValid ())
-        throw new FileFormatException ("Invalid catalog");
+        throw new FileFormatException ("FsProdos: Invalid catalog");
     }
   }
 

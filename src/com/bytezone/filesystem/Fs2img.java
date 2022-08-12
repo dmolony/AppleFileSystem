@@ -64,6 +64,8 @@ public class Fs2img extends AbstractFileSystem
     locked = (flags & 0x8000) != 0;
     hasDosVolumeNumber = (flags & 0x0100) != 0;
     volumeNumber = flags & 0x00FF;
+
+    //    System.out.println (this.toText ());
   }
 
   // ---------------------------------------------------------------------------------//
