@@ -43,8 +43,6 @@ public abstract class AbstractFileSystem implements AppleFileSystem
     this.blockReader = Objects.requireNonNull (blockReader);
 
     totalBlocks = fileLength / blockReader.blockSize;
-    //    System.out.println (this.toText ());
-    //    System.out.println ();
 
     //    assert totalBlocks > 0;
   }

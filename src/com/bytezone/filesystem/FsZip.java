@@ -8,11 +8,15 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipException;
 import java.util.zip.ZipInputStream;
 
+import com.bytezone.utility.Utility;
+
 // -----------------------------------------------------------------------------------//
 public class FsZip extends AbstractFileSystem
 // -----------------------------------------------------------------------------------//
 {
   static final byte[] ZIP = { 0x50, 0x4B, 0x03, 0x04 };
+
+  boolean debug = false;
 
   // ---------------------------------------------------------------------------------//
   public FsZip (String name, byte[] buffer, BlockReader blockReader)
@@ -29,7 +33,7 @@ public class FsZip extends AbstractFileSystem
 
     setFileSystemName ("Zip");
 
-    //    assert Utility.isMagic (buffer, offset, BIN2) && buffer[offset + 18] == 0x02;
+    assert Utility.isMagic (buffer, offset, ZIP);
 
   }
 
@@ -48,20 +52,23 @@ public class FsZip extends AbstractFileSystem
         if (entry.getName ().startsWith ("__"))
           continue;
 
-        System.out.print (entry);
+        //        System.out.print (entry);
         if (entry.isDirectory ())
           System.out.println (" : dir");
         else
         {
-          System.out.println (" : file");
-          System.out.println (entry.getCompressedSize ());
-          System.out.println (entry.getSize ());
-          System.out.println (entry.getName ());
-          System.out.println (entry.getComment ());
-          System.out.println (entry.getCrc ());
-          System.out.println (entry.getCreationTime ());
-          System.out.println (entry.getExtra ());
-          System.out.println (entry.getMethod ());
+          if (debug)
+          {
+            System.out.println (" : file");
+            System.out.println (entry.getCompressedSize ());
+            System.out.println (entry.getSize ());
+            System.out.println (entry.getName ());
+            System.out.println (entry.getComment ());
+            System.out.println (entry.getCrc ());
+            System.out.println (entry.getCreationTime ());
+            System.out.println (entry.getExtra ());
+            System.out.println (entry.getMethod ());
+          }
 
           int ptr = 0;
           int rem = (int) entry.getSize ();
@@ -74,13 +81,13 @@ public class FsZip extends AbstractFileSystem
               int len = zip.read (buffer, ptr, rem);
               if (len == 0)
                 break;
-              //            System.out.println (len);
+
               ptr += len;
               rem -= len;
             }
-            //          System.out.println (Utility.format (buffer, 0, 3000));
+
             List<AppleFileSystem> list = addFileSystem (this, entry.getName (), buffer);
-            System.out.printf ("%d file systems found%n", list.size ());
+            //            System.out.printf ("%d file systems found%n", list.size ());
           }
           else
           {
@@ -88,6 +95,7 @@ public class FsZip extends AbstractFileSystem
             List<Integer> sizes = new ArrayList<> ();
             int bytesRead;
             int size = 0;
+
             while (true)
             {
               byte[] buffer = new byte[1024];
@@ -97,7 +105,6 @@ public class FsZip extends AbstractFileSystem
               buffers.add (buffer);
               sizes.add (bytesRead);
               size += bytesRead;
-              //              System.out.println (Utility.format (buffer, 0, bytesRead));
             }
 
             byte[] buffer = new byte[size];
@@ -107,9 +114,9 @@ public class FsZip extends AbstractFileSystem
               System.arraycopy (buffers.get (i), 0, buffer, ptr, sizes.get (i));
               ptr += sizes.get (i);
             }
-            System.out.println (size);
+            //            System.out.println (size);
             List<AppleFileSystem> list = addFileSystem (this, entry.getName (), buffer);
-            System.out.printf ("%d file systems found%n", list.size ());
+            //            System.out.printf ("%d file systems found%n", list.size ());
             //            System.out.println (Utility.format (buffer));
           }
         }

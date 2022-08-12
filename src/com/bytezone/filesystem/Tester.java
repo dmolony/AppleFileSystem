@@ -65,7 +65,7 @@ public class Tester
       bxy + "GWFTP11B2.BXY",                         // 30: binary II / NuFX
       bqy + "NW.PROTALK5.BQY",                       // 31: binary II / Squeeze
       java + "vm02alpha1.dsk.zip",                   // 32: zip
-      java + "vm02alpha1.dsk",                       // 33: 
+      //      java + "vm02alpha1.dsk",                       // 33: 
   };
 
   // ---------------------------------------------------------------------------------//
@@ -74,8 +74,8 @@ public class Tester
   {
     FileSystemFactory factory = new FileSystemFactory ();
 
-    //    for (int fileNo = 0; fileNo < fileNames.length; fileNo++)
-    for (int fileNo = 32; fileNo <= 32; fileNo++)
+    for (int fileNo = 0; fileNo < fileNames.length; fileNo++)
+    //    for (int fileNo = 32; fileNo <= 32; fileNo++)
     {
       //      System.out.printf ("%n%d %s%n", fileNo, fileNames[fileNo].substring (base.length ()));
 
@@ -90,7 +90,7 @@ public class Tester
         continue;
       }
 
-      if (fileNo == 31)
+      if (fileNo == 99)
       {
         for (AppleFileSystem fs : fsList)
         {

@@ -53,8 +53,12 @@ public class FileSystemFactory
   // ---------------------------------------------------------------------------------//
   {
     fileSystems = new ArrayList<> ();
-    //    System.out.println ("Checking: " + name);
-    //    System.out.println (Utility.format (buffer, offset, 100));
+
+    if (debug)
+    {
+      System.out.println ("Checking: " + name);
+      System.out.println (Utility.format (buffer, offset, 100));
+    }
 
     if (length == 143_488)
       length = 143_360;
