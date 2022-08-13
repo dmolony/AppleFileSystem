@@ -89,8 +89,7 @@ public class FileSystemFactory
     add (getBinary2 (name, buffer, offset, length));
     add (getZip (name, buffer, offset, length));
     add (get2img (name, buffer, offset, length));
-
-    getUnidos (name, buffer, offset, length);
+    add (getUnidos (name, buffer, offset, length));
 
     return fileSystems;
   }
@@ -361,31 +360,24 @@ public class FileSystemFactory
   }
 
   // ---------------------------------------------------------------------------------//
-  private void getUnidos (String name, byte[] buffer, int offset, int length)
+  private FsUnidos getUnidos (String name, byte[] buffer, int offset, int length)
   // ---------------------------------------------------------------------------------//
   {
     if (length == UNIDOS_SIZE * 2)
       try
       {
-        FsDos fs1 = new FsDos (name, buffer, offset, UNIDOS_SIZE, unidosReader);
-        fs1.readCatalog ();
+        FsUnidos fs = new FsUnidos (name, buffer, offset, length, unidosReader);
+        fs.readCatalog ();
 
-        if (fs1 != null && fs1.getTotalCatalogBlocks () > 0)
-        {
-          FsDos fs2 = new FsDos (name, buffer, offset + UNIDOS_SIZE, UNIDOS_SIZE, unidosReader);
-          fs2.readCatalog ();
-
-          if (fs2 != null && fs2.getTotalCatalogBlocks () > 0)
-          {
-            fileSystems.add (fs1);
-            fileSystems.add (fs2);
-          }
-        }
+        if (fs.getFiles ().size () > 0)
+          return fs;
       }
       catch (FileFormatException e)
       {
         if (debug)
           System.out.println (e);
       }
+
+    return null;
   }
 }

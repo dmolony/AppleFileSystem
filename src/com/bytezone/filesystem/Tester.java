@@ -54,7 +54,7 @@ public class Tester
       hybr + "cpm/HYBRID.DSK",                       // 19: hybrid cpm/dos
       base + "dual dos/AAL-8603.DSK",                // 20: hybrid prodos/dos
       wiz + "Wizardry/murasama.dsk",                 // 21: pascal wizardry
-      woz + "Wizardry PGMO.woz",                     // 22: pascal wizardry woz
+      woz + "Wizardry PGMO.woz",                     // 22: woz pascal wizardry
       wiz + "wizardry_IV/Version A/wiz4_d1.dsk",     // 23: wizardry IV disk 1
       cmp + "ARCHIVES 7.2mg",                        // 24: 2mg / prodos / NuFX LBR files
       sdk + "SCASM.II4.0.SDK",                       // 25: NuFX / Dos

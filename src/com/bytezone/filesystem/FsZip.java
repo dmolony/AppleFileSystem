@@ -131,4 +131,16 @@ public class FsZip extends AbstractFileSystem
       e.printStackTrace ();
     }
   }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
+  public String toText ()
+  // ---------------------------------------------------------------------------------//
+  {
+    StringBuilder text = new StringBuilder (super.toText ());
+
+    //    text.append (String.format ("Entry length .......... %d%n", entryLength));
+
+    return text.toString ();
+  }
 }
