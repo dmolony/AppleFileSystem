@@ -90,6 +90,7 @@ public class FileSystemFactory
     add (getNuFx (name, buffer, offset, length));
     add (getBinary2 (name, buffer, offset, length));
     add (getZip (name, buffer, offset, length));
+    add (getGZip (name, buffer, offset, length));
     add (get2img (name, buffer, offset, length));
     add (getUnidos (name, buffer, offset, length));
 
@@ -342,6 +343,28 @@ public class FileSystemFactory
       try
       {
         FsZip fs = new FsZip (name, buffer, offset, length, lbrReader);
+        fs.readCatalog ();
+
+        if (fs.getFiles ().size () > 0)
+          return fs;
+      }
+      catch (FileFormatException e)
+      {
+        if (debug)
+          System.out.println (e);
+      }
+
+    return null;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  private FsGzip getGZip (String name, byte[] buffer, int offset, int length)
+  // ---------------------------------------------------------------------------------//
+  {
+    if (Utility.isMagic (buffer, offset, FsGzip.GZIP))
+      try
+      {
+        FsGzip fs = new FsGzip (name, buffer, offset, length, lbrReader);
         fs.readCatalog ();
 
         if (fs.getFiles ().size () > 0)

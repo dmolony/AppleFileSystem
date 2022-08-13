@@ -5,8 +5,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 
-import com.bytezone.utility.Utility;
-
 // see: https://github.com/zeek/bromagic/blob/master/database/apple
 // -----------------------------------------------------------------------------------//
 public class Tester
@@ -23,6 +21,7 @@ public class Tester
   String woz = base + "woz/wozaday_Wizardry/";
   String wiz = base + "Wizardry/";
   String cmp = base + "compressed/";
+  String brcc = base + "brcc/";
   String sdk = cmp + "SDK/";
   String shk = cmp + "SHK/";
   String lbr = cmp + "LBR/";
@@ -65,7 +64,7 @@ public class Tester
       bxy + "GWFTP11B2.BXY",                         // 30: binary II / NuFX
       bqy + "NW.PROTALK5.BQY",                       // 31: binary II / Squeeze
       java + "vm02alpha1.dsk.zip",                   // 32: zip
-      //      java + "vm02alpha1.dsk",                       // 33: 
+      brcc + "235 - ProDos Menu Programs (Big Red Computer Club).DSK.gz",   // 33: gzip
   };
 
   // ---------------------------------------------------------------------------------//
@@ -75,7 +74,7 @@ public class Tester
     FileSystemFactory factory = new FileSystemFactory ();
 
     for (int fileNo = 0; fileNo < fileNames.length; fileNo++)
-    //    for (int fileNo = 32; fileNo <= 32; fileNo++)
+    //    for (int fileNo = 33; fileNo <= 33; fileNo++)
     {
       //      System.out.printf ("%n%d %s%n", fileNo, fileNames[fileNo].substring (base.length ()));
 
@@ -97,13 +96,13 @@ public class Tester
           System.out.println ();
           System.out.println (fs.catalog ());
 
-          for (AppleFile file : fs.getFiles ())
-            if (file.getName ().equals ("NET.CONFIG.S.QQ"))
-            {
-              byte[] buffer = file.read ();
-              System.out.println (Utility.format (buffer));
-              break;
-            }
+          //          for (AppleFile file : fs.getFiles ())
+          //            if (file.getName ().equals ("NET.CONFIG.S.QQ"))
+          //            {
+          //              byte[] buffer = file.read ();
+          //              System.out.println (Utility.format (buffer));
+          //              break;
+          //            }
         }
       }
 

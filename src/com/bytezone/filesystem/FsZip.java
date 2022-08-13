@@ -86,8 +86,7 @@ public class FsZip extends AbstractFileSystem
               rem -= len;
             }
 
-            List<AppleFileSystem> list = addFileSystem (this, entry.getName (), buffer);
-            //            System.out.printf ("%d file systems found%n", list.size ());
+            addFileSystem (this, entry.getName (), buffer);
           }
           else
           {
@@ -114,10 +113,8 @@ public class FsZip extends AbstractFileSystem
               System.arraycopy (buffers.get (i), 0, buffer, ptr, sizes.get (i));
               ptr += sizes.get (i);
             }
-            //            System.out.println (size);
-            List<AppleFileSystem> list = addFileSystem (this, entry.getName (), buffer);
-            //            System.out.printf ("%d file systems found%n", list.size ());
-            //            System.out.println (Utility.format (buffer));
+
+            addFileSystem (this, entry.getName (), buffer);
           }
         }
       }
