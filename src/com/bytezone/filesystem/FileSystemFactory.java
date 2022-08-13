@@ -18,6 +18,8 @@ public class FileSystemFactory
   private static final byte[] WOZ_2 = { 0x57, 0x4F, 0x5A, 0x31, (byte) 0xFF, 0x0A, 0x0D, 0x0A };
 
   private static final int UNIDOS_SIZE = 409_600;
+  private static final int DOS31_SIZE = 116_480;
+  private static final int DOS33_SIZE = 143_360;
 
   static BlockReader blockReader0 = new BlockReader (512, BLOCK, 0, 0);     // Prodos
   static BlockReader blockReader1 = new BlockReader (512, BLOCK, 1, 8);     // Prodos
@@ -106,9 +108,9 @@ public class FileSystemFactory
   private FsDos getDos (String name, byte[] buffer, int offset, int length)
   // ---------------------------------------------------------------------------------//
   {
-    List<FsDos> disks = new ArrayList<> (2);
+    List<FsDos> fsList = new ArrayList<> (2);
 
-    if (length == 143_360)
+    if (length == DOS33_SIZE)
       for (BlockReader reader : dos33Readers)
         try
         {
@@ -116,7 +118,7 @@ public class FileSystemFactory
           fs.readCatalog ();
 
           if (fs.getTotalCatalogBlocks () > 0)
-            disks.add (fs);
+            fsList.add (fs);
         }
         catch (FileFormatException e)
         {
@@ -124,18 +126,13 @@ public class FileSystemFactory
             System.out.println (e);
         }
 
-    switch (disks.size ())
+    return switch (fsList.size ())
     {
-      case 1:
-        return disks.get (0);
-
-      case 2:
-        return disks.get (0).getTotalCatalogBlocks () > disks.get (1).getTotalCatalogBlocks ()
-            ? disks.get (0) : disks.get (1);
-
-      default:
-        return null;
-    }
+      case 1 -> fsList.get (0);
+      case 2 -> fsList.get (0).getTotalCatalogBlocks () > fsList.get (1).getTotalCatalogBlocks ()
+          ? fsList.get (0) : fsList.get (1);
+      default -> null;
+    };
   }
 
   // ---------------------------------------------------------------------------------//
@@ -186,7 +183,7 @@ public class FileSystemFactory
   private FsCpm getCpm (String name, byte[] buffer, int offset, int length)
   // ---------------------------------------------------------------------------------//
   {
-    if (length == 143_360)
+    if (length == DOS33_SIZE)
       try
       {
         FsCpm fs = new FsCpm (name, buffer, offset, length, cpmReader);
@@ -297,7 +294,7 @@ public class FileSystemFactory
   private FsDos getDos31 (String name, byte[] buffer, int offset, int length)
   // ---------------------------------------------------------------------------------//
   {
-    if (length == 116_480)                  // Dos3.1
+    if (length == DOS31_SIZE)
       try
       {
         FsDos fs = new FsDos (name, buffer, offset, length, dos31Reader);
@@ -319,7 +316,7 @@ public class FileSystemFactory
   private FsDos4 getDos4 (String name, byte[] buffer, int offset, int length)
   // ---------------------------------------------------------------------------------//
   {
-    if (length == 143_360)
+    if (length == DOS33_SIZE)
       try
       {
         FsDos4 fs = new FsDos4 (name, buffer, offset, length, dos33Reader0);
