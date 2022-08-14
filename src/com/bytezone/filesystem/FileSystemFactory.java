@@ -62,11 +62,11 @@ public class FileSystemFactory
 
     assert offset + length <= buffer.length;
 
-    getProdos (name, buffer, offset, length);
-    getPascal (name, buffer, offset, length);
     getDos31 (name, buffer, offset, length);
     getDos33 (name, buffer, offset, length);
     getDos4 (name, buffer, offset, length);
+    getProdos (name, buffer, offset, length);
+    getPascal (name, buffer, offset, length);
     getCpm (name, buffer, offset, length);
     getLbr (name, buffer, offset, length);
     getNuFx (name, buffer, offset, length);
@@ -76,6 +76,13 @@ public class FileSystemFactory
     get2img (name, buffer, offset, length);
     getUnidos (name, buffer, offset, length);
     getWoz (name, buffer, offset, length);
+
+    if (fileSystems.size () > 1)
+    {
+      FsHybrid fsHybrid = new FsHybrid (fileSystems);
+      fileSystems.clear ();
+      fileSystems.add (fsHybrid);
+    }
 
     return fileSystems;
   }
