@@ -32,21 +32,21 @@ public class FileSystemFactory
   private boolean debug = false;
 
   // ---------------------------------------------------------------------------------//
-  public List<AppleFileSystem> getFileSystems (AppleFile file)
+  public AppleFileSystem getFileSystem (AppleFile file)
   // ---------------------------------------------------------------------------------//
   {
-    return getFileSystems (file.getName (), file.read ());
+    return getFileSystem (file.getName (), file.read ());
   }
 
   // ---------------------------------------------------------------------------------//
-  public List<AppleFileSystem> getFileSystems (String name, byte[] buffer)
+  public AppleFileSystem getFileSystem (String name, byte[] buffer)
   // ---------------------------------------------------------------------------------//
   {
-    return getFileSystems (name, buffer, 0, buffer.length);
+    return getFileSystem (name, buffer, 0, buffer.length);
   }
 
   // ---------------------------------------------------------------------------------//
-  public List<AppleFileSystem> getFileSystems (String name, byte[] buffer, int offset, int length)
+  public AppleFileSystem getFileSystem (String name, byte[] buffer, int offset, int length)
   // ---------------------------------------------------------------------------------//
   {
     fileSystems = new ArrayList<> ();
@@ -68,23 +68,25 @@ public class FileSystemFactory
     getProdos (name, buffer, offset, length);
     getPascal (name, buffer, offset, length);
     getCpm (name, buffer, offset, length);
-    getLbr (name, buffer, offset, length);
-    getNuFx (name, buffer, offset, length);
-    getBinary2 (name, buffer, offset, length);
-    getZip (name, buffer, offset, length);
-    getGZip (name, buffer, offset, length);
-    get2img (name, buffer, offset, length);
-    getUnidos (name, buffer, offset, length);
-    getWoz (name, buffer, offset, length);
 
-    if (fileSystems.size () > 1)
+    if (fileSystems.size () == 0)
     {
-      FsHybrid fsHybrid = new FsHybrid (fileSystems);
-      fileSystems.clear ();
-      fileSystems.add (fsHybrid);
+      getLbr (name, buffer, offset, length);
+      getNuFx (name, buffer, offset, length);
+      getBinary2 (name, buffer, offset, length);
+      getZip (name, buffer, offset, length);
+      getGZip (name, buffer, offset, length);
+      get2img (name, buffer, offset, length);
+      getUnidos (name, buffer, offset, length);
+      getWoz (name, buffer, offset, length);
     }
 
-    return fileSystems;
+    return switch (fileSystems.size ())
+    {
+      case 0 -> null;
+      case 1 -> fileSystems.get (0);
+      default -> new FsHybrid (fileSystems);
+    };
   }
 
   // ---------------------------------------------------------------------------------//

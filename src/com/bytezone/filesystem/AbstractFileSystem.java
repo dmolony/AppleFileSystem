@@ -261,37 +261,39 @@ public abstract class AbstractFileSystem implements AppleFileSystem
   protected void addFileSystem (AppleFile parent, AbstractFile file)
   // ---------------------------------------------------------------------------------//
   {
-    List<AppleFileSystem> fileSystems = addFileSystem (parent, file.getName (), file.read ());
+    AppleFileSystem fs = addFileSystem (parent, file.getName (), file.read ());
 
-    if (fileSystems.size () == 0)
+    if (fs == null)
     {
       System.out.println ("No file systems found");
       parent.addFile (file);
-      ++totalFiles;
     }
   }
 
   // ---------------------------------------------------------------------------------//
-  protected List<AppleFileSystem> addFileSystem (AppleFile parent, String name, byte[] buffer)
+  protected AppleFileSystem addFileSystem (AppleFile parent, String name, byte[] buffer)
   // ---------------------------------------------------------------------------------//
   {
     return addFileSystem (parent, name, buffer, 0, buffer.length);
   }
 
   // ---------------------------------------------------------------------------------//
-  protected List<AppleFileSystem> addFileSystem (AppleFile parent, String name, byte[] buffer,
-      int offset, int length)
+  protected AppleFileSystem addFileSystem (AppleFile parent, String name, byte[] buffer, int offset,
+      int length)
   // ---------------------------------------------------------------------------------//
   {
     if (factory == null)
       factory = new FileSystemFactory ();
 
-    List<AppleFileSystem> fileSystems = factory.getFileSystems (name, buffer, offset, length);
+    AppleFileSystem fs = factory.getFileSystem (name, buffer, offset, length);
 
-    for (AppleFileSystem fs : fileSystems)
+    if (fs != null)
+    {
       parent.addFile (fs);
+      return fs;
+    }
 
-    return fileSystems;
+    return null;
   }
 
   // ---------------------------------------------------------------------------------//

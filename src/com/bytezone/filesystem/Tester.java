@@ -81,9 +81,9 @@ public class Tester
       Path path = Path.of (fileNames[fileNo]);
       String name = path.toFile ().getName ();
 
-      List<AppleFileSystem> fsList = factory.getFileSystems (name, readAllBytes (path));
+      AppleFileSystem fs = factory.getFileSystem (name, readAllBytes (path));
 
-      if (fsList.size () == 0)
+      if (fs == null)
       {
         System.out.println ("Unknown FS format: " + name);
         continue;
@@ -91,7 +91,6 @@ public class Tester
 
       if (fileNo == 99)
       {
-        for (AppleFileSystem fs : fsList)
         {
           System.out.println ();
           System.out.println (fs.catalog ());
@@ -107,7 +106,8 @@ public class Tester
       }
 
       System.out.println ();
-      listFileSystems (fsList, 0);
+      System.out.printf ("%2d  %s%n", 0, fs);
+      listFileSystems (fs.getFiles (), 0);
     }
   }
 
