@@ -10,12 +10,17 @@ public class FsHybrid extends AbstractFileSystem
   public FsHybrid (List<AppleFileSystem> fileSystems)
   // ---------------------------------------------------------------------------------//
   {
-    this (fileSystems.get (0).getName (), fileSystems.get (0).getBuffer (),
-        fileSystems.get (0).getOffset (), fileSystems.get (0).getLength (),
-        fileSystems.get (0).getBlockReader ());
+    this (fileSystems.get (0));
 
     for (AppleFileSystem fs : fileSystems)
       addFile (fs);
+  }
+
+  // ---------------------------------------------------------------------------------//
+  public FsHybrid (AppleFileSystem fs)
+  // ---------------------------------------------------------------------------------//
+  {
+    this (fs.getName (), fs.getBuffer (), fs.getOffset (), fs.getLength (), fs.getBlockReader ());
   }
 
   // ---------------------------------------------------------------------------------//
@@ -32,6 +37,6 @@ public class FsHybrid extends AbstractFileSystem
   public void readCatalog ()
   // ---------------------------------------------------------------------------------//
   {
-    System.out.println ("Nothing to see here");
+    // no catalog to read
   }
 }
