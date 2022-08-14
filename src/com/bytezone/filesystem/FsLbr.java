@@ -48,10 +48,7 @@ public class FsLbr extends AbstractFileSystem
         }
 
         if (file.status == 0 && file.totalBlocks > 0)
-        {
           addFile (file);
-          ++totalFiles;
-        }
       }
     }
   }

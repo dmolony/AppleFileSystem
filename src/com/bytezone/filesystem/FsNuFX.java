@@ -72,10 +72,7 @@ public class FsNuFX extends AbstractFileSystem
       if (file.hasDiskImage ())
         addFileSystem (this, file);
       else
-      {
         addFile (file);
-        ++totalFiles;
-      }
 
       ptr += file.rawLength;
     }

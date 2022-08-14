@@ -46,7 +46,6 @@ public class FsUnidos extends AbstractFileSystem
         {
           addFile (fs1);
           addFile (fs2);
-          totalFileSystems += 2;
         }
       }
     }

@@ -68,7 +68,7 @@ public class FsBinary2 extends AbstractFileSystem
       else
       {
         addFile (file);
-        ++totalFiles;
+        //        ++totalFiles;
       }
 
       nextBlock += ((file.getEof () - 1) / 128 + 2);

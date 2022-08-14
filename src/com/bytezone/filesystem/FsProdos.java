@@ -114,10 +114,7 @@ public class FsProdos extends AbstractFileSystem
             if (file.getFileType () == ProdosConstants.FILE_TYPE_LBR)
               addFileSystem (parent, file);
             else
-            {
               parent.addFile (file);
-              ++totalFiles;
-            }
             break;
 
           case PASCAL_ON_PROFILE:
@@ -128,7 +125,6 @@ public class FsProdos extends AbstractFileSystem
 
           case GSOS_EXTENDED_FILE:
             parent.addFile (new FileProdos (this, buffer, ptr));
-            ++totalFiles;
             break;
 
           case SUBDIRECTORY:
