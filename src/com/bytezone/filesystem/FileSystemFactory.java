@@ -12,9 +12,6 @@ import com.bytezone.utility.Utility;
 public class FileSystemFactory
 // -----------------------------------------------------------------------------------//
 {
-  private static final byte[] WOZ_1 = { 0x57, 0x4F, 0x5A, 0x32, (byte) 0xFF, 0x0A, 0x0D, 0x0A };
-  private static final byte[] WOZ_2 = { 0x57, 0x4F, 0x5A, 0x31, (byte) 0xFF, 0x0A, 0x0D, 0x0A };
-
   private static final int DOS31_SIZE = 116_480;
   private static final int DOS33_SIZE = 143_360;
   private static final int UNIDOS_SIZE = 409_600;
@@ -65,34 +62,26 @@ public class FileSystemFactory
 
     assert offset + length <= buffer.length;
 
-    add (getProdos (name, buffer, offset, length));
-    add (getPascal (name, buffer, offset, length));
-    add (getDos31 (name, buffer, offset, length));
-    add (getDos33 (name, buffer, offset, length));
-    add (getDos4 (name, buffer, offset, length));
-    add (getCpm (name, buffer, offset, length));
-    add (getLbr (name, buffer, offset, length));
-    add (getNuFx (name, buffer, offset, length));
-    add (getBinary2 (name, buffer, offset, length));
-    add (getZip (name, buffer, offset, length));
-    add (getGZip (name, buffer, offset, length));
-    add (get2img (name, buffer, offset, length));
-    add (getUnidos (name, buffer, offset, length));
-    add (getWoz (name, buffer, offset, length));
+    getProdos (name, buffer, offset, length);
+    getPascal (name, buffer, offset, length);
+    getDos31 (name, buffer, offset, length);
+    getDos33 (name, buffer, offset, length);
+    getDos4 (name, buffer, offset, length);
+    getCpm (name, buffer, offset, length);
+    getLbr (name, buffer, offset, length);
+    getNuFx (name, buffer, offset, length);
+    getBinary2 (name, buffer, offset, length);
+    getZip (name, buffer, offset, length);
+    getGZip (name, buffer, offset, length);
+    get2img (name, buffer, offset, length);
+    getUnidos (name, buffer, offset, length);
+    getWoz (name, buffer, offset, length);
 
     return fileSystems;
   }
 
   // ---------------------------------------------------------------------------------//
-  private void add (AppleFileSystem appleFileSystem)
-  // ---------------------------------------------------------------------------------//
-  {
-    if (appleFileSystem != null)
-      fileSystems.add (appleFileSystem);
-  }
-
-  // ---------------------------------------------------------------------------------//
-  private FsDos getDos31 (String name, byte[] buffer, int offset, int length)
+  private void getDos31 (String name, byte[] buffer, int offset, int length)
   // ---------------------------------------------------------------------------------//
   {
     if (length == DOS31_SIZE)
@@ -102,19 +91,17 @@ public class FileSystemFactory
         fs.readCatalog ();
 
         if (fs.getTotalCatalogBlocks () > 0)
-          return fs;
+          fileSystems.add (fs);
       }
       catch (FileFormatException e)
       {
         if (debug)
           System.out.println (e);
       }
-
-    return null;
   }
 
   // ---------------------------------------------------------------------------------//
-  private FsDos getDos33 (String name, byte[] buffer, int offset, int length)
+  private void getDos33 (String name, byte[] buffer, int offset, int length)
   // ---------------------------------------------------------------------------------//
   {
     List<FsDos> fsList = new ArrayList<> (2);
@@ -135,17 +122,22 @@ public class FileSystemFactory
             System.out.println (e);
         }
 
-    return switch (fsList.size ())
+    switch (fsList.size ())
     {
-      case 1 -> fsList.get (0);
-      case 2 -> fsList.get (0).getTotalCatalogBlocks () > fsList.get (1).getTotalCatalogBlocks ()
-          ? fsList.get (0) : fsList.get (1);
-      default -> null;
-    };
+      case 1:
+        fileSystems.add (fsList.get (0));
+        break;
+
+      case 2:
+        if (fsList.get (0).getTotalCatalogBlocks () > fsList.get (1).getTotalCatalogBlocks ())
+          fileSystems.add (fsList.get (0));
+        else
+          fileSystems.add (fsList.get (1));
+    }
   }
 
   // ---------------------------------------------------------------------------------//
-  private FsDos4 getDos4 (String name, byte[] buffer, int offset, int length)
+  private void getDos4 (String name, byte[] buffer, int offset, int length)
   // ---------------------------------------------------------------------------------//
   {
     if (length == DOS33_SIZE)
@@ -155,19 +147,37 @@ public class FileSystemFactory
         fs.readCatalog ();
 
         if (fs.getTotalCatalogBlocks () > 0)
-          return fs;
+          fileSystems.add (fs);
       }
       catch (FileFormatException e)
       {
         if (debug)
           System.out.println (e);
       }
-
-    return null;
   }
 
   // ---------------------------------------------------------------------------------//
-  private FsProdos getProdos (String name, byte[] buffer, int offset, int length)
+  private void getUnidos (String name, byte[] buffer, int offset, int length)
+  // ---------------------------------------------------------------------------------//
+  {
+    if (length == UNIDOS_SIZE * 2)
+      try
+      {
+        FsUnidos fs = new FsUnidos (name, buffer, offset, length, unidosReader);
+        fs.readCatalog ();
+
+        if (fs.getFiles ().size () > 0)
+          fileSystems.add (fs);
+      }
+      catch (FileFormatException e)
+      {
+        if (debug)
+          System.out.println (e);
+      }
+  }
+
+  // ---------------------------------------------------------------------------------//
+  private void getProdos (String name, byte[] buffer, int offset, int length)
   // ---------------------------------------------------------------------------------//
   {
     for (BlockReader reader : blockReaders)
@@ -177,19 +187,17 @@ public class FileSystemFactory
         fs.readCatalog ();
 
         if (fs.getTotalCatalogBlocks () > 0)
-          return fs;
+          fileSystems.add (fs);
       }
       catch (FileFormatException e)
       {
         if (debug)
           System.out.println (e);
       }
-
-    return null;
   }
 
   // ---------------------------------------------------------------------------------//
-  private FsPascal getPascal (String name, byte[] buffer, int offset, int length)
+  private void getPascal (String name, byte[] buffer, int offset, int length)
   // ---------------------------------------------------------------------------------//
   {
     for (BlockReader reader : blockReaders)
@@ -199,19 +207,17 @@ public class FileSystemFactory
         fs.readCatalog ();
 
         if (fs.getTotalCatalogBlocks () > 0)
-          return fs;
+          fileSystems.add (fs);
       }
       catch (FileFormatException e)
       {
         if (debug)
           System.out.println (e);
       }
-
-    return null;
   }
 
   // ---------------------------------------------------------------------------------//
-  private FsCpm getCpm (String name, byte[] buffer, int offset, int length)
+  private void getCpm (String name, byte[] buffer, int offset, int length)
   // ---------------------------------------------------------------------------------//
   {
     if (length == DOS33_SIZE)
@@ -221,19 +227,17 @@ public class FileSystemFactory
         fs.readCatalog ();
 
         if (fs.getTotalCatalogBlocks () > 0)
-          return fs;
+          fileSystems.add (fs);
       }
       catch (FileFormatException e)
       {
         if (debug)
           System.out.println (e);
       }
-
-    return null;
   }
 
   // ---------------------------------------------------------------------------------//
-  private FsLbr getLbr (String name, byte[] buffer, int offset, int length)
+  private void getLbr (String name, byte[] buffer, int offset, int length)
   // ---------------------------------------------------------------------------------//
   {
     try
@@ -242,19 +246,17 @@ public class FileSystemFactory
       fs.readCatalog ();
 
       if (fs.getTotalCatalogBlocks () > 0)
-        return fs;
+        fileSystems.add (fs);
     }
     catch (FileFormatException e)
     {
       if (debug)
         System.out.println (e);
     }
-
-    return null;
   }
 
   // ---------------------------------------------------------------------------------//
-  private FsBinary2 getBinary2 (String name, byte[] buffer, int offset, int length)
+  private void getBinary2 (String name, byte[] buffer, int offset, int length)
   // ---------------------------------------------------------------------------------//
   {
     if (Utility.isMagic (buffer, offset, FsBinary2.BIN2) && buffer[offset + 18] == 0x02)
@@ -264,19 +266,17 @@ public class FileSystemFactory
         fs.readCatalog ();
 
         if (fs.getFiles ().size () > 0)
-          return fs;
+          fileSystems.add (fs);
       }
       catch (FileFormatException e)
       {
         if (debug)
           System.out.println (e);
       }
-
-    return null;
   }
 
   // ---------------------------------------------------------------------------------//
-  private FsNuFX getNuFx (String name, byte[] buffer, int offset, int length)
+  private void getNuFx (String name, byte[] buffer, int offset, int length)
   // ---------------------------------------------------------------------------------//
   {
     if (Utility.isMagic (buffer, offset, FsNuFX.NuFile))
@@ -286,19 +286,17 @@ public class FileSystemFactory
         fs.readCatalog ();
 
         if (fs.getFiles ().size () > 0)
-          return fs;
+          fileSystems.add (fs);
       }
       catch (FileFormatException e)
       {
         if (debug)
           System.out.println (e);
       }
-
-    return null;
   }
 
   // ---------------------------------------------------------------------------------//
-  private Fs2img get2img (String name, byte[] buffer, int offset, int length)
+  private void get2img (String name, byte[] buffer, int offset, int length)
   // ---------------------------------------------------------------------------------//
   {
     if (Utility.isMagic (buffer, offset, Fs2img.TWO_IMG))
@@ -310,41 +308,17 @@ public class FileSystemFactory
         fs.readCatalog ();
 
         if (fs.getFiles ().size () > 0)
-          return fs;
+          fileSystems.add (fs);
       }
       catch (FileFormatException e)
       {
         if (debug)
           System.out.println (e);
       }
-
-    return null;
   }
 
   // ---------------------------------------------------------------------------------//
-  private FsUnidos getUnidos (String name, byte[] buffer, int offset, int length)
-  // ---------------------------------------------------------------------------------//
-  {
-    if (length == UNIDOS_SIZE * 2)
-      try
-      {
-        FsUnidos fs = new FsUnidos (name, buffer, offset, length, unidosReader);
-        fs.readCatalog ();
-
-        if (fs.getFiles ().size () > 0)
-          return fs;
-      }
-      catch (FileFormatException e)
-      {
-        if (debug)
-          System.out.println (e);
-      }
-
-    return null;
-  }
-
-  // ---------------------------------------------------------------------------------//
-  private FsZip getZip (String name, byte[] buffer, int offset, int length)
+  private void getZip (String name, byte[] buffer, int offset, int length)
   // ---------------------------------------------------------------------------------//
   {
     if (Utility.isMagic (buffer, offset, FsZip.ZIP))
@@ -354,19 +328,17 @@ public class FileSystemFactory
         fs.readCatalog ();
 
         if (fs.getFiles ().size () > 0)
-          return fs;
+          fileSystems.add (fs);
       }
       catch (FileFormatException e)
       {
         if (debug)
           System.out.println (e);
       }
-
-    return null;
   }
 
   // ---------------------------------------------------------------------------------//
-  private FsGzip getGZip (String name, byte[] buffer, int offset, int length)
+  private void getGZip (String name, byte[] buffer, int offset, int length)
   // ---------------------------------------------------------------------------------//
   {
     if (Utility.isMagic (buffer, offset, FsGzip.GZIP))
@@ -376,36 +348,32 @@ public class FileSystemFactory
         fs.readCatalog ();
 
         if (fs.getFiles ().size () > 0)
-          return fs;
+          fileSystems.add (fs);
       }
       catch (FileFormatException e)
       {
         if (debug)
           System.out.println (e);
       }
-
-    return null;
   }
 
   // ---------------------------------------------------------------------------------//
-  private FsWoz getWoz (String name, byte[] buffer, int offset, int length)
+  private void getWoz (String name, byte[] buffer, int offset, int length)
   // ---------------------------------------------------------------------------------//
   {
-    if (Utility.isMagic (buffer, 0, WOZ_1) || Utility.isMagic (buffer, offset, WOZ_2))
+    if (Utility.isMagic (buffer, 0, FsWoz.WOZ_1) || Utility.isMagic (buffer, offset, FsWoz.WOZ_2))
       try
       {
         FsWoz fs = new FsWoz (name, buffer, offset, length, lbrReader);
         fs.readCatalog ();
 
         if (fs.getFiles ().size () > 0)
-          return fs;
+          fileSystems.add (fs);
       }
       catch (FileFormatException e)
       {
         if (debug)
           System.out.println (e);
       }
-
-    return null;
   }
 }
