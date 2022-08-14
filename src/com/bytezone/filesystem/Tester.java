@@ -3,7 +3,6 @@ package com.bytezone.filesystem;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.List;
 
 // see: https://github.com/zeek/bromagic/blob/master/database/apple
 // -----------------------------------------------------------------------------------//
@@ -29,6 +28,7 @@ public class Tester
   String bxy = cmp + "BXY/";
   String bqy = cmp + "BQY/";
   String bsq = cmp + "BSQ/";
+  String zip = cmp + "ZIP/";
 
   String[] fileNames = {                             //
       base + "dos/Assembler.dsk",                    // 0: 3.3 intl 0
@@ -64,7 +64,9 @@ public class Tester
       bxy + "GWFTP11B2.BXY",                         // 30: binary II / NuFX
       bqy + "NW.PROTALK5.BQY",                       // 31: binary II / Squeeze
       java + "vm02alpha1.dsk.zip",                   // 32: zip
-      brcc + "235 - ProDos Menu Programs (Big Red Computer Club).DSK.gz",   // 33: gzip
+      zip + "copiers.zip",                           // 33: zip (no disk suffix)
+      zip + "Archive.zip",                           // 34: zip (no disk suffix)
+      brcc + "235 - ProDos Menu Programs (Big Red Computer Club).DSK.gz",   // 35: gzip
   };
 
   // ---------------------------------------------------------------------------------//
@@ -73,8 +75,8 @@ public class Tester
   {
     FileSystemFactory factory = new FileSystemFactory ();
 
-    for (int fileNo = 0; fileNo < fileNames.length; fileNo++)
-    //    for (int fileNo = 33; fileNo <= 33; fileNo++)
+    //    for (int fileNo = 0; fileNo < fileNames.length; fileNo++)
+    for (int fileNo = 33; fileNo <= 33; fileNo++)
     {
       //      System.out.printf ("%n%d %s%n", fileNo, fileNames[fileNo].substring (base.length ()));
 
@@ -91,38 +93,24 @@ public class Tester
 
       if (fileNo == 99)
       {
-        {
-          System.out.println ();
-          System.out.println (fs.catalog ());
-
-          //          for (AppleFile file : fs.getFiles ())
-          //            if (file.getName ().equals ("NET.CONFIG.S.QQ"))
-          //            {
-          //              byte[] buffer = file.read ();
-          //              System.out.println (Utility.format (buffer));
-          //              break;
-          //            }
-        }
+        System.out.println ();
+        System.out.println (fs.catalog ());
       }
 
       System.out.println ();
-      System.out.printf ("%2d  %s%n", 0, fs);
-      listFileSystems (fs.getFiles (), 0);
+      listFileSystems (fs, 1);
     }
   }
 
   // ---------------------------------------------------------------------------------//
-  private void listFileSystems (List<? extends AppleFile> files, int depth)
+  private void listFileSystems (AppleFile container, int depth)
   // ---------------------------------------------------------------------------------//
   {
-    for (AppleFile fs : files)
-    {
-      if (fs.isFileSystem ())
-      {
-        System.out.printf ("%2d  %s%n", depth, fs);
-        listFileSystems (fs.getFiles (), depth + 1);
-      }
-    }
+    System.out.printf ("%2d  %s%n", depth, container);
+
+    for (AppleFile file : container.getFiles ())
+      if (file.isFileSystem () || file.isDirectory ())
+        listFileSystems (file, depth + 1);
   }
 
   // ---------------------------------------------------------------------------------//

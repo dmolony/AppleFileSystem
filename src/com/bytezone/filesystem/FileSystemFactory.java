@@ -32,7 +32,7 @@ public class FileSystemFactory
   private boolean debug = false;
 
   // ---------------------------------------------------------------------------------//
-  public AppleFileSystem getFileSystem (AppleFile file)
+  AppleFileSystem getFileSystem (AppleFile file)
   // ---------------------------------------------------------------------------------//
   {
     return getFileSystem (file.getName (), file.read ());

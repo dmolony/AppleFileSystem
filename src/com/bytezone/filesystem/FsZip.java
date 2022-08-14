@@ -16,7 +16,7 @@ public class FsZip extends AbstractFileSystem
 {
   static final byte[] ZIP = { 0x50, 0x4B, 0x03, 0x04 };
 
-  boolean debug = false;
+  boolean debug = true;
 
   // ---------------------------------------------------------------------------------//
   public FsZip (String name, byte[] buffer, BlockReader blockReader)
@@ -49,32 +49,35 @@ public class FsZip extends AbstractFileSystem
       ZipEntry entry;
       while ((entry = zip.getNextEntry ()) != null)
       {
-        if (entry.getName ().startsWith ("__"))
+        if (entry.getName ().startsWith ("__") || entry.getName ().startsWith ("."))
           continue;
 
-        //        System.out.print (entry);
+        if (debug)
+        {
+          System.out.println ();
+          System.out.printf ("Compressed size ... %,d%n", entry.getCompressedSize ());
+          System.out.printf ("Size .............. %,d%n", entry.getSize ());
+          System.out.printf ("Name .............. %s%n", entry.getName ());
+          System.out.printf ("Comment ........... %s%n", entry.getComment ());
+          System.out.printf ("CRC ............... %,d%n", entry.getCrc ());
+          System.out.printf ("Creation time ..... %s%n", entry.getCreationTime ());
+          System.out.printf ("Extra ............. %s%n", entry.getExtra ());
+          System.out.printf ("Method ............ %,d%n", entry.getMethod ());
+          System.out.printf ("Is directory ...... %s%n", entry.isDirectory ());
+        }
+
         if (entry.isDirectory ())
-          System.out.println (" : dir");
+        {
+
+        }
         else
         {
-          if (debug)
-          {
-            System.out.println (" : file");
-            System.out.println (entry.getCompressedSize ());
-            System.out.println (entry.getSize ());
-            System.out.println (entry.getName ());
-            System.out.println (entry.getComment ());
-            System.out.println (entry.getCrc ());
-            System.out.println (entry.getCreationTime ());
-            System.out.println (entry.getExtra ());
-            System.out.println (entry.getMethod ());
-          }
-
           int ptr = 0;
           int rem = (int) entry.getSize ();
 
           if (rem > 0)
           {
+            //            System.out.println ("type 1");
             byte[] buffer = new byte[rem];
             while (true)
             {
@@ -90,6 +93,7 @@ public class FsZip extends AbstractFileSystem
           }
           else
           {
+            //            System.out.println ("type 2");
             List<byte[]> buffers = new ArrayList<> ();
             List<Integer> sizes = new ArrayList<> ();
             int bytesRead;
@@ -141,3 +145,34 @@ public class FsZip extends AbstractFileSystem
     return text.toString ();
   }
 }
+
+// Compression methods
+// 0 - The file is stored (no compression)
+// 1 - The file is Shrunk
+// 2 - The file is Reduced with compression factor 1
+// 3 - The file is Reduced with compression factor 2
+// 4 - The file is Reduced with compression factor 3
+// 5 - The file is Reduced with compression factor 4
+// 6 - The file is Imploded
+// 7 - Reserved for Tokenizing compression algorithm
+// 8 - The file is Deflated
+// 9 - Enhanced Deflating using Deflate64(tm)
+// 10 - PKWARE Data Compression Library Imploding (old IBM TERSE)
+// 11 - Reserved by PKWARE
+// 12 - File is compressed using BZIP2 algorithm
+// 13 - Reserved by PKWARE
+// 14 - LZMA
+// 15 - Reserved by PKWARE
+// 16 - IBM z/OS CMPSC Compression
+// 17 - Reserved by PKWARE
+// 18 - File is compressed using IBM TERSE (new)
+// 19 - IBM LZ77 z Architecture 
+// 20 - deprecated (use method 93 for zstd)
+// 93 - Zstandard (zstd) Compression 
+// 94 - MP3 Compression 
+// 95 - XZ Compression 
+// 96 - JPEG variant
+// 97 - WavPack compressed data
+// 98 - PPMd version I, Rev 1
+// 99 - AE-x encryption marker (see APPENDIX E)
+// 

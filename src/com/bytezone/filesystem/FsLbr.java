@@ -17,6 +17,7 @@ public class FsLbr extends AbstractFileSystem
   // ---------------------------------------------------------------------------------//
   {
     super (name, buffer, offset, length, blockReader);
+
     setFileSystemName ("LBR");
   }
 
