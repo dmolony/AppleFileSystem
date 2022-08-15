@@ -16,7 +16,7 @@ public class FsZip extends AbstractFileSystem
 {
   static final byte[] ZIP = { 0x50, 0x4B, 0x03, 0x04 };
 
-  boolean debug = true;
+  boolean debug = false;
 
   // ---------------------------------------------------------------------------------//
   public FsZip (String name, byte[] buffer, BlockReader blockReader)
@@ -49,8 +49,13 @@ public class FsZip extends AbstractFileSystem
       ZipEntry entry;
       while ((entry = zip.getNextEntry ()) != null)
       {
-        if (entry.getName ().startsWith ("__") || entry.getName ().startsWith ("."))
+        if (entry.getName ().startsWith ("__") || entry.getName ().startsWith (".")
+            || Utility.getSuffixNo (entry.getName ()) < 0)
+        {
+          if (debug)
+            System.out.printf ("Ignoring : %s%n", entry.getName ());
           continue;
+        }
 
         if (debug)
         {
@@ -89,7 +94,7 @@ public class FsZip extends AbstractFileSystem
               rem -= len;
             }
 
-            addFileSystem (this, entry.getName (), buffer);
+            addEntry (entry.getName (), buffer);
           }
           else
           {
@@ -118,7 +123,7 @@ public class FsZip extends AbstractFileSystem
               ptr += sizes.get (i);
             }
 
-            addFileSystem (this, entry.getName (), buffer);
+            addEntry (entry.getName (), buffer);
           }
         }
       }
@@ -131,6 +136,46 @@ public class FsZip extends AbstractFileSystem
     {
       e.printStackTrace ();
     }
+  }
+
+  // ---------------------------------------------------------------------------------//
+  private void addEntry (String path, byte[] buffer)
+  // ---------------------------------------------------------------------------------//
+  {
+    String fileName;
+
+    int pos = path.lastIndexOf ('/');
+    if (pos < 0)
+    {
+      fileName = path;
+      path = "";
+    }
+    else
+    {
+      fileName = path.substring (pos + 1);
+      path = path.substring (0, pos);
+    }
+
+    AppleFile parent = this;
+    if (!path.isEmpty ())
+      for (String name : path.split ("/"))
+        parent = getFolder (parent, name);
+
+    AppleFileSystem fs = addFileSystem (parent, fileName, buffer);
+  }
+
+  // ---------------------------------------------------------------------------------//
+  private FolderZip getFolder (AppleFile parent, String name)
+  // ---------------------------------------------------------------------------------//
+  {
+    for (AppleFile file : parent.getFiles ())
+      if (file.getName ().equals (name) && file.isDirectory ())
+        return (FolderZip) file;
+
+    FolderZip folder = new FolderZip (this, name);
+    parent.addFile (folder);
+
+    return folder;
   }
 
   // ---------------------------------------------------------------------------------//

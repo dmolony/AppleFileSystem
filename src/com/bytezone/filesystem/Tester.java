@@ -106,11 +106,15 @@ public class Tester
   private void listFileSystems (AppleFile container, int depth)
   // ---------------------------------------------------------------------------------//
   {
+    //    if (container.isFileSystem ())
     System.out.printf ("%2d  %s%n", depth, container);
+    depth++;
 
     for (AppleFile file : container.getFiles ())
       if (file.isFileSystem () || file.isDirectory ())
-        listFileSystems (file, depth + 1);
+        listFileSystems (file, depth);
+    //      else
+    //        System.out.printf ("%2d  %s%n", depth, file);
   }
 
   // ---------------------------------------------------------------------------------//
