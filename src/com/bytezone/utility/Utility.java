@@ -1,8 +1,11 @@
 package com.bytezone.utility;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.time.DateTimeException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -411,6 +414,41 @@ public class Utility
     }
 
     return text.toString ();
+  }
+
+  // ---------------------------------------------------------------------------------//
+  public static byte[] getFullBuffer (InputStream zip) throws IOException
+  // ---------------------------------------------------------------------------------//
+  {
+    List<byte[]> buffers = new ArrayList<> ();
+    List<Integer> sizes = new ArrayList<> ();
+
+    int bytesRead;
+    int size = 0;
+    int ptr = 0;
+
+    while (true)
+    {
+      byte[] buffer = new byte[1024];
+      bytesRead = zip.read (buffer);
+
+      if (bytesRead < 0)
+        break;
+
+      buffers.add (buffer);
+      sizes.add (bytesRead);
+      size += bytesRead;
+    }
+
+    byte[] buffer = new byte[size];
+
+    for (int i = 0; i < buffers.size (); i++)
+    {
+      System.arraycopy (buffers.get (i), 0, buffer, ptr, sizes.get (i));
+      ptr += sizes.get (i);
+    }
+
+    return buffer;
   }
 
   // Used by FsNuFX and FileNuFX (multiple bytes)

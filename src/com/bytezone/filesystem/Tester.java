@@ -29,6 +29,7 @@ public class Tester
   String bqy = cmp + "BQY/";
   String bsq = cmp + "BSQ/";
   String zip = cmp + "ZIP/";
+  String gz = cmp + "GZ/";
 
   String[] fileNames = {                             //
       base + "dos/Assembler.dsk",                    // 0: 3.3 intl 0
@@ -66,7 +67,8 @@ public class Tester
       java + "vm02alpha1.dsk.zip",                   // 32: zip
       zip + "copiers.zip",                           // 33: zip (no disk suffix)
       zip + "Archive.zip",                           // 34: zip (no disk suffix)
-      brcc + "235 - ProDos Menu Programs (Big Red Computer Club).DSK.gz",   // 35: gzip
+      gz + "ascii_express_pro.dsk.gz",               // 35: zip - wrong suffix (2 Dos disks)
+      gz + "catsmeow.dsk.gz",                        // 36: gzip
   };
 
   // ---------------------------------------------------------------------------------//
@@ -76,7 +78,8 @@ public class Tester
     FileSystemFactory factory = new FileSystemFactory ();
 
     //    for (int fileNo = 0; fileNo < fileNames.length; fileNo++)
-    for (int fileNo = 33; fileNo <= 33; fileNo++)
+    int index = 36;
+    for (int fileNo = index; fileNo <= index; fileNo++)
     {
       //      System.out.printf ("%n%d %s%n", fileNo, fileNames[fileNo].substring (base.length ()));
 
@@ -91,14 +94,14 @@ public class Tester
         continue;
       }
 
-      if (fileNo == 99)
+      if (fileNo == index && false)
       {
         System.out.println ();
         System.out.println (fs.catalog ());
       }
 
       System.out.println ();
-      listFileSystems (fs, 1);
+      listFileSystems (fs, 0);
     }
   }
 
@@ -106,13 +109,11 @@ public class Tester
   private void listFileSystems (AppleFile container, int depth)
   // ---------------------------------------------------------------------------------//
   {
-    //    if (container.isFileSystem ())
     System.out.printf ("%2d  %s%n", depth, container);
-    depth++;
 
     for (AppleFile file : container.getFiles ())
       if (file.isFileSystem () || file.isDirectory ())
-        listFileSystems (file, depth);
+        listFileSystems (file, depth + 1);
     //      else
     //        System.out.printf ("%2d  %s%n", depth, file);
   }

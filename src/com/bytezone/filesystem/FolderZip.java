@@ -4,7 +4,6 @@ package com.bytezone.filesystem;
 public class FolderZip extends AbstractFile
 // -----------------------------------------------------------------------------------//
 {
-
   // ---------------------------------------------------------------------------------//
   FolderZip (FsZip fs, String name)
   // ---------------------------------------------------------------------------------//
@@ -12,6 +11,7 @@ public class FolderZip extends AbstractFile
     super (fs);
 
     this.name = name;
+
     isFolder = true;
   }
 

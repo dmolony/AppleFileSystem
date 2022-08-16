@@ -10,13 +10,16 @@ import java.util.zip.ZipInputStream;
 
 import com.bytezone.utility.Utility;
 
+// https://docs.fileformat.com/compression/zip/
 // -----------------------------------------------------------------------------------//
 public class FsZip extends AbstractFileSystem
 // -----------------------------------------------------------------------------------//
 {
   static final byte[] ZIP = { 0x50, 0x4B, 0x03, 0x04 };
 
-  boolean debug = false;
+  private boolean debug = false;
+
+  private List<ZipEntry> zipEntries = new ArrayList<> ();
 
   // ---------------------------------------------------------------------------------//
   public FsZip (String name, byte[] buffer, BlockReader blockReader)
@@ -34,7 +37,6 @@ public class FsZip extends AbstractFileSystem
     setFileSystemName ("Zip");
 
     assert Utility.isMagic (buffer, offset, ZIP);
-
   }
 
   // ---------------------------------------------------------------------------------//
@@ -42,99 +44,54 @@ public class FsZip extends AbstractFileSystem
   public void readCatalog ()
   // ---------------------------------------------------------------------------------//
   {
-    //    System.out.println (Utility.format (diskBuffer, fileOffset, fileLength));
-
-    try (ZipInputStream zip = new ZipInputStream (new ByteArrayInputStream (getBuffer ()));)
+    try (ZipInputStream zip = new ZipInputStream (//
+        new ByteArrayInputStream (getBuffer (), getOffset (), getLength ()));)
     {
       ZipEntry entry;
       while ((entry = zip.getNextEntry ()) != null)
       {
+        zipEntries.add (entry);
+
         if (entry.getName ().startsWith ("__") || entry.getName ().startsWith (".")
-            || Utility.getSuffixNo (entry.getName ()) < 0)
+            || entry.isDirectory () || Utility.getSuffixNo (entry.getName ()) < 0)
         {
           if (debug)
             System.out.printf ("Ignoring : %s%n", entry.getName ());
           continue;
         }
 
-        if (debug)
-        {
-          System.out.println ();
-          System.out.printf ("Compressed size ... %,d%n", entry.getCompressedSize ());
-          System.out.printf ("Size .............. %,d%n", entry.getSize ());
-          System.out.printf ("Name .............. %s%n", entry.getName ());
-          System.out.printf ("Comment ........... %s%n", entry.getComment ());
-          System.out.printf ("CRC ............... %,d%n", entry.getCrc ());
-          System.out.printf ("Creation time ..... %s%n", entry.getCreationTime ());
-          System.out.printf ("Extra ............. %s%n", entry.getExtra ());
-          System.out.printf ("Method ............ %,d%n", entry.getMethod ());
-          System.out.printf ("Is directory ...... %s%n", entry.isDirectory ());
-        }
+        int rem = (int) entry.getSize ();
 
-        if (entry.isDirectory ())
+        if (rem > 0)
         {
+          byte[] buffer = new byte[rem];
+          int ptr = 0;
 
+          while (true)
+          {
+            int len = zip.read (buffer, ptr, rem);
+            if (len == 0)
+              break;
+
+            ptr += len;
+            rem -= len;
+          }
+
+          addEntry (entry.getName (), buffer);
         }
         else
-        {
-          int ptr = 0;
-          int rem = (int) entry.getSize ();
-
-          if (rem > 0)
-          {
-            //            System.out.println ("type 1");
-            byte[] buffer = new byte[rem];
-            while (true)
-            {
-              int len = zip.read (buffer, ptr, rem);
-              if (len == 0)
-                break;
-
-              ptr += len;
-              rem -= len;
-            }
-
-            addEntry (entry.getName (), buffer);
-          }
-          else
-          {
-            //            System.out.println ("type 2");
-            List<byte[]> buffers = new ArrayList<> ();
-            List<Integer> sizes = new ArrayList<> ();
-            int bytesRead;
-            int size = 0;
-
-            while (true)
-            {
-              byte[] buffer = new byte[1024];
-              bytesRead = zip.read (buffer);
-              if (bytesRead < 0)
-                break;
-              buffers.add (buffer);
-              sizes.add (bytesRead);
-              size += bytesRead;
-            }
-
-            byte[] buffer = new byte[size];
-
-            for (int i = 0; i < buffers.size (); i++)
-            {
-              System.arraycopy (buffers.get (i), 0, buffer, ptr, sizes.get (i));
-              ptr += sizes.get (i);
-            }
-
-            addEntry (entry.getName (), buffer);
-          }
-        }
+          addEntry (entry.getName (), Utility.getFullBuffer (zip));
       }
     }
     catch (ZipException e)
     {
-      e.printStackTrace ();
+      throw new FileFormatException (e.getMessage ());
+      //      e.printStackTrace ();
     }
     catch (IOException e)
     {
-      e.printStackTrace ();
+      throw new FileFormatException (e.getMessage ());
+      //      e.printStackTrace ();
     }
   }
 
@@ -185,7 +142,19 @@ public class FsZip extends AbstractFileSystem
   {
     StringBuilder text = new StringBuilder (super.toText ());
 
-    //    text.append (String.format ("Entry length .......... %d%n", entryLength));
+    for (ZipEntry entry : zipEntries)
+    {
+      System.out.println ();
+      text.append (String.format ("Compressed size ... %,d%n", entry.getCompressedSize ()));
+      text.append (String.format ("Size .............. %,d%n", entry.getSize ()));
+      text.append (String.format ("Name .............. %s%n", entry.getName ()));
+      text.append (String.format ("Comment ........... %s%n", entry.getComment ()));
+      text.append (String.format ("CRC ............... %,d%n", entry.getCrc ()));
+      text.append (String.format ("Creation time ..... %s%n", entry.getCreationTime ()));
+      text.append (String.format ("Extra ............. %s%n", entry.getExtra ()));
+      text.append (String.format ("Method ............ %,d%n", entry.getMethod ()));
+      text.append (String.format ("Is directory ...... %s%n", entry.isDirectory ()));
+    }
 
     return text.toString ();
   }
