@@ -53,7 +53,8 @@ public class FsPascal extends AbstractFileSystem
     int blockFrom = Utility.unsignedShort (buffer, 0);
     int blockTo = Utility.unsignedShort (buffer, 2);
     if (blockFrom != 0 || blockTo != 6)
-      throw new FileFormatException (String.format ("from: %d, to: %d%n", blockFrom, blockTo));
+      throw new FileFormatException (
+          String.format ("Pascal: from: %d, to: %d", blockFrom, blockTo));
 
     int nameLength = buffer[6] & 0xFF;
     if (nameLength < 1 || nameLength > 7)

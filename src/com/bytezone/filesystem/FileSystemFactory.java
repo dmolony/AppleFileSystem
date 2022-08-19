@@ -39,7 +39,7 @@ public class FileSystemFactory
   public AppleFileSystem getFileSystem (File file)
   // ---------------------------------------------------------------------------------//
   {
-    return getFileSystem (file.getName ().toString (), readAllBytes (file.toPath ()));
+    return getFileSystem (file.getName (), readAllBytes (file.toPath ()));
   }
 
   // ---------------------------------------------------------------------------------//
@@ -64,7 +64,8 @@ public class FileSystemFactory
 
     if (debug)
     {
-      System.out.println ("Checking: " + name);
+      System.out.printf ("Checking: %s%n", name);
+      System.out.printf ("Length  : %,d%n", length);
       System.out.println (Utility.format (buffer, offset, 100));
     }
 
@@ -240,7 +241,7 @@ public class FileSystemFactory
   private void getCpm (String name, byte[] buffer, int offset, int length)
   // ---------------------------------------------------------------------------------//
   {
-    if (length == DOS33_SIZE)
+    if (length == DOS33_SIZE || length == 819200)
       try
       {
         FsCpm fs = new FsCpm (name, buffer, offset, length, cpmReader);
@@ -408,8 +409,7 @@ public class FileSystemFactory
     catch (IOException e)
     {
       e.printStackTrace ();
-      System.exit (1);
-      return null;            // stupid editor
+      return null;
     }
   }
 }

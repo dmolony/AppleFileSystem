@@ -28,14 +28,14 @@ public class FsCpm extends AbstractFileSystem
   // ---------------------------------------------------------------------------------//
   {
     assert getTotalCatalogBlocks () == 0;
+
     int catalogBlocks = 0;
     FileCpm currentFile = null;
 
     out: for (int i = 0; i < 2; i++)
     {
-      AppleBlock vtoc = getBlock (12 + i);
-
-      byte[] buffer = vtoc.read ();
+      byte[] buffer = getBlock (12 + i).read ();
+      //      System.out.println (Utility.format (buffer));
 
       for (int j = 0; j < buffer.length; j += 32)
       {
@@ -43,12 +43,12 @@ public class FsCpm extends AbstractFileSystem
         if (b1 == EMPTY_BYTE_VALUE)         // deleted file??
           continue;
         if (b1 > 31)
-          //          throw new FileFormatException ("bad user number: " + b1);
+          //          throw new FileFormatException ("CPM: bad user number: " + b1);
           break out;
 
         int b2 = buffer[j + 1] & 0xFF;      // first letter of filename
         if (b2 <= 32 || (b2 > 126 && b2 != EMPTY_BYTE_VALUE))
-          //          throw new FileFormatException ("bad name value");
+          //          throw new FileFormatException ("CPM: bad name value");
           break out;
 
         if (currentFile == null || currentFile.isComplete ())

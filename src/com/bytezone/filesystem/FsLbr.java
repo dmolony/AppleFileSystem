@@ -4,7 +4,6 @@ package com.bytezone.filesystem;
 public class FsLbr extends AbstractFileSystem
 // -----------------------------------------------------------------------------------//
 {
-
   // ---------------------------------------------------------------------------------//
   public FsLbr (String name, byte[] buffer, BlockReader blockReader)
   // ---------------------------------------------------------------------------------//
@@ -31,8 +30,7 @@ public class FsLbr extends AbstractFileSystem
 
     for (int i = 0; i < max; i++)
     {
-      AppleBlock vtoc = getBlock (i);
-      byte[] buffer = vtoc.read ();
+      byte[] buffer = getBlock (i).read ();
 
       for (int j = 0; j < 4; j++)
       {
@@ -41,7 +39,7 @@ public class FsLbr extends AbstractFileSystem
         if (count++ == 0)                           // directory entry
         {
           if (file.status != 0 || !file.name.isBlank () || !file.extension.isBlank ())
-            return;
+            throw new FileFormatException ("LBR: Invalid header");
 
           max = file.totalBlocks;                   // change outer loop
           setCatalogBlocks (file.totalBlocks);
