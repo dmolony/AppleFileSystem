@@ -36,7 +36,7 @@ public class FileSystemFactory
   private boolean debug = false;
 
   // ---------------------------------------------------------------------------------//
-  AppleFileSystem getFileSystem (File file)
+  public AppleFileSystem getFileSystem (File file)
   // ---------------------------------------------------------------------------------//
   {
     return getFileSystem (file.getName ().toString (), readAllBytes (file.toPath ()));

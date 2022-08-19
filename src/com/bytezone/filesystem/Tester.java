@@ -16,7 +16,8 @@ public class Tester
   String euro = base + "Apple_IIgs_European_Disk_Collection/";
   String java = base + "VM02 Disk Image Collection/";
   String hybr = base + "AppleHybrid/";
-  String cpm = base + "cpm/CPM collection (37 disks) and more/";
+  String cpm1 = base + "cpm/";
+  String cpm2 = base + "cpm/CPM collection (37 disks) and more/";
   String woz = base + "woz/wozaday_Wizardry/";
   String wiz = base + "Wizardry/";
   String cmp = base + "compressed/";
@@ -48,7 +49,7 @@ public class Tester
       base + "DosMaster/Testing/Vol003.dsk",         // 13: DosMaster bad catalog
       intl + "pascal/SANE Disk 2.po",                // 14: pascal floppy blocks
       base + "pascal/Apple Pascal - Disk 0.dsk",     // 15: pascal floppy sectors
-      base + "cpm/CPM_C_2_2.dsk",                    // 16: CPM floppy
+      cpm1 + "CPM_C_2_2.dsk",                        // 16: CPM floppy
       euro + "UniDOS 3.3.po",                        // 17: Unidos 32 sector
       hybr + "HybridHuffin/IAC20.DSK",               // 18: hybrid pascal/dos
       hybr + "cpm/HYBRID.DSK",                       // 19: hybrid cpm/dos
@@ -69,6 +70,7 @@ public class Tester
       zip + "Archive.zip",                           // 34: zip (no disk suffix)
       gz + "ascii_express_pro.dsk.gz",               // 35: zip - wrong suffix (2 Dos disks)
       gz + "catsmeow.dsk.gz",                        // 36: gzip
+      cpm1 + "CPAM 3.5.po",                          // 37: unknown
   };
 
   // ---------------------------------------------------------------------------------//
@@ -78,7 +80,7 @@ public class Tester
     FileSystemFactory factory = new FileSystemFactory ();
 
     //    for (int fileNo = 0; fileNo < fileNames.length; fileNo++)
-    int index = 36;
+    int index = 37;
     for (int fileNo = index; fileNo <= index; fileNo++)
     {
       //      System.out.printf ("%n%d %s%n", fileNo, fileNames[fileNo].substring (base.length ()));

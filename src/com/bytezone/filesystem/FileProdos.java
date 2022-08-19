@@ -175,7 +175,10 @@ public class FileProdos extends AbstractFile
   public String toString ()
   // ---------------------------------------------------------------------------------//
   {
-    return String.format ("%-30s %-3s  %04X %4d %,8d", name, ProdosConstants.fileTypes[fileType],
-        keyPtr, getSize (), getLength ());
+    int length =
+        storageType == FsProdos.GSOS_EXTENDED_FILE ? getLength (ForkType.DATA) : getLength ();
+
+    return String.format ("%-30s %-3s  %04X %4d %,10d", name, ProdosConstants.fileTypes[fileType],
+        keyPtr, getSize (), length);
   }
 }
