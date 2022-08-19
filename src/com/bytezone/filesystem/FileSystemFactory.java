@@ -3,6 +3,10 @@ package com.bytezone.filesystem;
 import static com.bytezone.filesystem.BlockReader.AddressType.BLOCK;
 import static com.bytezone.filesystem.BlockReader.AddressType.SECTOR;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,6 +34,13 @@ public class FileSystemFactory
 
   List<AppleFileSystem> fileSystems;
   private boolean debug = false;
+
+  // ---------------------------------------------------------------------------------//
+  AppleFileSystem getFileSystem (File file)
+  // ---------------------------------------------------------------------------------//
+  {
+    return getFileSystem (file.getName ().toString (), readAllBytes (file.toPath ()));
+  }
 
   // ---------------------------------------------------------------------------------//
   AppleFileSystem getFileSystem (AppleFile file)
@@ -384,5 +395,21 @@ public class FileSystemFactory
         if (debug)
           System.out.println (e);
       }
+  }
+
+  // ---------------------------------------------------------------------------------//
+  private byte[] readAllBytes (Path fileName)
+  // ---------------------------------------------------------------------------------//
+  {
+    try
+    {
+      return Files.readAllBytes (fileName);
+    }
+    catch (IOException e)
+    {
+      e.printStackTrace ();
+      System.exit (1);
+      return null;            // stupid editor
+    }
   }
 }
