@@ -32,16 +32,30 @@ public class FsCpm extends AbstractFileSystem
     int catalogBlocks = 0;
     FileCpm currentFile = null;
 
-    out: for (int i = 0; i < 2; i++)
+    int firstBlock = 0;
+    int maxBlocks = 0;
+
+    if (getBuffer ().length == 143_360)
     {
-      byte[] buffer = getBlock (12 + i).read ();
-      //      System.out.println (Utility.format (buffer));
+      firstBlock = 12;        // track 3 x (4 blocks per track)
+      maxBlocks = 2;          // 2 blocks (half a track)
+    }
+    else if (getBuffer ().length == 819_200)
+    {
+      firstBlock = 16;        // track 2 x (8 blocks per track)
+      maxBlocks = 8;          // 8 blocks (full track)
+    }
+
+    out: for (int i = 0; i < maxBlocks; i++)
+    {
+      byte[] buffer = getBlock (firstBlock + i).read ();
 
       for (int j = 0; j < buffer.length; j += 32)
       {
         int b1 = buffer[j] & 0xFF;          // user number
         if (b1 == EMPTY_BYTE_VALUE)         // deleted file??
           continue;
+
         if (b1 > 31)
           //          throw new FileFormatException ("CPM: bad user number: " + b1);
           break out;

@@ -19,10 +19,12 @@ public class FileSystemFactory
   private static final int DOS31_SIZE = 116_480;
   private static final int DOS33_SIZE = 143_360;
   private static final int UNIDOS_SIZE = 409_600;
+  private static final int CPAM_SIZE = 819_200;
 
   static BlockReader blockReader0 = new BlockReader (512, BLOCK, 0, 0);     // Prodos
   static BlockReader blockReader1 = new BlockReader (512, BLOCK, 1, 8);     // Prodos
-  static BlockReader cpmReader = new BlockReader (1024, BLOCK, 2, 4);       // CPM
+  static BlockReader cpmReader0 = new BlockReader (1024, BLOCK, 2, 4);      // CPM
+  static BlockReader cpmReader1 = new BlockReader (1024, BLOCK, 0, 8);      // CPAM
   static BlockReader dos31Reader = new BlockReader (256, SECTOR, 0, 13);    // Dos 3.1
   static BlockReader dos33Reader0 = new BlockReader (256, SECTOR, 0, 16);   // Dos 3.3
   static BlockReader dos33Reader1 = new BlockReader (256, SECTOR, 1, 16);   // Dos 3.3
@@ -83,6 +85,7 @@ public class FileSystemFactory
 
     if (fileSystems.size () == 0)
     {
+      getCpm2 (name, buffer, offset, length);
       getLbr (name, buffer, offset, length);
       getNuFx (name, buffer, offset, length);
       getBinary2 (name, buffer, offset, length);
@@ -241,10 +244,30 @@ public class FileSystemFactory
   private void getCpm (String name, byte[] buffer, int offset, int length)
   // ---------------------------------------------------------------------------------//
   {
-    if (length == DOS33_SIZE || length == 819200)
+    if (length == DOS33_SIZE)
       try
       {
-        FsCpm fs = new FsCpm (name, buffer, offset, length, cpmReader);
+        FsCpm fs = new FsCpm (name, buffer, offset, length, cpmReader0);
+        fs.readCatalog ();
+
+        if (fs.getTotalCatalogBlocks () > 0)
+          fileSystems.add (fs);
+      }
+      catch (FileFormatException e)
+      {
+        if (debug)
+          System.out.println (e);
+      }
+  }
+
+  // ---------------------------------------------------------------------------------//
+  private void getCpm2 (String name, byte[] buffer, int offset, int length)
+  // ---------------------------------------------------------------------------------//
+  {
+    if (length == CPAM_SIZE)
+      try
+      {
+        FsCpm fs = new FsCpm (name, buffer, offset, length, cpmReader1);
         fs.readCatalog ();
 
         if (fs.getTotalCatalogBlocks () > 0)
