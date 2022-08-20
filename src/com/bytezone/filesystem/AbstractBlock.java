@@ -6,13 +6,13 @@ import com.bytezone.filesystem.BlockReader.AddressType;
 public abstract class AbstractBlock implements AppleBlock
 // -----------------------------------------------------------------------------------//
 {
-  final AppleFileSystem fileSystem;
+  protected final AppleFileSystem fileSystem;
 
-  final int blockNo;
-  final int track;
-  final int sector;
+  protected final int blockNo;
+  protected final int track;
+  protected final int sector;
 
-  boolean valid;
+  protected final boolean valid;
 
   // ---------------------------------------------------------------------------------//
   AbstractBlock (AppleFileSystem fileSystem, int blockNo)

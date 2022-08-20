@@ -10,11 +10,11 @@ public abstract class AbstractFile implements AppleFile
   protected final AppleFileSystem fileSystem;
   protected String name;
 
-  boolean isFile;
-  boolean isFolder;
-  boolean isFileSystem;
+  protected boolean isFile;
+  protected boolean isFolder;
+  protected boolean isFileSystem;
 
-  List<AppleFile> files = new ArrayList<> ();
+  protected final List<AppleFile> files = new ArrayList<> ();
 
   // ---------------------------------------------------------------------------------//
   AbstractFile (AppleFileSystem fileSystem)
