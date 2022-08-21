@@ -1,38 +1,51 @@
 package com.bytezone.filesystem;
 
 // -----------------------------------------------------------------------------------//
-public class FsData extends AbstractFileSystem
+public class FileData extends AbstractFile
 // -----------------------------------------------------------------------------------//
 {
-  // ---------------------------------------------------------------------------------//
-  public FsData (String name, byte[] buffer, BlockReader blockReader)
-  // ---------------------------------------------------------------------------------//
-  {
-    this (name, buffer, 0, buffer.length, blockReader);
-
-    setFileSystemName ("Data");
-  }
+  byte[] buffer;
 
   // ---------------------------------------------------------------------------------//
-  public FsData (String fileName, byte[] buffer, int offset, int length, BlockReader blockReader)
+  FileData (FsData fs, byte[] buffer, int ptr)
   // ---------------------------------------------------------------------------------//
   {
-    super (fileName, buffer, offset, length, blockReader);
-  }
+    super (fs);
 
-  // ---------------------------------------------------------------------------------//
-  @Override
-  public void readCatalog ()
-  // ---------------------------------------------------------------------------------//
-  {
-    addFile (new FileData (this, getBuffer (), 0));
+    isFile = true;
+    name = "Raw data";
+    this.buffer = buffer;
   }
 
   // ---------------------------------------------------------------------------------//
   @Override
-  public String toText ()
+  public byte[] read ()
   // ---------------------------------------------------------------------------------//
   {
-    return super.toText ();
+    return buffer;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
+  public int getLength ()                 // in bytes (eof)
+  // ---------------------------------------------------------------------------------//
+  {
+    return buffer.length;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
+  public int getSize ()                   // in blocks
+  // ---------------------------------------------------------------------------------//
+  {
+    return buffer.length / 512;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
+  public String toString ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return name;
   }
 }
