@@ -83,7 +83,7 @@ public class FileSystemFactory
     getPascal (name, buffer, offset, length);
     getCpm (name, buffer, offset, length);
 
-    if (fileSystems.size () == 0)
+    if (fileSystems.size () == 0)         // these filesystems cannot be hybrids
     {
       getCpm2 (name, buffer, offset, length);
       getLbr (name, buffer, offset, length);
@@ -98,7 +98,7 @@ public class FileSystemFactory
 
     return switch (fileSystems.size ())
     {
-      case 0 -> null;
+      case 0 -> new FsData (name, buffer, blockReader0);
       case 1 -> fileSystems.get (0);
       default -> new FsHybrid (fileSystems);
     };
