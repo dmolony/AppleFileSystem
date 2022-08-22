@@ -72,7 +72,7 @@ public abstract class AbstractFile implements AppleFile
   // ---------------------------------------------------------------------------------//
   {
     if (!isDirectory () && !isFileSystem ())
-      throw new UnsupportedOperationException ("cannot getFiles()");
+      throw new UnsupportedOperationException ("cannot getFiles() unless Directory or FileSystem");
 
     return files;
   }
