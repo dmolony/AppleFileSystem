@@ -71,6 +71,8 @@ public class Tester
       gz + "ascii_express_pro.dsk.gz",               // 35: zip - wrong suffix (2 Dos disks)
       gz + "catsmeow.dsk.gz",                        // 36: gzip
       cpm1 + "CPAM 3.5.po",                          // 37: unknown
+      bxy + "proformat.bxy",                         // 38:
+      bqy + "DEATHHUNT.BQY",                         // 39:
   };
 
   // ---------------------------------------------------------------------------------//
@@ -80,7 +82,7 @@ public class Tester
     FileSystemFactory factory = new FileSystemFactory ();
 
     //    for (int fileNo = 0; fileNo < fileNames.length; fileNo++)
-    int index = 37;
+    int index = 39;
     for (int fileNo = index; fileNo <= index; fileNo++)
     {
       //      System.out.printf ("%n%d %s%n", fileNo, fileNames[fileNo].substring (base.length ()));
@@ -96,7 +98,7 @@ public class Tester
         continue;
       }
 
-      if (fileNo == index && false)
+      if (fileNo == index && true)
       {
         System.out.println ();
         System.out.println (fs.catalog ());

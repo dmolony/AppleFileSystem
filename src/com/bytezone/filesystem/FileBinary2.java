@@ -50,7 +50,7 @@ public class FileBinary2 extends AbstractFile
 
   private List<AppleBlock> dataBlocks = new ArrayList<> ();
   private String squeezeName;
-  private boolean debug = false;
+  private boolean debug = true;
   private boolean validBlocks = true;
 
   // ---------------------------------------------------------------------------------//
@@ -79,8 +79,8 @@ public class FileBinary2 extends AbstractFile
     createTime = Utility.unsignedShort (buffer, 16);
 
     eof = Utility.unsignedTriple (buffer, 20);
-    name = Utility.getPascalString (buffer, 23);
-    nativeName = Utility.getPascalString (buffer, 39);
+    name = Utility.getMaskedPascalString (buffer, 23);
+    nativeName = Utility.getMaskedPascalString (buffer, 39);
 
     gAuxType = Utility.unsignedShort (buffer, 109);
     gAccess = buffer[111] & 0xFF;
@@ -113,7 +113,8 @@ public class FileBinary2 extends AbstractFile
       dataBlocks.add (fs.getBlock (block));
     }
 
-    if (isCompressed () && validBlocks)
+    // check DEATHHUNT.BQY
+    if (validBlocks && (isCompressed ()))// || name.endsWith (".QQ")))
     {
       buffer = fs.getBlock (headerBlockNo + 1).read ();
       if (buffer[0] == 0x76 && buffer[1] == (byte) 0xFF)      // squeeze
@@ -200,10 +201,12 @@ public class FileBinary2 extends AbstractFile
   public byte[] read ()
   // ---------------------------------------------------------------------------------//
   {
-    if (isCompressed () && ((FsBinary2) fileSystem).getSuffix ().equals ("bqy"))
+    if (((FsBinary2) fileSystem).getSuffix ().equals ("bqy") && squeezeName != null)
     {
       Squeeze squeeze = new Squeeze ();
-      return squeeze.unSqueeze (fileSystem.readBlocks (dataBlocks));
+      byte[] buffer = fileSystem.readBlocks (dataBlocks);
+      //      System.out.println (Utility.format (buffer));
+      return squeeze.unSqueeze (buffer);
     }
 
     return fileSystem.readBlocks (dataBlocks);
@@ -229,7 +232,7 @@ public class FileBinary2 extends AbstractFile
         created.isPresent () ? created.get () : ""));
     text.append (String.format ("Create time ....... %04X%n", createTime));
     text.append (String.format ("EOF ............... %06X  %<,7d%n", eof));
-    text.append (String.format ("File name ......... %s%n", name));
+    text.append (String.format ("File name ......... %s%n", getName ()));
     text.append (String.format ("Native name ....... %s%n", nativeName));
 
     text.append (String.format ("G Aux type ........ %04X  %<d%n", gAuxType));

@@ -236,6 +236,19 @@ public class Utility
   }
 
   // ---------------------------------------------------------------------------------//
+  public static String getMaskedPascalString (byte[] buffer, int offset)
+  // ---------------------------------------------------------------------------------//
+  {
+    int length = buffer[offset] & 0xFF;
+    byte[] text = new byte[length];
+
+    for (int i = 0; i < length; i++)
+      text[i] = (byte) (buffer[offset + i + 1] & 0x7F);
+
+    return new String (text);
+  }
+
+  // ---------------------------------------------------------------------------------//
   public static String getCString (byte[] buffer, int offset)
   // ---------------------------------------------------------------------------------//
   {

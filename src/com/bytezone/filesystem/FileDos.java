@@ -27,6 +27,8 @@ public class FileDos extends AbstractFile
   {
     super (fs);
 
+    isFile = true;
+
     int nextTrack = buffer[ptr] & 0xFF;
     int nextSector = buffer[ptr + 1] & 0xFF;
 

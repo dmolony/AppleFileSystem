@@ -97,7 +97,7 @@ public class BlockReader
         {
           int max = diskBuffer.length;
           int start = diskOffset + block.getBlockNo () * blockSize;
-          if (start + blockSize < max)
+          if (start + blockSize <= max)
             System.arraycopy (diskBuffer, start, blockBuffer, bufferOffset, blockSize);
           else
             System.out.printf ("Block %d out of range%n", block.getBlockNo ());
