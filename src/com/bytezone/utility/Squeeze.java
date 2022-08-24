@@ -25,7 +25,7 @@ public class Squeeze
     if (!Utility.isMagic (buffer, 0, Squeeze))
       throw new FileFormatException ("Not Squeeze format");
 
-    byte[] uncompressed = new byte[buffer.length * 3];
+    byte[] uncompressed = new byte[buffer.length * 5];      // complete guess
     int uncPtr = 0;
 
     int fileChecksum = Utility.unsignedShort (buffer, 2);

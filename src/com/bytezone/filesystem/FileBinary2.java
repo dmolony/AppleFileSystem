@@ -113,8 +113,7 @@ public class FileBinary2 extends AbstractFile
       dataBlocks.add (fs.getBlock (block));
     }
 
-    // check DEATHHUNT.BQY
-    if (validBlocks && (isCompressed ()))// || name.endsWith (".QQ")))
+    if (validBlocks && (isCompressed () || name.endsWith (".QQ")))
     {
       buffer = fs.getBlock (headerBlockNo + 1).read ();
       if (buffer[0] == 0x76 && buffer[1] == (byte) 0xFF)      // squeeze

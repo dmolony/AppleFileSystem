@@ -18,7 +18,7 @@ public class BlockReader
   final int interleave;               // 0, 1, 2
   final int blocksPerTrack;           // 4, 8, 13, 16, 32
 
-  final int trackSize;
+  final int trackSize;                // bytes per track
 
   enum AddressType
   {
@@ -95,9 +95,8 @@ public class BlockReader
       case BLOCK:
         if (interleave == 0)
         {
-          int max = diskBuffer.length;
           int start = diskOffset + block.getBlockNo () * blockSize;
-          if (start + blockSize <= max)
+          if (start + blockSize <= diskBuffer.length)
             System.arraycopy (diskBuffer, start, blockBuffer, bufferOffset, blockSize);
           else
             System.out.printf ("Block %d out of range%n", block.getBlockNo ());
