@@ -61,8 +61,9 @@ public class FileCpm extends AbstractFile
       if (b == 0)
         break;
 
-      if ((b & 0x80) != 0)
-        System.out.printf ("%s CPM hi bit set%n", getName ());
+      if (false)
+        if ((b & 0x80) != 0)
+          System.out.printf ("%s CPM hi bit set%n", getName ());
 
       int blockNumber = ((b & 0x80) == 0) ? (b + 12) : (b & 0x7F);
       dataBlocks.add (fileSystem.getBlock (blockNumber));

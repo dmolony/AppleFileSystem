@@ -72,7 +72,8 @@ public class FsBinary2 extends AbstractFileSystem
 
     } while (filesRemaining > 0);
 
-    if (filesRemaining > 0)
-      System.out.println (filesRemaining + " files unavailable");
+    if (false)
+      if (filesRemaining > 0)
+        System.out.println (filesRemaining + " files unavailable");
   }
 }

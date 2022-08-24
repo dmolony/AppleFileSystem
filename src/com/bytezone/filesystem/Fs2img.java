@@ -105,10 +105,10 @@ public class Fs2img extends AbstractFileSystem
     text.append (String.format ("Blocks ................ %,d%n", prodosBlocks));
     text.append (String.format ("Data offset ........... %d%n", offset));
     text.append (String.format ("Data size ............. %,d%n", length));
-    text.append (String.format ("Comment offset ........ %d%n", commentOffset));
+    text.append (String.format ("Comment offset ........ %,d%n", commentOffset));
     text.append (String.format ("Comment length ........ %,d%n", commentLength));
     text.append (String.format ("Comment ............... %s%n", comment));
-    text.append (String.format ("Creator Data offset ... %d%n", creatorDataOffset));
+    text.append (String.format ("Creator Data offset ... %,d%n", creatorDataOffset));
     text.append (String.format ("Creator Data length ... %,d", creatorDataLength));
 
     return text.toString ();

@@ -81,9 +81,9 @@ public class Tester
   {
     FileSystemFactory factory = new FileSystemFactory ();
 
-    //    for (int fileNo = 0; fileNo < fileNames.length; fileNo++)
     int index = 38;
-    for (int fileNo = index; fileNo <= index; fileNo++)
+    //    for (int fileNo = index; fileNo <= index; fileNo++)
+    for (int fileNo = 0; fileNo < fileNames.length; fileNo++)
     {
       //      System.out.printf ("%n%d %s%n", fileNo, fileNames[fileNo].substring (base.length ()));
 
@@ -98,7 +98,7 @@ public class Tester
         continue;
       }
 
-      if (fileNo == index && true)
+      if (fileNo == index && false)
       {
         System.out.println ();
         System.out.println (fs.catalog ());
@@ -113,7 +113,8 @@ public class Tester
   private void listFileSystems (AppleFile container, int depth)
   // ---------------------------------------------------------------------------------//
   {
-    System.out.printf ("%2d  %s%n", depth, container);
+    if (container.isFileSystem ())
+      System.out.printf ("%2d  %s%n", depth, container);
 
     for (AppleFile file : container.getFiles ())
       if (file.isFileSystem () || file.isDirectory ())
