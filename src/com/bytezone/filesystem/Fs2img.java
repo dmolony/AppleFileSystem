@@ -92,7 +92,7 @@ public class Fs2img extends AbstractFileSystem
   public String toText ()
   // ---------------------------------------------------------------------------------//
   {
-    StringBuilder text = new StringBuilder ();
+    StringBuilder text = new StringBuilder (super.toText () + "\n\n");
 
     text.append (String.format ("Creator ............... %s  %s%n", creator, getCreator (creator)));
     text.append (String.format ("Header size ........... %d%n", headerSize));

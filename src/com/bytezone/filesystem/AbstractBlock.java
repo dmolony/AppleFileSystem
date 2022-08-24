@@ -115,6 +115,7 @@ public abstract class AbstractBlock implements AppleBlock
   public String toString ()
   // ---------------------------------------------------------------------------------//
   {
-    return String.format ("%-6s: %4d  %3d  %3d", fileSystem.getType (), blockNo, track, sector);
+    return String.format ("%-6s  B:%4d,  T:%3d,  S:%3d", fileSystem.getType (), blockNo, track,
+        sector);
   }
 }

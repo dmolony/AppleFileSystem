@@ -50,7 +50,7 @@ public class FileBinary2 extends AbstractFile
 
   private List<AppleBlock> dataBlocks = new ArrayList<> ();
   private String squeezeName;
-  private boolean debug = true;
+  private boolean debug = false;
   private boolean validBlocks = true;
 
   // ---------------------------------------------------------------------------------//

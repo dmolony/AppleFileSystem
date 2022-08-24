@@ -83,19 +83,19 @@ public class FsNuFX extends AbstractFileSystem
   public String toText ()
   // ---------------------------------------------------------------------------------//
   {
-    StringBuilder text = new StringBuilder ();
+    StringBuilder text = new StringBuilder (super.toText () + "\n\n");
 
-    text.append (
-        String.format ("Master CRC ..... %04X   %s%n", crc, crcPassed ? "Passed" : "** Failed **"));
-    text.append (String.format ("Records ........ %,d%n", totalRecords));
-    text.append (String.format ("Created ........ %s%n", created.format ()));
-    text.append (String.format ("Modified ....... %s%n", modified.format ()));
-    text.append (String.format ("Version ........ %,d%n", version));
-    text.append (String.format ("Reserved ....... %08X%n", reserved1));
-    text.append (String.format ("Reserved ....... %08X%n", reserved2));
-    text.append (String.format ("Master EOF ..... %,d%n", eof));
-    text.append (String.format ("Reserved ....... %08X%n", reserved3));
-    text.append (String.format ("Reserved ....... %04X", reserved4));
+    text.append (String.format ("Master CRC ............ %04X   %s%n", crc,
+        crcPassed ? "Passed" : "** Failed **"));
+    text.append (String.format ("Records ............... %,d%n", totalRecords));
+    text.append (String.format ("Created ............... %s%n", created.format ()));
+    text.append (String.format ("Modified .............. %s%n", modified.format ()));
+    text.append (String.format ("Version ............... %,d%n", version));
+    text.append (String.format ("Reserved .............. %08X%n", reserved1));
+    text.append (String.format ("Reserved .............. %08X%n", reserved2));
+    text.append (String.format ("Master EOF ............ %,d%n", eof));
+    text.append (String.format ("Reserved .............. %08X%n", reserved3));
+    text.append (String.format ("Reserved .............. %04X", reserved4));
 
     return text.toString ();
   }

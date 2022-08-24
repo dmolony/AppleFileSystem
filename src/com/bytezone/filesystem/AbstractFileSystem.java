@@ -338,7 +338,8 @@ public abstract class AbstractFileSystem implements AppleFileSystem
     text.append (String.format ("Block size ............ %d%n", blockReader.blockSize));
     text.append (String.format ("Interleave ............ %d%n", blockReader.interleave));
     text.append (String.format ("Catalog blocks ........ %d%n", catalogBlocks));
-    text.append (String.format ("Total files ........... %d", files.size ()));
+    text.append (String.format ("Total file systems .... %d%n", totalFileSystems));
+    text.append (String.format ("Total files ........... %d %d", files.size (), totalFiles));
 
     return text.toString ();
   }

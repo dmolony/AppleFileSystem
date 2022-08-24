@@ -218,40 +218,44 @@ public class FileSystemFactory
   private void getProdos (String name, byte[] buffer, int offset, int length)
   // ---------------------------------------------------------------------------------//
   {
-    for (BlockReader reader : blockReaders)
-      try
-      {
-        FsProdos fs = new FsProdos (name, buffer, offset, length, reader);
-        fs.readCatalog ();
+    // should check for common HD sizes
+    if (length >= DOS33_SIZE)
+      for (BlockReader reader : blockReaders)
+        try
+        {
+          FsProdos fs = new FsProdos (name, buffer, offset, length, reader);
+          fs.readCatalog ();
 
-        if (fs.getTotalCatalogBlocks () > 0)
-          fileSystems.add (fs);
-      }
-      catch (FileFormatException e)
-      {
-        if (debug)
-          System.out.println (e);
-      }
+          if (fs.getTotalCatalogBlocks () > 0)
+            fileSystems.add (fs);
+        }
+        catch (FileFormatException e)
+        {
+          if (debug)
+            System.out.println (e);
+        }
   }
 
   // ---------------------------------------------------------------------------------//
   private void getPascal (String name, byte[] buffer, int offset, int length)
   // ---------------------------------------------------------------------------------//
   {
-    for (BlockReader reader : blockReaders)
-      try
-      {
-        FsPascal fs = new FsPascal (name, buffer, offset, length, reader);
-        fs.readCatalog ();
+    // should check for common HD sizes
+    if (length >= DOS33_SIZE)
+      for (BlockReader reader : blockReaders)
+        try
+        {
+          FsPascal fs = new FsPascal (name, buffer, offset, length, reader);
+          fs.readCatalog ();
 
-        if (fs.getTotalCatalogBlocks () > 0)
-          fileSystems.add (fs);
-      }
-      catch (FileFormatException e)
-      {
-        if (debug)
-          System.out.println (e);
-      }
+          if (fs.getTotalCatalogBlocks () > 0)
+            fileSystems.add (fs);
+        }
+        catch (FileFormatException e)
+        {
+          if (debug)
+            System.out.println (e);
+        }
   }
 
   // ---------------------------------------------------------------------------------//

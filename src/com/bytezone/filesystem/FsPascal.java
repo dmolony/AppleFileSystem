@@ -89,7 +89,7 @@ public class FsPascal extends AbstractFileSystem
   public String toText ()
   // ---------------------------------------------------------------------------------//
   {
-    StringBuilder text = new StringBuilder (super.toText ());
+    StringBuilder text = new StringBuilder (super.toText () + "\n\n");
 
     text.append ("\n");
     text.append (String.format ("Volume name ........... %s%n", volumeName));

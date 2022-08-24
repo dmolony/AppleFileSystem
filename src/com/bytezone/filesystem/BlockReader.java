@@ -109,8 +109,15 @@ public class BlockReader
         for (int i = 0; i < sectorsPerBlock; i++)
         {
           offset = base + interleaves[interleave][block.getSector () * sectorsPerBlock + i] * 256;
-          System.arraycopy (diskBuffer, diskOffset + offset, blockBuffer, bufferOffset + i * 256,
-              256);
+          if (diskOffset + offset + blockSize <= diskBuffer.length)
+            System.arraycopy (diskBuffer, diskOffset + offset, blockBuffer, bufferOffset + i * 256,
+                256);
+          else
+          {
+            System.out.printf ("Block %d out of range (%d in %d)%n", block.getBlockNo (),
+                diskOffset + offset + blockSize, diskBuffer.length);
+            break;
+          }
         }
 
         break;
