@@ -13,7 +13,10 @@ public class FsHybrid extends AbstractFileSystem
     this (fileSystems.get (0));
 
     for (AppleFileSystem fs : fileSystems)
+    {
+      //      fs.name = fs.
       addFile (fs);
+    }
   }
 
   // ---------------------------------------------------------------------------------//

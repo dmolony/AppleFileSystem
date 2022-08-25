@@ -144,7 +144,7 @@ public class FsZip extends AbstractFileSystem
 
     for (ZipEntry entry : zipEntries)
     {
-      System.out.println ();
+      text.append ("\n");
       text.append (String.format ("Compressed size ... %,d%n", entry.getCompressedSize ()));
       text.append (String.format ("Size .............. %,d%n", entry.getSize ()));
       text.append (String.format ("Name .............. %s%n", entry.getName ()));

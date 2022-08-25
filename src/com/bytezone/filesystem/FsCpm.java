@@ -87,7 +87,6 @@ public class FsCpm extends AbstractFileSystem
   {
     StringBuilder text = new StringBuilder (super.toText () + "\n\n");
 
-    text.append ("\n");
     text.append (String.format ("Entry length .......... %d%n", 32));
     text.append (String.format ("Entries per block ..... %d%n", getBlockSize () / 32));
     text.append (String.format ("File count ............ %d", getFiles ().size ()));

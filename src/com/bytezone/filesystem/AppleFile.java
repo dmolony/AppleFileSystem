@@ -39,5 +39,7 @@ public interface AppleFile
 
   public String catalog ();
 
+  public String getCatalogLine ();
+
   public int getBlockSize ();                       // returns blockReader.blockSize()
 }

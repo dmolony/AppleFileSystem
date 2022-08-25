@@ -26,6 +26,7 @@ public abstract class AbstractFileSystem implements AppleFileSystem
   protected String fileSystemName;        // DosX.X, Prodos, Pascal, CPM, NuFX, 2img, Bin2, Data
 
   protected FileSystemFactory factory;
+
   private int totalFileSystems = 0;
   private int totalFiles = 0;
 
@@ -326,11 +327,20 @@ public abstract class AbstractFileSystem implements AppleFileSystem
 
   // ---------------------------------------------------------------------------------//
   @Override
+  public String getCatalogLine ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return toString ();
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
   public String toText ()
   // ---------------------------------------------------------------------------------//
   {
     StringBuilder text = new StringBuilder ();
 
+    text.append (String.format ("File name ............. %s%n", fileName));
     text.append (String.format ("File system ........... %s%n", fileSystemName));
     text.append (String.format ("File offset ........... %,d%n", fileOffset));
     text.append (String.format ("File length ........... %,d%n", fileLength));
