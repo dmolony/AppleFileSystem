@@ -13,7 +13,7 @@ public interface AppleFile
     return false;
   }
 
-  public default boolean isDirectory ()
+  public default boolean isFolder ()
   {
     return false;
   }
@@ -23,9 +23,9 @@ public interface AppleFile
     return false;
   }
 
-  public void addFile (AppleFile file);             // if isDirectory() or isFileSystem()
+  public void addFile (AppleFile file);             // if isFolder() or isFileSystem()
 
-  public List<AppleFile> getFiles ();               // if isDirectory() or isFileSystem()
+  public List<AppleFile> getFiles ();               // if isFolder() or isFileSystem()
 
   public byte[] read ();
 

@@ -117,7 +117,7 @@ public class Tester
       System.out.printf ("%2d  %s%n", depth, container);
 
     for (AppleFile file : container.getFiles ())
-      if (file.isFileSystem () || file.isDirectory ())
+      if (file.isFileSystem () || file.isFolder ())
         listFileSystems (file, depth + 1);
     //      else
     //        System.out.printf ("%2d  %s%n", depth, file);

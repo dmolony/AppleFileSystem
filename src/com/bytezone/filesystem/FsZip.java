@@ -126,7 +126,7 @@ public class FsZip extends AbstractFileSystem
   // ---------------------------------------------------------------------------------//
   {
     for (AppleFile file : parent.getFiles ())
-      if (file.getName ().equals (name) && file.isDirectory ())
+      if (file.getName ().equals (name) && file.isFolder ())
         return (FolderZip) file;
 
     FolderZip folder = new FolderZip (this, name);

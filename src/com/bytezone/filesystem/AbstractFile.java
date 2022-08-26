@@ -41,7 +41,7 @@ public abstract class AbstractFile implements AppleFile
 
   // ---------------------------------------------------------------------------------//
   @Override
-  public boolean isDirectory ()
+  public boolean isFolder ()
   // ---------------------------------------------------------------------------------//
   {
     return isFolder;
@@ -60,7 +60,7 @@ public abstract class AbstractFile implements AppleFile
   public void addFile (AppleFile file)    // if isDirectory() or isFileSystem()
   // ---------------------------------------------------------------------------------//
   {
-    if (!isDirectory () && !isFileSystem ())
+    if (!isFolder () && !isFileSystem ())
       throw new UnsupportedOperationException ("cannot addFile()");
 
     files.add (file);
@@ -71,8 +71,8 @@ public abstract class AbstractFile implements AppleFile
   public List<AppleFile> getFiles ()      // if isDirectory() or isFileSystem()
   // ---------------------------------------------------------------------------------//
   {
-    if (!isDirectory () && !isFileSystem ())
-      throw new UnsupportedOperationException ("cannot getFiles() unless Directory or FileSystem");
+    if (!isFolder () && !isFileSystem ())
+      throw new UnsupportedOperationException ("cannot getFiles() unless Folder or FileSystem");
 
     return files;
   }
@@ -135,7 +135,7 @@ public abstract class AbstractFile implements AppleFile
     text.append (toString () + "\n");
 
     for (AppleFile file : files)
-      if (file.isDirectory () || file.isFileSystem ())
+      if (file.isFolder () || file.isFileSystem ())
         text.append (file.catalog () + "\n");
       else
         text.append (file + "\n");
