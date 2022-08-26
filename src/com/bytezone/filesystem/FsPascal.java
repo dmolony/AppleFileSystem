@@ -37,12 +37,13 @@ public class FsPascal extends AbstractFileSystem
   // ---------------------------------------------------------------------------------//
   {
     super (name, buffer, offset, length, blockReader);
+
     setFileSystemName ("Pascal");
+    readCatalog ();
   }
 
   // ---------------------------------------------------------------------------------//
-  @Override
-  public void readCatalog ()
+  private void readCatalog ()
   // ---------------------------------------------------------------------------------//
   {
     assert getTotalCatalogBlocks () == 0;

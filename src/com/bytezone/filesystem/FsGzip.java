@@ -31,13 +31,13 @@ public class FsGzip extends AbstractFileSystem
     super (name, buffer, offset, length, blockReader);
 
     setFileSystemName ("GZip");
+    readCatalog ();
 
     assert Utility.isMagic (buffer, offset, GZIP);
   }
 
   // ---------------------------------------------------------------------------------//
-  @Override
-  public void readCatalog ()
+  private void readCatalog ()
   // ---------------------------------------------------------------------------------//
   {
     try (GZIPInputStream zip = new GZIPInputStream (//

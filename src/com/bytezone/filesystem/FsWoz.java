@@ -30,11 +30,12 @@ public class FsWoz extends AbstractFileSystem
       setFileSystemName ("Woz1");
     else if (Utility.isMagic (buffer, 0, WOZ_2))
       setFileSystemName ("Woz2");
+
+    readCatalog ();
   }
 
   // ---------------------------------------------------------------------------------//
-  @Override
-  public void readCatalog ()
+  private void readCatalog ()
   // ---------------------------------------------------------------------------------//
   {
     try

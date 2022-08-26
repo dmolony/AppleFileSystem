@@ -35,13 +35,13 @@ public class FsZip extends AbstractFileSystem
     super (name, buffer, offset, length, blockReader);
 
     setFileSystemName ("Zip");
+    readCatalog ();
 
     assert Utility.isMagic (buffer, offset, ZIP);
   }
 
   // ---------------------------------------------------------------------------------//
-  @Override
-  public void readCatalog ()
+  private void readCatalog ()
   // ---------------------------------------------------------------------------------//
   {
     try (ZipInputStream zip = new ZipInputStream (//

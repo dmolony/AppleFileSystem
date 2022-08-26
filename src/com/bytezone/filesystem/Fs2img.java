@@ -65,12 +65,11 @@ public class Fs2img extends AbstractFileSystem
     hasDosVolumeNumber = (flags & 0x0100) != 0;
     volumeNumber = flags & 0x00FF;
 
-    //    System.out.println (this.toText ());
+    readCatalog ();
   }
 
   // ---------------------------------------------------------------------------------//
-  @Override
-  public void readCatalog ()
+  private void readCatalog ()
   // ---------------------------------------------------------------------------------//
   {
     addFileSystem (this, getName (), diskBuffer, offset, length);

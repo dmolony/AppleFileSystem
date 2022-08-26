@@ -30,6 +30,8 @@ public class FsBinary2 extends AbstractFileSystem
     int pos = name.lastIndexOf ('.');
     if (pos > 0)
       suffix = name.substring (pos + 1).toLowerCase ();
+
+    readCatalog ();
   }
 
   // ---------------------------------------------------------------------------------//
@@ -40,8 +42,7 @@ public class FsBinary2 extends AbstractFileSystem
   }
 
   // ---------------------------------------------------------------------------------//
-  @Override
-  public void readCatalog ()
+  private void readCatalog ()
   // ---------------------------------------------------------------------------------//
   {
     int nextBlock = 0;

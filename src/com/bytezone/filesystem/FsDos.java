@@ -24,6 +24,8 @@ public class FsDos extends AbstractFileSystem
   // ---------------------------------------------------------------------------------//
   {
     super (name, buffer, offset, length, blockReader);
+
+    readCatalog ();
   }
 
   // ---------------------------------------------------------------------------------//
@@ -41,8 +43,7 @@ public class FsDos extends AbstractFileSystem
   }
 
   // ---------------------------------------------------------------------------------//
-  @Override
-  public void readCatalog ()
+  private void readCatalog ()
   // ---------------------------------------------------------------------------------//
   {
     assert getTotalCatalogBlocks () == 0;

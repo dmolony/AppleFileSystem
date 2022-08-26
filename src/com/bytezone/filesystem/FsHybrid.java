@@ -34,12 +34,4 @@ public class FsHybrid extends AbstractFileSystem
 
     setFileSystemName ("Hybrid");
   }
-
-  // ---------------------------------------------------------------------------------//
-  @Override
-  public void readCatalog ()
-  // ---------------------------------------------------------------------------------//
-  {
-    // no catalog to read
-  }
 }

@@ -37,12 +37,13 @@ public class FsProdos extends AbstractFileSystem
   // ---------------------------------------------------------------------------------//
   {
     super (name, buffer, offset, length, blockReader);
+
     setFileSystemName ("Prodos");
+    readCatalog ();
   }
 
   // ---------------------------------------------------------------------------------//
-  @Override
-  public void readCatalog ()
+  private void readCatalog ()
   // ---------------------------------------------------------------------------------//
   {
     int nextBlockNo = 2;

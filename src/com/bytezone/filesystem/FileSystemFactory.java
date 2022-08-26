@@ -126,7 +126,6 @@ public class FileSystemFactory
       try
       {
         FsDos fs = new FsDos (name, buffer, offset, length, dos31Reader);
-        fs.readCatalog ();
 
         if (fs.getTotalCatalogBlocks () > 0)
           fileSystems.add (fs);
@@ -149,7 +148,6 @@ public class FileSystemFactory
         try
         {
           FsDos fs = new FsDos (name, buffer, offset, length, reader);
-          fs.readCatalog ();
 
           if (fs.getTotalCatalogBlocks () > 0)
             fsList.add (fs);
@@ -182,7 +180,6 @@ public class FileSystemFactory
       try
       {
         FsDos4 fs = new FsDos4 (name, buffer, offset, length, dos33Reader0);
-        fs.readCatalog ();
 
         if (fs.getTotalCatalogBlocks () > 0)
           fileSystems.add (fs);
@@ -202,7 +199,6 @@ public class FileSystemFactory
       try
       {
         FsUnidos fs = new FsUnidos (name, buffer, offset, length, unidosReader);
-        fs.readCatalog ();
 
         if (fs.getFiles ().size () > 0)
           fileSystems.add (fs);
@@ -224,7 +220,6 @@ public class FileSystemFactory
         try
         {
           FsProdos fs = new FsProdos (name, buffer, offset, length, reader);
-          fs.readCatalog ();
 
           if (fs.getTotalCatalogBlocks () > 0)
             fileSystems.add (fs);
@@ -246,7 +241,6 @@ public class FileSystemFactory
         try
         {
           FsPascal fs = new FsPascal (name, buffer, offset, length, reader);
-          fs.readCatalog ();
 
           if (fs.getTotalCatalogBlocks () > 0)
             fileSystems.add (fs);
@@ -266,7 +260,6 @@ public class FileSystemFactory
       try
       {
         FsCpm fs = new FsCpm (name, buffer, offset, length, cpmReader0);
-        fs.readCatalog ();
 
         if (fs.getTotalCatalogBlocks () > 0)
           fileSystems.add (fs);
@@ -286,7 +279,6 @@ public class FileSystemFactory
       try
       {
         FsCpm fs = new FsCpm (name, buffer, offset, length, cpmReader1);
-        fs.readCatalog ();
 
         if (fs.getTotalCatalogBlocks () > 0)
           fileSystems.add (fs);
@@ -305,7 +297,6 @@ public class FileSystemFactory
     try
     {
       FsLbr fs = new FsLbr (name, buffer, offset, length, lbrReader);
-      fs.readCatalog ();
 
       if (fs.getTotalCatalogBlocks () > 0)
         fileSystems.add (fs);
@@ -325,7 +316,6 @@ public class FileSystemFactory
       try
       {
         FsBinary2 fs = new FsBinary2 (name, buffer, offset, length, lbrReader);
-        fs.readCatalog ();
 
         if (fs.getFiles ().size () > 0)
           fileSystems.add (fs);
@@ -345,7 +335,6 @@ public class FileSystemFactory
       try
       {
         FsNuFX fs = new FsNuFX (name, buffer, offset, length, lbrReader);
-        fs.readCatalog ();
 
         if (fs.getFiles ().size () > 0)
           fileSystems.add (fs);
@@ -367,7 +356,6 @@ public class FileSystemFactory
         if (debug)
           System.out.println ("Checking 2img");
         Fs2img fs = new Fs2img (name, buffer, offset, length, lbrReader);
-        fs.readCatalog ();
 
         if (fs.getFiles ().size () > 0)
           fileSystems.add (fs);
@@ -387,7 +375,6 @@ public class FileSystemFactory
       try
       {
         FsZip fs = new FsZip (name, buffer, offset, length, lbrReader);
-        fs.readCatalog ();
 
         if (fs.getFiles ().size () > 0)
           fileSystems.add (fs);
@@ -407,7 +394,6 @@ public class FileSystemFactory
       try
       {
         FsGzip fs = new FsGzip (name, buffer, offset, length, lbrReader);
-        fs.readCatalog ();
 
         if (fs.getFiles ().size () > 0)
           fileSystems.add (fs);
@@ -427,7 +413,6 @@ public class FileSystemFactory
       try
       {
         FsWoz fs = new FsWoz (name, buffer, offset, length, lbrReader);
-        fs.readCatalog ();
 
         if (fs.getFiles ().size () > 0)
           fileSystems.add (fs);

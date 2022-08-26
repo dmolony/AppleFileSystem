@@ -22,11 +22,11 @@ public class FsUnidos extends AbstractFileSystem
     super (name, buffer, offset, length, blockReader);
 
     setFileSystemName ("Unidos");
+    readCatalog ();
   }
 
   // ---------------------------------------------------------------------------------//
-  @Override
-  public void readCatalog ()
+  private void readCatalog ()
   // ---------------------------------------------------------------------------------//
   {
     byte[] buffer = getBuffer ();
@@ -35,12 +35,10 @@ public class FsUnidos extends AbstractFileSystem
     try
     {
       FsDos fs1 = new FsDos ("Disk 1", buffer, offset, UNIDOS_SIZE, blockReader);
-      fs1.readCatalog ();
 
       if (fs1 != null && fs1.getTotalCatalogBlocks () > 0)
       {
         FsDos fs2 = new FsDos ("Disk 2", buffer, offset + UNIDOS_SIZE, UNIDOS_SIZE, blockReader);
-        fs2.readCatalog ();
 
         if (fs2 != null && fs2.getTotalCatalogBlocks () > 0)
         {

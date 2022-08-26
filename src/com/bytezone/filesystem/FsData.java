@@ -9,8 +9,6 @@ public class FsData extends AbstractFileSystem
   // ---------------------------------------------------------------------------------//
   {
     this (name, buffer, 0, buffer.length, blockReader);
-
-    setFileSystemName ("Data");
   }
 
   // ---------------------------------------------------------------------------------//
@@ -18,11 +16,14 @@ public class FsData extends AbstractFileSystem
   // ---------------------------------------------------------------------------------//
   {
     super (fileName, buffer, offset, length, blockReader);
+
+    setFileSystemName ("Data");
+
+    readCatalog ();
   }
 
   // ---------------------------------------------------------------------------------//
-  @Override
-  public void readCatalog ()
+  private void readCatalog ()
   // ---------------------------------------------------------------------------------//
   {
     addFile (new FileData (this, getBuffer (), 0));

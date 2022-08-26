@@ -16,7 +16,7 @@ public interface AppleFileSystem extends AppleFile
 
   AppleBlock allocate ();
 
-  public void readCatalog ();
+  //  public void readCatalog ();
 
   // passed through to BlockReader
 

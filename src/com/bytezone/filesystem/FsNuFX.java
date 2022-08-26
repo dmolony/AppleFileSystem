@@ -56,11 +56,12 @@ public class FsNuFX extends AbstractFileSystem
     crcPassed = crc == Utility.crc16 (crcBuffer, crcBuffer.length, 0);
     if (!crcPassed)
       throw new FileFormatException ("Master CRC failed");
+
+    readCatalog ();
   }
 
   // ---------------------------------------------------------------------------------//
-  @Override
-  public void readCatalog ()
+  private void readCatalog ()
   // ---------------------------------------------------------------------------------//
   {
     int ptr = 48;

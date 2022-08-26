@@ -20,11 +20,12 @@ public class FsCpm extends AbstractFileSystem
     super (name, buffer, offset, length, blockReader);
 
     setFileSystemName ("CPM");
+
+    readCatalog ();
   }
 
   // ---------------------------------------------------------------------------------//
-  @Override
-  public void readCatalog ()
+  private void readCatalog ()
   // ---------------------------------------------------------------------------------//
   {
     assert getTotalCatalogBlocks () == 0;

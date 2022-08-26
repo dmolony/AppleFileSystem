@@ -18,11 +18,11 @@ public class FsLbr extends AbstractFileSystem
     super (name, buffer, offset, length, blockReader);
 
     setFileSystemName ("LBR");
+    readCatalog ();
   }
 
   // ---------------------------------------------------------------------------------//
-  @Override
-  public void readCatalog ()
+  private void readCatalog ()
   // ---------------------------------------------------------------------------------//
   {
     int max = 1;
