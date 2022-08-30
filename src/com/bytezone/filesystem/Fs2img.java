@@ -30,6 +30,8 @@ public class Fs2img extends AbstractFileSystem
   private boolean hasDosVolumeNumber;
   private int volumeNumber;
 
+  private AppleFileSystem fileSystem;
+
   // ---------------------------------------------------------------------------------//
   public Fs2img (String name, byte[] buffer, BlockReader blockReader)
   // ---------------------------------------------------------------------------------//
@@ -72,7 +74,7 @@ public class Fs2img extends AbstractFileSystem
   private void readCatalog ()
   // ---------------------------------------------------------------------------------//
   {
-    addFileSystem (this, getName (), diskBuffer, offset, length);
+    fileSystem = addFileSystem (this, getName (), diskBuffer, offset, length);
   }
 
   // ---------------------------------------------------------------------------------//
@@ -108,7 +110,9 @@ public class Fs2img extends AbstractFileSystem
     text.append (String.format ("Comment length ........ %,d%n", commentLength));
     text.append (String.format ("Comment ............... %s%n", comment));
     text.append (String.format ("Creator Data offset ... %,d%n", creatorDataOffset));
-    text.append (String.format ("Creator Data length ... %,d", creatorDataLength));
+    text.append (String.format ("Creator Data length ... %,d%n%n", creatorDataLength));
+
+    text.append (fileSystem.toText ());
 
     return text.toString ();
   }

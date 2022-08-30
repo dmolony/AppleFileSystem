@@ -204,6 +204,14 @@ public abstract class AbstractFileSystem implements AppleFileSystem
 
   // ---------------------------------------------------------------------------------//
   @Override
+  public AppleFileSystem getFileSystem ()
+  // ---------------------------------------------------------------------------------//
+  {
+    throw new UnsupportedOperationException ("Cannot call getFileSystem() on a file system");
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
   public byte[] read ()
   // ---------------------------------------------------------------------------------//
   {

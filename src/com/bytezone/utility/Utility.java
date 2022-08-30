@@ -6,7 +6,6 @@ import java.time.DateTimeException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -17,8 +16,15 @@ public class Utility
   private static String[] hex =
       { "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "A", "B", "C", "D", "E", "F" };
   private static final int MAX_SHORT = 0xFFFF;
-  private static final List<String> suffixes = Arrays.asList ("po", "dsk", "do", "hdv", "2mg",
-      "d13", "sdk", "shk", "bxy", "bny", "bqy", "woz", "img", "dimg", "zip", "gz");
+  private static final List<String> suffixes = List.of ("po", "dsk", "do", "hdv", "2mg", "d13",
+      "sdk", "shk", "bxy", "bny", "bqy", "woz", "img", "dimg", "zip", "gz");
+
+  // ---------------------------------------------------------------------------------//
+  public static List<String> getSuffixes ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return suffixes;
+  }
 
   // ---------------------------------------------------------------------------------//
   public static int getSuffixNo (String filename)
@@ -32,11 +38,6 @@ public class Utility
   // ---------------------------------------------------------------------------------//
   {
     String lcFilename = filename.toLowerCase ();
-
-    //    if (lcFilename.endsWith (".gz"))
-    //      lcFilename = lcFilename.substring (0, lcFilename.length () - 3);
-    //    else if (lcFilename.endsWith (".zip"))
-    //      lcFilename = lcFilename.substring (0, lcFilename.length () - 4);
 
     int dotPos = lcFilename.lastIndexOf ('.');
     if (dotPos < 0)

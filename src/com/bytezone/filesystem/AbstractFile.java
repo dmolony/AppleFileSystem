@@ -68,6 +68,14 @@ public abstract class AbstractFile implements AppleFile
 
   // ---------------------------------------------------------------------------------//
   @Override
+  public AppleFileSystem getFileSystem ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return fileSystem;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
   public List<AppleFile> getFiles ()      // if isDirectory() or isFileSystem()
   // ---------------------------------------------------------------------------------//
   {
