@@ -73,6 +73,7 @@ public class Tester
       cpm1 + "CPAM 3.5.po",                          // 37: unknown
       bxy + "ANLIST.BXY",                            // 38:
       bqy + "DEATHHUNT.BQY",                         // 39:
+      shk + "hcomp.shk",                             // 40: NuFX / NuFX
   };
 
   // ---------------------------------------------------------------------------------//
@@ -81,9 +82,9 @@ public class Tester
   {
     FileSystemFactory factory = new FileSystemFactory ();
 
-    int index = 38;
-    //    for (int fileNo = index; fileNo <= index; fileNo++)
-    for (int fileNo = 0; fileNo < fileNames.length; fileNo++)
+    int index = 40;
+    for (int fileNo = index; fileNo <= index; fileNo++)
+    //    for (int fileNo = 0; fileNo < fileNames.length; fileNo++)
     {
       //      System.out.printf ("%n%d %s%n", fileNo, fileNames[fileNo].substring (base.length ()));
 
@@ -98,7 +99,7 @@ public class Tester
         continue;
       }
 
-      if (fileNo == index && false)
+      if (fileNo == index && true)
       {
         System.out.println ();
         System.out.println (fs.catalog ());
