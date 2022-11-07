@@ -109,7 +109,7 @@ public class BlockReader
         for (int i = 0; i < sectorsPerBlock; i++)
         {
           offset = base + interleaves[interleave][block.getSector () * sectorsPerBlock + i] * 256;
-          if (diskOffset + offset + blockSize <= diskBuffer.length)
+          if (diskOffset + offset + 256 <= diskBuffer.length)
             System.arraycopy (diskBuffer, diskOffset + offset, blockBuffer, bufferOffset + i * 256,
                 256);
           else
