@@ -7,6 +7,8 @@ import java.util.Objects;
 public class BlockReader
 // -----------------------------------------------------------------------------------//
 {
+  private static final int SECTOR_SIZE = 256;
+
   private int[][] interleaves = { { //
       0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16,       //
       17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31 },   // no interleave
@@ -87,6 +89,7 @@ public class BlockReader
     switch (addressType)
     {
       case SECTOR:
+        assert blockSize == SECTOR_SIZE;
         int offset =
             block.getTrack () * trackSize + interleaves[interleave][block.getSector ()] * blockSize;
         System.arraycopy (diskBuffer, diskOffset + offset, blockBuffer, bufferOffset, blockSize);
@@ -104,18 +107,19 @@ public class BlockReader
         }
 
         int base = block.getTrack () * trackSize;
-        int sectorsPerBlock = blockSize / 256;
+        int sectorsPerBlock = blockSize / SECTOR_SIZE;
 
         for (int i = 0; i < sectorsPerBlock; i++)
         {
-          offset = base + interleaves[interleave][block.getSector () * sectorsPerBlock + i] * 256;
-          if (diskOffset + offset + 256 <= diskBuffer.length)
-            System.arraycopy (diskBuffer, diskOffset + offset, blockBuffer, bufferOffset + i * 256,
-                256);
+          offset = base
+              + interleaves[interleave][block.getSector () * sectorsPerBlock + i] * SECTOR_SIZE;
+          if (diskOffset + offset + SECTOR_SIZE <= diskBuffer.length)
+            System.arraycopy (diskBuffer, diskOffset + offset, blockBuffer,
+                bufferOffset + i * SECTOR_SIZE, SECTOR_SIZE);
           else
           {
             System.out.printf ("Block %d out of range (%d in %d)%n", block.getBlockNo (),
-                diskOffset + offset + blockSize, diskBuffer.length);
+                diskOffset + offset + SECTOR_SIZE, diskBuffer.length);
             break;
           }
         }
