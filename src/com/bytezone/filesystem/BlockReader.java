@@ -106,12 +106,11 @@ public class BlockReader
           break;
         }
 
-        int base = block.getTrack () * trackSize;
         int sectorsPerBlock = blockSize / SECTOR_SIZE;
 
         for (int i = 0; i < sectorsPerBlock; i++)
         {
-          offset = base
+          offset = block.getTrack () * trackSize
               + interleaves[interleave][block.getSector () * sectorsPerBlock + i] * SECTOR_SIZE;
           if (diskOffset + offset + SECTOR_SIZE <= diskBuffer.length)
             System.arraycopy (diskBuffer, diskOffset + offset, blockBuffer,
