@@ -1,7 +1,6 @@
 package com.bytezone.filesystem;
 
-import static com.bytezone.filesystem.BlockReader.AddressType.BLOCK;
-
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -11,7 +10,7 @@ import com.bytezone.utility.Utility;
 public class FsPascal extends AbstractFileSystem
 // -----------------------------------------------------------------------------------//
 {
-  private static BlockReader blockReader = new BlockReader (512, BLOCK, 0, 0);
+  //  private static BlockReader blockReader = new BlockReader (512, BLOCK, 0, 0);
   private static final int CATALOG_ENTRY_SIZE = 26;
 
   private String volumeName;
@@ -19,26 +18,20 @@ public class FsPascal extends AbstractFileSystem
   private int files;          // no of files on disk
 
   // ---------------------------------------------------------------------------------//
-  public FsPascal (String name, byte[] buffer, int offset, int length)
+  public FsPascal (Path path, BlockReader blockReader)
   // ---------------------------------------------------------------------------------//
   {
-    this (name, buffer, offset, length, blockReader);
+    super (path, blockReader);
+
+    readCatalog ();
   }
 
   // ---------------------------------------------------------------------------------//
-  public FsPascal (String name, byte[] buffer, BlockReader blockReader)
+  public FsPascal (BlockReader blockReader)
   // ---------------------------------------------------------------------------------//
   {
-    this (name, buffer, 0, buffer.length, blockReader);
-  }
+    super (blockReader);
 
-  // ---------------------------------------------------------------------------------//
-  public FsPascal (String name, byte[] buffer, int offset, int length, BlockReader blockReader)
-  // ---------------------------------------------------------------------------------//
-  {
-    super (name, buffer, offset, length, blockReader);
-
-    setFileSystemName ("Pascal");
     readCatalog ();
   }
 
@@ -47,6 +40,8 @@ public class FsPascal extends AbstractFileSystem
   // ---------------------------------------------------------------------------------//
   {
     assert getTotalCatalogBlocks () == 0;
+
+    setFileSystemName ("Pascal");
 
     AppleBlock vtoc = getBlock (2);
     byte[] buffer = vtoc.read ();

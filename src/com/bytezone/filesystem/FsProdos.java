@@ -1,5 +1,7 @@
 package com.bytezone.filesystem;
 
+import java.nio.file.Path;
+
 import com.bytezone.utility.Utility;
 
 // -----------------------------------------------------------------------------------//
@@ -26,19 +28,20 @@ public class FsProdos extends AbstractFileSystem
   private int bitmapPointer;
 
   // ---------------------------------------------------------------------------------//
-  public FsProdos (String name, byte[] buffer, BlockReader blockReader)
+  public FsProdos (Path path, BlockReader blockReader)
   // ---------------------------------------------------------------------------------//
   {
-    this (name, buffer, 0, buffer.length, blockReader);
+    super (path, blockReader);
+
+    readCatalog ();
   }
 
   // ---------------------------------------------------------------------------------//
-  public FsProdos (String name, byte[] buffer, int offset, int length, BlockReader blockReader)
+  public FsProdos (BlockReader blockReader)
   // ---------------------------------------------------------------------------------//
   {
-    super (name, buffer, offset, length, blockReader);
+    super (blockReader);
 
-    setFileSystemName ("Prodos");
     readCatalog ();
   }
 
@@ -46,6 +49,8 @@ public class FsProdos extends AbstractFileSystem
   private void readCatalog ()
   // ---------------------------------------------------------------------------------//
   {
+    setFileSystemName ("Prodos");
+
     int nextBlockNo = 2;
     int prevBlockNo = 0;
 
@@ -121,7 +126,9 @@ public class FsProdos extends AbstractFileSystem
           case PASCAL_ON_PROFILE:
             file = new FileProdos (this, buffer, ptr);
             byte[] fileBuffer = file.read ();
-            addFileSystem (parent, file.getName (), fileBuffer, 1024, fileBuffer.length - 1024);
+            BlockReader pascalBlockReader =
+                new BlockReader (fileBuffer, 1024, fileBuffer.length - 1024);
+            addFileSystem (parent, pascalBlockReader);
             break;
 
           case GSOS_EXTENDED_FILE:

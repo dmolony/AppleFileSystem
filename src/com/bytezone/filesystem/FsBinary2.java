@@ -1,5 +1,7 @@
 package com.bytezone.filesystem;
 
+import java.nio.file.Path;
+
 import com.bytezone.utility.Utility;
 
 // -----------------------------------------------------------------------------------//
@@ -11,22 +13,12 @@ public class FsBinary2 extends AbstractFileSystem
   private String suffix;
 
   // ---------------------------------------------------------------------------------//
-  public FsBinary2 (String name, byte[] buffer, BlockReader blockReader)
+  public FsBinary2 (Path path, BlockReader blockReader)
   // ---------------------------------------------------------------------------------//
   {
-    this (name, buffer, 0, buffer.length, blockReader);
-  }
+    super (path, blockReader);
 
-  // ---------------------------------------------------------------------------------//
-  public FsBinary2 (String name, byte[] buffer, int offset, int length, BlockReader blockReader)
-  // ---------------------------------------------------------------------------------//
-  {
-    super (name, buffer, offset, length, blockReader);
-
-    setFileSystemName ("Bin II");
-
-    assert Utility.isMagic (buffer, offset, BIN2) && buffer[offset + 18] == 0x02;
-
+    String name = filePath.toFile ().getName ();
     int pos = name.lastIndexOf ('.');
     if (pos > 0)
       suffix = name.substring (pos + 1).toLowerCase ();
@@ -35,16 +27,23 @@ public class FsBinary2 extends AbstractFileSystem
   }
 
   // ---------------------------------------------------------------------------------//
-  public String getSuffix ()
+  public FsBinary2 (BlockReader blockReader)
   // ---------------------------------------------------------------------------------//
   {
-    return suffix;
+    super (blockReader);
+
+    readCatalog ();
   }
 
   // ---------------------------------------------------------------------------------//
   private void readCatalog ()
   // ---------------------------------------------------------------------------------//
   {
+    setFileSystemName ("Bin II");
+
+    assert Utility.isMagic (blockReader.diskBuffer, blockReader.diskOffset, BIN2)
+        && blockReader.diskBuffer[blockReader.diskOffset + 18] == 0x02;
+
     int nextBlock = 0;
     FileBinary2 file = null;
     int filesRemaining = 0;
@@ -76,5 +75,12 @@ public class FsBinary2 extends AbstractFileSystem
     if (false)
       if (filesRemaining > 0)
         System.out.println (filesRemaining + " files unavailable");
+  }
+
+  // ---------------------------------------------------------------------------------//
+  public String getSuffix ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return suffix;
   }
 }

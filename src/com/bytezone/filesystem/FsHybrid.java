@@ -1,5 +1,6 @@
 package com.bytezone.filesystem;
 
+import java.nio.file.Path;
 import java.util.List;
 
 // -----------------------------------------------------------------------------------//
@@ -23,14 +24,23 @@ public class FsHybrid extends AbstractFileSystem
   public FsHybrid (AppleFileSystem fs)
   // ---------------------------------------------------------------------------------//
   {
-    this (fs.getName (), fs.getBuffer (), fs.getOffset (), fs.getLength (), fs.getBlockReader ());
+    this (fs.getBlockReader ());
   }
 
   // ---------------------------------------------------------------------------------//
-  public FsHybrid (String name, byte[] buffer, int offset, int length, BlockReader blockReader)
+  public FsHybrid (Path path, BlockReader blockReader)
   // ---------------------------------------------------------------------------------//
   {
-    super (name, buffer, offset, length, blockReader);
+    super (path, blockReader);
+
+    setFileSystemName ("Hybrid");
+  }
+
+  // ---------------------------------------------------------------------------------//
+  public FsHybrid (BlockReader blockReader)
+  // ---------------------------------------------------------------------------------//
+  {
+    super (blockReader);
 
     setFileSystemName ("Hybrid");
   }

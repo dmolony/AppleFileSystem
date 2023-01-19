@@ -2,8 +2,8 @@ package com.bytezone.filesystem;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.zip.GZIPInputStream;
-import java.util.zip.ZipException;
 
 import com.bytezone.utility.Utility;
 
@@ -18,42 +18,45 @@ public class FsGzip extends AbstractFileSystem
   boolean debug = false;
 
   // ---------------------------------------------------------------------------------//
-  public FsGzip (String name, byte[] buffer, BlockReader blockReader)
+  public FsGzip (Path path, BlockReader blockReader)
   // ---------------------------------------------------------------------------------//
   {
-    this (name, buffer, 0, buffer.length, blockReader);
+    super (path, blockReader);
+
+    readCatalog ();
+
+    assert Utility.isMagic (blockReader.diskBuffer, blockReader.diskOffset, GZIP);
   }
 
   // ---------------------------------------------------------------------------------//
-  public FsGzip (String name, byte[] buffer, int offset, int length, BlockReader blockReader)
+  public FsGzip (BlockReader blockReader)
   // ---------------------------------------------------------------------------------//
   {
-    super (name, buffer, offset, length, blockReader);
+    super (blockReader);
 
-    setFileSystemName ("GZip");
     readCatalog ();
 
-    assert Utility.isMagic (buffer, offset, GZIP);
+    assert Utility.isMagic (blockReader.diskBuffer, blockReader.diskOffset, GZIP);
   }
 
   // ---------------------------------------------------------------------------------//
   private void readCatalog ()
   // ---------------------------------------------------------------------------------//
   {
+    setFileSystemName ("GZip");
+
     try (GZIPInputStream zip = new GZIPInputStream (//
         new ByteArrayInputStream (getBuffer (), getOffset (), getLength ()));)
     {
       addFileSystem (this, getName (), Utility.getFullBuffer (zip));
     }
-    catch (ZipException e)
-    {
-      throw new FileFormatException (e.getMessage ());
-      //      e.printStackTrace ();
-    }
+    //    catch (ZipException e)
+    //    {
+    //      throw new FileFormatException (e.getMessage ());
+    //    }
     catch (IOException e)
     {
       throw new FileFormatException (e.getMessage ());
-      //      e.printStackTrace ();
     }
   }
 }

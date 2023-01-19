@@ -1,27 +1,32 @@
 package com.bytezone.filesystem;
 
+import java.nio.file.Path;
+
+import com.bytezone.filesystem.BlockReader.AddressType;
+
 // -----------------------------------------------------------------------------------//
 public class FsUnidos extends AbstractFileSystem
 // -----------------------------------------------------------------------------------//
 {
   private static final int UNIDOS_SIZE = 409_600;
 
-  private boolean debug = false;
+  private boolean debug = true;
 
   // ---------------------------------------------------------------------------------//
-  public FsUnidos (String name, byte[] buffer, BlockReader blockReader)
+  public FsUnidos (Path path, BlockReader blockReader)
   // ---------------------------------------------------------------------------------//
   {
-    this (name, buffer, 0, buffer.length, blockReader);
+    super (path, blockReader);
+
+    readCatalog ();
   }
 
   // ---------------------------------------------------------------------------------//
-  public FsUnidos (String name, byte[] buffer, int offset, int length, BlockReader blockReader)
+  public FsUnidos (BlockReader blockReader)
   // ---------------------------------------------------------------------------------//
   {
-    super (name, buffer, offset, length, blockReader);
+    super (blockReader);
 
-    setFileSystemName ("Unidos");
     readCatalog ();
   }
 
@@ -29,16 +34,22 @@ public class FsUnidos extends AbstractFileSystem
   private void readCatalog ()
   // ---------------------------------------------------------------------------------//
   {
+    setFileSystemName ("Unidos");
+
     byte[] buffer = getBuffer ();
     int offset = getOffset ();
 
     try
     {
-      FsDos fs1 = new FsDos ("Disk 1", buffer, offset, UNIDOS_SIZE, blockReader);
+      BlockReader blockReader1 = new BlockReader (buffer, offset, UNIDOS_SIZE);
+      blockReader1.setParameters (256, AddressType.SECTOR, 0, 32);
+      FsDos fs1 = new FsDos (blockReader1);
 
       if (fs1 != null && fs1.getTotalCatalogBlocks () > 0)
       {
-        FsDos fs2 = new FsDos ("Disk 2", buffer, offset + UNIDOS_SIZE, UNIDOS_SIZE, blockReader);
+        BlockReader blockReader2 = new BlockReader (buffer, offset + UNIDOS_SIZE, UNIDOS_SIZE);
+        blockReader2.setParameters (256, AddressType.SECTOR, 0, 32);
+        FsDos fs2 = new FsDos (blockReader2);
 
         if (fs2 != null && fs2.getTotalCatalogBlocks () > 0)
         {

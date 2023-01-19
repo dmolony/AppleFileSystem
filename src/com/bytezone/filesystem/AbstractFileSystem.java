@@ -1,5 +1,6 @@
 package com.bytezone.filesystem;
 
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -10,15 +11,15 @@ import com.bytezone.filesystem.BlockReader.AddressType;
 public abstract class AbstractFileSystem implements AppleFileSystem
 // -----------------------------------------------------------------------------------//
 {
-  protected final String fileName;
+  protected Path filePath;
 
-  protected final byte[] diskBuffer;      // entire buffer including any header or other disks
-  protected final int fileOffset;         // start of this file system
-  protected final int fileLength;         // length of this file system
+  //  protected final byte[] diskBuffer;      // entire buffer including any header or other disks
+  //  protected final int fileOffset;         // start of this file system
+  //  protected final int fileLength;         // length of this file system
 
   protected final BlockReader blockReader;
 
-  protected final int totalBlocks;
+  //  protected final int totalBlocks;
   protected int catalogBlocks;
 
   protected List<AppleFile> files = new ArrayList<> ();
@@ -31,21 +32,18 @@ public abstract class AbstractFileSystem implements AppleFileSystem
   private int totalFiles = 0;
 
   // ---------------------------------------------------------------------------------//
-  public AbstractFileSystem (String fileName, byte[] buffer, int offset, int length,
-      BlockReader blockReader)
+  public AbstractFileSystem (BlockReader blockReader)
   // ---------------------------------------------------------------------------------//
   {
-    Objects.checkFromIndexSize (offset, length, buffer.length);
-
-    this.fileName = fileName;
-    this.diskBuffer = buffer;
-    this.fileOffset = offset;
-    this.fileLength = length;
     this.blockReader = Objects.requireNonNull (blockReader);
+  }
 
-    totalBlocks = fileLength / blockReader.blockSize;
-
-    //    assert totalBlocks > 0;
+  // ---------------------------------------------------------------------------------//
+  public AbstractFileSystem (Path filePath, BlockReader blockReader)
+  // ---------------------------------------------------------------------------------//
+  {
+    this.filePath = filePath;
+    this.blockReader = Objects.requireNonNull (blockReader);
   }
 
   // ---------------------------------------------------------------------------------//
@@ -73,7 +71,7 @@ public abstract class AbstractFileSystem implements AppleFileSystem
   boolean isValidBlockNo (int blockNo)
   // ---------------------------------------------------------------------------------//
   {
-    return blockNo >= 0 && blockNo < totalBlocks;
+    return blockNo >= 0 && blockNo < blockReader.totalBlocks;
   }
 
   // ---------------------------------------------------------------------------------//
@@ -129,7 +127,7 @@ public abstract class AbstractFileSystem implements AppleFileSystem
   public byte[] readBlock (AppleBlock block)
   // ---------------------------------------------------------------------------------//
   {
-    return blockReader.read (diskBuffer, fileOffset, block);
+    return blockReader.read (block);
   }
 
   // ---------------------------------------------------------------------------------//
@@ -137,7 +135,7 @@ public abstract class AbstractFileSystem implements AppleFileSystem
   public byte[] readBlocks (List<AppleBlock> blocks)
   // ---------------------------------------------------------------------------------//
   {
-    return blockReader.read (diskBuffer, fileOffset, blocks);
+    return blockReader.read (blocks);
   }
 
   // ---------------------------------------------------------------------------------//
@@ -145,7 +143,7 @@ public abstract class AbstractFileSystem implements AppleFileSystem
   public void writeBlock (AppleBlock block, byte[] buffer)
   // ---------------------------------------------------------------------------------//
   {
-    blockReader.write (diskBuffer, fileOffset, block, buffer);
+    blockReader.write (block, buffer);
   }
 
   // ---------------------------------------------------------------------------------//
@@ -153,7 +151,7 @@ public abstract class AbstractFileSystem implements AppleFileSystem
   public void writeBlocks (List<AppleBlock> blocks, byte[] buffer)
   // ---------------------------------------------------------------------------------//
   {
-    blockReader.write (diskBuffer, fileOffset, blocks, buffer);
+    blockReader.write (blocks, buffer);
   }
 
   // AppleFile methods
@@ -163,7 +161,7 @@ public abstract class AbstractFileSystem implements AppleFileSystem
   public String getName ()
   // ---------------------------------------------------------------------------------//
   {
-    return fileName;
+    return "File System";
   }
 
   // ---------------------------------------------------------------------------------//
@@ -199,7 +197,7 @@ public abstract class AbstractFileSystem implements AppleFileSystem
   public int getBlockSize ()
   // ---------------------------------------------------------------------------------//
   {
-    return blockReader.blockSize;
+    return blockReader.bytesPerBlock;
   }
 
   // ---------------------------------------------------------------------------------//
@@ -239,7 +237,7 @@ public abstract class AbstractFileSystem implements AppleFileSystem
   public byte[] getBuffer ()
   // ---------------------------------------------------------------------------------//
   {
-    return diskBuffer;
+    return blockReader.diskBuffer;
   }
 
   // ---------------------------------------------------------------------------------//
@@ -247,7 +245,7 @@ public abstract class AbstractFileSystem implements AppleFileSystem
   public int getOffset ()
   // ---------------------------------------------------------------------------------//
   {
-    return fileOffset;
+    return blockReader.diskOffset;
   }
 
   // ---------------------------------------------------------------------------------//
@@ -255,7 +253,7 @@ public abstract class AbstractFileSystem implements AppleFileSystem
   public int getLength ()         // in bytes
   // ---------------------------------------------------------------------------------//
   {
-    return fileLength;
+    return blockReader.length;
   }
 
   // ---------------------------------------------------------------------------------//
@@ -263,7 +261,7 @@ public abstract class AbstractFileSystem implements AppleFileSystem
   public int getSize ()           // in blocks
   // ---------------------------------------------------------------------------------//
   {
-    return totalBlocks;
+    return blockReader.totalBlocks;
   }
 
   // ---------------------------------------------------------------------------------//
@@ -283,18 +281,18 @@ public abstract class AbstractFileSystem implements AppleFileSystem
   protected AppleFileSystem addFileSystem (AppleFile parent, String name, byte[] buffer)
   // ---------------------------------------------------------------------------------//
   {
-    return addFileSystem (parent, name, buffer, 0, buffer.length);
+    BlockReader blockReader = new BlockReader (buffer, 0, buffer.length);
+    return addFileSystem (parent, blockReader);
   }
 
   // ---------------------------------------------------------------------------------//
-  protected AppleFileSystem addFileSystem (AppleFile parent, String name, byte[] buffer, int offset,
-      int length)
+  protected AppleFileSystem addFileSystem (AppleFile parent, BlockReader blockReader)
   // ---------------------------------------------------------------------------------//
   {
     if (factory == null)
       factory = new FileSystemFactory ();
 
-    AppleFileSystem fs = factory.getFileSystem (name, buffer, offset, length);
+    AppleFileSystem fs = factory.getFileSystem (blockReader);
 
     if (fs != null)
     {
@@ -348,13 +346,12 @@ public abstract class AbstractFileSystem implements AppleFileSystem
   {
     StringBuilder text = new StringBuilder ();
 
-    text.append (String.format ("File name ............. %s%n", fileName));
+    //    text.append (String.format ("File name ............. %s%n", fileName));
     text.append (String.format ("File system ........... %s%n", fileSystemName));
-    text.append (String.format ("File offset ........... %,d%n", fileOffset));
-    text.append (String.format ("File length ........... %,d%n", fileLength));
-    text.append (String.format ("Total blocks .......... %,d%n", totalBlocks));
-    text.append (String.format ("Block size ............ %d%n", blockReader.blockSize));
-    text.append (String.format ("Interleave ............ %d%n", blockReader.interleave));
+
+    text.append (blockReader.toText ());
+    text.append ("\n");
+
     text.append (String.format ("Catalog blocks ........ %d%n", catalogBlocks));
     text.append (String.format ("Total file systems .... %d%n", totalFileSystems));
     text.append (String.format ("Total files ........... %d %d", files.size (), totalFiles));
@@ -367,8 +364,8 @@ public abstract class AbstractFileSystem implements AppleFileSystem
   public String toString ()
   // ---------------------------------------------------------------------------------//
   {
-    return String.format ("%-20.20s %-6s %,8d  %d %,7d  %4d %3d %4d %3d", fileName, fileSystemName,
-        fileOffset, blockReader.interleave, totalBlocks, blockReader.blockSize, catalogBlocks,
-        totalFiles, totalFileSystems);
+    return String.format ("%-6s %,8d  %d %,7d  %4d %3d %4d %3d", fileSystemName,
+        blockReader.diskOffset, blockReader.interleave, blockReader.totalBlocks,
+        blockReader.bytesPerBlock, catalogBlocks, totalFiles, totalFileSystems);
   }
 }

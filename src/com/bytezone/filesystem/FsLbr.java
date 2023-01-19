@@ -1,23 +1,26 @@
 package com.bytezone.filesystem;
 
+import java.nio.file.Path;
+
 // -----------------------------------------------------------------------------------//
 public class FsLbr extends AbstractFileSystem
 // -----------------------------------------------------------------------------------//
 {
   // ---------------------------------------------------------------------------------//
-  public FsLbr (String name, byte[] buffer, BlockReader blockReader)
+  public FsLbr (Path path, BlockReader blockReader)
   // ---------------------------------------------------------------------------------//
   {
-    this (name, buffer, 0, buffer.length, blockReader);
+    super (path, blockReader);
+
+    readCatalog ();
   }
 
   // ---------------------------------------------------------------------------------//
-  public FsLbr (String name, byte[] buffer, int offset, int length, BlockReader blockReader)
+  public FsLbr (BlockReader blockReader)
   // ---------------------------------------------------------------------------------//
   {
-    super (name, buffer, offset, length, blockReader);
+    super (blockReader);
 
-    setFileSystemName ("LBR");
     readCatalog ();
   }
 
@@ -25,6 +28,8 @@ public class FsLbr extends AbstractFileSystem
   private void readCatalog ()
   // ---------------------------------------------------------------------------------//
   {
+    setFileSystemName ("LBR");
+
     int max = 1;
     int count = 0;
 

@@ -2,6 +2,7 @@ package com.bytezone.filesystem;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.zip.ZipEntry;
@@ -22,28 +23,33 @@ public class FsZip extends AbstractFileSystem
   private List<ZipEntry> zipEntries = new ArrayList<> ();
 
   // ---------------------------------------------------------------------------------//
-  public FsZip (String name, byte[] buffer, BlockReader blockReader)
+  public FsZip (Path path, BlockReader blockReader)
   // ---------------------------------------------------------------------------------//
   {
-    this (name, buffer, 0, buffer.length, blockReader);
+    super (path, blockReader);
+
+    readCatalog ();
+
+    assert Utility.isMagic (blockReader.diskBuffer, blockReader.diskOffset, ZIP);
   }
 
   // ---------------------------------------------------------------------------------//
-  public FsZip (String name, byte[] buffer, int offset, int length, BlockReader blockReader)
+  public FsZip (BlockReader blockReader)
   // ---------------------------------------------------------------------------------//
   {
-    super (name, buffer, offset, length, blockReader);
+    super (blockReader);
 
-    setFileSystemName ("Zip");
     readCatalog ();
 
-    assert Utility.isMagic (buffer, offset, ZIP);
+    assert Utility.isMagic (blockReader.diskBuffer, blockReader.diskOffset, ZIP);
   }
 
   // ---------------------------------------------------------------------------------//
   private void readCatalog ()
   // ---------------------------------------------------------------------------------//
   {
+    setFileSystemName ("Zip");
+
     try (ZipInputStream zip = new ZipInputStream (//
         new ByteArrayInputStream (getBuffer (), getOffset (), getLength ()));)
     {

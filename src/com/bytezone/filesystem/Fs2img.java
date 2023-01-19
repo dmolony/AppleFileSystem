@@ -1,5 +1,7 @@
 package com.bytezone.filesystem;
 
+import java.nio.file.Path;
+
 import com.bytezone.utility.Utility;
 
 // -----------------------------------------------------------------------------------//
@@ -33,19 +35,31 @@ public class Fs2img extends AbstractFileSystem
   private AppleFileSystem fileSystem;
 
   // ---------------------------------------------------------------------------------//
-  public Fs2img (String name, byte[] buffer, BlockReader blockReader)
+  public Fs2img (Path path, BlockReader blockReader)
   // ---------------------------------------------------------------------------------//
   {
-    this (name, buffer, 0, buffer.length, blockReader);
+    super (path, blockReader);
+
+    readCatalog ();
   }
 
   // ---------------------------------------------------------------------------------//
-  public Fs2img (String name, byte[] buffer, int offset, int length, BlockReader blockReader)
+  public Fs2img (BlockReader blockReader)
   // ---------------------------------------------------------------------------------//
   {
-    super (name, buffer, offset, length, blockReader);
+    super (blockReader);
 
+    readCatalog ();
+  }
+
+  // ---------------------------------------------------------------------------------//
+  private void readCatalog ()
+  // ---------------------------------------------------------------------------------//
+  {
     setFileSystemName ("2img");
+
+    byte[] buffer = blockReader.diskBuffer;
+    int offset = blockReader.diskOffset;
 
     assert Utility.isMagic (buffer, offset, TWO_IMG);
 
@@ -55,8 +69,10 @@ public class Fs2img extends AbstractFileSystem
     format = Utility.unsignedLong (buffer, offset + 12);
     flags = Utility.unsignedLong (buffer, offset + 16);
     prodosBlocks = Utility.unsignedLong (buffer, offset + 20);
+
     this.offset = Utility.unsignedLong (buffer, offset + 24);
     this.length = Utility.unsignedLong (buffer, offset + 28);
+
     commentOffset = Utility.unsignedLong (buffer, offset + 32);
     commentLength = Utility.unsignedLong (buffer, offset + 36);
     creatorDataOffset = Utility.unsignedLong (buffer, offset + 40);
@@ -67,14 +83,9 @@ public class Fs2img extends AbstractFileSystem
     hasDosVolumeNumber = (flags & 0x0100) != 0;
     volumeNumber = flags & 0x00FF;
 
-    readCatalog ();
-  }
-
-  // ---------------------------------------------------------------------------------//
-  private void readCatalog ()
-  // ---------------------------------------------------------------------------------//
-  {
-    fileSystem = addFileSystem (this, getName (), diskBuffer, offset, length);
+    BlockReader reader =
+        new BlockReader (blockReader.diskBuffer, blockReader.diskOffset + offset, length);
+    fileSystem = addFileSystem (this, reader);
   }
 
   // ---------------------------------------------------------------------------------//

@@ -91,7 +91,7 @@ public class Tester
       Path path = Path.of (fileNames[fileNo]);
       String name = path.toFile ().getName ();
 
-      AppleFileSystem fs = factory.getFileSystem (name, readAllBytes (path));
+      AppleFileSystem fs = factory.getFileSystem (path);
 
       if (fs == null)
       {

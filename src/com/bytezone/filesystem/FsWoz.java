@@ -1,5 +1,7 @@
 package com.bytezone.filesystem;
 
+import java.nio.file.Path;
+
 import com.bytezone.utility.Utility;
 import com.bytezone.woz.DiskNibbleException;
 import com.bytezone.woz.WozFile;
@@ -14,22 +16,19 @@ public class FsWoz extends AbstractFileSystem
   boolean debug = false;
 
   // ---------------------------------------------------------------------------------//
-  public FsWoz (String name, byte[] buffer, BlockReader blockReader)
+  public FsWoz (Path path, BlockReader blockReader)
   // ---------------------------------------------------------------------------------//
   {
-    this (name, buffer, 0, buffer.length, blockReader);
+    super (path, blockReader);
+
+    readCatalog ();
   }
 
   // ---------------------------------------------------------------------------------//
-  public FsWoz (String name, byte[] buffer, int offset, int length, BlockReader blockReader)
+  public FsWoz (BlockReader blockReader)
   // ---------------------------------------------------------------------------------//
   {
-    super (name, buffer, offset, length, blockReader);
-
-    if (Utility.isMagic (buffer, 0, WOZ_1))
-      setFileSystemName ("Woz1");
-    else if (Utility.isMagic (buffer, 0, WOZ_2))
-      setFileSystemName ("Woz2");
+    super (blockReader);
 
     readCatalog ();
   }
@@ -38,10 +37,20 @@ public class FsWoz extends AbstractFileSystem
   private void readCatalog ()
   // ---------------------------------------------------------------------------------//
   {
+
+    if (Utility.isMagic (blockReader.diskBuffer, 0, WOZ_1))
+      setFileSystemName ("Woz1");
+    else if (Utility.isMagic (blockReader.diskBuffer, 0, WOZ_2))
+      setFileSystemName ("Woz2");
+    else
+      System.out.println ("Not woz");
+
     try
     {
       byte[] buffer = new WozFile (getBuffer ()).getDiskBuffer ();
-      addFileSystem (this, fileName, buffer);
+
+      BlockReader blockReader = new BlockReader (buffer, 0, buffer.length);
+      addFileSystem (this, blockReader);
     }
     catch (DiskNibbleException e)
     {

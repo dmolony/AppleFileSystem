@@ -1,5 +1,7 @@
 package com.bytezone.filesystem;
 
+import java.nio.file.Path;
+
 // -----------------------------------------------------------------------------------//
 public class FsCpm extends AbstractFileSystem
 // -----------------------------------------------------------------------------------//
@@ -7,19 +9,17 @@ public class FsCpm extends AbstractFileSystem
   private static final int EMPTY_BYTE_VALUE = 0xE5;
 
   // ---------------------------------------------------------------------------------//
-  public FsCpm (String name, byte[] buffer, BlockReader blockReader)
+  public FsCpm (Path path, BlockReader blockReader)
   // ---------------------------------------------------------------------------------//
   {
-    this (name, buffer, 0, buffer.length, blockReader);
+    super (path, blockReader);
   }
 
   // ---------------------------------------------------------------------------------//
-  public FsCpm (String name, byte[] buffer, int offset, int length, BlockReader blockReader)
+  public FsCpm (BlockReader blockReader)
   // ---------------------------------------------------------------------------------//
   {
-    super (name, buffer, offset, length, blockReader);
-
-    setFileSystemName ("CPM");
+    super (blockReader);
 
     readCatalog ();
   }
@@ -29,6 +29,8 @@ public class FsCpm extends AbstractFileSystem
   // ---------------------------------------------------------------------------------//
   {
     assert getTotalCatalogBlocks () == 0;
+
+    setFileSystemName ("CPM");
 
     int catalogBlocks = 0;
     FileCpm currentFile = null;
@@ -47,7 +49,7 @@ public class FsCpm extends AbstractFileSystem
       maxBlocks = 8;          // 8 blocks (full track)
     }
 
-    out: for (int i = 0; i < maxBlocks; i++)
+    OUT: for (int i = 0; i < maxBlocks; i++)
     {
       byte[] buffer = getBlock (firstBlock + i).read ();
 
@@ -59,12 +61,12 @@ public class FsCpm extends AbstractFileSystem
 
         if (b1 > 31)
           //          throw new FileFormatException ("CPM: bad user number: " + b1);
-          break out;
+          break OUT;
 
         int b2 = buffer[j + 1] & 0xFF;      // first letter of filename
         if (b2 <= 32 || (b2 > 126 && b2 != EMPTY_BYTE_VALUE))
           //          throw new FileFormatException ("CPM: bad name value");
-          break out;
+          break OUT;
 
         if (currentFile == null || currentFile.isComplete ())
         {

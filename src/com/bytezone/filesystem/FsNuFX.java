@@ -1,5 +1,7 @@
 package com.bytezone.filesystem;
 
+import java.nio.file.Path;
+
 import com.bytezone.utility.DateTime;
 import com.bytezone.utility.Utility;
 
@@ -10,34 +12,44 @@ public class FsNuFX extends AbstractFileSystem
 {
   static final byte[] NuFile = { 0x4E, (byte) 0xF5, 0x46, (byte) 0xE9, 0x6C, (byte) 0xE5 };
 
-  private final int crc;
-  private final int totalRecords;
-  private final DateTime created;
-  private final DateTime modified;
-  private final int version;
-  private final int reserved1;            // v1 stores file type (0xE0 - LBR)
-  private final int reserved2;            // v1 stores aux (0x8002)
-  private final int reserved3;
-  private final int reserved4;
-  private final int eof;
+  private int crc;
+  private int totalRecords;
+  private DateTime created;
+  private DateTime modified;
+  private int version;
+  private int reserved1;            // v1 stores file type (0xE0 - LBR)
+  private int reserved2;            // v1 stores aux (0x8002)
+  private int reserved3;
+  private int reserved4;
+  private int eof;
 
-  private final boolean crcPassed;
+  private boolean crcPassed;
 
   // ---------------------------------------------------------------------------------//
-  public FsNuFX (String name, byte[] buffer, BlockReader reader)
+  public FsNuFX (Path path, BlockReader reader)
   // ---------------------------------------------------------------------------------//
   {
-    this (name, buffer, 0, buffer.length, reader);
+    super (path, reader);           // reader not used
+
+    init ();
   }
 
   // ---------------------------------------------------------------------------------//
-  public FsNuFX (String name, byte[] buffer, int offset, int length, BlockReader reader)
+  public FsNuFX (BlockReader blockReader)
   // ---------------------------------------------------------------------------------//
   {
-    super (name, buffer, offset, length, reader);       // reader not used
+    super (blockReader);           // reader not used
 
+    init ();
+  }
+
+  // ---------------------------------------------------------------------------------//
+  private void init ()
+  // ---------------------------------------------------------------------------------//
+  {
     setFileSystemName ("NuFX");
 
+    byte[] buffer = blockReader.diskBuffer;
     assert Utility.isMagic (buffer, 0, NuFile);
 
     crc = Utility.unsignedShort (buffer, 6);
