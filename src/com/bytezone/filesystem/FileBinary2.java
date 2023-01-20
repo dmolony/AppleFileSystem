@@ -105,7 +105,7 @@ public class FileBinary2 extends AbstractFile
       if (!fs.isValidBlockNo (block))
       {
         if (debug)
-          System.out.printf ("Invalid block %d in %s%n", block, getName ());
+          System.out.printf ("Invalid block %d in %s%n", block, getFileName ());
         validBlocks = false;
         break;
       }
@@ -133,10 +133,10 @@ public class FileBinary2 extends AbstractFile
 
   // ---------------------------------------------------------------------------------//
   @Override
-  public String getName ()
+  public String getFileName ()
   // ---------------------------------------------------------------------------------//
   {
-    return squeezeName == null ? super.getName () : squeezeName;
+    return squeezeName == null ? super.getFileName () : squeezeName;
   }
 
   // ---------------------------------------------------------------------------------//
@@ -200,7 +200,7 @@ public class FileBinary2 extends AbstractFile
   public byte[] read ()
   // ---------------------------------------------------------------------------------//
   {
-    String suffix = Utility.getSuffix (fileSystem.getName ());
+    String suffix = Utility.getSuffix (fileSystem.getFileName ());
     if (suffix.equals ("bqy") && squeezeName != null)
     {
       Squeeze squeeze = new Squeeze ();
@@ -232,7 +232,7 @@ public class FileBinary2 extends AbstractFile
         created.isPresent () ? created.get () : ""));
     text.append (String.format ("Create time ....... %04X%n", createTime));
     text.append (String.format ("EOF ............... %06X  %<,7d%n", eof));
-    text.append (String.format ("File name ......... %s%n", getName ()));
+    text.append (String.format ("File name ......... %s%n", getFileName ()));
     text.append (String.format ("Native name ....... %s%n", nativeName));
 
     text.append (String.format ("G Aux type ........ %04X  %<d%n", gAuxType));
@@ -260,7 +260,7 @@ public class FileBinary2 extends AbstractFile
   public String toString ()
   // ---------------------------------------------------------------------------------//
   {
-    return String.format ("%,6d  %-20s  %02X  %04X %03X  %3d  %,8d", dataBlocks.size (), getName (),
+    return String.format ("%,6d  %-20s  %02X  %04X %03X  %3d  %,8d", dataBlocks.size (), getFileName (),
         fileType, auxType, storageType, blocks, eof);
   }
 }

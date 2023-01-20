@@ -6,7 +6,7 @@ import java.util.List;
 public interface AppleFile
 // -----------------------------------------------------------------------------------//
 {
-  public String getName ();
+  public String getFileName ();
 
   public default boolean isFileSystem ()
   {

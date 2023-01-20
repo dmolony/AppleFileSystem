@@ -118,7 +118,7 @@ public class FileNuFX extends AbstractFile
 
   // ---------------------------------------------------------------------------------//
   @Override
-  public String getName ()
+  public String getFileName ()
   // ---------------------------------------------------------------------------------//
   {
     return fileName;

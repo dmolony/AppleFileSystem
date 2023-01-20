@@ -31,7 +31,7 @@ public class FsBinary2 extends AbstractFileSystem
     {
       if (!isValidBlockNo (nextBlock))
       {
-        System.out.printf ("Invalid block number %d in %s%n", nextBlock, getName ());
+        System.out.printf ("Invalid block number %d in %s%n", nextBlock, getFileName ());
         break;
       }
 

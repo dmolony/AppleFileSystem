@@ -155,7 +155,7 @@ public abstract class AbstractFileSystem implements AppleFileSystem
 
   // ---------------------------------------------------------------------------------//
   @Override
-  public String getName ()
+  public String getFileName ()
   // ---------------------------------------------------------------------------------//
   {
     return blockReader.getName ();
@@ -258,7 +258,7 @@ public abstract class AbstractFileSystem implements AppleFileSystem
   protected void addFileSystem (AppleFile parent, AbstractFile file)
   // ---------------------------------------------------------------------------------//
   {
-    AppleFileSystem fs = addFileSystem (parent, file.getName (), file.read ());
+    AppleFileSystem fs = addFileSystem (parent, file.getFileName (), file.read ());
 
     if (fs == null)
     {
@@ -332,7 +332,7 @@ public abstract class AbstractFileSystem implements AppleFileSystem
   {
     StringBuilder text = new StringBuilder ();
 
-    text.append (String.format ("File name ............. %s%n", getName ()));
+    text.append (String.format ("File name ............. %s%n", getFileName ()));
     text.append (String.format ("File system ........... %s%n", fileSystemName));
 
     text.append (blockReader.toText ());
@@ -350,7 +350,7 @@ public abstract class AbstractFileSystem implements AppleFileSystem
   public String toString ()
   // ---------------------------------------------------------------------------------//
   {
-    return String.format ("%-12s %-6s %,8d  %d %,7d  %4d %3d %4d %3d", getName (), fileSystemName,
+    return String.format ("%-12s %-6s %,8d  %d %,7d  %4d %3d %4d %3d", getFileName (), fileSystemName,
         blockReader.getDiskOffset (), blockReader.interleave, blockReader.totalBlocks,
         blockReader.bytesPerBlock, catalogBlocks, totalFiles, totalFileSystems);
   }

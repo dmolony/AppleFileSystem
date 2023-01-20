@@ -25,7 +25,7 @@ public abstract class AbstractFile implements AppleFile
 
   // ---------------------------------------------------------------------------------//
   @Override
-  public String getName ()
+  public String getFileName ()
   // ---------------------------------------------------------------------------------//
   {
     return name;

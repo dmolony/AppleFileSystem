@@ -63,7 +63,7 @@ public class FileCpm extends AbstractFile
 
       if (false)
         if ((b & 0x80) != 0)
-          System.out.printf ("%s CPM hi bit set%n", getName ());
+          System.out.printf ("%s CPM hi bit set%n", getFileName ());
 
       int blockNumber = ((b & 0x80) == 0) ? (b + 12) : (b & 0x7F);
       dataBlocks.add (fileSystem.getBlock (blockNumber));
@@ -103,7 +103,7 @@ public class FileCpm extends AbstractFile
 
   // ---------------------------------------------------------------------------------//
   @Override
-  public String getName ()
+  public String getFileName ()
   // ---------------------------------------------------------------------------------//
   {
     return type.isEmpty () ? name : name + "." + type;
@@ -114,7 +114,7 @@ public class FileCpm extends AbstractFile
   public String toString ()
   // ---------------------------------------------------------------------------------//
   {
-    return String.format ("%-12s  %s  %s  %2d %3d  %3d", getName (), readOnly ? "*" : " ",
+    return String.format ("%-12s  %s  %s  %2d %3d  %3d", getFileName (), readOnly ? "*" : " ",
         systemFile ? "*" : " ", userNumber, dataBlocks.size (), recordCount);
   }
 }
