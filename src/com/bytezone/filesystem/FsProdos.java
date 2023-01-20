@@ -1,7 +1,5 @@
 package com.bytezone.filesystem;
 
-import java.nio.file.Path;
-
 import com.bytezone.utility.Utility;
 
 // -----------------------------------------------------------------------------------//
@@ -26,15 +24,6 @@ public class FsProdos extends AbstractFileSystem
   private int entriesPerBlock;
   private int fileCount;
   private int bitmapPointer;
-
-  // ---------------------------------------------------------------------------------//
-  public FsProdos (Path path, BlockReader blockReader)
-  // ---------------------------------------------------------------------------------//
-  {
-    super (path, blockReader);
-
-    readCatalog ();
-  }
 
   // ---------------------------------------------------------------------------------//
   public FsProdos (BlockReader blockReader)

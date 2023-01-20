@@ -1,7 +1,5 @@
 package com.bytezone.filesystem;
 
-import java.nio.file.Path;
-
 import com.bytezone.utility.DateTime;
 import com.bytezone.utility.Utility;
 
@@ -26,27 +24,11 @@ public class FsNuFX extends AbstractFileSystem
   private boolean crcPassed;
 
   // ---------------------------------------------------------------------------------//
-  public FsNuFX (Path path, BlockReader reader)
-  // ---------------------------------------------------------------------------------//
-  {
-    super (path, reader);           // reader not used
-
-    init ();
-  }
-
-  // ---------------------------------------------------------------------------------//
   public FsNuFX (BlockReader blockReader)
   // ---------------------------------------------------------------------------------//
   {
     super (blockReader);           // reader not used
 
-    init ();
-  }
-
-  // ---------------------------------------------------------------------------------//
-  private void init ()
-  // ---------------------------------------------------------------------------------//
-  {
     setFileSystemName ("NuFX");
 
     byte[] buffer = blockReader.getDiskBuffer ();

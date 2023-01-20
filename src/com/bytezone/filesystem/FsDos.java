@@ -1,7 +1,5 @@
 package com.bytezone.filesystem;
 
-import java.nio.file.Path;
-
 // -----------------------------------------------------------------------------------//
 public class FsDos extends AbstractFileSystem
 // -----------------------------------------------------------------------------------//
@@ -12,15 +10,6 @@ public class FsDos extends AbstractFileSystem
   enum FileType
   {
     Text, ApplesoftBasic, IntegerBasic, Binary, SS, Relocatable, AA, BB
-  }
-
-  // ---------------------------------------------------------------------------------//
-  public FsDos (Path path, BlockReader blockReader)
-  // ---------------------------------------------------------------------------------//
-  {
-    super (path, blockReader);
-
-    readCatalog ();
   }
 
   // ---------------------------------------------------------------------------------//

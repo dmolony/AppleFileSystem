@@ -1,22 +1,11 @@
 package com.bytezone.filesystem;
 
-import java.nio.file.Path;
-
 // -----------------------------------------------------------------------------------//
 public class FsDos4 extends AbstractFileSystem
 // -----------------------------------------------------------------------------------//
 {
   static final int ENTRY_SIZE = 35;
   int dosVersion;
-
-  // ---------------------------------------------------------------------------------//
-  public FsDos4 (Path path, BlockReader blockReader)
-  // ---------------------------------------------------------------------------------//
-  {
-    super (path, blockReader);
-
-    readCatalog ();
-  }
 
   // ---------------------------------------------------------------------------------//
   public FsDos4 (BlockReader blockReader)

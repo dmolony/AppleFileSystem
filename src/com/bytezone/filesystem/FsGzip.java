@@ -2,7 +2,6 @@ package com.bytezone.filesystem;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.nio.file.Path;
 import java.util.zip.GZIPInputStream;
 
 import com.bytezone.utility.Utility;
@@ -16,17 +15,6 @@ public class FsGzip extends AbstractFileSystem
   static final byte[] GZIP = { 0x1F, (byte) 0x8B };
 
   boolean debug = false;
-
-  // ---------------------------------------------------------------------------------//
-  public FsGzip (Path path, BlockReader blockReader)
-  // ---------------------------------------------------------------------------------//
-  {
-    super (path, blockReader);
-
-    readCatalog ();
-
-    assert blockReader.isMagic (0, GZIP);
-  }
 
   // ---------------------------------------------------------------------------------//
   public FsGzip (BlockReader blockReader)

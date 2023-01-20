@@ -1,5 +1,8 @@
 package com.bytezone.filesystem;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.List;
 import java.util.Objects;
 
@@ -21,6 +24,9 @@ public class BlockReader
   private final int diskOffset;
   private final int diskLength;
 
+  private Path path;
+  private String suffix;
+
   AddressType addressType;      // BLOCK, SECTOR
   int bytesPerBlock;            // 256, 512, 1024
   int interleave;               // 0, 1, 2
@@ -31,6 +37,26 @@ public class BlockReader
   enum AddressType
   {
     BLOCK, SECTOR
+  }
+
+  // ---------------------------------------------------------------------------------//
+  public BlockReader (Path path)
+  // ---------------------------------------------------------------------------------//
+  {
+    this.path = path;
+    byte[] buffer = readAllBytes (path);
+
+    diskBuffer = buffer;
+    diskOffset = 0;
+    if (buffer.length == 143_488)
+      diskLength = 143_360;
+    else
+      diskLength = buffer.length;
+
+    String name = path.toFile ().getName ();
+    int pos = name.lastIndexOf ('.');
+    if (pos > 0)
+      suffix = name.substring (pos + 1).toLowerCase ();
   }
 
   // ---------------------------------------------------------------------------------//
@@ -48,12 +74,12 @@ public class BlockReader
   }
 
   // ---------------------------------------------------------------------------------//
-  public BlockReader (BlockReader clone)
+  public BlockReader (BlockReader original)
   // ---------------------------------------------------------------------------------//
   {
-    this.diskBuffer = clone.diskBuffer;
-    this.diskOffset = clone.diskOffset;
-    this.diskLength = clone.diskLength;
+    this.diskBuffer = original.diskBuffer;
+    this.diskOffset = original.diskOffset;
+    this.diskLength = original.diskLength;
   }
 
   // ---------------------------------------------------------------------------------//
@@ -251,6 +277,35 @@ public class BlockReader
         System.out.println ("Unknown address type: " + addressType);
         assert false;
         break;          // impossible
+    }
+  }
+
+  // ---------------------------------------------------------------------------------//
+  Path getPath ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return path;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  String getSuffix ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return suffix;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  private byte[] readAllBytes (Path path)
+  // ---------------------------------------------------------------------------------//
+  {
+    try
+    {
+      return Files.readAllBytes (path);
+    }
+    catch (IOException e)
+    {
+      e.printStackTrace ();
+      return null;
     }
   }
 

@@ -1,7 +1,5 @@
 package com.bytezone.filesystem;
 
-import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
@@ -33,14 +31,13 @@ public class FileSystemFactory
 
   private List<AppleFileSystem> fileSystems;
   private boolean debug = false;
-  private Path path;
 
   // ---------------------------------------------------------------------------------//
   public AppleFileSystem getFileSystem (Path path)
   // ---------------------------------------------------------------------------------//
   {
-    this.path = path;
-    AppleFileSystem fs = getFileSystem (readAllBytes (path));
+    BlockReader blockReader = new BlockReader (path);
+    AppleFileSystem fs = getFileSystem (blockReader);
 
     return fs;
   }
@@ -49,7 +46,7 @@ public class FileSystemFactory
   AppleFileSystem getFileSystem (AppleFile file)
   // ---------------------------------------------------------------------------------//
   {
-    path = null;
+    //    path = null;
     return getFileSystem (file.read ());
   }
 
@@ -69,7 +66,7 @@ public class FileSystemFactory
 
     if (debug)
     {
-      System.out.printf ("Checking: %s%n", path);
+      System.out.printf ("Checking: %s%n", blockReader.getPath ());
       System.out.printf ("Length  : %,d%n", blockReader.getDiskLength ());
       System.out.println (
           Utility.format (blockReader.getDiskBuffer (), blockReader.getDiskOffset (), 100));
@@ -154,7 +151,7 @@ public class FileSystemFactory
         BlockReader dos31Reader = new BlockReader (blockReader);
         dos31Reader.setParameters (256, AddressType.SECTOR, 0, 13);
 
-        FsDos fs = new FsDos (path, dos31Reader);
+        FsDos fs = new FsDos (dos31Reader);
 
         if (fs.getTotalCatalogBlocks () > 0)
           fileSystems.add (fs);
@@ -180,7 +177,7 @@ public class FileSystemFactory
           BlockReader dos33Reader = new BlockReader (blockReader);
           dos33Reader.setParameters (256, AddressType.SECTOR, i, 16);
 
-          FsDos fs = new FsDos (path, dos33Reader);
+          FsDos fs = new FsDos (dos33Reader);
 
           if (fs.getTotalCatalogBlocks () > 0)
             fsList.add (fs);
@@ -215,7 +212,7 @@ public class FileSystemFactory
         BlockReader dos4Reader = new BlockReader (blockReader);
         dos4Reader.setParameters (256, AddressType.SECTOR, 0, 16);
 
-        FsDos4 fs = new FsDos4 (path, dos4Reader);
+        FsDos4 fs = new FsDos4 (dos4Reader);
 
         if (fs.getTotalCatalogBlocks () > 0)
           fileSystems.add (fs);
@@ -237,7 +234,7 @@ public class FileSystemFactory
         BlockReader unidosReader = new BlockReader (blockReader);
         blockReader.setParameters (256, AddressType.SECTOR, 0, 32);
 
-        FsUnidos fs = new FsUnidos (path, unidosReader);
+        FsUnidos fs = new FsUnidos (unidosReader);
 
         if (fs.getFiles ().size () > 0)
           fileSystems.add (fs);
@@ -261,7 +258,7 @@ public class FileSystemFactory
           BlockReader prodosReader = new BlockReader (blockReader);
           prodosReader.setParameters (512, AddressType.BLOCK, i, i * 8);
 
-          FsProdos fs = new FsProdos (path, prodosReader);
+          FsProdos fs = new FsProdos (prodosReader);
 
           if (fs.getTotalCatalogBlocks () > 0)
             fileSystems.add (fs);
@@ -285,7 +282,7 @@ public class FileSystemFactory
           BlockReader pascalReader = new BlockReader (blockReader);
           pascalReader.setParameters (512, AddressType.BLOCK, i, i * 8);
 
-          FsPascal fs = new FsPascal (path, pascalReader);
+          FsPascal fs = new FsPascal (pascalReader);
 
           if (fs.getTotalCatalogBlocks () > 0)
             fileSystems.add (fs);
@@ -307,7 +304,7 @@ public class FileSystemFactory
         BlockReader cpmReader = new BlockReader (blockReader);
         cpmReader.setParameters (1024, AddressType.BLOCK, 2, 4);
 
-        FsCpm fs = new FsCpm (path, cpmReader);
+        FsCpm fs = new FsCpm (cpmReader);
 
         if (fs.getTotalCatalogBlocks () > 0)
           fileSystems.add (fs);
@@ -329,7 +326,7 @@ public class FileSystemFactory
         BlockReader cpamReader = new BlockReader (blockReader);
         cpamReader.setParameters (1024, AddressType.BLOCK, 0, 8);
 
-        FsCpm fs = new FsCpm (path, cpamReader);
+        FsCpm fs = new FsCpm (cpamReader);
 
         if (fs.getTotalCatalogBlocks () > 0)
           fileSystems.add (fs);
@@ -350,7 +347,7 @@ public class FileSystemFactory
       BlockReader lbrReader = new BlockReader (blockReader);
       lbrReader.setParameters (128, AddressType.BLOCK, 0, 0);
 
-      FsLbr fs = new FsLbr (path, lbrReader);
+      FsLbr fs = new FsLbr (lbrReader);
 
       if (fs.getTotalCatalogBlocks () > 0)
         fileSystems.add (fs);
@@ -372,7 +369,7 @@ public class FileSystemFactory
         BlockReader lbrReader = new BlockReader (blockReader);
         lbrReader.setParameters (128, AddressType.BLOCK, 0, 0);
 
-        FsBinary2 fs = new FsBinary2 (path, lbrReader);
+        FsBinary2 fs = new FsBinary2 (lbrReader);
 
         if (fs.getFiles ().size () > 0)
           fileSystems.add (fs);
@@ -394,7 +391,7 @@ public class FileSystemFactory
         BlockReader lbrReader = new BlockReader (blockReader);
         lbrReader.setParameters (128, AddressType.BLOCK, 0, 0);
 
-        FsNuFX fs = new FsNuFX (path, lbrReader);
+        FsNuFX fs = new FsNuFX (lbrReader);
 
         if (fs.getFiles ().size () > 0)
           fileSystems.add (fs);
@@ -419,7 +416,7 @@ public class FileSystemFactory
         BlockReader lbrReader = new BlockReader (blockReader);
         lbrReader.setParameters (128, AddressType.BLOCK, 0, 0);
 
-        Fs2img fs = new Fs2img (path, lbrReader);
+        Fs2img fs = new Fs2img (lbrReader);
 
         if (fs.getFiles ().size () > 0)
           fileSystems.add (fs);
@@ -441,7 +438,7 @@ public class FileSystemFactory
         BlockReader lbrReader = new BlockReader (blockReader);
         lbrReader.setParameters (128, AddressType.BLOCK, 0, 0);
 
-        FsZip fs = new FsZip (path, lbrReader);
+        FsZip fs = new FsZip (lbrReader);
 
         if (fs.getFiles ().size () > 0)
           fileSystems.add (fs);
@@ -463,7 +460,7 @@ public class FileSystemFactory
         BlockReader lbrReader = new BlockReader (blockReader);
         lbrReader.setParameters (128, AddressType.BLOCK, 0, 0);
 
-        FsGzip fs = new FsGzip (path, lbrReader);
+        FsGzip fs = new FsGzip (lbrReader);
 
         if (fs.getFiles ().size () > 0)
           fileSystems.add (fs);
@@ -485,7 +482,7 @@ public class FileSystemFactory
         BlockReader lbrReader = new BlockReader (blockReader);
         lbrReader.setParameters (128, AddressType.BLOCK, 0, 0);
 
-        FsWoz fs = new FsWoz (path, lbrReader);
+        FsWoz fs = new FsWoz (lbrReader);
 
         if (fs.getFiles ().size () > 0)
           fileSystems.add (fs);
@@ -495,20 +492,5 @@ public class FileSystemFactory
         if (debug)
           System.out.println (e);
       }
-  }
-
-  // ---------------------------------------------------------------------------------//
-  private byte[] readAllBytes (Path fileName)
-  // ---------------------------------------------------------------------------------//
-  {
-    try
-    {
-      return Files.readAllBytes (fileName);
-    }
-    catch (IOException e)
-    {
-      e.printStackTrace ();
-      return null;
-    }
   }
 }

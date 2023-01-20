@@ -1,7 +1,5 @@
 package com.bytezone.filesystem;
 
-import java.nio.file.Path;
-
 import com.bytezone.filesystem.BlockReader.AddressType;
 
 // -----------------------------------------------------------------------------------//
@@ -11,15 +9,6 @@ public class FsUnidos extends AbstractFileSystem
   private static final int UNIDOS_SIZE = 409_600;
 
   private boolean debug = true;
-
-  // ---------------------------------------------------------------------------------//
-  public FsUnidos (Path path, BlockReader blockReader)
-  // ---------------------------------------------------------------------------------//
-  {
-    super (path, blockReader);
-
-    readCatalog ();
-  }
 
   // ---------------------------------------------------------------------------------//
   public FsUnidos (BlockReader blockReader)

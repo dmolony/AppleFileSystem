@@ -2,7 +2,6 @@ package com.bytezone.filesystem;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.zip.ZipEntry;
@@ -21,17 +20,6 @@ public class FsZip extends AbstractFileSystem
   private boolean debug = false;
 
   private List<ZipEntry> zipEntries = new ArrayList<> ();
-
-  // ---------------------------------------------------------------------------------//
-  public FsZip (Path path, BlockReader blockReader)
-  // ---------------------------------------------------------------------------------//
-  {
-    super (path, blockReader);
-
-    readCatalog ();
-
-    assert blockReader.isMagic (0, ZIP);
-  }
 
   // ---------------------------------------------------------------------------------//
   public FsZip (BlockReader blockReader)

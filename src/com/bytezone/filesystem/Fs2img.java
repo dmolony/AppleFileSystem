@@ -1,7 +1,5 @@
 package com.bytezone.filesystem;
 
-import java.nio.file.Path;
-
 import com.bytezone.utility.Utility;
 
 // -----------------------------------------------------------------------------------//
@@ -33,15 +31,6 @@ public class Fs2img extends AbstractFileSystem
   private int volumeNumber;
 
   private AppleFileSystem fileSystem;
-
-  // ---------------------------------------------------------------------------------//
-  public Fs2img (Path path, BlockReader blockReader)
-  // ---------------------------------------------------------------------------------//
-  {
-    super (path, blockReader);
-
-    readCatalog ();
-  }
 
   // ---------------------------------------------------------------------------------//
   public Fs2img (BlockReader blockReader)

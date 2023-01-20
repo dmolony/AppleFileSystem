@@ -1,6 +1,5 @@
 package com.bytezone.filesystem;
 
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -11,7 +10,6 @@ import com.bytezone.filesystem.BlockReader.AddressType;
 public abstract class AbstractFileSystem implements AppleFileSystem
 // -----------------------------------------------------------------------------------//
 {
-  protected Path filePath;
   protected final BlockReader blockReader;
   protected int catalogBlocks;
   protected List<AppleFile> files = new ArrayList<> ();
@@ -31,18 +29,17 @@ public abstract class AbstractFileSystem implements AppleFileSystem
   }
 
   // ---------------------------------------------------------------------------------//
-  public AbstractFileSystem (Path filePath, BlockReader blockReader)
-  // ---------------------------------------------------------------------------------//
-  {
-    this.filePath = filePath;
-    this.blockReader = Objects.requireNonNull (blockReader);
-  }
-
-  // ---------------------------------------------------------------------------------//
   void setFileSystemName (String fileSystemName)
   // ---------------------------------------------------------------------------------//
   {
     this.fileSystemName = fileSystemName;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  String getSuffix ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return blockReader.getSuffix ();
   }
 
   // ---------------------------------------------------------------------------------//

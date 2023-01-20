@@ -1,28 +1,10 @@
 package com.bytezone.filesystem;
 
-import java.nio.file.Path;
-
 // -----------------------------------------------------------------------------------//
 public class FsBinary2 extends AbstractFileSystem
 // -----------------------------------------------------------------------------------//
 {
   static final byte[] BIN2 = { 0x0A, 0x47, 0x4C };
-
-  private String suffix;
-
-  // ---------------------------------------------------------------------------------//
-  public FsBinary2 (Path path, BlockReader blockReader)
-  // ---------------------------------------------------------------------------------//
-  {
-    super (path, blockReader);
-
-    String name = filePath.toFile ().getName ();
-    int pos = name.lastIndexOf ('.');
-    if (pos > 0)
-      suffix = name.substring (pos + 1).toLowerCase ();
-
-    readCatalog ();
-  }
 
   // ---------------------------------------------------------------------------------//
   public FsBinary2 (BlockReader blockReader)
@@ -72,12 +54,5 @@ public class FsBinary2 extends AbstractFileSystem
     if (false)
       if (filesRemaining > 0)
         System.out.println (filesRemaining + " files unavailable");
-  }
-
-  // ---------------------------------------------------------------------------------//
-  public String getSuffix ()
-  // ---------------------------------------------------------------------------------//
-  {
-    return suffix;
   }
 }

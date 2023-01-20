@@ -1,6 +1,5 @@
 package com.bytezone.filesystem;
 
-import java.nio.file.Path;
 import java.util.List;
 
 // -----------------------------------------------------------------------------------//
@@ -25,15 +24,6 @@ public class FsHybrid extends AbstractFileSystem
   // ---------------------------------------------------------------------------------//
   {
     this (fs.getBlockReader ());
-  }
-
-  // ---------------------------------------------------------------------------------//
-  public FsHybrid (Path path, BlockReader blockReader)
-  // ---------------------------------------------------------------------------------//
-  {
-    super (path, blockReader);
-
-    setFileSystemName ("Hybrid");
   }
 
   // ---------------------------------------------------------------------------------//

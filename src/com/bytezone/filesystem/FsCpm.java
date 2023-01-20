@@ -1,19 +1,10 @@
 package com.bytezone.filesystem;
 
-import java.nio.file.Path;
-
 // -----------------------------------------------------------------------------------//
 public class FsCpm extends AbstractFileSystem
 // -----------------------------------------------------------------------------------//
 {
   private static final int EMPTY_BYTE_VALUE = 0xE5;
-
-  // ---------------------------------------------------------------------------------//
-  public FsCpm (Path path, BlockReader blockReader)
-  // ---------------------------------------------------------------------------------//
-  {
-    super (path, blockReader);
-  }
 
   // ---------------------------------------------------------------------------------//
   public FsCpm (BlockReader blockReader)

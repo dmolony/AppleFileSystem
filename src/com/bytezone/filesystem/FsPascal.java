@@ -1,6 +1,5 @@
 package com.bytezone.filesystem;
 
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,15 +15,6 @@ public class FsPascal extends AbstractFileSystem
   private String volumeName;
   private int blocks;         // size of disk
   private int files;          // no of files on disk
-
-  // ---------------------------------------------------------------------------------//
-  public FsPascal (Path path, BlockReader blockReader)
-  // ---------------------------------------------------------------------------------//
-  {
-    super (path, blockReader);
-
-    readCatalog ();
-  }
 
   // ---------------------------------------------------------------------------------//
   public FsPascal (BlockReader blockReader)
