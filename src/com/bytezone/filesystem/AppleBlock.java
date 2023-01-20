@@ -6,9 +6,9 @@ public interface AppleBlock
 {
   int getBlockNo ();
 
-  int getTrack ();
+  int getTrackNo ();
 
-  int getSector ();
+  int getSectorNo ();
 
   boolean isValid ();
 

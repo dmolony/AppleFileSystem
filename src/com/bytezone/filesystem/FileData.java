@@ -35,7 +35,7 @@ public class FileData extends AbstractFile
 
   // ---------------------------------------------------------------------------------//
   @Override
-  public int getSize ()                   // in blocks
+  public int getTotalBlocks ()                   // in blocks
   // ---------------------------------------------------------------------------------//
   {
     return buffer.length / 512;

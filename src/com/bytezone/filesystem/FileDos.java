@@ -126,7 +126,7 @@ public class FileDos extends AbstractFile
 
   // ---------------------------------------------------------------------------------//
   @Override
-  public int getSize ()                   // in blocks
+  public int getTotalBlocks ()                   // in blocks
   // ---------------------------------------------------------------------------------//
   {
     return indexBlocks.size () + dataBlocks.size ();

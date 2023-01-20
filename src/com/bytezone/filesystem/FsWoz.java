@@ -2,7 +2,6 @@ package com.bytezone.filesystem;
 
 import java.nio.file.Path;
 
-import com.bytezone.utility.Utility;
 import com.bytezone.woz.DiskNibbleException;
 import com.bytezone.woz.WozFile;
 
@@ -38,9 +37,9 @@ public class FsWoz extends AbstractFileSystem
   // ---------------------------------------------------------------------------------//
   {
 
-    if (Utility.isMagic (blockReader.diskBuffer, 0, WOZ_1))
+    if (blockReader.isMagic (0, WOZ_1))
       setFileSystemName ("Woz1");
-    else if (Utility.isMagic (blockReader.diskBuffer, 0, WOZ_2))
+    else if (blockReader.isMagic (0, WOZ_2))
       setFileSystemName ("Woz2");
     else
       System.out.println ("Not woz");

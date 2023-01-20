@@ -25,7 +25,7 @@ public class FsGzip extends AbstractFileSystem
 
     readCatalog ();
 
-    assert Utility.isMagic (blockReader.diskBuffer, blockReader.diskOffset, GZIP);
+    assert blockReader.isMagic (0, GZIP);
   }
 
   // ---------------------------------------------------------------------------------//
@@ -36,7 +36,7 @@ public class FsGzip extends AbstractFileSystem
 
     readCatalog ();
 
-    assert Utility.isMagic (blockReader.diskBuffer, blockReader.diskOffset, GZIP);
+    assert blockReader.isMagic (0, GZIP);
   }
 
   // ---------------------------------------------------------------------------------//

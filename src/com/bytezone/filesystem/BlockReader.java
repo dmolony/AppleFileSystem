@@ -3,6 +3,8 @@ package com.bytezone.filesystem;
 import java.util.List;
 import java.util.Objects;
 
+import com.bytezone.utility.Utility;
+
 // -----------------------------------------------------------------------------------//
 public class BlockReader
 // -----------------------------------------------------------------------------------//
@@ -15,9 +17,9 @@ public class BlockReader
       { 0, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 15 },       // pascal
       { 0, 6, 12, 3, 9, 15, 14, 5, 11, 2, 8, 7, 13, 4, 10, 1 } };     // CPM
 
-  final byte[] diskBuffer;
-  final int diskOffset;
-  final int length;
+  private final byte[] diskBuffer;
+  private final int diskOffset;
+  private final int diskLength;
 
   AddressType addressType;      // BLOCK, SECTOR
   int bytesPerBlock;            // 256, 512, 1024
@@ -32,17 +34,17 @@ public class BlockReader
   }
 
   // ---------------------------------------------------------------------------------//
-  public BlockReader (byte[] diskBuffer, int diskOffset, int length)
+  public BlockReader (byte[] diskBuffer, int diskOffset, int diskLength)
   // ---------------------------------------------------------------------------------//
   {
-    Objects.checkFromIndexSize (diskOffset, length, diskBuffer.length);
+    Objects.checkFromIndexSize (diskOffset, diskLength, diskBuffer.length);
 
-    if (length == 143_488)
-      length = 143_360;
+    if (diskLength == 143_488)
+      diskLength = 143_360;
 
     this.diskBuffer = diskBuffer;
     this.diskOffset = diskOffset;
-    this.length = length;
+    this.diskLength = diskLength;
   }
 
   // ---------------------------------------------------------------------------------//
@@ -51,7 +53,7 @@ public class BlockReader
   {
     this.diskBuffer = clone.diskBuffer;
     this.diskOffset = clone.diskOffset;
-    this.length = clone.length;
+    this.diskLength = clone.diskLength;
   }
 
   // ---------------------------------------------------------------------------------//
@@ -65,7 +67,42 @@ public class BlockReader
     this.blocksPerTrack = blocksPerTrack;
 
     bytesPerTrack = bytesPerBlock * blocksPerTrack;
-    totalBlocks = length / bytesPerBlock;
+    totalBlocks = diskLength / bytesPerBlock;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  byte[] getDiskBuffer ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return diskBuffer;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  int getDiskOffset ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return diskOffset;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  int getDiskLength ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return diskLength;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  boolean isMagic (int offset, byte[] magic)
+  // ---------------------------------------------------------------------------------//
+  {
+    return Utility.isMagic (diskBuffer, diskOffset + offset, magic);
+  }
+
+  // ---------------------------------------------------------------------------------//
+  boolean byteAt (int offset, byte magic)
+  // ---------------------------------------------------------------------------------//
+  {
+    return diskBuffer[diskOffset + offset] == magic;
   }
 
   // ---------------------------------------------------------------------------------//
@@ -118,8 +155,8 @@ public class BlockReader
     {
       case SECTOR:
         assert bytesPerBlock == SECTOR_SIZE;
-        int offset = block.getTrack () * bytesPerTrack
-            + interleaves[interleave][block.getSector ()] * bytesPerBlock;
+        int offset = block.getTrackNo () * bytesPerTrack
+            + interleaves[interleave][block.getSectorNo ()] * bytesPerBlock;
         System.arraycopy (diskBuffer, diskOffset + offset, blockBuffer, bufferOffset,
             bytesPerBlock);
         break;
@@ -139,8 +176,8 @@ public class BlockReader
 
         for (int i = 0; i < sectorsPerBlock; i++)
         {
-          offset = block.getTrack () * bytesPerTrack
-              + interleaves[interleave][block.getSector () * sectorsPerBlock + i] * SECTOR_SIZE;
+          offset = block.getTrackNo () * bytesPerTrack
+              + interleaves[interleave][block.getSectorNo () * sectorsPerBlock + i] * SECTOR_SIZE;
 
           if (diskOffset + offset + SECTOR_SIZE <= diskBuffer.length)
             System.arraycopy (diskBuffer, diskOffset + offset, blockBuffer,
@@ -184,8 +221,8 @@ public class BlockReader
     switch (addressType)
     {
       case SECTOR:
-        int offset = block.getTrack () * bytesPerTrack
-            + interleaves[interleave][block.getSector ()] * bytesPerBlock;
+        int offset = block.getTrackNo () * bytesPerTrack
+            + interleaves[interleave][block.getSectorNo ()] * bytesPerBlock;
         System.arraycopy (blockBuffer, bufferOffset, diskBuffer, diskOffset + offset,
             bytesPerBlock);
         break;
@@ -198,12 +235,12 @@ public class BlockReader
           break;
         }
 
-        int base = block.getTrack () * bytesPerTrack;
+        int base = block.getTrackNo () * bytesPerTrack;
         int sectorsPerBlock = bytesPerBlock / 256;
 
         for (int i = 0; i < sectorsPerBlock; i++)
         {
-          offset = base + interleaves[interleave][block.getSector () * sectorsPerBlock + i] * 256;
+          offset = base + interleaves[interleave][block.getSectorNo () * sectorsPerBlock + i] * 256;
           System.arraycopy (blockBuffer, bufferOffset + i * 256, diskBuffer, diskOffset + offset,
               256);
         }
@@ -223,8 +260,8 @@ public class BlockReader
   {
     StringBuilder text = new StringBuilder ();
 
-    text.append (String.format ("File offset ........... %,d%n", diskOffset));
-    text.append (String.format ("File length ........... %,d%n", length));
+    text.append (String.format ("Disk offset ........... %,d%n", diskOffset));
+    text.append (String.format ("Disk length ........... %,d%n", diskLength));
     text.append (String.format ("Total blocks .......... %,d%n", totalBlocks));
     text.append (String.format ("Block size ............ %d%n", bytesPerBlock));
     text.append (String.format ("Interleave ............ %d", interleave));

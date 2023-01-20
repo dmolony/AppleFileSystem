@@ -61,7 +61,7 @@ public class FsPascal extends AbstractFileSystem
     files = Utility.unsignedShort (buffer, 16);
     setCatalogBlocks (blockTo - 2);
 
-    int max = Math.min (blockTo, getSize ());
+    int max = Math.min (blockTo, getTotalBlocks ());
 
     List<AppleBlock> addresses = new ArrayList<> ();
     for (int i = 2; i < max; i++)

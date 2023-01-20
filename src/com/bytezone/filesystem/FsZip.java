@@ -30,7 +30,7 @@ public class FsZip extends AbstractFileSystem
 
     readCatalog ();
 
-    assert Utility.isMagic (blockReader.diskBuffer, blockReader.diskOffset, ZIP);
+    assert blockReader.isMagic (0, ZIP);
   }
 
   // ---------------------------------------------------------------------------------//
@@ -41,7 +41,7 @@ public class FsZip extends AbstractFileSystem
 
     readCatalog ();
 
-    assert Utility.isMagic (blockReader.diskBuffer, blockReader.diskOffset, ZIP);
+    assert blockReader.isMagic (0, ZIP);
   }
 
   // ---------------------------------------------------------------------------------//

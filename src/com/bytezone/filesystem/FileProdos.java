@@ -154,7 +154,7 @@ public class FileProdos extends AbstractFile
 
   // ---------------------------------------------------------------------------------//
   @Override
-  public int getSize ()                                    // in blocks
+  public int getTotalBlocks ()                                    // in blocks
   // ---------------------------------------------------------------------------------//
   {
     return size;              // size of both forks if GSOS extended
@@ -187,6 +187,6 @@ public class FileProdos extends AbstractFile
         storageType == FsProdos.GSOS_EXTENDED_FILE ? getLength (ForkType.DATA) : getLength ();
 
     return String.format ("%-30s %-3s  %04X %4d %,10d", name, ProdosConstants.fileTypes[fileType],
-        keyPtr, getSize (), length);
+        keyPtr, getTotalBlocks (), length);
   }
 }

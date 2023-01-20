@@ -49,22 +49,24 @@ public class FsNuFX extends AbstractFileSystem
   {
     setFileSystemName ("NuFX");
 
-    byte[] buffer = blockReader.diskBuffer;
-    assert Utility.isMagic (buffer, 0, NuFile);
+    byte[] buffer = blockReader.getDiskBuffer ();
+    int diskOffset = blockReader.getDiskOffset ();
 
-    crc = Utility.unsignedShort (buffer, 6);
-    totalRecords = Utility.unsignedLong (buffer, 8);        // no of FileNuFX
-    created = new DateTime (buffer, 12);
-    modified = new DateTime (buffer, 20);
-    version = Utility.unsignedShort (buffer, 28);
-    reserved1 = Utility.unsignedLong (buffer, 30);
-    reserved2 = Utility.unsignedLong (buffer, 34);
-    eof = Utility.unsignedLong (buffer, 38);
-    reserved3 = Utility.unsignedLong (buffer, 42);
-    reserved4 = Utility.unsignedShort (buffer, 46);
+    assert blockReader.isMagic (0, NuFile);
+
+    crc = Utility.unsignedShort (buffer, diskOffset + 6);
+    totalRecords = Utility.unsignedLong (buffer, diskOffset + 8);        // no of FileNuFX
+    created = new DateTime (buffer, diskOffset + 12);
+    modified = new DateTime (buffer, diskOffset + 20);
+    version = Utility.unsignedShort (buffer, diskOffset + 28);
+    reserved1 = Utility.unsignedLong (buffer, diskOffset + 30);
+    reserved2 = Utility.unsignedLong (buffer, diskOffset + 34);
+    eof = Utility.unsignedLong (buffer, diskOffset + 38);
+    reserved3 = Utility.unsignedLong (buffer, diskOffset + 42);
+    reserved4 = Utility.unsignedShort (buffer, diskOffset + 46);
 
     byte[] crcBuffer = new byte[40];
-    System.arraycopy (buffer, 8, crcBuffer, 0, crcBuffer.length);
+    System.arraycopy (buffer, diskOffset + 8, crcBuffer, 0, crcBuffer.length);
     crcPassed = crc == Utility.crc16 (crcBuffer, crcBuffer.length, 0);
     if (!crcPassed)
       throw new FileFormatException ("Master CRC failed");

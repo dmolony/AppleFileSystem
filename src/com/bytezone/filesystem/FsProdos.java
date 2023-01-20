@@ -51,10 +51,10 @@ public class FsProdos extends AbstractFileSystem
   {
     setFileSystemName ("Prodos");
 
-    int nextBlockNo = 2;
-    int prevBlockNo = 0;
+    int nextBlockNo = 2;                    // first catalog block
+    int prevBlockNo = -1;
 
-    assert getTotalCatalogBlocks () == 0;
+    assert catalogBlocks == 0;
     int catalogBlocks = 0;
 
     while (nextBlockNo != 0)

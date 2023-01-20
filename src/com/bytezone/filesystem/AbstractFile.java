@@ -119,7 +119,7 @@ public abstract class AbstractFile implements AppleFile
 
   // ---------------------------------------------------------------------------------//
   @Override
-  public int getSize ()                   // in blocks
+  public int getTotalBlocks ()                   // in blocks
   // ---------------------------------------------------------------------------------//
   {
     throw new UnsupportedOperationException ("getSize() not implemented");

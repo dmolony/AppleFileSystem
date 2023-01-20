@@ -33,7 +33,7 @@ public interface AppleFile
 
   public int getLength ();                          // in bytes (eof)
 
-  public int getSize ();                            // in data blocks
+  public int getTotalBlocks ();                     // in data blocks
 
   public List<AppleBlock> getBlocks ();
 

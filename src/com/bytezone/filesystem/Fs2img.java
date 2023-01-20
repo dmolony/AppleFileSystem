@@ -58,33 +58,33 @@ public class Fs2img extends AbstractFileSystem
   {
     setFileSystemName ("2img");
 
-    byte[] buffer = blockReader.diskBuffer;
-    int offset = blockReader.diskOffset;
+    byte[] buffer = blockReader.getDiskBuffer ();
+    int diskOffset = blockReader.getDiskOffset ();
 
-    assert Utility.isMagic (buffer, offset, TWO_IMG);
+    assert blockReader.isMagic (0, TWO_IMG);
 
-    creator = new String (buffer, offset + 4, 4);
-    headerSize = Utility.unsignedShort (buffer, offset + 8);
-    version = Utility.unsignedShort (buffer, offset + 10);
-    format = Utility.unsignedLong (buffer, offset + 12);
-    flags = Utility.unsignedLong (buffer, offset + 16);
-    prodosBlocks = Utility.unsignedLong (buffer, offset + 20);
+    creator = new String (buffer, diskOffset + 4, 4);
+    headerSize = Utility.unsignedShort (buffer, diskOffset + 8);
+    version = Utility.unsignedShort (buffer, diskOffset + 10);
+    format = Utility.unsignedLong (buffer, diskOffset + 12);
+    flags = Utility.unsignedLong (buffer, diskOffset + 16);
+    prodosBlocks = Utility.unsignedLong (buffer, diskOffset + 20);
 
-    this.offset = Utility.unsignedLong (buffer, offset + 24);
-    this.length = Utility.unsignedLong (buffer, offset + 28);
+    this.offset = Utility.unsignedLong (buffer, diskOffset + 24);
+    this.length = Utility.unsignedLong (buffer, diskOffset + 28);
 
-    commentOffset = Utility.unsignedLong (buffer, offset + 32);
-    commentLength = Utility.unsignedLong (buffer, offset + 36);
-    creatorDataOffset = Utility.unsignedLong (buffer, offset + 40);
-    creatorDataLength = Utility.unsignedLong (buffer, offset + 44);
-    comment = commentOffset == 0 ? "" : new String (buffer, offset + commentOffset, commentLength);
+    commentOffset = Utility.unsignedLong (buffer, diskOffset + 32);
+    commentLength = Utility.unsignedLong (buffer, diskOffset + 36);
+    creatorDataOffset = Utility.unsignedLong (buffer, diskOffset + 40);
+    creatorDataLength = Utility.unsignedLong (buffer, diskOffset + 44);
+    comment =
+        commentOffset == 0 ? "" : new String (buffer, diskOffset + commentOffset, commentLength);
 
     locked = (flags & 0x8000) != 0;
     hasDosVolumeNumber = (flags & 0x0100) != 0;
     volumeNumber = flags & 0x00FF;
 
-    BlockReader reader =
-        new BlockReader (blockReader.diskBuffer, blockReader.diskOffset + offset, length);
+    BlockReader reader = new BlockReader (buffer, diskOffset + offset, length);
     fileSystem = addFileSystem (this, reader);
   }
 

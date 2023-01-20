@@ -2,8 +2,6 @@ package com.bytezone.filesystem;
 
 import java.nio.file.Path;
 
-import com.bytezone.utility.Utility;
-
 // -----------------------------------------------------------------------------------//
 public class FsBinary2 extends AbstractFileSystem
 // -----------------------------------------------------------------------------------//
@@ -41,8 +39,7 @@ public class FsBinary2 extends AbstractFileSystem
   {
     setFileSystemName ("Bin II");
 
-    assert Utility.isMagic (blockReader.diskBuffer, blockReader.diskOffset, BIN2)
-        && blockReader.diskBuffer[blockReader.diskOffset + 18] == 0x02;
+    assert blockReader.isMagic (0, BIN2) && blockReader.byteAt (18, (byte) 0x02);
 
     int nextBlock = 0;
     FileBinary2 file = null;

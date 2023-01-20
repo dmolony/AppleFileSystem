@@ -31,7 +31,7 @@ public class FileSystemFactory
   //  static BlockReader[] dos33Readers = { dos33Reader0, dos33Reader1 };
   //  static BlockReader[] blockReaders = { blockReader0, blockReader1 };
 
-  List<AppleFileSystem> fileSystems;
+  private List<AppleFileSystem> fileSystems;
   private boolean debug = false;
   private Path path;
 
@@ -69,15 +69,11 @@ public class FileSystemFactory
 
     if (debug)
     {
-      //      System.out.printf ("Checking: %s%n", name);
-      System.out.printf ("Length  : %,d%n", blockReader.length);
-      System.out.println (Utility.format (blockReader.diskBuffer, blockReader.diskOffset, 100));
+      System.out.printf ("Checking: %s%n", path);
+      System.out.printf ("Length  : %,d%n", blockReader.getDiskLength ());
+      System.out.println (
+          Utility.format (blockReader.getDiskBuffer (), blockReader.getDiskOffset (), 100));
     }
-
-    //    if (length == 143_488)
-    //      length = 143_360;
-
-    //    assert offset + length <= buffer.length;
 
     getDos31 (blockReader);
     getDos33 (blockReader);
@@ -87,21 +83,28 @@ public class FileSystemFactory
     getCpm (blockReader);
 
     if (fileSystems.size () == 0)         // these filesystems cannot be hybrids
-    {
       getCpm2 (blockReader);
+    if (fileSystems.size () == 0)
       getLbr (blockReader);
+    if (fileSystems.size () == 0)
       getNuFx (blockReader);
+    if (fileSystems.size () == 0)
       getBinary2 (blockReader);
+    if (fileSystems.size () == 0)
       getZip (blockReader);
+    if (fileSystems.size () == 0)
       getGZip (blockReader);
+    if (fileSystems.size () == 0)
       get2img (blockReader);
+    if (fileSystems.size () == 0)
       getUnidos (blockReader);
+    if (fileSystems.size () == 0)
       getWoz (blockReader);
-    }
 
     switch (fileSystems.size ())
     {
       case 0:
+        blockReader.setParameters (256, AddressType.SECTOR, 0, 16);
         return new FsData (blockReader);
 
       case 1:
@@ -144,12 +147,13 @@ public class FileSystemFactory
   private void getDos31 (BlockReader blockReader)
   // ---------------------------------------------------------------------------------//
   {
-    if (blockReader.length == DOS31_SIZE)
+    if (blockReader.getDiskLength () == DOS31_SIZE)
     {
       try
       {
         BlockReader dos31Reader = new BlockReader (blockReader);
         dos31Reader.setParameters (256, AddressType.SECTOR, 0, 13);
+
         FsDos fs = new FsDos (path, dos31Reader);
 
         if (fs.getTotalCatalogBlocks () > 0)
@@ -169,7 +173,7 @@ public class FileSystemFactory
   {
     List<FsDos> fsList = new ArrayList<> (2);
 
-    if (blockReader.length == DOS33_SIZE)
+    if (blockReader.getDiskLength () == DOS33_SIZE)
       for (int i = 0; i < 2; i++)
         try
         {
@@ -205,11 +209,12 @@ public class FileSystemFactory
   private void getDos4 (BlockReader blockReader)
   // ---------------------------------------------------------------------------------//
   {
-    if (blockReader.length == DOS33_SIZE)
+    if (blockReader.getDiskLength () == DOS33_SIZE)
       try
       {
         BlockReader dos4Reader = new BlockReader (blockReader);
         dos4Reader.setParameters (256, AddressType.SECTOR, 0, 16);
+
         FsDos4 fs = new FsDos4 (path, dos4Reader);
 
         if (fs.getTotalCatalogBlocks () > 0)
@@ -226,11 +231,12 @@ public class FileSystemFactory
   private void getUnidos (BlockReader blockReader)
   // ---------------------------------------------------------------------------------//
   {
-    if (blockReader.length == UNIDOS_SIZE * 2)
+    if (blockReader.getDiskLength () == UNIDOS_SIZE * 2)
       try
       {
         BlockReader unidosReader = new BlockReader (blockReader);
         blockReader.setParameters (256, AddressType.SECTOR, 0, 32);
+
         FsUnidos fs = new FsUnidos (path, unidosReader);
 
         if (fs.getFiles ().size () > 0)
@@ -248,7 +254,7 @@ public class FileSystemFactory
   // ---------------------------------------------------------------------------------//
   {
     // should check for common HD sizes
-    if (blockReader.length >= DOS33_SIZE)
+    if (blockReader.getDiskLength () >= DOS33_SIZE)
       for (int i = 0; i < 2; i++)
         try
         {
@@ -272,12 +278,13 @@ public class FileSystemFactory
   // ---------------------------------------------------------------------------------//
   {
     // should check for common HD sizes
-    if (blockReader.length >= DOS33_SIZE)
+    if (blockReader.getDiskLength () >= DOS33_SIZE)
       for (int i = 0; i < 2; i++)
         try
         {
           BlockReader pascalReader = new BlockReader (blockReader);
           pascalReader.setParameters (512, AddressType.BLOCK, i, i * 8);
+
           FsPascal fs = new FsPascal (path, pascalReader);
 
           if (fs.getTotalCatalogBlocks () > 0)
@@ -294,11 +301,12 @@ public class FileSystemFactory
   private void getCpm (BlockReader blockReader)
   // ---------------------------------------------------------------------------------//
   {
-    if (blockReader.length == DOS33_SIZE)
+    if (blockReader.getDiskLength () == DOS33_SIZE)
       try
       {
         BlockReader cpmReader = new BlockReader (blockReader);
         cpmReader.setParameters (1024, AddressType.BLOCK, 2, 4);
+
         FsCpm fs = new FsCpm (path, cpmReader);
 
         if (fs.getTotalCatalogBlocks () > 0)
@@ -315,11 +323,12 @@ public class FileSystemFactory
   private void getCpm2 (BlockReader blockReader)
   // ---------------------------------------------------------------------------------//
   {
-    if (blockReader.length == CPAM_SIZE)
+    if (blockReader.getDiskLength () == CPAM_SIZE)
       try
       {
         BlockReader cpamReader = new BlockReader (blockReader);
         cpamReader.setParameters (1024, AddressType.BLOCK, 0, 8);
+
         FsCpm fs = new FsCpm (path, cpamReader);
 
         if (fs.getTotalCatalogBlocks () > 0)
@@ -340,6 +349,7 @@ public class FileSystemFactory
     {
       BlockReader lbrReader = new BlockReader (blockReader);
       lbrReader.setParameters (128, AddressType.BLOCK, 0, 0);
+
       FsLbr fs = new FsLbr (path, lbrReader);
 
       if (fs.getTotalCatalogBlocks () > 0)
@@ -356,12 +366,12 @@ public class FileSystemFactory
   private void getBinary2 (BlockReader blockReader)
   // ---------------------------------------------------------------------------------//
   {
-    if (Utility.isMagic (blockReader.diskBuffer, blockReader.diskOffset, FsBinary2.BIN2)
-        && blockReader.diskBuffer[blockReader.diskOffset + 18] == 0x02)
+    if (blockReader.isMagic (0, FsBinary2.BIN2) && blockReader.byteAt (18, (byte) 0x02))
       try
       {
         BlockReader lbrReader = new BlockReader (blockReader);
         lbrReader.setParameters (128, AddressType.BLOCK, 0, 0);
+
         FsBinary2 fs = new FsBinary2 (path, lbrReader);
 
         if (fs.getFiles ().size () > 0)
@@ -378,11 +388,12 @@ public class FileSystemFactory
   private void getNuFx (BlockReader blockReader)
   // ---------------------------------------------------------------------------------//
   {
-    if (Utility.isMagic (blockReader.diskBuffer, blockReader.diskOffset, FsNuFX.NuFile))
+    if (blockReader.isMagic (0, FsNuFX.NuFile))
       try
       {
         BlockReader lbrReader = new BlockReader (blockReader);
         lbrReader.setParameters (128, AddressType.BLOCK, 0, 0);
+
         FsNuFX fs = new FsNuFX (path, lbrReader);
 
         if (fs.getFiles ().size () > 0)
@@ -399,13 +410,15 @@ public class FileSystemFactory
   private void get2img (BlockReader blockReader)
   // ---------------------------------------------------------------------------------//
   {
-    if (Utility.isMagic (blockReader.diskBuffer, blockReader.diskOffset, Fs2img.TWO_IMG))
+    if (blockReader.isMagic (0, Fs2img.TWO_IMG))
       try
       {
         if (debug)
           System.out.println ("Checking 2img");
+
         BlockReader lbrReader = new BlockReader (blockReader);
         lbrReader.setParameters (128, AddressType.BLOCK, 0, 0);
+
         Fs2img fs = new Fs2img (path, lbrReader);
 
         if (fs.getFiles ().size () > 0)
@@ -422,11 +435,12 @@ public class FileSystemFactory
   private void getZip (BlockReader blockReader)
   // ---------------------------------------------------------------------------------//
   {
-    if (Utility.isMagic (blockReader.diskBuffer, blockReader.diskOffset, FsZip.ZIP))
+    if (blockReader.isMagic (0, FsZip.ZIP))
       try
       {
         BlockReader lbrReader = new BlockReader (blockReader);
         lbrReader.setParameters (128, AddressType.BLOCK, 0, 0);
+
         FsZip fs = new FsZip (path, lbrReader);
 
         if (fs.getFiles ().size () > 0)
@@ -443,11 +457,12 @@ public class FileSystemFactory
   private void getGZip (BlockReader blockReader)
   // ---------------------------------------------------------------------------------//
   {
-    if (Utility.isMagic (blockReader.diskBuffer, blockReader.diskOffset, FsGzip.GZIP))
+    if (blockReader.isMagic (0, FsGzip.GZIP))
       try
       {
         BlockReader lbrReader = new BlockReader (blockReader);
         lbrReader.setParameters (128, AddressType.BLOCK, 0, 0);
+
         FsGzip fs = new FsGzip (path, lbrReader);
 
         if (fs.getFiles ().size () > 0)
@@ -464,12 +479,12 @@ public class FileSystemFactory
   private void getWoz (BlockReader blockReader)
   // ---------------------------------------------------------------------------------//
   {
-    if (Utility.isMagic (blockReader.diskBuffer, blockReader.diskOffset, FsWoz.WOZ_1)
-        || Utility.isMagic (blockReader.diskBuffer, blockReader.diskOffset, FsWoz.WOZ_2))
+    if (blockReader.isMagic (0, FsWoz.WOZ_1) || blockReader.isMagic (0, FsWoz.WOZ_2))
       try
       {
         BlockReader lbrReader = new BlockReader (blockReader);
         lbrReader.setParameters (128, AddressType.BLOCK, 0, 0);
+
         FsWoz fs = new FsWoz (path, lbrReader);
 
         if (fs.getFiles ().size () > 0)

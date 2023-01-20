@@ -60,7 +60,7 @@ public class ForkProdos
           break;
 
         case PASCAL_ON_PROFILE:
-          for (int i = keyPtr; i < fileSystem.getSize (); i++)
+          for (int i = keyPtr; i < fileSystem.getTotalBlocks (); i++)
             blockNos.add (i);
           break;
 
