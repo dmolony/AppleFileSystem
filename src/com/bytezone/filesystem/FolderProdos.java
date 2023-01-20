@@ -41,7 +41,7 @@ public class FolderProdos extends AbstractFile
     storageType = (buffer[ptr] & 0xF0) >>> 4;
     int nameLength = buffer[ptr] & 0x0F;
     if (nameLength > 0)
-      name = Utility.string (buffer, ptr + 1, nameLength);
+      fileName = Utility.string (buffer, ptr + 1, nameLength);
 
     created = Utility.getAppleDate (buffer, ptr + 0x18);
     dateCreated = created == null ? NO_DATE : created.format (df);
@@ -69,7 +69,7 @@ public class FolderProdos extends AbstractFile
   public String toString ()
   // ---------------------------------------------------------------------------------//
   {
-    return String.format ("%-30s %-3s  %04X %4d %,10d", name, ProdosConstants.fileTypes[fileType],
+    return String.format ("%-30s %-3s  %04X %4d %,10d", fileName, ProdosConstants.fileTypes[fileType],
         keyPtr, size, eof);
   }
 }

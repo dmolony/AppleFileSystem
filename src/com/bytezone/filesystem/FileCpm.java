@@ -39,7 +39,7 @@ public class FileCpm extends AbstractFile
     type = new String (typeBuffer).trim ();
 
     userNumber = buffer[ptr] & 0xFF;
-    name = new String (buffer, ptr + 1, 8).trim ();
+    fileName = new String (buffer, ptr + 1, 8).trim ();
 
     extentCounterLo = buffer[ptr + 12] & 0xFF;
     reserved = buffer[ptr + 13] & 0xFF;
@@ -106,7 +106,7 @@ public class FileCpm extends AbstractFile
   public String getFileName ()
   // ---------------------------------------------------------------------------------//
   {
-    return type.isEmpty () ? name : name + "." + type;
+    return type.isEmpty () ? fileName : fileName + "." + type;
   }
 
   // ---------------------------------------------------------------------------------//

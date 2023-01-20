@@ -32,7 +32,7 @@ public class FilePascal extends AbstractFile
     fileType = buffer[ptr + 4] & 0xFF;
     wildCard = buffer[ptr + 5] & 0xFF;
 
-    name = Utility.getPascalString (buffer, ptr + 6);
+    fileName = Utility.getPascalString (buffer, ptr + 6);
     bytesUsedInLastBlock = Utility.unsignedShort (buffer, ptr + 22);
     date = Utility.getPascalLocalDate (buffer, ptr + 24);             // could return null
 
@@ -77,7 +77,7 @@ public class FilePascal extends AbstractFile
   public String toString ()
   // ---------------------------------------------------------------------------------//
   {
-    return String.format ("%-20s  %3d  %03X-%03X  %3d  %s", name, fileType, firstBlock, lastBlock,
+    return String.format ("%-20s  %3d  %03X-%03X  %3d  %s", fileName, fileType, firstBlock, lastBlock,
         bytesUsedInLastBlock, date);
   }
 }

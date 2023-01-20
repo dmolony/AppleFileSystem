@@ -15,7 +15,7 @@ public class FileLocal extends AbstractFile
     super (null);
 
     this.file = file;
-    this.name = file.getName ();
+    this.fileName = file.getName ();
     this.isFolder = file.isDirectory ();
     this.isFile = true;
   }

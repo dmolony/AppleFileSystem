@@ -13,7 +13,7 @@ public class FileData extends AbstractFile
     super (fs);
 
     isFile = true;
-    name = "Raw data";
+    fileName = "Raw data";
     this.buffer = buffer;
   }
 
@@ -46,6 +46,6 @@ public class FileData extends AbstractFile
   public String toString ()
   // ---------------------------------------------------------------------------------//
   {
-    return name;
+    return fileName;
   }
 }

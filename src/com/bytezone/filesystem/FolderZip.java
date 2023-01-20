@@ -10,7 +10,7 @@ public class FolderZip extends AbstractFile
   {
     super (fs);
 
-    this.name = name;
+    this.fileName = name;
 
     isFolder = true;
   }
@@ -20,6 +20,6 @@ public class FolderZip extends AbstractFile
   public String toString ()
   // ---------------------------------------------------------------------------------//
   {
-    return String.format ("%-30s ZIPDIR", name);
+    return String.format ("%-30s ZIPDIR", fileName);
   }
 }

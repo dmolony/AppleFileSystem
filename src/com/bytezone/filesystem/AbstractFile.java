@@ -8,7 +8,7 @@ public abstract class AbstractFile implements AppleFile
 // -----------------------------------------------------------------------------------//
 {
   protected final AppleFileSystem fileSystem;
-  protected String name;
+  protected String fileName;
 
   protected boolean isFile;
   protected boolean isFolder;
@@ -28,7 +28,7 @@ public abstract class AbstractFile implements AppleFile
   public String getFileName ()
   // ---------------------------------------------------------------------------------//
   {
-    return name;
+    return fileName;
   }
 
   // ---------------------------------------------------------------------------------//
@@ -159,7 +159,7 @@ public abstract class AbstractFile implements AppleFile
   public String getCatalogLine ()
   // ---------------------------------------------------------------------------------//
   {
-    return String.format ("%s", name);
+    return String.format ("%s", fileName);
   }
 
   // ---------------------------------------------------------------------------------//
@@ -167,6 +167,6 @@ public abstract class AbstractFile implements AppleFile
   public String toString ()
   // ---------------------------------------------------------------------------------//
   {
-    return String.format ("%s", name);
+    return String.format ("%s", fileName);
   }
 }

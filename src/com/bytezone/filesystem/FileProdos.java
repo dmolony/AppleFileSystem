@@ -48,7 +48,7 @@ public class FileProdos extends AbstractFile
     storageType = (buffer[ptr] & 0xF0) >>> 4;
     int nameLength = buffer[ptr] & 0x0F;
     if (nameLength > 0)
-      name = Utility.string (buffer, ptr + 1, nameLength);
+      fileName = Utility.string (buffer, ptr + 1, nameLength);
 
     fileType = buffer[ptr + 0x10] & 0xFF;
     keyPtr = Utility.unsignedShort (buffer, ptr + 0x11);
@@ -186,7 +186,7 @@ public class FileProdos extends AbstractFile
     int length =
         storageType == FsProdos.GSOS_EXTENDED_FILE ? getLength (ForkType.DATA) : getLength ();
 
-    return String.format ("%-30s %-3s  %04X %4d %,10d", name, ProdosConstants.fileTypes[fileType],
+    return String.format ("%-30s %-3s  %04X %4d %,10d", fileName, ProdosConstants.fileTypes[fileType],
         keyPtr, getTotalBlocks (), length);
   }
 }

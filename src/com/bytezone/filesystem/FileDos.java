@@ -34,7 +34,7 @@ public class FileDos extends AbstractFile
 
     type = buffer[ptr + 2] & 0x7F;
     locked = (buffer[ptr + 2] & 0x80) != 0;
-    name = Utility.string (buffer, ptr + 3, 30).trim ();
+    fileName = Utility.string (buffer, ptr + 3, 30).trim ();
     sectorCount = Utility.unsignedShort (buffer, ptr + 33);
 
     fileType = switch (type)
@@ -138,7 +138,7 @@ public class FileDos extends AbstractFile
   // ---------------------------------------------------------------------------------//
   {
     return String.format ("%s %s %03d %-30s", locked ? "*" : " ", fileTypeLetter, sectorCount,
-        name);
+        fileName);
   }
 
   // ---------------------------------------------------------------------------------//
@@ -147,6 +147,6 @@ public class FileDos extends AbstractFile
   // ---------------------------------------------------------------------------------//
   {
     return String.format ("%s %s %03d %-30s", locked ? "*" : " ", fileTypeLetter, sectorCount,
-        name);
+        fileName);
   }
 }

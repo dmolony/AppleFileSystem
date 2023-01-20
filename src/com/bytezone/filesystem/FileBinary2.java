@@ -79,7 +79,7 @@ public class FileBinary2 extends AbstractFile
     createTime = Utility.unsignedShort (buffer, 16);
 
     eof = Utility.unsignedTriple (buffer, 20);
-    name = Utility.getMaskedPascalString (buffer, 23);
+    fileName = Utility.getMaskedPascalString (buffer, 23);
     nativeName = Utility.getMaskedPascalString (buffer, 39);
 
     gAuxType = Utility.unsignedShort (buffer, 109);
@@ -113,7 +113,7 @@ public class FileBinary2 extends AbstractFile
       dataBlocks.add (fs.getBlock (block));
     }
 
-    if (validBlocks && (isCompressed () || name.endsWith (".QQ")))
+    if (validBlocks && (isCompressed () || fileName.endsWith (".QQ")))
     {
       buffer = fs.getBlock (headerBlockNo + 1).read ();
       if (buffer[0] == 0x76 && buffer[1] == (byte) 0xFF)      // squeeze
