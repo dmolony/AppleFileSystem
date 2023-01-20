@@ -25,7 +25,8 @@ public class BlockReader
   private final int diskLength;
 
   private Path path;
-  private String suffix;
+  private String name;
+  //  private String suffix;
 
   AddressType addressType;      // BLOCK, SECTOR
   int bytesPerBlock;            // 256, 512, 1024
@@ -48,19 +49,20 @@ public class BlockReader
 
     diskBuffer = buffer;
     diskOffset = 0;
+
     if (buffer.length == 143_488)
       diskLength = 143_360;
     else
       diskLength = buffer.length;
 
-    String name = path.toFile ().getName ();
-    int pos = name.lastIndexOf ('.');
-    if (pos > 0)
-      suffix = name.substring (pos + 1).toLowerCase ();
+    name = path.toFile ().getName ();
+    //    int pos = name.lastIndexOf ('.');
+    //    if (pos > 0)
+    //      suffix = name.substring (pos + 1).toLowerCase ();
   }
 
   // ---------------------------------------------------------------------------------//
-  public BlockReader (byte[] diskBuffer, int diskOffset, int diskLength)
+  public BlockReader (String name, byte[] diskBuffer, int diskOffset, int diskLength)
   // ---------------------------------------------------------------------------------//
   {
     Objects.checkFromIndexSize (diskOffset, diskLength, diskBuffer.length);
@@ -71,6 +73,8 @@ public class BlockReader
     this.diskBuffer = diskBuffer;
     this.diskOffset = diskOffset;
     this.diskLength = diskLength;
+
+    this.name = name;
   }
 
   // ---------------------------------------------------------------------------------//
@@ -80,6 +84,10 @@ public class BlockReader
     this.diskBuffer = original.diskBuffer;
     this.diskOffset = original.diskOffset;
     this.diskLength = original.diskLength;
+
+    this.path = original.path;
+    this.name = original.name;
+    //    this.suffix = original.suffix;
   }
 
   // ---------------------------------------------------------------------------------//
@@ -94,6 +102,13 @@ public class BlockReader
 
     bytesPerTrack = bytesPerBlock * blocksPerTrack;
     totalBlocks = diskLength / bytesPerBlock;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  String getName ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return name;
   }
 
   // ---------------------------------------------------------------------------------//
@@ -288,10 +303,10 @@ public class BlockReader
   }
 
   // ---------------------------------------------------------------------------------//
-  String getSuffix ()
+  boolean isValidBlockNo (int blockNo)
   // ---------------------------------------------------------------------------------//
   {
-    return suffix;
+    return blockNo >= 0 && blockNo < totalBlocks;
   }
 
   // ---------------------------------------------------------------------------------//

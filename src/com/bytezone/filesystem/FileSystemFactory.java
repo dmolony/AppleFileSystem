@@ -11,23 +11,10 @@ import com.bytezone.utility.Utility;
 public class FileSystemFactory
 // -----------------------------------------------------------------------------------//
 {
-  private static final int DOS31_SIZE = 116_480;
-  private static final int DOS33_SIZE = 143_360;
+  private static final int SECTOR_13_SIZE = 116_480;
+  private static final int SECTOR_16_SIZE = 143_360;
   private static final int UNIDOS_SIZE = 409_600;
   private static final int CPAM_SIZE = 819_200;
-
-  //  static BlockReader lbrReader = new BlockReader (128, BLOCK, 0, 0);        // LBR
-  //  static BlockReader dos31Reader = new BlockReader (256, SECTOR, 0, 13);    // Dos 3.1
-  //  static BlockReader dos33Reader0 = new BlockReader (256, SECTOR, 0, 16);   // Dos 3.3
-  //  static BlockReader dos33Reader1 = new BlockReader (256, SECTOR, 1, 16);   // Dos 3.3
-  //  static BlockReader unidosReader = new BlockReader (256, SECTOR, 0, 32);   // UniDos
-  //  static BlockReader blockReader0 = new BlockReader (512, BLOCK, 0, 0);     // Prodos, Pascal
-  //  static BlockReader blockReader1 = new BlockReader (512, BLOCK, 1, 8);     // Prodos, Pascal
-  //  static BlockReader cpmReader0 = new BlockReader (1024, BLOCK, 2, 4);      // CPM
-  //  static BlockReader cpmReader1 = new BlockReader (1024, BLOCK, 0, 8);      // CPAM
-
-  //  static BlockReader[] dos33Readers = { dos33Reader0, dos33Reader1 };
-  //  static BlockReader[] blockReaders = { blockReader0, blockReader1 };
 
   private List<AppleFileSystem> fileSystems;
   private boolean debug = false;
@@ -36,27 +23,22 @@ public class FileSystemFactory
   public AppleFileSystem getFileSystem (Path path)
   // ---------------------------------------------------------------------------------//
   {
-    BlockReader blockReader = new BlockReader (path);
-    AppleFileSystem fs = getFileSystem (blockReader);
-
-    return fs;
+    return getFileSystem (new BlockReader (path));
   }
 
   // ---------------------------------------------------------------------------------//
-  AppleFileSystem getFileSystem (AppleFile file)
-  // ---------------------------------------------------------------------------------//
-  {
-    //    path = null;
-    return getFileSystem (file.read ());
-  }
+  //  AppleFileSystem getFileSystem (AppleFile file)
+  //  // ---------------------------------------------------------------------------------//
+  //  {
+  //    return getFileSystem (file.read ());
+  //  }
 
   // ---------------------------------------------------------------------------------//
-  public AppleFileSystem getFileSystem (byte[] buffer)
-  // ---------------------------------------------------------------------------------//
-  {
-    BlockReader blockReader = new BlockReader (buffer, 0, buffer.length);
-    return getFileSystem (blockReader);
-  }
+  //  public AppleFileSystem getFileSystem (byte[] buffer)
+  //  // ---------------------------------------------------------------------------------//
+  //  {
+  //    return getFileSystem (new BlockReader (buffer, 0, buffer.length));
+  //  }
 
   // ---------------------------------------------------------------------------------//
   public AppleFileSystem getFileSystem (BlockReader blockReader)
@@ -80,6 +62,8 @@ public class FileSystemFactory
     getCpm (blockReader);
 
     if (fileSystems.size () == 0)         // these filesystems cannot be hybrids
+      getDos31 (blockReader);
+    if (fileSystems.size () == 0)
       getCpm2 (blockReader);
     if (fileSystems.size () == 0)
       getLbr (blockReader);
@@ -144,7 +128,7 @@ public class FileSystemFactory
   private void getDos31 (BlockReader blockReader)
   // ---------------------------------------------------------------------------------//
   {
-    if (blockReader.getDiskLength () == DOS31_SIZE)
+    if (blockReader.getDiskLength () == SECTOR_13_SIZE)
     {
       try
       {
@@ -170,7 +154,7 @@ public class FileSystemFactory
   {
     List<FsDos> fsList = new ArrayList<> (2);
 
-    if (blockReader.getDiskLength () == DOS33_SIZE)
+    if (blockReader.getDiskLength () == SECTOR_16_SIZE)
       for (int i = 0; i < 2; i++)
         try
         {
@@ -206,7 +190,7 @@ public class FileSystemFactory
   private void getDos4 (BlockReader blockReader)
   // ---------------------------------------------------------------------------------//
   {
-    if (blockReader.getDiskLength () == DOS33_SIZE)
+    if (blockReader.getDiskLength () == SECTOR_16_SIZE)
       try
       {
         BlockReader dos4Reader = new BlockReader (blockReader);
@@ -251,7 +235,7 @@ public class FileSystemFactory
   // ---------------------------------------------------------------------------------//
   {
     // should check for common HD sizes
-    if (blockReader.getDiskLength () >= DOS33_SIZE)
+    if (blockReader.getDiskLength () >= SECTOR_16_SIZE)
       for (int i = 0; i < 2; i++)
         try
         {
@@ -275,7 +259,7 @@ public class FileSystemFactory
   // ---------------------------------------------------------------------------------//
   {
     // should check for common HD sizes
-    if (blockReader.getDiskLength () >= DOS33_SIZE)
+    if (blockReader.getDiskLength () >= SECTOR_16_SIZE)
       for (int i = 0; i < 2; i++)
         try
         {
@@ -298,7 +282,7 @@ public class FileSystemFactory
   private void getCpm (BlockReader blockReader)
   // ---------------------------------------------------------------------------------//
   {
-    if (blockReader.getDiskLength () == DOS33_SIZE)
+    if (blockReader.getDiskLength () == SECTOR_16_SIZE)
       try
       {
         BlockReader cpmReader = new BlockReader (blockReader);

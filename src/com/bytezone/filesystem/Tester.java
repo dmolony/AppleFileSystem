@@ -1,7 +1,6 @@
 package com.bytezone.filesystem;
 
 import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
 
 // see: https://github.com/zeek/bromagic/blob/master/database/apple
@@ -82,20 +81,17 @@ public class Tester
   {
     FileSystemFactory factory = new FileSystemFactory ();
 
-    int index = 31;
+    int index = 10;
     for (int fileNo = index; fileNo <= index; fileNo++)
     //    for (int fileNo = 0; fileNo < fileNames.length; fileNo++)
     {
-      //      System.out.printf ("%n%d %s%n", fileNo, fileNames[fileNo].substring (base.length ()));
+      System.out.printf ("%n%d %s%n", fileNo, fileNames[fileNo].substring (base.length ()));
 
-      Path path = Path.of (fileNames[fileNo]);
-      String name = path.toFile ().getName ();
-
-      AppleFileSystem fs = factory.getFileSystem (path);
+      AppleFileSystem fs = factory.getFileSystem (Path.of (fileNames[fileNo]));
 
       if (fs == null)
       {
-        System.out.println ("Unknown FS format: " + name);
+        System.out.println ("Unknown FS format: " + fileNames[fileNo]);
         continue;
       }
 
@@ -122,22 +118,6 @@ public class Tester
         listFileSystems (file, depth + 1);
     //      else
     //        System.out.printf ("%2d  %s%n", depth, file);
-  }
-
-  // ---------------------------------------------------------------------------------//
-  private byte[] readAllBytes (Path fileName)
-  // ---------------------------------------------------------------------------------//
-  {
-    try
-    {
-      return Files.readAllBytes (fileName);
-    }
-    catch (IOException e)
-    {
-      e.printStackTrace ();
-      System.exit (1);
-      return null;            // stupid editor
-    }
   }
 
   // ---------------------------------------------------------------------------------//

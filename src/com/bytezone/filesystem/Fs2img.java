@@ -73,8 +73,7 @@ public class Fs2img extends AbstractFileSystem
     hasDosVolumeNumber = (flags & 0x0100) != 0;
     volumeNumber = flags & 0x00FF;
 
-    BlockReader reader = new BlockReader (buffer, diskOffset + offset, length);
-    fileSystem = addFileSystem (this, reader);
+    fileSystem = addFileSystem (this, new BlockReader ("???", buffer, diskOffset + offset, length));
   }
 
   // ---------------------------------------------------------------------------------//

@@ -116,7 +116,7 @@ public class FsProdos extends AbstractFileSystem
             file = new FileProdos (this, buffer, ptr);
             byte[] fileBuffer = file.read ();
             BlockReader pascalBlockReader =
-                new BlockReader (fileBuffer, 1024, fileBuffer.length - 1024);
+                new BlockReader (file.name, fileBuffer, 1024, fileBuffer.length - 1024);
             addFileSystem (parent, pascalBlockReader);
             break;
 

@@ -200,7 +200,8 @@ public class FileBinary2 extends AbstractFile
   public byte[] read ()
   // ---------------------------------------------------------------------------------//
   {
-    if (((FsBinary2) fileSystem).getSuffix ().equals ("bqy") && squeezeName != null)
+    String suffix = Utility.getSuffix (fileSystem.getName ());
+    if (suffix.equals ("bqy") && squeezeName != null)
     {
       Squeeze squeeze = new Squeeze ();
       byte[] buffer = fileSystem.readBlocks (dataBlocks);

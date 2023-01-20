@@ -36,8 +36,7 @@ public class FsWoz extends AbstractFileSystem
     {
       byte[] buffer = new WozFile (getBuffer ()).getDiskBuffer ();
 
-      BlockReader blockReader = new BlockReader (buffer, 0, buffer.length);
-      addFileSystem (this, blockReader);
+      addFileSystem (this, new BlockReader ("??", buffer, 0, buffer.length));
     }
     catch (DiskNibbleException e)
     {
