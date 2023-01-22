@@ -56,14 +56,14 @@ public class FsUnidos extends AbstractFileSystem
   }
 
   // ---------------------------------------------------------------------------------//
-  @Override
-  public String toText ()
-  // ---------------------------------------------------------------------------------//
-  {
-    StringBuilder text = new StringBuilder (super.toText () + "\n\n");
-
-    //    text.append (String.format ("Entry length .......... %d%n", entryLength));
-
-    return text.toString ();
-  }
+  //  @Override
+  //  public String toText ()
+  //  // ---------------------------------------------------------------------------------//
+  //  {
+  //    StringBuilder text = new StringBuilder (super.toText () + "\n\n");
+  //
+  //    //    text.append (String.format ("Entry length .......... %d%n", entryLength));
+  //
+  //    return text.toString ();
+  //  }
 }

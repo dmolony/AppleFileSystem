@@ -27,20 +27,6 @@ public class FileSystemFactory
   }
 
   // ---------------------------------------------------------------------------------//
-  //  AppleFileSystem getFileSystem (AppleFile file)
-  //  // ---------------------------------------------------------------------------------//
-  //  {
-  //    return getFileSystem (file.read ());
-  //  }
-
-  // ---------------------------------------------------------------------------------//
-  //  public AppleFileSystem getFileSystem (byte[] buffer)
-  //  // ---------------------------------------------------------------------------------//
-  //  {
-  //    return getFileSystem (new BlockReader (buffer, 0, buffer.length));
-  //  }
-
-  // ---------------------------------------------------------------------------------//
   public AppleFileSystem getFileSystem (BlockReader blockReader)
   // ---------------------------------------------------------------------------------//
   {
@@ -164,7 +150,11 @@ public class FileSystemFactory
           FsDos fs = new FsDos (dos33Reader);
 
           if (fs.getTotalCatalogBlocks () > 0)
+          {
             fsList.add (fs);
+            if (fs.getTotalCatalogBlocks () == 15)        // can't get better than this
+              break;
+          }
         }
         catch (FileFormatException e)
         {
@@ -220,7 +210,7 @@ public class FileSystemFactory
 
         FsUnidos fs = new FsUnidos (unidosReader);
 
-        if (fs.getFiles ().size () > 0)
+        if (fs.getFiles ().size () == 2)            // should be exactly 2 dos file systems
           fileSystems.add (fs);
       }
       catch (FileFormatException e)
@@ -245,7 +235,10 @@ public class FileSystemFactory
           FsProdos fs = new FsProdos (prodosReader);
 
           if (fs.getTotalCatalogBlocks () > 0)
+          {
             fileSystems.add (fs);
+            break;
+          }
         }
         catch (FileFormatException e)
         {
@@ -269,7 +262,10 @@ public class FileSystemFactory
           FsPascal fs = new FsPascal (pascalReader);
 
           if (fs.getTotalCatalogBlocks () > 0)
+          {
             fileSystems.add (fs);
+            break;
+          }
         }
         catch (FileFormatException e)
         {

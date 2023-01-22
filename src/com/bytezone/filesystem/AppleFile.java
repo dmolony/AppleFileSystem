@@ -2,6 +2,8 @@ package com.bytezone.filesystem;
 
 import java.util.List;
 
+import com.bytezone.utility.Utility;
+
 // -----------------------------------------------------------------------------------//
 public interface AppleFile
 // -----------------------------------------------------------------------------------//
@@ -44,4 +46,9 @@ public interface AppleFile
   public int getBlockSize ();                       // returns blockReader.blockSize()
 
   public AppleFileSystem getFileSystem ();
+
+  public default void dump ()
+  {
+    System.out.println (Utility.format (read ()));
+  }
 }

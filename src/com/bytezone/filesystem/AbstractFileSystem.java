@@ -20,6 +20,7 @@ public abstract class AbstractFileSystem implements AppleFileSystem
 
   private int totalFileSystems = 0;
   private int totalFiles = 0;
+  private boolean partOfHybrid;
 
   // ---------------------------------------------------------------------------------//
   public AbstractFileSystem (BlockReader blockReader)
@@ -40,6 +41,22 @@ public abstract class AbstractFileSystem implements AppleFileSystem
   // ---------------------------------------------------------------------------------//
   {
     return catalogBlocks;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
+  public void setHybrid ()
+  // ---------------------------------------------------------------------------------//
+  {
+    partOfHybrid = true;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
+  public boolean isHybrid ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return partOfHybrid;
   }
 
   // ---------------------------------------------------------------------------------//
@@ -73,6 +90,7 @@ public abstract class AbstractFileSystem implements AppleFileSystem
   }
 
   // ---------------------------------------------------------------------------------//
+  @Override
   public String getFileSystemName ()
   // ---------------------------------------------------------------------------------//
   {
@@ -350,8 +368,9 @@ public abstract class AbstractFileSystem implements AppleFileSystem
   public String toString ()
   // ---------------------------------------------------------------------------------//
   {
-    return String.format ("%-12s %-6s %,8d  %d %,7d  %4d %3d %4d %3d", getFileName (), fileSystemName,
-        blockReader.getDiskOffset (), blockReader.interleave, blockReader.totalBlocks,
-        blockReader.bytesPerBlock, catalogBlocks, totalFiles, totalFileSystems);
+    return String.format ("%-12s %-6s %,8d  %d %,7d  %4d %3d %4d %3d", getFileName (),
+        fileSystemName, blockReader.getDiskOffset (), blockReader.interleave,
+        blockReader.totalBlocks, blockReader.bytesPerBlock, catalogBlocks, totalFiles,
+        totalFileSystems);
   }
 }

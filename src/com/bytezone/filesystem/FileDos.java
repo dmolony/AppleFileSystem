@@ -84,7 +84,7 @@ public class FileDos extends AbstractFile
         if (!dataSector.isValid ())
           throw new FileFormatException ("Invalid data sector");
 
-        if (dataSector.getBlockNo () != 0)
+        if (dataSector.getBlockNo () > 0)
         {
           dataBlocks.add (dataSector);
           --sectorsLeft;

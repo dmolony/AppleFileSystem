@@ -81,11 +81,11 @@ public class Tester
   {
     FileSystemFactory factory = new FileSystemFactory ();
 
-    int index = 10;
+    int index = 18;
     for (int fileNo = index; fileNo <= index; fileNo++)
     //    for (int fileNo = 0; fileNo < fileNames.length; fileNo++)
     {
-      System.out.printf ("%n%d %s%n", fileNo, fileNames[fileNo].substring (base.length ()));
+      //      System.out.printf ("%n%d %s%n", fileNo, fileNames[fileNo].substring (base.length ()));
 
       AppleFileSystem fs = factory.getFileSystem (Path.of (fileNames[fileNo]));
 
@@ -99,6 +99,9 @@ public class Tester
       {
         System.out.println ();
         System.out.println (fs.catalog ());
+        System.out.println ();
+
+        //        AppleFile file = fs.getFiles ().get (10);
       }
 
       System.out.println ();

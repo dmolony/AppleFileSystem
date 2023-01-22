@@ -26,7 +26,6 @@ public class BlockReader
 
   private Path path;
   private String name;
-  //  private String suffix;
 
   AddressType addressType;      // BLOCK, SECTOR
   int bytesPerBlock;            // 256, 512, 1024
@@ -56,9 +55,6 @@ public class BlockReader
       diskLength = buffer.length;
 
     name = path.toFile ().getName ();
-    //    int pos = name.lastIndexOf ('.');
-    //    if (pos > 0)
-    //      suffix = name.substring (pos + 1).toLowerCase ();
   }
 
   // ---------------------------------------------------------------------------------//
@@ -87,7 +83,6 @@ public class BlockReader
 
     this.path = original.path;
     this.name = original.name;
-    //    this.suffix = original.suffix;
   }
 
   // ---------------------------------------------------------------------------------//
