@@ -3,7 +3,6 @@ package com.bytezone.filesystem;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.bytezone.filesystem.FsDos.FileType;
 import com.bytezone.utility.Utility;
 
 // -----------------------------------------------------------------------------------//
@@ -13,8 +12,6 @@ public class FileDos extends AbstractFile
   int type;
   int sectorCount;
   boolean locked;
-  FileType fileType;
-  String fileTypeLetter;
 
   List<AppleBlock> indexBlocks = new ArrayList<> ();
   List<AppleBlock> dataBlocks = new ArrayList<> ();
@@ -37,20 +34,20 @@ public class FileDos extends AbstractFile
     fileName = Utility.string (buffer, ptr + 3, 30).trim ();
     sectorCount = Utility.unsignedShort (buffer, ptr + 33);
 
-    fileType = switch (type)
-    {
-      case 0x00 -> FileType.Text;
-      case 0x01 -> FileType.IntegerBasic;
-      case 0x02 -> FileType.ApplesoftBasic;
-      case 0x04 -> FileType.Binary;
-      case 0x08 -> FileType.SS;
-      case 0x10 -> FileType.Relocatable;
-      case 0x20 -> FileType.AA;
-      case 0x40 -> FileType.BB;
-      default -> FileType.Binary;        // should never happen
-    };
+    //    fileType = switch (type)
+    //    {
+    //      case 0x00 -> FileType.Text;
+    //      case 0x01 -> FileType.IntegerBasic;
+    //      case 0x02 -> FileType.ApplesoftBasic;
+    //      case 0x04 -> FileType.Binary;
+    //      case 0x08 -> FileType.SS;
+    //      case 0x10 -> FileType.Relocatable;
+    //      case 0x20 -> FileType.AA;
+    //      case 0x40 -> FileType.BB;
+    //      default -> FileType.Binary;        // should never happen
+    //    };
 
-    fileTypeLetter = switch (type)
+    fileTypeText = switch (type)
     {
       case 0x00 -> "T";
       case 0x01 -> "I";
@@ -102,6 +99,7 @@ public class FileDos extends AbstractFile
   }
 
   // ---------------------------------------------------------------------------------//
+  @Override
   public int getFileType ()
   // ---------------------------------------------------------------------------------//
   {
@@ -137,7 +135,7 @@ public class FileDos extends AbstractFile
   public String getCatalogLine ()
   // ---------------------------------------------------------------------------------//
   {
-    return String.format ("%s %s %03d %-30s", locked ? "*" : " ", fileTypeLetter, sectorCount,
+    return String.format ("%s %s %03d %-30s", locked ? "*" : " ", fileTypeText, sectorCount,
         fileName);
   }
 
@@ -146,7 +144,7 @@ public class FileDos extends AbstractFile
   public String toString ()
   // ---------------------------------------------------------------------------------//
   {
-    return String.format ("%s %s %03d %-30s", locked ? "*" : " ", fileTypeLetter, sectorCount,
+    return String.format ("%s %s %03d %-30s", locked ? "*" : " ", fileTypeText, sectorCount,
         fileName);
   }
 }

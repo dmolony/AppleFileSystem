@@ -43,6 +43,10 @@ public interface AppleFile
 
   public String getCatalogLine ();
 
+  public String getFileTypeText ();
+
+  public int getFileType ();
+
   public int getBlockSize ();                       // returns blockReader.blockSize()
 
   public AppleFileSystem getFileSystem ();

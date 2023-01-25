@@ -10,10 +10,13 @@ import com.bytezone.utility.Utility;
 public class FilePascal extends AbstractFile
 // -----------------------------------------------------------------------------------//
 {
+  private static final String[] fileTypes =
+      { "Volume", "Bad ", "Code", "Text", "Info", "Data", "Graf", "Foto", "SecureDir" };
+
   private int firstBlock;
   private int lastBlock;
   private int bytesUsedInLastBlock;
-  private int fileType;
+  //  private int fileType;
   private int wildCard;
   private LocalDate date;
 
@@ -30,6 +33,8 @@ public class FilePascal extends AbstractFile
     firstBlock = Utility.unsignedShort (buffer, ptr);
     lastBlock = Utility.unsignedShort (buffer, ptr + 2);
     fileType = buffer[ptr + 4] & 0xFF;
+    fileTypeText = fileTypes[fileType];
+
     wildCard = buffer[ptr + 5] & 0xFF;
 
     fileName = Utility.getPascalString (buffer, ptr + 6);
@@ -77,7 +82,7 @@ public class FilePascal extends AbstractFile
   public String toString ()
   // ---------------------------------------------------------------------------------//
   {
-    return String.format ("%-20s  %3d  %03X-%03X  %3d  %s", fileName, fileType, firstBlock, lastBlock,
-        bytesUsedInLastBlock, date);
+    return String.format ("%-20s  %3d  %-4s  %03X-%03X  %3d  %s", fileName, fileType, fileTypeText,
+        firstBlock, lastBlock, bytesUsedInLastBlock, date);
   }
 }

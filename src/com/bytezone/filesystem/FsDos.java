@@ -7,10 +7,10 @@ public class FsDos extends AbstractFileSystem
   static final int ENTRY_SIZE = 35;
   int dosVersion;
 
-  enum FileType
-  {
-    Text, ApplesoftBasic, IntegerBasic, Binary, SS, Relocatable, AA, BB
-  }
+  //  enum FileType
+  //  {
+  //    Text, ApplesoftBasic, IntegerBasic, Binary, SS, Relocatable, AA, BB
+  //  }
 
   // ---------------------------------------------------------------------------------//
   public FsDos (BlockReader blockReader)

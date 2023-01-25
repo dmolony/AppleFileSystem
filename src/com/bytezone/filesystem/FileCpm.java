@@ -8,7 +8,7 @@ public class FileCpm extends AbstractFile
 // -----------------------------------------------------------------------------------//
 {
   private final int userNumber;
-  private final String type;
+  //  private final String type;
 
   private final boolean readOnly;
   private final boolean systemFile;
@@ -36,7 +36,7 @@ public class FileCpm extends AbstractFile
     typeBuffer[0] = (byte) (buffer[ptr + 9] & 0x7F);
     typeBuffer[1] = (byte) (buffer[ptr + 10] & 0x7F);
     typeBuffer[2] = (byte) (buffer[ptr + 11] & 0x7F);
-    type = new String (typeBuffer).trim ();
+    fileTypeText = new String (typeBuffer).trim ();
 
     userNumber = buffer[ptr] & 0xFF;
     fileName = new String (buffer, ptr + 1, 8).trim ();
@@ -106,7 +106,7 @@ public class FileCpm extends AbstractFile
   public String getFileName ()
   // ---------------------------------------------------------------------------------//
   {
-    return type.isEmpty () ? fileName : fileName + "." + type;
+    return fileTypeText.isEmpty () ? fileName : fileName + "." + fileTypeText;
   }
 
   // ---------------------------------------------------------------------------------//

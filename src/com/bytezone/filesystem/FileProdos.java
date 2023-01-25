@@ -14,7 +14,6 @@ public class FileProdos extends AbstractFile
   private static final String NO_DATE = "<NO DATE>";
 
   private int storageType;
-  private int fileType;
   private int keyPtr;
   private int size;
   private int eof;
@@ -51,6 +50,8 @@ public class FileProdos extends AbstractFile
       fileName = Utility.string (buffer, ptr + 1, nameLength);
 
     fileType = buffer[ptr + 0x10] & 0xFF;
+    fileTypeText = ProdosConstants.fileTypes[fileType];
+
     keyPtr = Utility.unsignedShort (buffer, ptr + 0x11);
     size = Utility.unsignedShort (buffer, ptr + 0x13);
     eof = Utility.unsignedTriple (buffer, ptr + 0x15);
@@ -94,13 +95,6 @@ public class FileProdos extends AbstractFile
         else
           resourceFork = new ForkProdos ((FsProdos) fileSystem, keyPtr, storageType, size, eof);
     }
-  }
-
-  // ---------------------------------------------------------------------------------//
-  public int getFileType ()
-  // ---------------------------------------------------------------------------------//
-  {
-    return fileType;
   }
 
   // ---------------------------------------------------------------------------------//
@@ -186,7 +180,7 @@ public class FileProdos extends AbstractFile
     int length =
         storageType == FsProdos.GSOS_EXTENDED_FILE ? getLength (ForkType.DATA) : getLength ();
 
-    return String.format ("%-30s %-3s  %04X %4d %,10d", fileName, ProdosConstants.fileTypes[fileType],
-        keyPtr, getTotalBlocks (), length);
+    return String.format ("%-30s %-3s  %04X %4d %,10d", fileName, fileTypeText, keyPtr,
+        getTotalBlocks (), length);
   }
 }

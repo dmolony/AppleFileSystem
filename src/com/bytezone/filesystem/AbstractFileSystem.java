@@ -20,7 +20,8 @@ public abstract class AbstractFileSystem implements AppleFileSystem
 
   private int totalFileSystems = 0;
   private int totalFiles = 0;
-  private boolean partOfHybrid;
+
+  private boolean partOfHybrid;           // this fs is one of two file systems on the disk
 
   // ---------------------------------------------------------------------------------//
   public AbstractFileSystem (BlockReader blockReader)
@@ -238,6 +239,22 @@ public abstract class AbstractFileSystem implements AppleFileSystem
   // ---------------------------------------------------------------------------------//
   {
     throw new UnsupportedOperationException ("Cannot call getBlocks() on a file system");
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
+  public int getFileType ()
+  // ---------------------------------------------------------------------------------//
+  {
+    throw new UnsupportedOperationException ("Cannot call getFileType() on a file system");
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
+  public String getFileTypeText ()
+  // ---------------------------------------------------------------------------------//
+  {
+    throw new UnsupportedOperationException ("Cannot call getFileTypeText() on a file system");
   }
 
   // ---------------------------------------------------------------------------------//

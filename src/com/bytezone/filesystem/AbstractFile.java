@@ -14,6 +14,9 @@ public abstract class AbstractFile implements AppleFile
   protected boolean isFolder;
   protected boolean isFileSystem;
 
+  protected String fileTypeText;
+  protected int fileType;
+
   protected final List<AppleFile> files = new ArrayList<> ();
 
   // ---------------------------------------------------------------------------------//
@@ -160,6 +163,22 @@ public abstract class AbstractFile implements AppleFile
   // ---------------------------------------------------------------------------------//
   {
     return String.format ("%s", fileName);
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
+  public int getFileType ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return fileType;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
+  public String getFileTypeText ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return fileTypeText;
   }
 
   // ---------------------------------------------------------------------------------//
