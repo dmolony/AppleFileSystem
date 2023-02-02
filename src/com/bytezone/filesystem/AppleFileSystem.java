@@ -10,6 +10,8 @@ public interface AppleFileSystem extends AppleFile
 {
   String getFileSystemName ();
 
+  FileSystemType getFileSystemType ();
+
   byte[] getBuffer ();
 
   int getOffset ();
@@ -21,8 +23,6 @@ public interface AppleFileSystem extends AppleFile
   BlockReader getBlockReader ();
 
   AppleBlock allocate ();
-
-  //  public void readCatalog ();
 
   // passed through to BlockReader
 
@@ -43,4 +43,9 @@ public interface AppleFileSystem extends AppleFile
   void writeBlocks (List<AppleBlock> blocks, byte[] buffer);
 
   String toText ();
+
+  enum FileSystemType
+  {
+    DOS, PRODOS, PASCAL, CPM
+  }
 }

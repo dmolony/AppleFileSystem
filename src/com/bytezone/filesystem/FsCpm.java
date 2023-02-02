@@ -22,6 +22,7 @@ public class FsCpm extends AbstractFileSystem
     assert getTotalCatalogBlocks () == 0;
 
     setFileSystemName ("CPM");
+    setFileSystemType (FileSystemType.CPM);
 
     int catalogBlocks = 0;
     FileCpm currentFile = null;

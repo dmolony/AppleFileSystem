@@ -39,6 +39,7 @@ public class FsProdos extends AbstractFileSystem
   // ---------------------------------------------------------------------------------//
   {
     setFileSystemName ("Prodos");
+    setFileSystemType (FileSystemType.PRODOS);
 
     int nextBlockNo = 2;                    // first catalog block
     int prevBlockNo = -1;

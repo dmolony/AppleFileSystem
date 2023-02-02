@@ -17,6 +17,7 @@ public abstract class AbstractFileSystem implements AppleFileSystem
   protected List<AppleFile> files = new ArrayList<> ();   // files, folders and file systems
 
   protected String fileSystemName;        // DosX.X, Prodos, Pascal, CPM, NuFX, 2img, Bin2, Data
+  protected FileSystemType fileSystemType;
 
   private int totalFileSystems = 0;
   private int totalFiles = 0;
@@ -35,6 +36,13 @@ public abstract class AbstractFileSystem implements AppleFileSystem
   // ---------------------------------------------------------------------------------//
   {
     this.fileSystemName = fileSystemName;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  void setFileSystemType (FileSystemType fileSystemType)
+  // ---------------------------------------------------------------------------------//
+  {
+    this.fileSystemType = fileSystemType;
   }
 
   // ---------------------------------------------------------------------------------//
@@ -96,6 +104,14 @@ public abstract class AbstractFileSystem implements AppleFileSystem
   // ---------------------------------------------------------------------------------//
   {
     return fileSystemName;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
+  public FileSystemType getFileSystemType ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return fileSystemType;
   }
 
   // ---------------------------------------------------------------------------------//
@@ -368,7 +384,8 @@ public abstract class AbstractFileSystem implements AppleFileSystem
     StringBuilder text = new StringBuilder ();
 
     text.append (String.format ("File name ............. %s%n", getFileName ()));
-    text.append (String.format ("File system ........... %s%n", fileSystemName));
+    text.append (String.format ("File system name ...... %s%n", fileSystemName));
+    text.append (String.format ("File system type ...... %s%n", fileSystemType));
 
     text.append (blockReader.toText ());
     text.append ("\n");

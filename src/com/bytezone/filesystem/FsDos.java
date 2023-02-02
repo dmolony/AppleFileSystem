@@ -26,6 +26,7 @@ public class FsDos extends AbstractFileSystem
   // ---------------------------------------------------------------------------------//
   {
     dosVersion = version & 0xFF;
+    setFileSystemType (FileSystemType.DOS);
     setFileSystemName ("Dos" + switch (version)
     {
       case 0x01 -> "3.1";

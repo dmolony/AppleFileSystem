@@ -32,6 +32,7 @@ public class FsPascal extends AbstractFileSystem
     assert getTotalCatalogBlocks () == 0;
 
     setFileSystemName ("Pascal");
+    setFileSystemType (FileSystemType.PASCAL);
 
     AppleBlock vtoc = getBlock (2);
     byte[] buffer = vtoc.read ();
