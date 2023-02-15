@@ -6,7 +6,7 @@ import java.util.List;
 import com.bytezone.utility.Utility;
 
 // -----------------------------------------------------------------------------------//
-public class FileDos extends AbstractFile
+public class FileDos extends AbstractAppleFile
 // -----------------------------------------------------------------------------------//
 {
   int type;

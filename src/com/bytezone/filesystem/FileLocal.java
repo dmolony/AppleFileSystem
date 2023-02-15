@@ -3,7 +3,7 @@ package com.bytezone.filesystem;
 import java.io.File;
 
 // -----------------------------------------------------------------------------------//
-public class FileLocal extends AbstractFile
+public class FileLocal extends AbstractAppleFile
 // -----------------------------------------------------------------------------------//
 {
   File file;

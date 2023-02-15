@@ -306,7 +306,7 @@ public abstract class AbstractFileSystem implements AppleFileSystem
   }
 
   // ---------------------------------------------------------------------------------//
-  protected void addFileSystem (AppleFile parent, AbstractFile file)
+  protected void addFileSystem (AppleFile parent, AbstractAppleFile file)
   // ---------------------------------------------------------------------------------//
   {
     AppleFileSystem fs = addFileSystem (parent, file.getFileName (), file.read ());

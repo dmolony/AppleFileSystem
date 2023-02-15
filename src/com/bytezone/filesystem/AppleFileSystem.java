@@ -46,6 +46,6 @@ public interface AppleFileSystem extends AppleFile
 
   enum FileSystemType
   {
-    DOS, PRODOS, PASCAL, CPM
+    DOS, PRODOS, PASCAL, CPM, NUFX
   }
 }

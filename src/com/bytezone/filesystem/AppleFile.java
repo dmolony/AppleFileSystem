@@ -49,7 +49,7 @@ public interface AppleFile
 
   public int getBlockSize ();                       // returns blockReader.blockSize()
 
-  public AppleFileSystem getFileSystem ();
+  public AppleFileSystem getFileSystem ();          // parent
 
   public default void dump ()
   {

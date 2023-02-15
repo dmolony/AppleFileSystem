@@ -6,7 +6,7 @@ import java.time.format.DateTimeFormatter;
 import com.bytezone.utility.Utility;
 
 // -----------------------------------------------------------------------------------//
-public class FileProdos extends AbstractFile
+public class FileProdos extends AbstractAppleFile
 // -----------------------------------------------------------------------------------//
 {
   private static final DateTimeFormatter sdf = DateTimeFormatter.ofPattern ("d-LLL-yy");

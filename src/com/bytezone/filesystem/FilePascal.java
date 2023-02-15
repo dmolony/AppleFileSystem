@@ -7,7 +7,7 @@ import java.util.List;
 import com.bytezone.utility.Utility;
 
 // -----------------------------------------------------------------------------------//
-public class FilePascal extends AbstractFile
+public class FilePascal extends AbstractAppleFile
 // -----------------------------------------------------------------------------------//
 {
   private static final String[] fileTypes =

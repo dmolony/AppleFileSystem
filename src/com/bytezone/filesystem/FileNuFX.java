@@ -9,7 +9,7 @@ import com.bytezone.utility.DateTime;
 import com.bytezone.utility.Utility;
 
 // -----------------------------------------------------------------------------------//
-public class FileNuFX extends AbstractFile
+public class FileNuFX extends AbstractAppleFile
 // -----------------------------------------------------------------------------------//
 {
   private static final byte[] NuFX = { 0x4E, (byte) 0xF5, 0x46, (byte) 0xD8 };
@@ -27,7 +27,7 @@ public class FileNuFX extends AbstractFile
   private final int fileSystemID;
   private final char separator;
   private final int access;
-  private final int fileType;
+  //  private final int fileType;
   private final int auxType;
   private final int storType;
   private final DateTime created;

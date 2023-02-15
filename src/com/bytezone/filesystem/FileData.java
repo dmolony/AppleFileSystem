@@ -1,7 +1,7 @@
 package com.bytezone.filesystem;
 
 // -----------------------------------------------------------------------------------//
-public class FileData extends AbstractFile
+public class FileData extends AbstractAppleFile
 // -----------------------------------------------------------------------------------//
 {
   byte[] buffer;

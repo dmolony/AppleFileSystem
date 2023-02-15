@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 // -----------------------------------------------------------------------------------//
-public class FileCpm extends AbstractFile
+public class FileCpm extends AbstractAppleFile
 // -----------------------------------------------------------------------------------//
 {
   private final int userNumber;

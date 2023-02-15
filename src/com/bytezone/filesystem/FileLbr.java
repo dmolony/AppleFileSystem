@@ -3,7 +3,7 @@ package com.bytezone.filesystem;
 import com.bytezone.utility.Utility;
 
 // -----------------------------------------------------------------------------------//
-public class FileLbr extends AbstractFile
+public class FileLbr extends AbstractAppleFile
 // -----------------------------------------------------------------------------------//
 {
   int status;

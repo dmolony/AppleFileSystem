@@ -9,7 +9,7 @@ import com.bytezone.utility.Squeeze;
 import com.bytezone.utility.Utility;
 
 // -----------------------------------------------------------------------------------//
-public class FileBinary2 extends AbstractFile
+public class FileBinary2 extends AbstractAppleFile
 // -----------------------------------------------------------------------------------//
 {
   private static String[] bin2Formats =

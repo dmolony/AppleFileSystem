@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 // -----------------------------------------------------------------------------------//
-public abstract class AbstractFile implements AppleFile
+public abstract class AbstractAppleFile implements AppleFile
 // -----------------------------------------------------------------------------------//
 {
   protected final AppleFileSystem fileSystem;
@@ -20,7 +20,7 @@ public abstract class AbstractFile implements AppleFile
   protected final List<AppleFile> files = new ArrayList<> ();
 
   // ---------------------------------------------------------------------------------//
-  AbstractFile (AppleFileSystem fileSystem)
+  AbstractAppleFile (AppleFileSystem fileSystem)
   // ---------------------------------------------------------------------------------//
   {
     this.fileSystem = fileSystem;
