@@ -16,7 +16,8 @@ public class FileDos extends AbstractAppleFile
   List<AppleBlock> indexBlocks = new ArrayList<> ();
   List<AppleBlock> dataBlocks = new ArrayList<> ();
 
-  int eof;
+  int length;
+  int address;
 
   // ---------------------------------------------------------------------------------//
   FileDos (FsDos fs, byte[] buffer, int ptr)
@@ -90,12 +91,33 @@ public class FileDos extends AbstractAppleFile
             break;
         }
         else
-          dataBlocks.add (null);          // must be a sparse file
+          dataBlocks.add (null);              // must be a sparse file
       }
 
       nextTrack = sectorBuffer[1] & 0xFF;
       nextSector = sectorBuffer[2] & 0xFF;
     }
+
+    if (type == 0x04)                         // binary
+    {
+      if (dataBlocks.size () > 0)
+      {
+        byte[] fileBuffer = fs.readBlock (dataBlocks.get (0));
+        address = Utility.unsignedShort (fileBuffer, 0);
+        length = Utility.unsignedShort (fileBuffer, 2);
+      }
+    }
+    else if (type == 0x01 || type == 2)       // integer basic or applesoft
+    {
+      if (dataBlocks.size () > 0)
+      {
+        byte[] fileBuffer = fs.readBlock (dataBlocks.get (0));
+        length = Utility.unsignedShort (fileBuffer, 0);
+        // could calculate the address from the line numbers
+      }
+    }
+    else
+      length = dataBlocks.size () * fileSystem.getBlockSize ();
   }
 
   // ---------------------------------------------------------------------------------//
@@ -116,10 +138,10 @@ public class FileDos extends AbstractAppleFile
 
   // ---------------------------------------------------------------------------------//
   @Override
-  public int getLength ()                 // in bytes (eof)
+  public int getLength ()                         // in bytes (eof)
   // ---------------------------------------------------------------------------------//
   {
-    return dataBlocks.size () * fileSystem.getBlockSize ();
+    return length;
   }
 
   // ---------------------------------------------------------------------------------//

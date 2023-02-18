@@ -151,7 +151,7 @@ public class FileProdos extends AbstractAppleFile
   public int getTotalBlocks ()                                    // in blocks
   // ---------------------------------------------------------------------------------//
   {
-    return size;              // size of both forks if GSOS extended
+    return size;                              // size of both forks if GSOS extended
   }
 
   // ---------------------------------------------------------------------------------//
