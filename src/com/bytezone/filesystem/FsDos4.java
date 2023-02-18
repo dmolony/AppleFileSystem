@@ -28,6 +28,7 @@ public class FsDos4 extends AbstractFileSystem
       case 0x43 -> "4.3";
       default -> "?.?";
     });
+    setFileSystemType (FileSystemType.DOS4);
   }
 
   // ---------------------------------------------------------------------------------//

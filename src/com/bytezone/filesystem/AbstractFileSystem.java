@@ -348,19 +348,32 @@ public abstract class AbstractFileSystem implements AppleFileSystem
     StringBuilder text = new StringBuilder ();
 
     text.append (toString () + "\n");
+    boolean inFolder = false;
+
+    //    for (AppleFile file : files)
+    //      if (file.isFileSystem () || file.isFolder ())
+    //      {
+    //        text.append ("\n");
+    //        text.append (file.catalog ());
+    //        text.append ("\n");
+    //        inFolder = true;
+    //      }
+    //      else
+    //      {
+    //        if (inFolder)
+    //        {
+    //          inFolder = false;
+    //          text.append ("\n");
+    //        }
+    //        text.append (file);
+    //        text.append ("\n");
+    //      }
 
     for (AppleFile file : files)
-      if (file.isFileSystem () || file.isFolder ())
-      {
-        text.append ("\n");
-        text.append (file.catalog ());
-        text.append ("\n");
-      }
-      else
-      {
-        text.append (file);
-        text.append ("\n");
-      }
+    {
+      text.append (file);
+      text.append ("\n");
+    }
 
     while (text.charAt (text.length () - 1) == '\n')
       text.deleteCharAt (text.length () - 1);

@@ -8,6 +8,8 @@ public class Fs2img extends AbstractFileSystem
 {
   static final byte[] TWO_IMG = { 0x32, 0x49, 0x4D, 0x47 };
   private static String[] twoIMGFormats = { "Dos", "Prodos", "NIB" };
+  private static FileSystemType[] fileSystemTypes =
+      { FileSystemType.DOS, FileSystemType.PRODOS, FileSystemType.NIB };
   private static String[] creatorCodes = { "!nfc", "B2TR", "CTKG", "ShIm", "WOOF", "XGS!", "CdrP" };
   private static String[] creatorNames = { "ASIMOV2", "Bernie ][ the Rescue", "Catakig",
       "Sheppy's ImageMaker", "Sweet 16", "XGS", "CiderPress" };
@@ -46,6 +48,7 @@ public class Fs2img extends AbstractFileSystem
   // ---------------------------------------------------------------------------------//
   {
     setFileSystemName ("2img");
+    setFileSystemType (FileSystemType.IMG2);
 
     byte[] buffer = blockReader.getDiskBuffer ();
     int diskOffset = blockReader.getDiskOffset ();
@@ -99,6 +102,8 @@ public class Fs2img extends AbstractFileSystem
     text.append (String.format ("Header size ........... %d%n", headerSize));
     text.append (String.format ("Version ............... %d%n", version));
     text.append (String.format ("Format ................ %d  %s%n", format, twoIMGFormats[format]));
+    text.append (
+        String.format ("File system type ...... %d  %s%n", format, fileSystemTypes[format]));
     text.append (String.format ("Flags ................. %08X%n", flags));
     text.append (String.format ("  locked .............. %s%n", locked));
     text.append (String.format ("  has Dos Volume no ... %s%n", hasDosVolumeNumber));

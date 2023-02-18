@@ -10,8 +10,6 @@ public interface AppleFileSystem extends AppleFile
 {
   String getFileSystemName ();
 
-  FileSystemType getFileSystemType ();
-
   byte[] getBuffer ();
 
   int getOffset ();
@@ -46,6 +44,7 @@ public interface AppleFileSystem extends AppleFile
 
   enum FileSystemType
   {
-    DOS, PRODOS, PASCAL, CPM, NUFX
+    DOS, PRODOS, PASCAL, CPM, NUFX, IMG2, NIB, DOS4, UNIDOS, ZIP, GZIP, HYBRID, DATA, BIN2, WOZ1,
+    WOZ2, LBR
   }
 }

@@ -24,6 +24,7 @@ public class FsUnidos extends AbstractFileSystem
   // ---------------------------------------------------------------------------------//
   {
     setFileSystemName ("Unidos");
+    setFileSystemType (FileSystemType.UNIDOS);
 
     byte[] buffer = getBuffer ();
     int offset = getOffset ();

@@ -37,6 +37,7 @@ public class FsZip extends AbstractFileSystem
   // ---------------------------------------------------------------------------------//
   {
     setFileSystemName ("Zip");
+    setFileSystemType (FileSystemType.ZIP);
 
     try (ZipInputStream zip = new ZipInputStream (//
         new ByteArrayInputStream (getBuffer (), getOffset (), getLength ()));)

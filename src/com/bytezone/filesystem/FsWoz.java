@@ -26,9 +26,15 @@ public class FsWoz extends AbstractFileSystem
   // ---------------------------------------------------------------------------------//
   {
     if (blockReader.isMagic (0, WOZ_1))
+    {
       setFileSystemName ("WOZ-1");
+      setFileSystemType (FileSystemType.WOZ1);
+    }
     else if (blockReader.isMagic (0, WOZ_2))
+    {
       setFileSystemName ("WOZ-2");
+      setFileSystemType (FileSystemType.WOZ2);
+    }
     else
       System.out.println ("Not woz");
 

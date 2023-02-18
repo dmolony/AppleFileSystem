@@ -3,6 +3,8 @@ package com.bytezone.filesystem;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.bytezone.filesystem.AppleFileSystem.FileSystemType;
+
 // -----------------------------------------------------------------------------------//
 public abstract class AbstractAppleFile implements AppleFile
 // -----------------------------------------------------------------------------------//
@@ -75,6 +77,14 @@ public abstract class AbstractAppleFile implements AppleFile
   // ---------------------------------------------------------------------------------//
   {
     return fileSystem;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
+  public FileSystemType getFileSystemType ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return fileSystem == null ? null : fileSystem.getFileSystemType ();
   }
 
   // ---------------------------------------------------------------------------------//

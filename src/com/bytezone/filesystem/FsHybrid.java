@@ -33,5 +33,6 @@ public class FsHybrid extends AbstractFileSystem
     super (blockReader);
 
     setFileSystemName ("Hybrid");
+    setFileSystemType (FileSystemType.HYBRID);
   }
 }

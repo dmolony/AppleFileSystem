@@ -18,6 +18,7 @@ public class FsLbr extends AbstractFileSystem
   // ---------------------------------------------------------------------------------//
   {
     setFileSystemName ("LBR");
+    setFileSystemType (FileSystemType.LBR);
 
     int max = 1;
     int count = 0;

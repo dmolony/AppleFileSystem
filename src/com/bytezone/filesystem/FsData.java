@@ -18,6 +18,7 @@ public class FsData extends AbstractFileSystem
   // ---------------------------------------------------------------------------------//
   {
     setFileSystemName ("Data");
+    setFileSystemType (FileSystemType.DATA);
 
     addFile (new FileData (this, getBuffer (), 0));
   }
