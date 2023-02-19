@@ -9,16 +9,15 @@ import com.bytezone.filesystem.AppleFileSystem.FileSystemType;
 public abstract class AbstractAppleFile implements AppleFile
 // -----------------------------------------------------------------------------------//
 {
-  //  protected AppleFileSystem fileSystem;
-  protected AppleFileSystem appleFileSystem;
-  protected String fileName;
+  protected AppleFileSystem appleFileSystem;  // format of the disk on which this file exists
 
   protected boolean isFile;
   protected boolean isFolder;
   protected boolean isFileSystem;
 
-  protected String fileTypeText;
+  protected String fileName;
   protected int fileType;
+  protected String fileTypeText;
 
   protected final List<AppleFile> files = new ArrayList<> ();
 

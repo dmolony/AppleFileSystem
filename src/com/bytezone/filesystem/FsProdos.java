@@ -106,7 +106,7 @@ public class FsProdos extends AbstractFileSystem
           case SEEDLING:
           case SAPLING:
           case TREE:
-            FileProdos file = new FileProdos (this, buffer, ptr);
+            FileProdos file = new FileProdos (this, buffer, ptr);    // this needs to be kept
             if (file.getFileType () == ProdosConstants.FILE_TYPE_LBR)
               addFileSystem (this, file);
             else
@@ -114,11 +114,8 @@ public class FsProdos extends AbstractFileSystem
             break;
 
           case PASCAL_ON_PROFILE:
-            file = new FileProdos (this, buffer, ptr);
-            byte[] fileBuffer = file.read ();
-            BlockReader pascalBlockReader =
-                new BlockReader (file.fileName, fileBuffer, 1024, fileBuffer.length - 1024);
-            addFileSystem (this, pascalBlockReader);
+            file = new FileProdos (this, buffer, ptr);    // this needs to be kept
+            addFileSystem (this, file, 1024);
             break;
 
           case GSOS_EXTENDED_FILE:
