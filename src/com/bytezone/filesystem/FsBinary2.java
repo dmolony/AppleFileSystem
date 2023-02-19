@@ -19,7 +19,7 @@ public class FsBinary2 extends AbstractFileSystem
   private void readCatalog ()
   // ---------------------------------------------------------------------------------//
   {
-    setFileSystemName ("Bin II");
+    //    setFileSystemName ("Bin II");
     setFileSystemType (FileSystemType.BIN2);
 
     assert blockReader.isMagic (0, BIN2) && blockReader.byteAt (18, (byte) 0x02);

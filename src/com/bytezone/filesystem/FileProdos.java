@@ -37,10 +37,10 @@ public class FileProdos extends AbstractAppleFile
   }
 
   // ---------------------------------------------------------------------------------//
-  FileProdos (FsProdos fs, byte[] buffer, int ptr)
+  FileProdos (FsProdos parent, byte[] buffer, int ptr)
   // ---------------------------------------------------------------------------------//
   {
-    super (fs);
+    super (parent);
 
     isFile = true;
 
@@ -73,14 +73,14 @@ public class FileProdos extends AbstractAppleFile
     if (storageType == FsProdos.GSOS_EXTENDED_FILE)
       createBothForks ();
     else
-      dataFork = new ForkProdos (fs, keyPtr, storageType, size, eof);
+      dataFork = new ForkProdos (parent, keyPtr, storageType, size, eof);
   }
 
   // ---------------------------------------------------------------------------------//
   private void createBothForks ()
   // ---------------------------------------------------------------------------------//
   {
-    byte[] buffer = fileSystem.getBlock (keyPtr).read ();
+    byte[] buffer = getFileSystem ().getBlock (keyPtr).read ();
 
     for (int ptr = 0; ptr < 512; ptr += 256)
     {
@@ -91,9 +91,9 @@ public class FileProdos extends AbstractAppleFile
 
       if (keyPtr > 0)
         if (ptr == 0)
-          dataFork = new ForkProdos ((FsProdos) fileSystem, keyPtr, storageType, size, eof);
+          dataFork = new ForkProdos ((FsProdos) getFileSystem (), keyPtr, storageType, size, eof);
         else
-          resourceFork = new ForkProdos ((FsProdos) fileSystem, keyPtr, storageType, size, eof);
+          resourceFork = new ForkProdos ((FsProdos) getFileSystem (), keyPtr, storageType, size, eof);
     }
   }
 

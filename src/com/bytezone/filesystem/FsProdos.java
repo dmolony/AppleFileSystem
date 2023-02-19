@@ -38,7 +38,7 @@ public class FsProdos extends AbstractFileSystem
   private void readCatalog ()
   // ---------------------------------------------------------------------------------//
   {
-    setFileSystemName ("Prodos");
+    //    setFileSystemName ("Prodos");
     setFileSystemType (FileSystemType.PRODOS);
 
     int nextBlockNo = 2;                    // first catalog block
@@ -108,7 +108,7 @@ public class FsProdos extends AbstractFileSystem
           case TREE:
             FileProdos file = new FileProdos (this, buffer, ptr);
             if (file.getFileType () == ProdosConstants.FILE_TYPE_LBR)
-              addFileSystem (parent, file);
+              addFileSystem (this, file);
             else
               parent.addFile (file);
             break;
@@ -118,7 +118,7 @@ public class FsProdos extends AbstractFileSystem
             byte[] fileBuffer = file.read ();
             BlockReader pascalBlockReader =
                 new BlockReader (file.fileName, fileBuffer, 1024, fileBuffer.length - 1024);
-            addFileSystem (parent, pascalBlockReader);
+            addFileSystem (this, pascalBlockReader);
             break;
 
           case GSOS_EXTENDED_FILE:

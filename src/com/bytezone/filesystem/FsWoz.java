@@ -27,12 +27,12 @@ public class FsWoz extends AbstractFileSystem
   {
     if (blockReader.isMagic (0, WOZ_1))
     {
-      setFileSystemName ("WOZ-1");
+      //      setFileSystemName ("WOZ-1");
       setFileSystemType (FileSystemType.WOZ1);
     }
     else if (blockReader.isMagic (0, WOZ_2))
     {
-      setFileSystemName ("WOZ-2");
+      //      setFileSystemName ("WOZ-2");
       setFileSystemType (FileSystemType.WOZ2);
     }
     else
@@ -43,7 +43,8 @@ public class FsWoz extends AbstractFileSystem
       WozFile wozFile = new WozFile (getBuffer ());
       byte[] buffer = wozFile.getDiskBuffer ();
 
-      addFileSystem (this, new BlockReader (getFileSystemName (), buffer, 0, buffer.length));
+      addFileSystem (this,
+          new BlockReader (getFileSystemType ().toString (), buffer, 0, buffer.length));
     }
     catch (DiskNibbleException e)
     {

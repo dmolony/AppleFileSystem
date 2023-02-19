@@ -31,10 +31,10 @@ public class FolderProdos extends AbstractAppleFile
   String dateModified, timeModified;
 
   // ---------------------------------------------------------------------------------//
-  FolderProdos (FsProdos fs, byte[] buffer, int ptr)
+  FolderProdos (FsProdos parent, byte[] buffer, int ptr)
   // ---------------------------------------------------------------------------------//
   {
-    super (fs);
+    super (parent);
 
     isFolder = true;
 

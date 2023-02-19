@@ -8,11 +8,15 @@ import com.bytezone.filesystem.BlockReader.AddressType;
 public interface AppleFileSystem extends AppleFile
 // -----------------------------------------------------------------------------------//
 {
-  String getFileSystemName ();
+  //  String getFileSystemName ();        // should be in AppleFile, or perhaps obsolete
 
   byte[] getBuffer ();
 
   int getOffset ();
+
+  void setParentFileSystem (AppleFileSystem appleFileSystem);
+
+  AppleFileSystem getParentFileSystem ();
 
   void setHybrid ();
 

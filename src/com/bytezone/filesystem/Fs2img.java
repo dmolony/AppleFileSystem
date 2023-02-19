@@ -47,7 +47,7 @@ public class Fs2img extends AbstractFileSystem
   private void readCatalog ()
   // ---------------------------------------------------------------------------------//
   {
-    setFileSystemName ("2img");
+    //    setFileSystemName ("2img");
     setFileSystemType (FileSystemType.IMG2);
 
     byte[] buffer = blockReader.getDiskBuffer ();
@@ -76,8 +76,21 @@ public class Fs2img extends AbstractFileSystem
     hasDosVolumeNumber = (flags & 0x0100) != 0;
     volumeNumber = flags & 0x00FF;
 
-    fileSystem = addFileSystem (this,
-        new BlockReader (twoIMGFormats[format], buffer, diskOffset + offset, length));
+    BlockReader blockReader =
+        new BlockReader (twoIMGFormats[format], buffer, diskOffset + offset, length);
+    fileSystem = addFileSystem (this, blockReader);
+
+    checkLyingLiars ();
+  }
+
+  // sometimes a disk claims one format but is actually something else
+  // ---------------------------------------------------------------------------------//
+  private void checkLyingLiars ()
+  // ---------------------------------------------------------------------------------//
+  {
+    if (fileSystem.getFileSystemType () != fileSystemTypes[format])
+      System.out.printf ("2IMG header claims to be %s, but is actually %s%n", twoIMGFormats[format],
+          fileSystem.getFileSystemType ());
   }
 
   // ---------------------------------------------------------------------------------//

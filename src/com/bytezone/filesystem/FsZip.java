@@ -36,7 +36,7 @@ public class FsZip extends AbstractFileSystem
   private void readCatalog ()
   // ---------------------------------------------------------------------------------//
   {
-    setFileSystemName ("Zip");
+    //    setFileSystemName ("Zip");
     setFileSystemType (FileSystemType.ZIP);
 
     try (ZipInputStream zip = new ZipInputStream (//
@@ -108,12 +108,12 @@ public class FsZip extends AbstractFileSystem
       path = path.substring (0, pos);
     }
 
-    AppleFile parent = this;
-    if (!path.isEmpty ())
-      for (String name : path.split ("/"))
-        parent = getFolder (parent, name);
+    //    AppleFile parent = this;
+    //    if (!path.isEmpty ())
+    //      for (String name : path.split ("/"))
+    //        parent = getFolder (parent, name);
 
-    AppleFileSystem fs = addFileSystem (parent, fileName, buffer);
+    AppleFileSystem fs = addFileSystem (this, fileName, buffer);
   }
 
   // ---------------------------------------------------------------------------------//

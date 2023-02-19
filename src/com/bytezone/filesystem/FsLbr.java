@@ -17,7 +17,7 @@ public class FsLbr extends AbstractFileSystem
   private void readCatalog ()
   // ---------------------------------------------------------------------------------//
   {
-    setFileSystemName ("LBR");
+    //    setFileSystemName ("LBR");
     setFileSystemType (FileSystemType.LBR);
 
     int max = 1;

@@ -23,7 +23,7 @@ public class FsUnidos extends AbstractFileSystem
   private void readCatalog ()
   // ---------------------------------------------------------------------------------//
   {
-    setFileSystemName ("Unidos");
+    //    setFileSystemName ("Unidos");
     setFileSystemType (FileSystemType.UNIDOS);
 
     byte[] buffer = getBuffer ();

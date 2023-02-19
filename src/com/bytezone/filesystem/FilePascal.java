@@ -50,7 +50,7 @@ public class FilePascal extends AbstractAppleFile
   public byte[] read ()
   // ---------------------------------------------------------------------------------//
   {
-    return fileSystem.readBlocks (dataBlocks);
+    return appleFileSystem.readBlocks (dataBlocks);
   }
 
   // ---------------------------------------------------------------------------------//
@@ -58,7 +58,7 @@ public class FilePascal extends AbstractAppleFile
   public int getLength ()                 // in bytes (eof)
   // ---------------------------------------------------------------------------------//
   {
-    return (dataBlocks.size () - 1) * fileSystem.getBlockSize () + bytesUsedInLastBlock;
+    return (dataBlocks.size () - 1) * getFileSystem ().getBlockSize () + bytesUsedInLastBlock;
   }
 
   // ---------------------------------------------------------------------------------//

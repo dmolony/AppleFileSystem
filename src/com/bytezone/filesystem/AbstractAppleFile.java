@@ -9,7 +9,8 @@ import com.bytezone.filesystem.AppleFileSystem.FileSystemType;
 public abstract class AbstractAppleFile implements AppleFile
 // -----------------------------------------------------------------------------------//
 {
-  protected final AppleFileSystem fileSystem;
+  //  protected AppleFileSystem fileSystem;
+  protected AppleFileSystem appleFileSystem;
   protected String fileName;
 
   protected boolean isFile;
@@ -22,10 +23,10 @@ public abstract class AbstractAppleFile implements AppleFile
   protected final List<AppleFile> files = new ArrayList<> ();
 
   // ---------------------------------------------------------------------------------//
-  AbstractAppleFile (AppleFileSystem fileSystem)
+  AbstractAppleFile (AppleFileSystem appleFileSystem)
   // ---------------------------------------------------------------------------------//
   {
-    this.fileSystem = fileSystem;
+    this.appleFileSystem = appleFileSystem;
   }
 
   // ---------------------------------------------------------------------------------//
@@ -76,7 +77,7 @@ public abstract class AbstractAppleFile implements AppleFile
   public AppleFileSystem getFileSystem ()
   // ---------------------------------------------------------------------------------//
   {
-    return fileSystem;
+    return appleFileSystem;
   }
 
   // ---------------------------------------------------------------------------------//
@@ -84,7 +85,7 @@ public abstract class AbstractAppleFile implements AppleFile
   public FileSystemType getFileSystemType ()
   // ---------------------------------------------------------------------------------//
   {
-    return fileSystem == null ? null : fileSystem.getFileSystemType ();
+    return appleFileSystem.getFileSystemType ();
   }
 
   // ---------------------------------------------------------------------------------//
@@ -103,7 +104,7 @@ public abstract class AbstractAppleFile implements AppleFile
   public int getBlockSize ()
   // ---------------------------------------------------------------------------------//
   {
-    return fileSystem.getBlockSize ();
+    return appleFileSystem.getBlockSize ();
   }
 
   // ---------------------------------------------------------------------------------//

@@ -117,7 +117,7 @@ public class FileDos extends AbstractAppleFile
       }
     }
     else
-      length = dataBlocks.size () * fileSystem.getBlockSize ();
+      length = dataBlocks.size () * getFileSystem ().getBlockSize ();
   }
 
   // ---------------------------------------------------------------------------------//
@@ -133,7 +133,7 @@ public class FileDos extends AbstractAppleFile
   public byte[] read ()
   // ---------------------------------------------------------------------------------//
   {
-    return fileSystem.readBlocks (dataBlocks);
+    return appleFileSystem.readBlocks (dataBlocks);
   }
 
   // ---------------------------------------------------------------------------------//
@@ -166,7 +166,7 @@ public class FileDos extends AbstractAppleFile
   public String toString ()
   // ---------------------------------------------------------------------------------//
   {
-    return String.format ("%s %s %03d %-30s", locked ? "*" : " ", fileTypeText, sectorCount,
-        fileName);
+    return String.format ("%s %s %03d %-30s %,7d", locked ? "*" : " ", fileTypeText, sectorCount,
+        fileName, length);
   }
 }

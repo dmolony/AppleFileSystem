@@ -30,9 +30,13 @@ public interface AppleFile
 
   public List<AppleFile> getFiles ();               // if isFolder() or isFileSystem()
 
-  public byte[] read ();
+  public AppleFileSystem getFileSystem ();          // if isFile()
 
-  public void write (byte[] buffer);
+  public FileSystemType getFileSystemType ();       // if isFileSystem()
+
+  public byte[] read ();                            // if isFile()
+
+  public void write (byte[] buffer);                // if isFile()
 
   public int getLength ();                          // in bytes (eof)
 
@@ -49,10 +53,6 @@ public interface AppleFile
   public int getFileType ();
 
   public int getBlockSize ();                       // returns blockReader.blockSize()
-
-  public AppleFileSystem getFileSystem ();          // parent
-
-  public FileSystemType getFileSystemType ();
 
   public default void dump ()
   {

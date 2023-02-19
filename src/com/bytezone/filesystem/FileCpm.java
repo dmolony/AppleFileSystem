@@ -21,10 +21,10 @@ public class FileCpm extends AbstractAppleFile
   List<AppleBlock> dataBlocks = new ArrayList<> ();
 
   // ---------------------------------------------------------------------------------//
-  FileCpm (FsCpm fs, byte[] buffer, int ptr)
+  FileCpm (FsCpm parent, byte[] buffer, int ptr)
   // ---------------------------------------------------------------------------------//
   {
-    super (fs);
+    super (parent);
 
     isFile = true;
 
@@ -66,7 +66,7 @@ public class FileCpm extends AbstractAppleFile
           System.out.printf ("%s CPM hi bit set%n", getFileName ());
 
       int blockNumber = ((b & 0x80) == 0) ? (b + 12) : (b & 0x7F);
-      dataBlocks.add (fileSystem.getBlock (blockNumber));
+      dataBlocks.add (getFileSystem ().getBlock (blockNumber));
     }
   }
 
@@ -82,7 +82,7 @@ public class FileCpm extends AbstractAppleFile
   public byte[] read ()
   // ---------------------------------------------------------------------------------//
   {
-    return fileSystem.readBlocks (dataBlocks);
+    return appleFileSystem.readBlocks (dataBlocks);
   }
 
   // ---------------------------------------------------------------------------------//
@@ -90,7 +90,7 @@ public class FileCpm extends AbstractAppleFile
   public int getLength ()                 // in bytes (eof)
   // ---------------------------------------------------------------------------------//
   {
-    return dataBlocks.size () * fileSystem.getBlockSize ();
+    return dataBlocks.size () * getFileSystem ().getBlockSize ();
   }
 
   // ---------------------------------------------------------------------------------//

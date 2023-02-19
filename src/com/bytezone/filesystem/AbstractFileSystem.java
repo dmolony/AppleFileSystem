@@ -14,9 +14,11 @@ public abstract class AbstractFileSystem implements AppleFileSystem
 
   protected final BlockReader blockReader;
   protected int catalogBlocks;
+
+  protected AppleFileSystem parentFileSystem;   // pascal on prodos, dos in 2img etc
   protected List<AppleFile> files = new ArrayList<> ();   // files, folders and file systems
 
-  protected String fileSystemName;        // DosX.X, Prodos, Pascal, CPM, NuFX, 2img, Bin2, Data
+  //  protected String fileSystemName;        // DosX.X, Prodos, Pascal, CPM, NuFX, 2img, Bin2, Data
   protected FileSystemType fileSystemType;
 
   private int totalFileSystems = 0;
@@ -32,17 +34,25 @@ public abstract class AbstractFileSystem implements AppleFileSystem
   }
 
   // ---------------------------------------------------------------------------------//
-  void setFileSystemName (String fileSystemName)
-  // ---------------------------------------------------------------------------------//
-  {
-    this.fileSystemName = fileSystemName;
-  }
+  //  void setFileSystemName (String fileSystemName)
+  //  // ---------------------------------------------------------------------------------//
+  //  {
+  //    this.fileSystemName = fileSystemName;
+  //  }
 
   // ---------------------------------------------------------------------------------//
   void setFileSystemType (FileSystemType fileSystemType)
   // ---------------------------------------------------------------------------------//
   {
     this.fileSystemType = fileSystemType;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
+  public AppleFileSystem getParentFileSystem ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return parentFileSystem;
   }
 
   // ---------------------------------------------------------------------------------//
@@ -99,12 +109,12 @@ public abstract class AbstractFileSystem implements AppleFileSystem
   }
 
   // ---------------------------------------------------------------------------------//
-  @Override
-  public String getFileSystemName ()
-  // ---------------------------------------------------------------------------------//
-  {
-    return fileSystemName;
-  }
+  //  @Override
+  //  public String getFileSystemName ()
+  //  // ---------------------------------------------------------------------------------//
+  //  {
+  //    return fileSystemName;
+  //  }
 
   // ---------------------------------------------------------------------------------//
   @Override
@@ -227,14 +237,6 @@ public abstract class AbstractFileSystem implements AppleFileSystem
 
   // ---------------------------------------------------------------------------------//
   @Override
-  public AppleFileSystem getFileSystem ()
-  // ---------------------------------------------------------------------------------//
-  {
-    throw new UnsupportedOperationException ("Cannot call getFileSystem() on a file system");
-  }
-
-  // ---------------------------------------------------------------------------------//
-  @Override
   public byte[] read ()
   // ---------------------------------------------------------------------------------//
   {
@@ -255,6 +257,14 @@ public abstract class AbstractFileSystem implements AppleFileSystem
   // ---------------------------------------------------------------------------------//
   {
     throw new UnsupportedOperationException ("Cannot call getBlocks() on a file system");
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
+  public AppleFileSystem getFileSystem ()
+  // ---------------------------------------------------------------------------------//
+  {
+    throw new UnsupportedOperationException ("Cannot call getFileSystem() on a file system");
   }
 
   // ---------------------------------------------------------------------------------//
@@ -306,7 +316,7 @@ public abstract class AbstractFileSystem implements AppleFileSystem
   }
 
   // ---------------------------------------------------------------------------------//
-  protected void addFileSystem (AppleFile parent, AbstractAppleFile file)
+  protected void addFileSystem (AppleFileSystem parent, AbstractAppleFile file)
   // ---------------------------------------------------------------------------------//
   {
     AppleFileSystem fs = addFileSystem (parent, file.getFileName (), file.read ());
@@ -319,14 +329,14 @@ public abstract class AbstractFileSystem implements AppleFileSystem
   }
 
   // ---------------------------------------------------------------------------------//
-  protected AppleFileSystem addFileSystem (AppleFile parent, String name, byte[] buffer)
+  protected AppleFileSystem addFileSystem (AppleFileSystem parent, String name, byte[] buffer)
   // ---------------------------------------------------------------------------------//
   {
     return addFileSystem (parent, new BlockReader (name, buffer, 0, buffer.length));
   }
 
   // ---------------------------------------------------------------------------------//
-  protected AppleFileSystem addFileSystem (AppleFile parent, BlockReader blockReader)
+  protected AppleFileSystem addFileSystem (AppleFileSystem parent, BlockReader blockReader)
   // ---------------------------------------------------------------------------------//
   {
     if (factory == null)
@@ -335,9 +345,20 @@ public abstract class AbstractFileSystem implements AppleFileSystem
     AppleFileSystem fs = factory.getFileSystem (blockReader);
 
     if (fs != null)
+    {
       parent.addFile (fs);
+      fs.setParentFileSystem (parent);
+    }
 
     return fs;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
+  public void setParentFileSystem (AppleFileSystem appleFileSystem)
+  // ---------------------------------------------------------------------------------//
+  {
+    this.parentFileSystem = appleFileSystem;
   }
 
   // ---------------------------------------------------------------------------------//
@@ -397,7 +418,7 @@ public abstract class AbstractFileSystem implements AppleFileSystem
     StringBuilder text = new StringBuilder ();
 
     text.append (String.format ("File name ............. %s%n", getFileName ()));
-    text.append (String.format ("File system name ...... %s%n", fileSystemName));
+    //    text.append (String.format ("File system name ...... %s%n", fileSystemName));
     text.append (String.format ("File system type ...... %s%n", fileSystemType));
 
     text.append (blockReader.toText ());
@@ -416,7 +437,7 @@ public abstract class AbstractFileSystem implements AppleFileSystem
   // ---------------------------------------------------------------------------------//
   {
     return String.format ("%-12s %-6s %,8d  %d %,7d  %4d %3d %4d %3d", getFileName (),
-        fileSystemName, blockReader.getDiskOffset (), blockReader.interleave,
+        getFileSystemType (), blockReader.getDiskOffset (), blockReader.interleave,
         blockReader.totalBlocks, blockReader.bytesPerBlock, catalogBlocks, totalFiles,
         totalFileSystems);
   }

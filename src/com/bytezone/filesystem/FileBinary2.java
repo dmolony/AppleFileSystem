@@ -140,6 +140,7 @@ public class FileBinary2 extends AbstractAppleFile
   }
 
   // ---------------------------------------------------------------------------------//
+  @Override
   public int getFileType ()
   // ---------------------------------------------------------------------------------//
   {
@@ -200,16 +201,16 @@ public class FileBinary2 extends AbstractAppleFile
   public byte[] read ()
   // ---------------------------------------------------------------------------------//
   {
-    String suffix = Utility.getSuffix (fileSystem.getFileName ());
+    String suffix = Utility.getSuffix (getFileSystem ().getFileName ());
     if (suffix.equals ("bqy") && squeezeName != null)
     {
       Squeeze squeeze = new Squeeze ();
-      byte[] buffer = fileSystem.readBlocks (dataBlocks);
+      byte[] buffer = getFileSystem ().readBlocks (dataBlocks);
       //      System.out.println (Utility.format (buffer));
       return squeeze.unSqueeze (buffer);
     }
 
-    return fileSystem.readBlocks (dataBlocks);
+    return appleFileSystem.readBlocks (dataBlocks);
   }
 
   // ---------------------------------------------------------------------------------//
@@ -260,7 +261,7 @@ public class FileBinary2 extends AbstractAppleFile
   public String toString ()
   // ---------------------------------------------------------------------------------//
   {
-    return String.format ("%,6d  %-20s  %02X  %04X %03X  %3d  %,8d", dataBlocks.size (), getFileName (),
-        fileType, auxType, storageType, blocks, eof);
+    return String.format ("%,6d  %-20s  %02X  %04X %03X  %3d  %,8d", dataBlocks.size (),
+        getFileName (), fileType, auxType, storageType, blocks, eof);
   }
 }

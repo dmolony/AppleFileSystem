@@ -76,7 +76,7 @@ public class FileDos4 extends AbstractAppleFile
   public byte[] read ()
   // ---------------------------------------------------------------------------------//
   {
-    return fileSystem.readBlocks (dataBlocks);
+    return appleFileSystem.readBlocks (dataBlocks);
   }
 
   // ---------------------------------------------------------------------------------//
@@ -84,7 +84,7 @@ public class FileDos4 extends AbstractAppleFile
   public int getLength ()                 // in bytes (eof)
   // ---------------------------------------------------------------------------------//
   {
-    return dataBlocks.size () * fileSystem.getBlockSize ();
+    return dataBlocks.size () * getFileSystem ().getBlockSize ();
   }
 
   // ---------------------------------------------------------------------------------//

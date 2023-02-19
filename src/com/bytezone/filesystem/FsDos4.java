@@ -21,13 +21,13 @@ public class FsDos4 extends AbstractFileSystem
   // ---------------------------------------------------------------------------------//
   {
     dosVersion = version & 0xFF;
-    setFileSystemName ("Dos" + switch (version)
-    {
-      case 0x41 -> "4.1";
-      case 0x42 -> "4.2";
-      case 0x43 -> "4.3";
-      default -> "?.?";
-    });
+    //    setFileSystemName ("Dos" + switch (version)
+    //    {
+    //      case 0x41 -> "4.1";
+    //      case 0x42 -> "4.2";
+    //      case 0x43 -> "4.3";
+    //      default -> "?.?";
+    //    });
     setFileSystemType (FileSystemType.DOS4);
   }
 

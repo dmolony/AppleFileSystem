@@ -7,11 +7,6 @@ public class FsDos extends AbstractFileSystem
   static final int ENTRY_SIZE = 35;
   int dosVersion;
 
-  //  enum FileType
-  //  {
-  //    Text, ApplesoftBasic, IntegerBasic, Binary, SS, Relocatable, AA, BB
-  //  }
-
   // ---------------------------------------------------------------------------------//
   public FsDos (BlockReader blockReader)
   // ---------------------------------------------------------------------------------//
@@ -27,13 +22,13 @@ public class FsDos extends AbstractFileSystem
   {
     dosVersion = version & 0xFF;
     setFileSystemType (FileSystemType.DOS);
-    setFileSystemName ("Dos" + switch (version)
-    {
-      case 0x01 -> "3.1";
-      case 0x02 -> "3.2";
-      case 0x03 -> "3.3";
-      default -> "?.?";
-    });
+    //    setFileSystemName ("Dos" + switch (version)
+    //    {
+    //      case 0x01 -> "3.1";
+    //      case 0x02 -> "3.2";
+    //      case 0x03 -> "3.3";
+    //      default -> "?.?";
+    //    });
   }
 
   // ---------------------------------------------------------------------------------//
