@@ -10,7 +10,7 @@ import com.bytezone.filesystem.BlockReader.AddressType;
 public abstract class AbstractFileSystem implements AppleFileSystem
 // -----------------------------------------------------------------------------------//
 {
-  protected FileSystemFactory factory;          // only needed for embedded file systems
+  protected static FileSystemFactory factory;   // only needed for embedded file systems
 
   protected final BlockReader blockReader;
   protected int catalogBlocks;
@@ -312,13 +312,10 @@ public abstract class AbstractFileSystem implements AppleFileSystem
     if (fs == null)
     {
       System.out.println ("No file systems found");
-      this.addFile (file);      // not a file system, so revert to adding the file
+      this.addFile (file);        // not a file system, so revert to adding the file
     }
     else
-    {
       fs.setAppleFile (file);     // otherwise we lose the file details as it is now a file system
-      assert file.getFileSystem () == this;     // why is the parent a parameter?
-    }
   }
 
   // FsZip
