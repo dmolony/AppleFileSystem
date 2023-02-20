@@ -29,7 +29,7 @@ public abstract class AbstractFileSystem implements AppleFileSystem
   private int totalFileSystems = 0;
   private int totalFiles = 0;
 
-  private boolean partOfHybrid;           // this FS is one of two file systems on the disk
+  protected boolean partOfHybrid;           // this FS is one of two file systems on the disk
 
   // ---------------------------------------------------------------------------------//
   public AbstractFileSystem (BlockReader blockReader, FileSystemType fileSystemType)
@@ -44,14 +44,6 @@ public abstract class AbstractFileSystem implements AppleFileSystem
   // ---------------------------------------------------------------------------------//
   {
     return catalogBlocks;
-  }
-
-  // ---------------------------------------------------------------------------------//
-  @Override
-  public void setHybrid ()
-  // ---------------------------------------------------------------------------------//
-  {
-    partOfHybrid = true;
   }
 
   // ---------------------------------------------------------------------------------//
@@ -385,7 +377,6 @@ public abstract class AbstractFileSystem implements AppleFileSystem
     StringBuilder text = new StringBuilder ();
 
     text.append (String.format ("File name ............. %s%n", getFileName ()));
-    //    text.append (String.format ("File system name ...... %s%n", fileSystemName));
     text.append (String.format ("File system type ...... %s%n", fileSystemType));
 
     text.append (blockReader.toText ());

@@ -15,7 +15,7 @@ public class FsHybrid extends AbstractFileSystem
     for (AppleFileSystem fs : fileSystems)
     {
       addFile (fs);
-      fs.setHybrid ();
+      ((AbstractFileSystem) fs).partOfHybrid = true;
     }
   }
 
