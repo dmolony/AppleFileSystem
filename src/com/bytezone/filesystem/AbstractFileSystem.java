@@ -15,8 +15,12 @@ public abstract class AbstractFileSystem implements AppleFileSystem
   protected final BlockReader blockReader;
   protected int catalogBlocks;
 
-  protected AppleFileSystem parentFileSystem;   // pascal on prodos, dos in 2img etc
-  protected AppleFile appleFile;                // file is also a file system
+  // When this FS is embedded, it either came from an existing AppleFile (eg PAR), or is
+  // was a disk image in one of the non-standard file systems (zip, gz, NuFX 2img etc).
+  // In order to obtain the parent FS, it will stored here. The AppleFile is needed to
+  // keep the file details of the file that was reinterpreted as a FS (PAR, LBR)
+  protected AppleFileSystem appleFileSystem;    // the parent of this FS
+  protected AppleFile appleFile;                // the source of this FS
 
   protected List<AppleFile> files = new ArrayList<> ();   // files, folders and file systems
 
@@ -236,7 +240,7 @@ public abstract class AbstractFileSystem implements AppleFileSystem
   public AppleFileSystem getFileSystem ()
   // ---------------------------------------------------------------------------------//
   {
-    return parentFileSystem;
+    return appleFileSystem;
     //    throw new UnsupportedOperationException ("Cannot call getFileSystem() on a file system");
   }
 
@@ -312,10 +316,10 @@ public abstract class AbstractFileSystem implements AppleFileSystem
     if (fs == null)
     {
       System.out.println ("No file systems found");
-      this.addFile (file);        // not a file system, so revert to adding the file
+      addFile (file);        // not a file system, so revert to adding it as a file
     }
     else
-      fs.setAppleFile (file);     // otherwise we lose the file details as it is now a file system
+      ((AbstractFileSystem) fs).setAppleFile (file);     // don't lose the file details
   }
 
   // FsZip
@@ -340,24 +344,22 @@ public abstract class AbstractFileSystem implements AppleFileSystem
 
     if (fs != null)
     {
-      this.addFile (fs);
-      fs.setParentFileSystem (this);
+      addFile (fs);
+      ((AbstractFileSystem) fs).setParentFileSystem (this);
     }
 
     return fs;
   }
 
   // ---------------------------------------------------------------------------------//
-  @Override
-  public void setParentFileSystem (AppleFileSystem appleFileSystem)
+  void setParentFileSystem (AppleFileSystem appleFileSystem)
   // ---------------------------------------------------------------------------------//
   {
-    this.parentFileSystem = appleFileSystem;
+    this.appleFileSystem = appleFileSystem;
   }
 
   // ---------------------------------------------------------------------------------//
-  @Override
-  public void setAppleFile (AppleFile appleFile)
+  void setAppleFile (AppleFile appleFile)
   // ---------------------------------------------------------------------------------//
   {
     this.appleFile = appleFile;

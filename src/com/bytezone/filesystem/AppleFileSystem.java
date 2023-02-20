@@ -12,9 +12,9 @@ public interface AppleFileSystem extends AppleFile
 
   int getOffset ();
 
-  void setParentFileSystem (AppleFileSystem appleFileSystem);
+  //  void setParentFileSystem (AppleFileSystem appleFileSystem);
 
-  void setAppleFile (AppleFile appleFile);
+  //  void setAppleFile (AppleFile appleFile);
 
   void setHybrid ();
 
