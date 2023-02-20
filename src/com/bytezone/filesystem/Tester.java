@@ -30,6 +30,7 @@ public class Tester
   String bsq = cmp + "BSQ/";
   String zip = cmp + "ZIP/";
   String gz = cmp + "GZ/";
+  String fva = base + "FVA/Fantavision/";
 
   String[] fileNames = {                             //
       base + "dos/Assembler.dsk",                    // 0: 3.3 intl 0
@@ -73,6 +74,7 @@ public class Tester
       bxy + "ANLIST.BXY",                            // 38:
       bqy + "DEATHHUNT.BQY",                         // 39:
       shk + "hcomp.shk",                             // 40: NuFX / NuFX
+      fva + "Fantavision.2mg",                       // 41: 
   };
 
   // ---------------------------------------------------------------------------------//
@@ -81,7 +83,7 @@ public class Tester
   {
     FileSystemFactory factory = new FileSystemFactory ();
 
-    int index = 18;
+    int index = 41;
     for (int fileNo = index; fileNo <= index; fileNo++)
     //    for (int fileNo = 0; fileNo < fileNames.length; fileNo++)
     {

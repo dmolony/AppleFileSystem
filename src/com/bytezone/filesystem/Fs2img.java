@@ -47,7 +47,6 @@ public class Fs2img extends AbstractFileSystem
   private void readCatalog ()
   // ---------------------------------------------------------------------------------//
   {
-    //    setFileSystemName ("2img");
     setFileSystemType (FileSystemType.IMG2);
 
     byte[] buffer = blockReader.getDiskBuffer ();
@@ -64,6 +63,9 @@ public class Fs2img extends AbstractFileSystem
 
     this.offset = Utility.unsignedLong (buffer, diskOffset + 24);
     this.length = Utility.unsignedLong (buffer, diskOffset + 28);
+
+    if (length == 0)
+      length = prodosBlocks * 512;        // see Fantavision.2mg
 
     commentOffset = Utility.unsignedLong (buffer, diskOffset + 32);
     commentLength = Utility.unsignedLong (buffer, diskOffset + 36);

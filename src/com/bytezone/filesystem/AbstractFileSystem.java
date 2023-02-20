@@ -301,6 +301,9 @@ public abstract class AbstractFileSystem implements AppleFileSystem
     return blockReader.totalBlocks;
   }
 
+  // FsNuFX
+  // FsBinary2
+  // FsProdos
   // ---------------------------------------------------------------------------------//
   protected void addFileSystem (AppleFileSystem parent, AbstractAppleFile file)
   // ---------------------------------------------------------------------------------//
@@ -308,6 +311,7 @@ public abstract class AbstractFileSystem implements AppleFileSystem
     addFileSystem (parent, file, 0);
   }
 
+  // FsProdos
   // ---------------------------------------------------------------------------------//
   protected void addFileSystem (AppleFileSystem parent, AbstractAppleFile file, int offset)
   // ---------------------------------------------------------------------------------//
@@ -325,6 +329,8 @@ public abstract class AbstractFileSystem implements AppleFileSystem
     }
   }
 
+  // FsZip
+  // FsGzip
   // ---------------------------------------------------------------------------------//
   protected AppleFileSystem addFileSystem (AppleFileSystem parent, String name, byte[] buffer)
   // ---------------------------------------------------------------------------------//
@@ -332,9 +338,10 @@ public abstract class AbstractFileSystem implements AppleFileSystem
     return addFileSystem (parent, new BlockReader (name, buffer, 0, buffer.length));
   }
 
+  // FsWoz
+  // Fs2img
   // ---------------------------------------------------------------------------------//
-  protected AppleFileSystem addFileSystem (AppleFileSystem parent,
-      BlockReader blockReader)
+  protected AppleFileSystem addFileSystem (AppleFileSystem parent, BlockReader blockReader)
   // ---------------------------------------------------------------------------------//
   {
     if (factory == null)
@@ -345,7 +352,7 @@ public abstract class AbstractFileSystem implements AppleFileSystem
     if (fs != null)
     {
       parent.addFile (fs);
-      fs.setParentFileSystem (parent);
+      fs.setParentFileSystem (parent);    // should store file instead of parent FS
     }
 
     return fs;
@@ -366,27 +373,8 @@ public abstract class AbstractFileSystem implements AppleFileSystem
   {
     StringBuilder text = new StringBuilder ();
 
-    text.append (toString () + "\n");
-    boolean inFolder = false;
-
-    //    for (AppleFile file : files)
-    //      if (file.isFileSystem () || file.isFolder ())
-    //      {
-    //        text.append ("\n");
-    //        text.append (file.catalog ());
-    //        text.append ("\n");
-    //        inFolder = true;
-    //      }
-    //      else
-    //      {
-    //        if (inFolder)
-    //        {
-    //          inFolder = false;
-    //          text.append ("\n");
-    //        }
-    //        text.append (file);
-    //        text.append ("\n");
-    //      }
+    text.append (toString ());
+    text.append ("\n");
 
     for (AppleFile file : files)
     {

@@ -14,6 +14,7 @@ public class FileData extends AbstractAppleFile
 
     isFile = true;
     fileName = "Raw data";
+    fileTypeText = "DATA";
     this.buffer = buffer;
   }
 

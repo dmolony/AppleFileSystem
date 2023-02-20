@@ -125,7 +125,7 @@ public class FsProdos extends AbstractFileSystem
           case SUBDIRECTORY:
             FolderProdos folder = new FolderProdos (this, buffer, ptr);
             parent.addFile (folder);
-            processFolder (folder, folder.keyPtr);
+            processFolder (folder, folder.keyPtr);        // recursive
             break;
 
           case SUBDIRECTORY_HEADER:
