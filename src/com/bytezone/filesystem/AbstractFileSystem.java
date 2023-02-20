@@ -10,15 +10,15 @@ import com.bytezone.filesystem.BlockReader.AddressType;
 public abstract class AbstractFileSystem implements AppleFileSystem
 // -----------------------------------------------------------------------------------//
 {
-  protected static FileSystemFactory factory;   // only needed for embedded file systems
+  protected static FileSystemFactory factory = new FileSystemFactory ();
 
   protected final BlockReader blockReader;
   protected int catalogBlocks;
 
-  // When this FS is embedded, it either came from an existing AppleFile (eg PAR), or is
+  // When this FS is embedded, it either came from an existing AppleFile (eg PAR), or it
   // was a disk image in one of the non-standard file systems (zip, gz, NuFX 2img etc).
   // In order to obtain the parent FS, it will stored here. The AppleFile is needed to
-  // keep the file details of the file that was reinterpreted as a FS (PAR, LBR)
+  // keep the file details of the file that is now reinterpreted as a FS (PAR, LBR).
   protected AppleFileSystem appleFileSystem;    // the parent of this FS
   protected AppleFile appleFile;                // the source of this FS
 
@@ -29,7 +29,7 @@ public abstract class AbstractFileSystem implements AppleFileSystem
   private int totalFileSystems = 0;
   private int totalFiles = 0;
 
-  private boolean partOfHybrid;           // this fs is one of two file systems on the disk
+  private boolean partOfHybrid;           // this FS is one of two file systems on the disk
 
   // ---------------------------------------------------------------------------------//
   public AbstractFileSystem (BlockReader blockReader, FileSystemType fileSystemType)
@@ -240,8 +240,7 @@ public abstract class AbstractFileSystem implements AppleFileSystem
   public AppleFileSystem getFileSystem ()
   // ---------------------------------------------------------------------------------//
   {
-    return appleFileSystem;
-    //    throw new UnsupportedOperationException ("Cannot call getFileSystem() on a file system");
+    return appleFileSystem;       // for embedded file systems only (usually null)
   }
 
   // ---------------------------------------------------------------------------------//
@@ -319,7 +318,7 @@ public abstract class AbstractFileSystem implements AppleFileSystem
       addFile (file);        // not a file system, so revert to adding it as a file
     }
     else
-      ((AbstractFileSystem) fs).setAppleFile (file);     // don't lose the file details
+      ((AbstractFileSystem) fs).appleFile = file;     // don't lose the file details
   }
 
   // FsZip
@@ -337,32 +336,15 @@ public abstract class AbstractFileSystem implements AppleFileSystem
   protected AppleFileSystem addFileSystem (BlockReader blockReader)
   // ---------------------------------------------------------------------------------//
   {
-    if (factory == null)
-      factory = new FileSystemFactory ();
-
     AppleFileSystem fs = factory.getFileSystem (blockReader);
 
     if (fs != null)
     {
       addFile (fs);
-      ((AbstractFileSystem) fs).setParentFileSystem (this);
+      ((AbstractFileSystem) fs).appleFileSystem = this;
     }
 
     return fs;
-  }
-
-  // ---------------------------------------------------------------------------------//
-  void setParentFileSystem (AppleFileSystem appleFileSystem)
-  // ---------------------------------------------------------------------------------//
-  {
-    this.appleFileSystem = appleFileSystem;
-  }
-
-  // ---------------------------------------------------------------------------------//
-  void setAppleFile (AppleFile appleFile)
-  // ---------------------------------------------------------------------------------//
-  {
-    this.appleFile = appleFile;
   }
 
   // ---------------------------------------------------------------------------------//
