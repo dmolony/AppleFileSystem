@@ -11,7 +11,7 @@ public class FsDos4 extends AbstractFileSystem
   public FsDos4 (BlockReader blockReader)
   // ---------------------------------------------------------------------------------//
   {
-    super (blockReader);
+    super (blockReader, FileSystemType.DOS4);
 
     readCatalog ();
   }
@@ -28,7 +28,6 @@ public class FsDos4 extends AbstractFileSystem
     //      case 0x43 -> "4.3";
     //      default -> "?.?";
     //    });
-    setFileSystemType (FileSystemType.DOS4);
   }
 
   // ---------------------------------------------------------------------------------//

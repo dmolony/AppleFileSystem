@@ -25,7 +25,7 @@ public class FsZip extends AbstractFileSystem
   public FsZip (BlockReader blockReader)
   // ---------------------------------------------------------------------------------//
   {
-    super (blockReader);
+    super (blockReader, FileSystemType.ZIP);
 
     readCatalog ();
 
@@ -36,9 +36,6 @@ public class FsZip extends AbstractFileSystem
   private void readCatalog ()
   // ---------------------------------------------------------------------------------//
   {
-    //    setFileSystemName ("Zip");
-    setFileSystemType (FileSystemType.ZIP);
-
     try (ZipInputStream zip = new ZipInputStream (//
         new ByteArrayInputStream (getBuffer (), getOffset (), getLength ()));)
     {

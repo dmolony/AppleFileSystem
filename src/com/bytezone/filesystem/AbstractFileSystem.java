@@ -27,26 +27,12 @@ public abstract class AbstractFileSystem implements AppleFileSystem
   private boolean partOfHybrid;           // this fs is one of two file systems on the disk
 
   // ---------------------------------------------------------------------------------//
-  public AbstractFileSystem (BlockReader blockReader)
+  public AbstractFileSystem (BlockReader blockReader, FileSystemType fileSystemType)
   // ---------------------------------------------------------------------------------//
   {
     this.blockReader = Objects.requireNonNull (blockReader);
-  }
-
-  // ---------------------------------------------------------------------------------//
-  void setFileSystemType (FileSystemType fileSystemType)
-  // ---------------------------------------------------------------------------------//
-  {
     this.fileSystemType = fileSystemType;
   }
-
-  // ---------------------------------------------------------------------------------//
-  //  @Override
-  //  public AppleFileSystem getParentFileSystem ()     // should be getFileSystem()
-  //  // ---------------------------------------------------------------------------------//
-  //  {
-  //    return parentFileSystem;
-  //  }
 
   // ---------------------------------------------------------------------------------//
   int getTotalCatalogBlocks ()

@@ -10,7 +10,7 @@ public class FsCpm extends AbstractFileSystem
   public FsCpm (BlockReader blockReader)
   // ---------------------------------------------------------------------------------//
   {
-    super (blockReader);
+    super (blockReader, FileSystemType.CPM);
 
     readCatalog ();
   }
@@ -20,9 +20,6 @@ public class FsCpm extends AbstractFileSystem
   // ---------------------------------------------------------------------------------//
   {
     assert getTotalCatalogBlocks () == 0;
-
-    //    setFileSystemName ("CPM");
-    setFileSystemType (FileSystemType.CPM);
 
     int catalogBlocks = 0;
     FileCpm currentFile = null;

@@ -27,10 +27,7 @@ public class FsNuFX extends AbstractFileSystem
   public FsNuFX (BlockReader blockReader)
   // ---------------------------------------------------------------------------------//
   {
-    super (blockReader);           // reader not used
-
-    //    setFileSystemName ("NuFX");
-    setFileSystemType (FileSystemType.NUFX);
+    super (blockReader, FileSystemType.NUFX);           // reader not used
 
     byte[] buffer = blockReader.getDiskBuffer ();
     int diskOffset = blockReader.getDiskOffset ();

@@ -20,7 +20,7 @@ public class FsGzip extends AbstractFileSystem
   public FsGzip (BlockReader blockReader)
   // ---------------------------------------------------------------------------------//
   {
-    super (blockReader);
+    super (blockReader, FileSystemType.GZIP);
 
     readCatalog ();
 
@@ -31,9 +31,6 @@ public class FsGzip extends AbstractFileSystem
   private void readCatalog ()
   // ---------------------------------------------------------------------------------//
   {
-    //    setFileSystemName ("GZip");
-    setFileSystemType (FileSystemType.GZIP);
-
     try (GZIPInputStream zip = new GZIPInputStream (//
         new ByteArrayInputStream (getBuffer (), getOffset (), getLength ()));)
     {

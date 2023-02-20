@@ -8,7 +8,7 @@ public class FsLbr extends AbstractFileSystem
   public FsLbr (BlockReader blockReader)
   // ---------------------------------------------------------------------------------//
   {
-    super (blockReader);
+    super (blockReader, FileSystemType.LBR);
 
     readCatalog ();
   }
@@ -17,9 +17,6 @@ public class FsLbr extends AbstractFileSystem
   private void readCatalog ()
   // ---------------------------------------------------------------------------------//
   {
-    //    setFileSystemName ("LBR");
-    setFileSystemType (FileSystemType.LBR);
-
     int max = 1;
     int count = 0;
 

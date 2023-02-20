@@ -38,7 +38,7 @@ public class Fs2img extends AbstractFileSystem
   public Fs2img (BlockReader blockReader)
   // ---------------------------------------------------------------------------------//
   {
-    super (blockReader);
+    super (blockReader, FileSystemType.IMG2);
 
     readCatalog ();
   }
@@ -47,8 +47,6 @@ public class Fs2img extends AbstractFileSystem
   private void readCatalog ()
   // ---------------------------------------------------------------------------------//
   {
-    setFileSystemType (FileSystemType.IMG2);
-
     byte[] buffer = blockReader.getDiskBuffer ();
     int diskOffset = blockReader.getDiskOffset ();
 

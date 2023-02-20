@@ -29,7 +29,7 @@ public class FsProdos extends AbstractFileSystem
   public FsProdos (BlockReader blockReader)
   // ---------------------------------------------------------------------------------//
   {
-    super (blockReader);
+    super (blockReader, FileSystemType.PRODOS);
 
     readCatalog ();
   }
@@ -38,9 +38,6 @@ public class FsProdos extends AbstractFileSystem
   private void readCatalog ()
   // ---------------------------------------------------------------------------------//
   {
-    //    setFileSystemName ("Prodos");
-    setFileSystemType (FileSystemType.PRODOS);
-
     int nextBlockNo = 2;                    // first catalog block
     int prevBlockNo = -1;
 

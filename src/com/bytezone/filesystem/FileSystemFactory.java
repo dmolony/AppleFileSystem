@@ -4,6 +4,7 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.bytezone.filesystem.AppleFileSystem.FileSystemType;
 import com.bytezone.filesystem.BlockReader.AddressType;
 import com.bytezone.utility.Utility;
 
@@ -456,21 +457,26 @@ public class FileSystemFactory
   private void getWoz (BlockReader blockReader)
   // ---------------------------------------------------------------------------------//
   {
-    if (blockReader.isMagic (0, FsWoz.WOZ_1) || blockReader.isMagic (0, FsWoz.WOZ_2))
-      try
-      {
-        BlockReader lbrReader = new BlockReader (blockReader);
-        lbrReader.setParameters (128, AddressType.BLOCK, 0, 0);
+    FileSystemType fileSystemType = blockReader.isMagic (0, FsWoz.WOZ_1) ? FileSystemType.WOZ1
+        : blockReader.isMagic (0, FsWoz.WOZ_2) ? FileSystemType.WOZ2 : null;
 
-        FsWoz fs = new FsWoz (lbrReader);
+    if (fileSystemType == null)
+      return;
 
-        if (fs.getFiles ().size () > 0)
-          fileSystems.add (fs);
-      }
-      catch (FileFormatException e)
-      {
-        if (debug)
-          System.out.println (e);
-      }
+    try
+    {
+      BlockReader lbrReader = new BlockReader (blockReader);
+      lbrReader.setParameters (128, AddressType.BLOCK, 0, 0);
+
+      FsWoz fs = new FsWoz (lbrReader, fileSystemType);
+
+      if (fs.getFiles ().size () > 0)
+        fileSystems.add (fs);
+    }
+    catch (FileFormatException e)
+    {
+      if (debug)
+        System.out.println (e);
+    }
   }
 }
