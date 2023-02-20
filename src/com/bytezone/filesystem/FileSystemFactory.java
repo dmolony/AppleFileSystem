@@ -41,9 +41,11 @@ public class FileSystemFactory
           Utility.format (blockReader.getDiskBuffer (), blockReader.getDiskOffset (), 100));
     }
 
-    getDos31 (blockReader);
     getDos33 (blockReader);
-    getDos4 (blockReader);
+
+    if (fileSystems.size () == 0)
+      getDos4 (blockReader);
+
     getProdos (blockReader);
     getPascal (blockReader);
     getCpm (blockReader);

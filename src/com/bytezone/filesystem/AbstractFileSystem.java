@@ -16,6 +16,7 @@ public abstract class AbstractFileSystem implements AppleFileSystem
   protected int catalogBlocks;
 
   protected AppleFileSystem parentFileSystem;   // pascal on prodos, dos in 2img etc
+  protected AppleFile appleFile;                // file is also a file system
 
   protected List<AppleFile> files = new ArrayList<> ();   // files, folders and file systems
 
@@ -289,45 +290,50 @@ public abstract class AbstractFileSystem implements AppleFileSystem
 
   // FsNuFX
   // FsBinary2
-  // FsProdos
+  // FsProdos (LBR files)
   // ---------------------------------------------------------------------------------//
-  protected void addFileSystem (AppleFileSystem parent, AbstractAppleFile file)
+  protected void addFileSystem (AppleFile file)
   // ---------------------------------------------------------------------------------//
   {
-    addFileSystem (parent, file, 0);
+    addFileSystem (file, 0);
   }
 
-  // FsProdos
+  // FsProdos (PAR files)
   // ---------------------------------------------------------------------------------//
-  protected void addFileSystem (AppleFileSystem parent, AbstractAppleFile file, int offset)
+  protected void addFileSystem (AppleFile file, int offset)
   // ---------------------------------------------------------------------------------//
   {
     byte[] buffer = file.read ();
     BlockReader blockReader =
         new BlockReader (file.getFileName (), buffer, offset, buffer.length - offset);
 
-    AppleFileSystem fs = addFileSystem (parent, blockReader);
+    AppleFileSystem fs = addFileSystem (blockReader);
 
     if (fs == null)
     {
       System.out.println ("No file systems found");
-      parent.addFile (file);
+      this.addFile (file);      // not a file system, so revert to adding the file
+    }
+    else
+    {
+      fs.setAppleFile (file);     // otherwise we lose the file details as it is now a file system
+      assert file.getFileSystem () == this;     // why is the parent a parameter?
     }
   }
 
   // FsZip
   // FsGzip
   // ---------------------------------------------------------------------------------//
-  protected AppleFileSystem addFileSystem (AppleFileSystem parent, String name, byte[] buffer)
+  protected AppleFileSystem addFileSystem (String name, byte[] buffer)
   // ---------------------------------------------------------------------------------//
   {
-    return addFileSystem (parent, new BlockReader (name, buffer, 0, buffer.length));
+    return addFileSystem (new BlockReader (name, buffer, 0, buffer.length));
   }
 
   // FsWoz
   // Fs2img
   // ---------------------------------------------------------------------------------//
-  protected AppleFileSystem addFileSystem (AppleFileSystem parent, BlockReader blockReader)
+  protected AppleFileSystem addFileSystem (BlockReader blockReader)
   // ---------------------------------------------------------------------------------//
   {
     if (factory == null)
@@ -337,8 +343,8 @@ public abstract class AbstractFileSystem implements AppleFileSystem
 
     if (fs != null)
     {
-      parent.addFile (fs);
-      fs.setParentFileSystem (parent);    // should store file instead of parent FS
+      this.addFile (fs);
+      fs.setParentFileSystem (this);
     }
 
     return fs;
@@ -350,6 +356,14 @@ public abstract class AbstractFileSystem implements AppleFileSystem
   // ---------------------------------------------------------------------------------//
   {
     this.parentFileSystem = appleFileSystem;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
+  public void setAppleFile (AppleFile appleFile)
+  // ---------------------------------------------------------------------------------//
+  {
+    this.appleFile = appleFile;
   }
 
   // ---------------------------------------------------------------------------------//
@@ -408,6 +422,9 @@ public abstract class AbstractFileSystem implements AppleFileSystem
   public String toString ()
   // ---------------------------------------------------------------------------------//
   {
+    if (appleFile != null)
+      return appleFile.toString ();
+
     return String.format ("%-12s %-6s %,8d  %d %,7d  %4d %3d %4d %3d", getFileName (),
         getFileSystemType (), blockReader.getDiskOffset (), blockReader.interleave,
         blockReader.totalBlocks, blockReader.bytesPerBlock, catalogBlocks, totalFiles,

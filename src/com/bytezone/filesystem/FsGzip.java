@@ -34,7 +34,7 @@ public class FsGzip extends AbstractFileSystem
     try (GZIPInputStream zip = new GZIPInputStream (//
         new ByteArrayInputStream (getBuffer (), getOffset (), getLength ()));)
     {
-      addFileSystem (this, getFileName (), Utility.getFullBuffer (zip));
+      addFileSystem (getFileName (), Utility.getFullBuffer (zip));
     }
     //    catch (ZipException e)
     //    {

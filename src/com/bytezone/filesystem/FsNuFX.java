@@ -65,7 +65,7 @@ public class FsNuFX extends AbstractFileSystem
       FileNuFX file = new FileNuFX (this, getBuffer (), ptr);
 
       if (file.hasDiskImage () || file.isLibrary ())
-        addFileSystem (this, file);
+        addFileSystem (file);
       else
         addFile (file);
 

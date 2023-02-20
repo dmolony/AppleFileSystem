@@ -14,6 +14,8 @@ public interface AppleFileSystem extends AppleFile
 
   void setParentFileSystem (AppleFileSystem appleFileSystem);
 
+  void setAppleFile (AppleFile appleFile);
+
   void setHybrid ();
 
   boolean isHybrid ();

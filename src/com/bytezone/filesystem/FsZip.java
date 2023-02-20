@@ -78,12 +78,10 @@ public class FsZip extends AbstractFileSystem
     catch (ZipException e)
     {
       throw new FileFormatException (e.getMessage ());
-      //      e.printStackTrace ();
     }
     catch (IOException e)
     {
       throw new FileFormatException (e.getMessage ());
-      //      e.printStackTrace ();
     }
   }
 
@@ -110,7 +108,7 @@ public class FsZip extends AbstractFileSystem
     //      for (String name : path.split ("/"))
     //        parent = getFolder (parent, name);
 
-    AppleFileSystem fs = addFileSystem (this, fileName, buffer);
+    AppleFileSystem fs = addFileSystem (fileName, buffer);
   }
 
   // ---------------------------------------------------------------------------------//
