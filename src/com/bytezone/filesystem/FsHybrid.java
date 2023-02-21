@@ -15,6 +15,7 @@ public class FsHybrid extends AbstractFileSystem
     for (AppleFileSystem fs : fileSystems)
     {
       addFile (fs);
+      ((AbstractFileSystem) fs).appleFileSystem = this;
       ((AbstractFileSystem) fs).partOfHybrid = true;
     }
   }
@@ -31,5 +32,22 @@ public class FsHybrid extends AbstractFileSystem
   // ---------------------------------------------------------------------------------//
   {
     super (blockReader, FileSystemType.HYBRID);
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
+  public String toText ()
+  // ---------------------------------------------------------------------------------//
+  {
+    StringBuilder text = new StringBuilder ();
+
+    text.append (String.format ("File name ............. %s%n", getFileName ()));
+    text.append (String.format ("File system type ...... %s%n", fileSystemType));
+    text.append ("\n");
+
+    for (AppleFile appleFile : files)
+      text.append (String.format ("File system type ...... %s%n", appleFile.getFileSystemType ()));
+
+    return text.toString ();
   }
 }

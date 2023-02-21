@@ -378,13 +378,15 @@ public abstract class AbstractFileSystem implements AppleFileSystem
 
     text.append (String.format ("File name ............. %s%n", getFileName ()));
     text.append (String.format ("File system type ...... %s%n", fileSystemType));
+    text.append ("\n");
 
     text.append (blockReader.toText ());
+    text.append ("\n");
     text.append ("\n");
 
     text.append (String.format ("Catalog blocks ........ %d%n", catalogBlocks));
     text.append (String.format ("Total file systems .... %d%n", totalFileSystems));
-    text.append (String.format ("Total files ........... %d %d", files.size (), totalFiles));
+    text.append (String.format ("Total files ........... %d", totalFiles));
 
     return text.toString ();
   }

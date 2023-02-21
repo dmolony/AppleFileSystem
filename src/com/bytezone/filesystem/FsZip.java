@@ -2,6 +2,7 @@ package com.bytezone.filesystem;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.nio.file.attribute.FileTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.zip.ZipEntry;
@@ -130,18 +131,26 @@ public class FsZip extends AbstractFileSystem
   public String toText ()
   // ---------------------------------------------------------------------------------//
   {
-    StringBuilder text = new StringBuilder (super.toText () + "\n\n");
+    StringBuilder text = new StringBuilder (super.toText () + "\n");
 
     for (ZipEntry entry : zipEntries)
     {
+      String comment = entry.getComment ();
+      if (comment == null)
+        comment = "";
+      FileTime fileTime = entry.getCreationTime ();
+      String creationTime = fileTime == null ? "" : fileTime.toString ();
+      byte[] bytes = entry.getExtra ();
+      String extra = bytes == null ? "" : bytes.toString ();
+
       text.append ("\n");
       text.append (String.format ("Compressed size ... %,d%n", entry.getCompressedSize ()));
       text.append (String.format ("Size .............. %,d%n", entry.getSize ()));
       text.append (String.format ("Name .............. %s%n", entry.getName ()));
-      text.append (String.format ("Comment ........... %s%n", entry.getComment ()));
+      text.append (String.format ("Comment ........... %s%n", comment));
       text.append (String.format ("CRC ............... %,d%n", entry.getCrc ()));
-      text.append (String.format ("Creation time ..... %s%n", entry.getCreationTime ()));
-      text.append (String.format ("Extra ............. %s%n", entry.getExtra ()));
+      text.append (String.format ("Creation time ..... %s%n", creationTime));
+      text.append (String.format ("Extra ............. %s%n", extra));
       text.append (String.format ("Method ............ %,d%n", entry.getMethod ()));
       text.append (String.format ("Is directory ...... %s%n", entry.isDirectory ()));
     }
