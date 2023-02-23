@@ -13,8 +13,8 @@ public class FsProdos extends AbstractFileSystem
   static final int VOLUME_HEADER = 0x0F;
   static final int SUBDIRECTORY_HEADER = 0x0E;
   static final int SUBDIRECTORY = 0x0D;
-  static final int GSOS_EXTENDED_FILE = 0x05;      // tech note #25
-  static final int PASCAL_ON_PROFILE = 0x04;       // tech note #25
+  public static final int GSOS_EXTENDED_FILE = 0x05;      // tech note #25
+  public static final int PASCAL_ON_PROFILE = 0x04;       // tech note #25
   static final int TREE = 0x03;
   static final int SAPLING = 0x02;
   static final int SEEDLING = 0x01;
@@ -103,7 +103,7 @@ public class FsProdos extends AbstractFileSystem
           case SEEDLING:
           case SAPLING:
           case TREE:
-            FileProdos file = new FileProdos (this, buffer, ptr);    // this needs to be kept
+            FileProdos file = new FileProdos (this, buffer, ptr);
             if (file.getFileType () == ProdosConstants.FILE_TYPE_LBR)
               addFileSystem (file);
             else
@@ -111,7 +111,7 @@ public class FsProdos extends AbstractFileSystem
             break;
 
           case PASCAL_ON_PROFILE:
-            file = new FileProdos (this, buffer, ptr);    // this needs to be kept
+            file = new FileProdos (this, buffer, ptr);
             addFileSystem (file, 1024);
             break;
 

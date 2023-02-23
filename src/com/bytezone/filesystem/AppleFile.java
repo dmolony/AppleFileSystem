@@ -26,6 +26,16 @@ public interface AppleFile
     return false;
   }
 
+  public default boolean isForkedFile ()
+  {
+    return false;
+  }
+
+  public default boolean isFork ()
+  {
+    return false;
+  }
+
   public void addFile (AppleFile file);             // if isFolder() or isFileSystem()
 
   public List<AppleFile> getFiles ();               // if isFolder() or isFileSystem()

@@ -9,7 +9,7 @@ import com.bytezone.filesystem.AppleFileSystem.FileSystemType;
 public abstract class AbstractAppleFile implements AppleFile
 // -----------------------------------------------------------------------------------//
 {
-  protected AppleFileSystem appleFileSystem;  // format of the disk on which this file exists
+  protected AppleFileSystem appleFileSystem;  // FS of the disk on which this file exists
 
   protected boolean isFile;
   protected boolean isFolder;
@@ -65,10 +65,10 @@ public abstract class AbstractAppleFile implements AppleFile
   public void addFile (AppleFile file)    // if isDirectory() or isFileSystem()
   // ---------------------------------------------------------------------------------//
   {
-    if (!isFolder () && !isFileSystem ())
+    if (isFolder () || isFileSystem () || isForkedFile ())
+      files.add (file);
+    else
       throw new UnsupportedOperationException ("cannot addFile()");
-
-    files.add (file);
   }
 
   // ---------------------------------------------------------------------------------//
@@ -89,10 +89,10 @@ public abstract class AbstractAppleFile implements AppleFile
 
   // ---------------------------------------------------------------------------------//
   @Override
-  public List<AppleFile> getFiles ()      // if isDirectory() or isFileSystem()
+  public List<AppleFile> getFiles ()
   // ---------------------------------------------------------------------------------//
   {
-    if (!isFolder () && !isFileSystem ())
+    if (!isFolder () && !isFileSystem () && !isForkedFile ())
       throw new UnsupportedOperationException ("cannot getFiles() unless Folder or FileSystem");
 
     return files;
@@ -155,11 +155,14 @@ public abstract class AbstractAppleFile implements AppleFile
 
     text.append (toString () + "\n");
 
-    for (AppleFile file : files)
-      if (file.isFolder () || file.isFileSystem ())
-        text.append (file.catalog () + "\n");
-      else
-        text.append (file + "\n");
+    if (files.size () > 0)
+      for (AppleFile file : files)
+        if (file.isFolder () || file.isFileSystem ())
+          text.append (file.catalog () + "\n");
+        else
+          text.append (file + "\n");
+    else
+      text.append ("Empty");
 
     while (text.charAt (text.length () - 1) == '\n')
       text.deleteCharAt (text.length () - 1);

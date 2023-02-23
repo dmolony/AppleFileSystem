@@ -31,7 +31,7 @@ public class FileProdos extends AbstractAppleFile
   private ForkProdos dataFork;
   private ForkProdos resourceFork;
 
-  enum ForkType
+  public enum ForkType
   {
     DATA, RESOURCE;
   }
@@ -70,10 +70,10 @@ public class FileProdos extends AbstractAppleFile
     dateM = modified == null ? NO_DATE : modified.format (sdf);
     timeM = modified == null ? "" : modified.format (stf);
 
-    if (storageType == FsProdos.GSOS_EXTENDED_FILE)
+    if (isForkedFile ())
       createBothForks ();
     else
-      dataFork = new ForkProdos (parent, keyPtr, storageType, size, eof);
+      dataFork = new ForkProdos (this, "Not forked", keyPtr, storageType, size, eof);
   }
 
   // ---------------------------------------------------------------------------------//
@@ -91,9 +91,15 @@ public class FileProdos extends AbstractAppleFile
 
       if (keyPtr > 0)
         if (ptr == 0)
-          dataFork = new ForkProdos ((FsProdos) getFileSystem (), keyPtr, storageType, size, eof);
+        {
+          dataFork = new ForkProdos (this, "Data Fork", keyPtr, storageType, size, eof);
+          addFile (dataFork);
+        }
         else
-          resourceFork = new ForkProdos ((FsProdos) getFileSystem (), keyPtr, storageType, size, eof);
+        {
+          resourceFork = new ForkProdos (this, "Resource fork", keyPtr, storageType, size, eof);
+          addFile (resourceFork);
+        }
     }
   }
 
@@ -105,46 +111,61 @@ public class FileProdos extends AbstractAppleFile
   }
 
   // ---------------------------------------------------------------------------------//
+  public int getStorageType ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return storageType;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
+  public boolean isForkedFile ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return storageType == FsProdos.GSOS_EXTENDED_FILE;
+  }
+
+  // ---------------------------------------------------------------------------------//
   @Override
   public byte[] read ()
   // ---------------------------------------------------------------------------------//
   {
-    if (storageType == FsProdos.GSOS_EXTENDED_FILE)
-      throw new FileFormatException ("File type is GS Extended");
+    if (isForkedFile ())
+      throw new FileFormatException ("Tried to read() a forked file");
 
     return dataFork.read ();
   }
 
   // ---------------------------------------------------------------------------------//
-  public byte[] read (ForkType forkType)
-  // ---------------------------------------------------------------------------------//
-  {
-    if (storageType != FsProdos.GSOS_EXTENDED_FILE)
-      throw new FileFormatException ("File type not GS Extended");
-
-    return forkType == ForkType.DATA ? dataFork.read () : resourceFork.read ();
-  }
+  //  public byte[] read (ForkType forkType)
+  //  // ---------------------------------------------------------------------------------//
+  //  {
+  //    if (!isForkedFile ())
+  //      throw new FileFormatException ("File type not GS Extended");
+  //
+  //    return forkType == ForkType.DATA ? dataFork.read () : resourceFork.read ();
+  //  }
 
   // ---------------------------------------------------------------------------------//
   @Override
   public int getLength ()                                  // in bytes (eof)
   // ---------------------------------------------------------------------------------//
   {
-    if (storageType == FsProdos.GSOS_EXTENDED_FILE)
-      throw new FileFormatException ("File type is GS Extended");
+    if (isForkedFile ())
+      throw new FileFormatException ("Tried to getLength() on a forked file");
 
-    return dataFork.getEof ();
+    return dataFork.getLength ();
   }
 
   // ---------------------------------------------------------------------------------//
-  public int getLength (ForkType forkType)                 // in bytes (eof)
-  // ---------------------------------------------------------------------------------//
-  {
-    if (storageType != FsProdos.GSOS_EXTENDED_FILE)
-      throw new FileFormatException ("File type not GS Extended");
-
-    return forkType == ForkType.DATA ? dataFork.getEof () : resourceFork.getEof ();
-  }
+  //  public int getLength (ForkType forkType)                 // in bytes (eof)
+  //  // ---------------------------------------------------------------------------------//
+  //  {
+  //    if (!isForkedFile ())
+  //      throw new FileFormatException ("File type not GS Extended");
+  //
+  //    return forkType == ForkType.DATA ? dataFork.getEof () : resourceFork.getEof ();
+  //  }
 
   // ---------------------------------------------------------------------------------//
   @Override
@@ -155,14 +176,14 @@ public class FileProdos extends AbstractAppleFile
   }
 
   // ---------------------------------------------------------------------------------//
-  public int getSize (ForkType forkType)                   // in blocks
-  // ---------------------------------------------------------------------------------//
-  {
-    if (storageType != FsProdos.GSOS_EXTENDED_FILE)
-      throw new FileFormatException ("File type not GS Extended");
-
-    return forkType == ForkType.DATA ? dataFork.getSize () : resourceFork.getSize ();
-  }
+  //  public int getSize (ForkType forkType)                   // in blocks
+  //  // ---------------------------------------------------------------------------------//
+  //  {
+  //    if (!isForkedFile ())
+  //      throw new FileFormatException ("File type not GS Extended");
+  //
+  //    return forkType == ForkType.DATA ? dataFork.getSize () : resourceFork.getSize ();
+  //  }
 
   // ---------------------------------------------------------------------------------//
   @Override
@@ -177,8 +198,7 @@ public class FileProdos extends AbstractAppleFile
   public String toString ()
   // ---------------------------------------------------------------------------------//
   {
-    int length =
-        storageType == FsProdos.GSOS_EXTENDED_FILE ? getLength (ForkType.DATA) : getLength ();
+    int length = isForkedFile () ? 0 : dataFork.getLength ();      // fix this!!
 
     return String.format ("%-30s %-3s  %04X %4d %,10d", fileName, fileTypeText, keyPtr,
         getTotalBlocks (), length);

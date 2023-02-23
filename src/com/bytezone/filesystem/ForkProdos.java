@@ -3,8 +3,10 @@ package com.bytezone.filesystem;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.bytezone.filesystem.AppleFileSystem.FileSystemType;
+
 // -----------------------------------------------------------------------------------//
-public class ForkProdos
+public class ForkProdos implements AppleFile
 // -----------------------------------------------------------------------------------//
 {
   static final int VOLUME_HEADER = 0x0F;
@@ -17,7 +19,10 @@ public class ForkProdos
   static final int SEEDLING = 0x01;
   static final int FREE = 0x00;
 
+  private FileProdos parent;
   private FsProdos fileSystem;
+  private String name;                              // DATA, RESOURCE, FILE
+
   private int storageType;
   private int size;
   private int eof;
@@ -30,10 +35,13 @@ public class ForkProdos
   private byte[] data;
 
   // ---------------------------------------------------------------------------------//
-  ForkProdos (FsProdos fileSystem, int keyPtr, int storageType, int size, int eof)
+  ForkProdos (FileProdos parent, String name, int keyPtr, int storageType, int size, int eof)
   // ---------------------------------------------------------------------------------//
   {
-    this.fileSystem = fileSystem;
+    this.parent = parent;
+    this.name = name;
+    this.fileSystem = (FsProdos) parent.getFileSystem ();
+
     this.storageType = storageType;
     this.keyPtr = keyPtr;
     this.size = size;
@@ -83,17 +91,10 @@ public class ForkProdos
   }
 
   // ---------------------------------------------------------------------------------//
-  public int getEof ()
+  public int getAuxType ()
   // ---------------------------------------------------------------------------------//
   {
-    return eof;
-  }
-
-  // ---------------------------------------------------------------------------------//
-  public int getSize ()
-  // ---------------------------------------------------------------------------------//
-  {
-    return size;
+    return parent.getAuxType ();
   }
 
   // ---------------------------------------------------------------------------------//
@@ -147,33 +148,149 @@ public class ForkProdos
   }
 
   // ---------------------------------------------------------------------------------//
+  @Override
   public byte[] read ()
   // ---------------------------------------------------------------------------------//
   {
     if (data == null)
-    {
-      switch (storageType)
-      {
-        case SEEDLING:
-        case SAPLING:
-        case TREE:
-          return fileSystem.readBlocks (dataBlocks);
-
-        case SUBDIRECTORY:
-          return fileSystem.readBlocks (dataBlocks);
-
-        case GSOS_EXTENDED_FILE:
-          return fileSystem.readBlocks (dataBlocks);
-
-        case PASCAL_ON_PROFILE:
-          return fileSystem.readBlocks (dataBlocks);
-
-        default:
-          System.out.println ("Unknown storage type in getBuffer : " + storageType);
-          return new byte[512];
-      }
-    }
+      data = fileSystem.readBlocks (dataBlocks);
 
     return data;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
+  public String getFileName ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return name;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
+  public void addFile (AppleFile file)
+  // ---------------------------------------------------------------------------------//
+  {
+    throw new UnsupportedOperationException ("cannot addFile() to a fork");
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
+  public List<AppleFile> getFiles ()
+  // ---------------------------------------------------------------------------------//
+  {
+    throw new UnsupportedOperationException ("cannot getFiles() from a fork");
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
+  public AppleFileSystem getFileSystem ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return parent.getFileSystem ();
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
+  public FileSystemType getFileSystemType ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return parent.getFileSystemType ();
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
+  public void write (byte[] buffer)
+  // ---------------------------------------------------------------------------------//
+  {
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
+  public int getLength ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return eof;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
+  public int getTotalBlocks ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return size;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
+  public List<AppleBlock> getBlocks ()
+  // ---------------------------------------------------------------------------------//
+  {
+    throw new UnsupportedOperationException ("getBlocks() not implemented");
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
+  public String catalog ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return "";
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
+  public String getFileTypeText ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return parent.getFileTypeText ();
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
+  public int getFileType ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return parent.getFileType ();
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
+  public int getBlockSize ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return parent.getBlockSize ();
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
+  public boolean isFile ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return true;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
+  public boolean isFork ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return true;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
+  public String getCatalogLine ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return name;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
+  public String toString ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return String.format ("%-30s %-3s  %04X %4d %,10d", name, parent.getFileTypeText (), keyPtr,
+        getTotalBlocks (), getLength ());
   }
 }

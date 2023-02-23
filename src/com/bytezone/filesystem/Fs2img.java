@@ -17,6 +17,7 @@ public class Fs2img extends AbstractFileSystem
   private String creator;
   private int offset;
   private int length;
+  private int originalLength;
   private int headerSize;
   private int version;
   private int format;
@@ -27,6 +28,8 @@ public class Fs2img extends AbstractFileSystem
   private int creatorDataOffset;
   private int creatorDataLength;
   private String comment;
+
+  private String displayMessage = "";
 
   private boolean locked;
   private boolean hasDosVolumeNumber;
@@ -59,11 +62,10 @@ public class Fs2img extends AbstractFileSystem
     flags = Utility.unsignedLong (buffer, diskOffset + 16);
     prodosBlocks = Utility.unsignedLong (buffer, diskOffset + 20);
 
-    this.offset = Utility.unsignedLong (buffer, diskOffset + 24);
-    this.length = Utility.unsignedLong (buffer, diskOffset + 28);
+    offset = Utility.unsignedLong (buffer, diskOffset + 24);
+    originalLength = Utility.unsignedLong (buffer, diskOffset + 28);
 
-    if (length == 0)
-      length = prodosBlocks * 512;        // see Fantavision.2mg
+    length = originalLength == 0 ? prodosBlocks * 512 : originalLength; // see Fantavision.2mg
 
     commentOffset = Utility.unsignedLong (buffer, diskOffset + 32);
     commentLength = Utility.unsignedLong (buffer, diskOffset + 36);
@@ -80,17 +82,8 @@ public class Fs2img extends AbstractFileSystem
         new BlockReader (twoIMGFormats[format], buffer, diskOffset + offset, length);
     fileSystem = addFileSystem (blockReader);
 
-    checkLyingLiars ();
-  }
-
-  // sometimes a disk claims one format but is actually something else
-  // ---------------------------------------------------------------------------------//
-  private void checkLyingLiars ()
-  // ---------------------------------------------------------------------------------//
-  {
     if (fileSystem.getFileSystemType () != fileSystemTypes[format])
-      System.out.printf ("2IMG header claims to be %s, but is actually %s%n", twoIMGFormats[format],
-          fileSystem.getFileSystemType ());
+      displayMessage = String.format ("<-- wrong, actually %s", fileSystem.getFileSystemType ());
   }
 
   // ---------------------------------------------------------------------------------//
@@ -111,19 +104,22 @@ public class Fs2img extends AbstractFileSystem
   {
     StringBuilder text = new StringBuilder (super.toText () + "\n\n");
 
+    String message = originalLength == 0 ? "   <-- wrong!" : "";
+
     text.append (String.format ("Creator ............... %s  %s%n", creator, getCreator (creator)));
     text.append (String.format ("Header size ........... %d%n", headerSize));
     text.append (String.format ("Version ............... %d%n", version));
-    text.append (String.format ("Format ................ %d  %s%n", format, twoIMGFormats[format]));
-    text.append (
-        String.format ("File system type ...... %d  %s%n", format, fileSystemTypes[format]));
+    text.append (String.format ("Format ................ %d  %s  %s%n", format,
+        twoIMGFormats[format], displayMessage));
+    //    text.append (String.format ("File system type ...... %d  %s  %s%n", format,
+    //        fileSystemTypes[format], displayMessage));
     text.append (String.format ("Flags ................. %08X%n", flags));
     text.append (String.format ("  locked .............. %s%n", locked));
     text.append (String.format ("  has Dos Volume no ... %s%n", hasDosVolumeNumber));
     text.append (String.format ("  Dos Volume no ....... %d%n", volumeNumber));
     text.append (String.format ("Blocks ................ %,d%n", prodosBlocks));
     text.append (String.format ("Data offset ........... %d%n", offset));
-    text.append (String.format ("Data size ............. %,d%n", length));
+    text.append (String.format ("Data size ............. %,d%s%n", originalLength, message));
     text.append (String.format ("Comment offset ........ %,d%n", commentOffset));
     text.append (String.format ("Comment length ........ %,d%n", commentLength));
     text.append (String.format ("Comment ............... %s%n", comment));
