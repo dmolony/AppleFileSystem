@@ -71,13 +71,13 @@ public class FileProdos extends AbstractAppleFile
     timeM = modified == null ? "" : modified.format (stf);
 
     if (isForkedFile ())
-      createBothForks ();
+      createForks ();
     else
-      dataFork = new ForkProdos (this, "Not forked", keyPtr, storageType, size, eof);
+      dataFork = new ForkProdos (this, null, keyPtr, storageType, size, eof);
   }
 
   // ---------------------------------------------------------------------------------//
-  private void createBothForks ()
+  private void createForks ()
   // ---------------------------------------------------------------------------------//
   {
     byte[] buffer = getFileSystem ().getBlock (keyPtr).read ();
@@ -92,12 +92,12 @@ public class FileProdos extends AbstractAppleFile
       if (keyPtr > 0)
         if (ptr == 0)
         {
-          dataFork = new ForkProdos (this, "Data Fork", keyPtr, storageType, size, eof);
+          dataFork = new ForkProdos (this, ForkType.DATA, keyPtr, storageType, size, eof);
           addFile (dataFork);
         }
         else
         {
-          resourceFork = new ForkProdos (this, "Resource fork", keyPtr, storageType, size, eof);
+          resourceFork = new ForkProdos (this, ForkType.RESOURCE, keyPtr, storageType, size, eof);
           addFile (resourceFork);
         }
     }
@@ -131,20 +131,10 @@ public class FileProdos extends AbstractAppleFile
   // ---------------------------------------------------------------------------------//
   {
     if (isForkedFile ())
-      throw new FileFormatException ("Tried to read() a forked file");
+      throw new FileFormatException ("Cannot read() a forked file");
 
     return dataFork.read ();
   }
-
-  // ---------------------------------------------------------------------------------//
-  //  public byte[] read (ForkType forkType)
-  //  // ---------------------------------------------------------------------------------//
-  //  {
-  //    if (!isForkedFile ())
-  //      throw new FileFormatException ("File type not GS Extended");
-  //
-  //    return forkType == ForkType.DATA ? dataFork.read () : resourceFork.read ();
-  //  }
 
   // ---------------------------------------------------------------------------------//
   @Override
@@ -152,20 +142,10 @@ public class FileProdos extends AbstractAppleFile
   // ---------------------------------------------------------------------------------//
   {
     if (isForkedFile ())
-      throw new FileFormatException ("Tried to getLength() on a forked file");
+      throw new FileFormatException ("Cannot getLength() on a forked file");
 
     return dataFork.getLength ();
   }
-
-  // ---------------------------------------------------------------------------------//
-  //  public int getLength (ForkType forkType)                 // in bytes (eof)
-  //  // ---------------------------------------------------------------------------------//
-  //  {
-  //    if (!isForkedFile ())
-  //      throw new FileFormatException ("File type not GS Extended");
-  //
-  //    return forkType == ForkType.DATA ? dataFork.getEof () : resourceFork.getEof ();
-  //  }
 
   // ---------------------------------------------------------------------------------//
   @Override
@@ -174,16 +154,6 @@ public class FileProdos extends AbstractAppleFile
   {
     return size;                              // size of both forks if GSOS extended
   }
-
-  // ---------------------------------------------------------------------------------//
-  //  public int getSize (ForkType forkType)                   // in blocks
-  //  // ---------------------------------------------------------------------------------//
-  //  {
-  //    if (!isForkedFile ())
-  //      throw new FileFormatException ("File type not GS Extended");
-  //
-  //    return forkType == ForkType.DATA ? dataFork.getSize () : resourceFork.getSize ();
-  //  }
 
   // ---------------------------------------------------------------------------------//
   @Override

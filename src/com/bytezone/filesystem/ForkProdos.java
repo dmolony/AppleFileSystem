@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.bytezone.filesystem.AppleFileSystem.FileSystemType;
+import com.bytezone.filesystem.FileProdos.ForkType;
 
 // -----------------------------------------------------------------------------------//
 public class ForkProdos implements AppleFile
@@ -21,7 +22,8 @@ public class ForkProdos implements AppleFile
 
   private FileProdos parent;
   private FsProdos fileSystem;
-  private String name;                              // DATA, RESOURCE, FILE
+  private String name;
+  private ForkType forkType;
 
   private int storageType;
   private int size;
@@ -35,11 +37,13 @@ public class ForkProdos implements AppleFile
   private byte[] data;
 
   // ---------------------------------------------------------------------------------//
-  ForkProdos (FileProdos parent, String name, int keyPtr, int storageType, int size, int eof)
+  ForkProdos (FileProdos parent, ForkType forkType, int keyPtr, int storageType, int size, int eof)
   // ---------------------------------------------------------------------------------//
   {
     this.parent = parent;
-    this.name = name;
+    this.forkType = forkType;
+    this.name = forkType == ForkType.DATA ? "Data fork"
+        : forkType == ForkType.RESOURCE ? "Resource fork" : "Not forked";
     this.fileSystem = (FsProdos) parent.getFileSystem ();
 
     this.storageType = storageType;
