@@ -9,7 +9,6 @@ import com.bytezone.utility.Utility;
 public class FileDos extends AbstractAppleFile
 // -----------------------------------------------------------------------------------//
 {
-  int type;
   int sectorCount;
   boolean locked;
 
@@ -30,25 +29,12 @@ public class FileDos extends AbstractAppleFile
     int nextTrack = buffer[ptr] & 0xFF;
     int nextSector = buffer[ptr + 1] & 0xFF;
 
-    type = buffer[ptr + 2] & 0x7F;
+    fileType = buffer[ptr + 2] & 0x7F;
     locked = (buffer[ptr + 2] & 0x80) != 0;
     fileName = Utility.string (buffer, ptr + 3, 30).trim ();
     sectorCount = Utility.unsignedShort (buffer, ptr + 33);
 
-    //    fileType = switch (type)
-    //    {
-    //      case 0x00 -> FileType.Text;
-    //      case 0x01 -> FileType.IntegerBasic;
-    //      case 0x02 -> FileType.ApplesoftBasic;
-    //      case 0x04 -> FileType.Binary;
-    //      case 0x08 -> FileType.SS;
-    //      case 0x10 -> FileType.Relocatable;
-    //      case 0x20 -> FileType.AA;
-    //      case 0x40 -> FileType.BB;
-    //      default -> FileType.Binary;        // should never happen
-    //    };
-
-    fileTypeText = switch (type)
+    fileTypeText = switch (fileType)
     {
       case 0x00 -> "T";
       case 0x01 -> "I";
@@ -69,36 +55,36 @@ public class FileDos extends AbstractAppleFile
         throw new FileFormatException ("Invalid TS sector");
 
       indexBlocks.add (tsSector);
-      --sectorsLeft;
+
+      if (--sectorsLeft <= 0)
+        break;
 
       byte[] sectorBuffer = tsSector.read ();
 
       for (int i = 12; i < 256; i += 2)
       {
-        int fileTrack = sectorBuffer[i] & 0xFF;
-        int fileSector = sectorBuffer[i + 1] & 0xFF;
+        AppleBlock dataSector = fs.getSector (sectorBuffer, i);
 
-        AppleBlock dataSector = fs.getSector (fileTrack, fileSector);
         if (!dataSector.isValid ())
           throw new FileFormatException ("Invalid data sector");
 
         if (dataSector.getBlockNo () > 0)
         {
           dataBlocks.add (dataSector);
-          --sectorsLeft;
-
-          if (sectorsLeft == 0)
+          if (--sectorsLeft <= 0)
             break;
         }
-        else
+        else if (fileType == 0x00)            // text file
           dataBlocks.add (null);              // must be a sparse file
+        else
+          System.out.println ("unexpected zero index in " + fileName);
       }
 
       nextTrack = sectorBuffer[1] & 0xFF;
       nextSector = sectorBuffer[2] & 0xFF;
     }
 
-    if (type == 0x04)                         // binary
+    if (fileType == 0x04)                         // binary
     {
       if (dataBlocks.size () > 0)
       {
@@ -107,7 +93,7 @@ public class FileDos extends AbstractAppleFile
         length = Utility.unsignedShort (fileBuffer, 2);
       }
     }
-    else if (type == 0x01 || type == 2)       // integer basic or applesoft
+    else if (fileType == 0x01 || fileType == 2)       // integer basic or applesoft
     {
       if (dataBlocks.size () > 0)
       {
@@ -118,14 +104,6 @@ public class FileDos extends AbstractAppleFile
     }
     else
       length = dataBlocks.size () * getFileSystem ().getBlockSize ();
-  }
-
-  // ---------------------------------------------------------------------------------//
-  @Override
-  public int getFileType ()
-  // ---------------------------------------------------------------------------------//
-  {
-    return type;
   }
 
   // ---------------------------------------------------------------------------------//

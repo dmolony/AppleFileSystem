@@ -9,7 +9,6 @@ import com.bytezone.utility.Utility;
 public class FileDos4 extends AbstractAppleFile
 // -----------------------------------------------------------------------------------//
 {
-  int type;
   int sectorCount;
 
   List<AppleBlock> indexBlocks = new ArrayList<> ();
@@ -26,7 +25,7 @@ public class FileDos4 extends AbstractAppleFile
     int nextTrack = buffer[ptr] & 0xFF;
     int nextSector = buffer[ptr + 1] & 0xFF;
 
-    type = buffer[ptr + 2] & 0xFF;
+    fileType = buffer[ptr + 2] & 0xFF;
     fileName = Utility.string (buffer, ptr + 3, 24).trim ();
     sectorCount = Utility.unsignedShort (buffer, ptr + 33);
     int sectorsLeft = sectorCount;
@@ -100,6 +99,6 @@ public class FileDos4 extends AbstractAppleFile
   public String toString ()
   // ---------------------------------------------------------------------------------//
   {
-    return String.format ("%-30s  %3d  %3d", fileName, type, sectorCount);
+    return String.format ("%-30s  %3d  %3d", fileName, fileType, sectorCount);
   }
 }

@@ -134,6 +134,14 @@ public abstract class AbstractFileSystem implements AppleFileSystem
 
   // ---------------------------------------------------------------------------------//
   @Override
+  public AppleBlock getSector (byte[] buffer, int offset)
+  // ---------------------------------------------------------------------------------//
+  {
+    return blockReader.getSector (this, buffer, offset);
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
   public byte[] readBlock (AppleBlock block)
   // ---------------------------------------------------------------------------------//
   {
@@ -396,10 +404,10 @@ public abstract class AbstractFileSystem implements AppleFileSystem
   public String toString ()
   // ---------------------------------------------------------------------------------//
   {
-    if (appleFile != null)
-      return appleFile.toString ();
+    //    if (appleFile != null)
+    //      return appleFile.toString ();
 
-    return String.format ("%-12s %-6s %,8d  %d %,7d  %4d %3d %4d %3d", getFileName (),
+    return String.format ("%-15s %-6s %,8d  %d %,7d  %4d %3d %4d %3d", getFileName (),
         getFileSystemType (), blockReader.getDiskOffset (), blockReader.interleave,
         blockReader.totalBlocks, blockReader.bytesPerBlock, catalogBlocks, totalFiles,
         totalFileSystems);

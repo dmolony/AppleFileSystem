@@ -16,7 +16,6 @@ public class FilePascal extends AbstractAppleFile
   private int firstBlock;
   private int lastBlock;
   private int bytesUsedInLastBlock;
-  //  private int fileType;
   private int wildCard;
   private LocalDate date;
 

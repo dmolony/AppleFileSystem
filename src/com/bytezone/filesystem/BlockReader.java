@@ -166,6 +166,18 @@ public class BlockReader
   }
 
   // ---------------------------------------------------------------------------------//
+  public AppleBlock getSector (AppleFileSystem fs, byte[] buffer, int offset)
+  // ---------------------------------------------------------------------------------//
+  {
+    int track = buffer[offset] & 0xFF;
+    int sector = buffer[++offset] & 0xFF;
+
+    assert addressType == AddressType.SECTOR;
+
+    return new BlockDos (fs, track, sector);
+  }
+
+  // ---------------------------------------------------------------------------------//
   public byte[] read (AppleBlock block)
   // ---------------------------------------------------------------------------------//
   {

@@ -34,6 +34,8 @@ public interface AppleFileSystem extends AppleFile
 
   AppleBlock getSector (int track, int sector);
 
+  AppleBlock getSector (byte[] buffer, int offset);
+
   byte[] readBlock (AppleBlock block);
 
   byte[] readBlocks (List<AppleBlock> blocks);
