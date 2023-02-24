@@ -3,11 +3,10 @@ package com.bytezone.filesystem;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.bytezone.filesystem.AppleFileSystem.FileSystemType;
 import com.bytezone.filesystem.FileProdos.ForkType;
 
 // -----------------------------------------------------------------------------------//
-public class ForkProdos implements AppleFile
+public class ForkProdos extends AbstractAppleFile
 // -----------------------------------------------------------------------------------//
 {
   static final int VOLUME_HEADER = 0x0F;
@@ -20,7 +19,7 @@ public class ForkProdos implements AppleFile
   static final int SEEDLING = 0x01;
   static final int FREE = 0x00;
 
-  private FileProdos parent;
+  private FileProdos parentFile;
   private FsProdos fileSystem;
   private String name;
   private ForkType forkType;
@@ -37,14 +36,23 @@ public class ForkProdos implements AppleFile
   private byte[] data;
 
   // ---------------------------------------------------------------------------------//
-  ForkProdos (FileProdos parent, ForkType forkType, int keyPtr, int storageType, int size, int eof)
+  ForkProdos (FileProdos parentFile, ForkType forkType, int keyPtr, int storageType,
+      int size, int eof)
   // ---------------------------------------------------------------------------------//
   {
-    this.parent = parent;
+    super (parentFile.getFileSystem ());
+
+    isFile = true;
+    isFork = forkType != null;
+
+    fileType = parentFile.getFileType ();
+    fileTypeText = parentFile.getFileTypeText ();
+
+    this.parentFile = parentFile;
     this.forkType = forkType;
     this.name = forkType == ForkType.DATA ? "Data fork"
         : forkType == ForkType.RESOURCE ? "Resource fork" : "Not forked";
-    this.fileSystem = (FsProdos) parent.getFileSystem ();
+    this.fileSystem = (FsProdos) parentFile.getFileSystem ();
 
     this.storageType = storageType;
     this.keyPtr = keyPtr;
@@ -95,10 +103,10 @@ public class ForkProdos implements AppleFile
   }
 
   // ---------------------------------------------------------------------------------//
-  public FileProdos getParent ()
+  public FileProdos getParentFile ()
   // ---------------------------------------------------------------------------------//
   {
-    return parent;
+    return parentFile;
   }
 
   // ---------------------------------------------------------------------------------//
@@ -167,7 +175,7 @@ public class ForkProdos implements AppleFile
   public String getFileName ()
   // ---------------------------------------------------------------------------------//
   {
-    return name;
+    return name;          // DATA or RESOURCE
   }
 
   // ---------------------------------------------------------------------------------//
@@ -184,22 +192,6 @@ public class ForkProdos implements AppleFile
   // ---------------------------------------------------------------------------------//
   {
     throw new UnsupportedOperationException ("cannot getFiles() from a fork");
-  }
-
-  // ---------------------------------------------------------------------------------//
-  @Override
-  public AppleFileSystem getFileSystem ()
-  // ---------------------------------------------------------------------------------//
-  {
-    return parent.getFileSystem ();
-  }
-
-  // ---------------------------------------------------------------------------------//
-  @Override
-  public FileSystemType getFileSystemType ()
-  // ---------------------------------------------------------------------------------//
-  {
-    return parent.getFileSystemType ();
   }
 
   // ---------------------------------------------------------------------------------//
@@ -243,46 +235,6 @@ public class ForkProdos implements AppleFile
 
   // ---------------------------------------------------------------------------------//
   @Override
-  public String getFileTypeText ()
-  // ---------------------------------------------------------------------------------//
-  {
-    return parent.getFileTypeText ();
-  }
-
-  // ---------------------------------------------------------------------------------//
-  @Override
-  public int getFileType ()
-  // ---------------------------------------------------------------------------------//
-  {
-    return parent.getFileType ();
-  }
-
-  // ---------------------------------------------------------------------------------//
-  @Override
-  public int getBlockSize ()
-  // ---------------------------------------------------------------------------------//
-  {
-    return parent.getBlockSize ();
-  }
-
-  // ---------------------------------------------------------------------------------//
-  @Override
-  public boolean isFile ()
-  // ---------------------------------------------------------------------------------//
-  {
-    return true;
-  }
-
-  // ---------------------------------------------------------------------------------//
-  @Override
-  public boolean isFork ()
-  // ---------------------------------------------------------------------------------//
-  {
-    return true;
-  }
-
-  // ---------------------------------------------------------------------------------//
-  @Override
   public String getCatalogLine ()
   // ---------------------------------------------------------------------------------//
   {
@@ -290,11 +242,18 @@ public class ForkProdos implements AppleFile
   }
 
   // ---------------------------------------------------------------------------------//
+  public ForkType getForkType ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return forkType;
+  }
+
+  // ---------------------------------------------------------------------------------//
   @Override
   public String toString ()
   // ---------------------------------------------------------------------------------//
   {
-    return String.format ("%-30s %-3s  %04X %4d %,10d", name, parent.getFileTypeText (), keyPtr,
-        getTotalBlocks (), getLength ());
+    return String.format ("%-30s %-3s  %04X %4d %,10d", name,
+        parentFile.getFileTypeText (), keyPtr, getTotalBlocks (), getLength ());
   }
 }

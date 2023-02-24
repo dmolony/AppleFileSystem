@@ -14,6 +14,8 @@ public abstract class AbstractAppleFile implements AppleFile
   protected boolean isFile;
   protected boolean isFolder;
   protected boolean isFileSystem;
+  protected boolean isForkedFile;
+  protected boolean isFork;
 
   protected String fileName;
   protected int fileType;
@@ -62,7 +64,23 @@ public abstract class AbstractAppleFile implements AppleFile
 
   // ---------------------------------------------------------------------------------//
   @Override
-  public void addFile (AppleFile file)    // if isDirectory() or isFileSystem()
+  public boolean isForkedFile ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return isForkedFile;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
+  public boolean isFork ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return isFork;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
+  public void addFile (AppleFile file)
   // ---------------------------------------------------------------------------------//
   {
     if (isFolder () || isFileSystem () || isForkedFile ())
@@ -93,7 +111,8 @@ public abstract class AbstractAppleFile implements AppleFile
   // ---------------------------------------------------------------------------------//
   {
     if (!isFolder () && !isFileSystem () && !isForkedFile ())
-      throw new UnsupportedOperationException ("cannot getFiles() unless Folder or FileSystem");
+      throw new UnsupportedOperationException (
+          "cannot getFiles() unless Folder or FileSystem or ForkedFile");
 
     return files;
   }
@@ -124,7 +143,7 @@ public abstract class AbstractAppleFile implements AppleFile
 
   // ---------------------------------------------------------------------------------//
   @Override
-  public int getLength ()                 // in bytes (eof)
+  public int getLength ()                         // in bytes (eof)
   // ---------------------------------------------------------------------------------//
   {
     throw new UnsupportedOperationException ("getLength() not implemented");
@@ -135,7 +154,7 @@ public abstract class AbstractAppleFile implements AppleFile
   public int getTotalBlocks ()                   // in blocks
   // ---------------------------------------------------------------------------------//
   {
-    throw new UnsupportedOperationException ("getSize() not implemented");
+    throw new UnsupportedOperationException ("getTotalBlocks() not implemented");
   }
 
   // ---------------------------------------------------------------------------------//

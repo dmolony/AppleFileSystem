@@ -68,7 +68,7 @@ public class FsDos extends AbstractFileSystem
       {
         if ((buffer[ptr] & 0x80) != 0)        // deleted file
         {
-
+          // could make a list for Extras' panel
         }
         else
         {
@@ -79,7 +79,9 @@ public class FsDos extends AbstractFileSystem
           }
           catch (FileFormatException e)
           {
-            break;
+            // could prepare list of failures for Extras' panel
+            //            String fileName = Utility.string (buffer, ptr + 3, 30).trim ();
+            //            System.out.println (fileName + " failed");
           }
         }
 

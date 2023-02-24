@@ -48,7 +48,7 @@ public class FileDos extends AbstractAppleFile
     };
 
     int sectorsLeft = sectorCount;
-    while (nextTrack != 0)
+    loop: while (nextTrack != 0)
     {
       AppleBlock tsSector = fs.getSector (nextTrack, nextSector);
       if (!tsSector.isValid ())
@@ -66,18 +66,18 @@ public class FileDos extends AbstractAppleFile
         AppleBlock dataSector = fs.getSector (sectorBuffer, i);
 
         if (!dataSector.isValid ())
-          throw new FileFormatException ("Invalid data sector");
+          throw new FileFormatException ("Invalid data sector - " + dataSector);
 
         if (dataSector.getBlockNo () > 0)
         {
           dataBlocks.add (dataSector);
           if (--sectorsLeft <= 0)
-            break;
+            break loop;
         }
         else if (fileType == 0x00)            // text file
           dataBlocks.add (null);              // must be a sparse file
         else
-          System.out.println ("unexpected zero index in " + fileName);
+          throw new FileFormatException ("Unexpected zero index value in TsSector");
       }
 
       nextTrack = sectorBuffer[1] & 0xFF;

@@ -42,9 +42,11 @@ public class FileProdos extends AbstractAppleFile
   {
     super (parent);
 
-    isFile = true;
-
     storageType = (buffer[ptr] & 0xF0) >>> 4;
+
+    isFile = true;
+    isForkedFile = storageType == FsProdos.GSOS_EXTENDED_FILE;
+
     int nameLength = buffer[ptr] & 0x0F;
     if (nameLength > 0)
       fileName = Utility.string (buffer, ptr + 1, nameLength);
@@ -70,6 +72,7 @@ public class FileProdos extends AbstractAppleFile
     dateM = modified == null ? NO_DATE : modified.format (sdf);
     timeM = modified == null ? "" : modified.format (stf);
 
+    // 
     if (isForkedFile ())
       createForks ();
     else
@@ -97,7 +100,8 @@ public class FileProdos extends AbstractAppleFile
         }
         else
         {
-          resourceFork = new ForkProdos (this, ForkType.RESOURCE, keyPtr, storageType, size, eof);
+          resourceFork =
+              new ForkProdos (this, ForkType.RESOURCE, keyPtr, storageType, size, eof);
           addFile (resourceFork);
         }
     }
@@ -108,14 +112,6 @@ public class FileProdos extends AbstractAppleFile
   // ---------------------------------------------------------------------------------//
   {
     return auxType;
-  }
-
-  // ---------------------------------------------------------------------------------//
-  @Override
-  public boolean isForkedFile ()
-  // ---------------------------------------------------------------------------------//
-  {
-    return storageType == FsProdos.GSOS_EXTENDED_FILE;
   }
 
   // ---------------------------------------------------------------------------------//
@@ -131,7 +127,7 @@ public class FileProdos extends AbstractAppleFile
 
   // ---------------------------------------------------------------------------------//
   @Override
-  public int getLength ()                                  // in bytes (eof)
+  public int getLength ()                                         // in bytes (eof)
   // ---------------------------------------------------------------------------------//
   {
     if (isForkedFile ())
