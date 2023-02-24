@@ -14,7 +14,7 @@ public abstract class AbstractAppleFile implements AppleFile
   protected boolean isFile;
   protected boolean isFolder;
   protected boolean isFileSystem;
-  protected boolean isForkedFile;
+  protected boolean isForkedFile;           // FileProdos only
   protected boolean isFork;
 
   protected String fileName;

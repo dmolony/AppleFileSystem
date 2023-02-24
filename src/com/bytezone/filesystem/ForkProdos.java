@@ -21,7 +21,7 @@ public class ForkProdos extends AbstractAppleFile
 
   private FileProdos parentFile;
   private FsProdos fileSystem;
-  private String name;
+  //  private String name;
   private ForkType forkType;
 
   private int storageType;
@@ -35,6 +35,12 @@ public class ForkProdos extends AbstractAppleFile
 
   private byte[] data;
 
+  // All ForkProdos files have a FileProdos parent. Forks are also AppleFiles, but
+  // only the DATA and RESOURCE forks are treated as standalone files. Normal
+  // prodos files simply use a ForkProdos for their data (as the code to read them 
+  // is identical.
+  // DATA and RESOURCE forks are stored as children of the FileProdos, normal
+  // prodos files keep a private reference to its 'fork' data.
   // ---------------------------------------------------------------------------------//
   ForkProdos (FileProdos parentFile, ForkType forkType, int keyPtr, int storageType,
       int size, int eof)
@@ -50,7 +56,7 @@ public class ForkProdos extends AbstractAppleFile
 
     this.parentFile = parentFile;
     this.forkType = forkType;
-    this.name = forkType == ForkType.DATA ? "Data fork"
+    this.fileName = forkType == ForkType.DATA ? "Data fork"
         : forkType == ForkType.RESOURCE ? "Resource fork" : "Not forked";
     this.fileSystem = (FsProdos) parentFile.getFileSystem ();
 
@@ -161,25 +167,6 @@ public class ForkProdos extends AbstractAppleFile
 
   // ---------------------------------------------------------------------------------//
   @Override
-  public byte[] read ()
-  // ---------------------------------------------------------------------------------//
-  {
-    if (data == null)
-      data = fileSystem.readBlocks (dataBlocks);
-
-    return data;
-  }
-
-  // ---------------------------------------------------------------------------------//
-  @Override
-  public String getFileName ()
-  // ---------------------------------------------------------------------------------//
-  {
-    return name;          // DATA or RESOURCE
-  }
-
-  // ---------------------------------------------------------------------------------//
-  @Override
   public void addFile (AppleFile file)
   // ---------------------------------------------------------------------------------//
   {
@@ -196,9 +183,13 @@ public class ForkProdos extends AbstractAppleFile
 
   // ---------------------------------------------------------------------------------//
   @Override
-  public void write (byte[] buffer)
+  public byte[] read ()
   // ---------------------------------------------------------------------------------//
   {
+    if (data == null)
+      data = fileSystem.readBlocks (dataBlocks);
+
+    return data;
   }
 
   // ---------------------------------------------------------------------------------//
@@ -219,26 +210,10 @@ public class ForkProdos extends AbstractAppleFile
 
   // ---------------------------------------------------------------------------------//
   @Override
-  public List<AppleBlock> getBlocks ()
-  // ---------------------------------------------------------------------------------//
-  {
-    throw new UnsupportedOperationException ("getBlocks() not implemented");
-  }
-
-  // ---------------------------------------------------------------------------------//
-  @Override
-  public String catalog ()
-  // ---------------------------------------------------------------------------------//
-  {
-    return "";
-  }
-
-  // ---------------------------------------------------------------------------------//
-  @Override
   public String getCatalogLine ()
   // ---------------------------------------------------------------------------------//
   {
-    return name;
+    return toString ();
   }
 
   // ---------------------------------------------------------------------------------//
@@ -253,7 +228,7 @@ public class ForkProdos extends AbstractAppleFile
   public String toString ()
   // ---------------------------------------------------------------------------------//
   {
-    return String.format ("%-30s %-3s  %04X %4d %,10d", name,
+    return String.format ("%-30s %-3s  %04X %4d %,10d", fileName,
         parentFile.getFileTypeText (), keyPtr, getTotalBlocks (), getLength ());
   }
 }

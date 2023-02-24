@@ -28,8 +28,7 @@ public class FileProdos extends AbstractAppleFile
   private LocalDateTime modified;
   private String dateC, timeC, dateM, timeM;
 
-  private ForkProdos dataFork;
-  private ForkProdos resourceFork;
+  private ForkProdos data;            // for non-forked files
 
   public enum ForkType
   {
@@ -76,7 +75,7 @@ public class FileProdos extends AbstractAppleFile
     if (isForkedFile ())
       createForks ();
     else
-      dataFork = new ForkProdos (this, null, keyPtr, storageType, size, eof);
+      data = new ForkProdos (this, null, keyPtr, storageType, size, eof);
   }
 
   // ---------------------------------------------------------------------------------//
@@ -94,16 +93,11 @@ public class FileProdos extends AbstractAppleFile
 
       if (keyPtr > 0)
         if (ptr == 0)
-        {
-          dataFork = new ForkProdos (this, ForkType.DATA, keyPtr, storageType, size, eof);
-          addFile (dataFork);
-        }
+          addFile (new ForkProdos (this, ForkType.DATA, keyPtr, storageType, size, eof));
         else
-        {
-          resourceFork =
-              new ForkProdos (this, ForkType.RESOURCE, keyPtr, storageType, size, eof);
-          addFile (resourceFork);
-        }
+          addFile (
+              new ForkProdos (this, ForkType.RESOURCE, keyPtr, storageType, size, eof));
+
     }
   }
 
@@ -122,7 +116,7 @@ public class FileProdos extends AbstractAppleFile
     if (isForkedFile ())
       throw new FileFormatException ("Cannot read() a forked file");
 
-    return dataFork.read ();
+    return data.read ();
   }
 
   // ---------------------------------------------------------------------------------//
@@ -133,7 +127,7 @@ public class FileProdos extends AbstractAppleFile
     if (isForkedFile ())
       throw new FileFormatException ("Cannot getLength() on a forked file");
 
-    return dataFork.getLength ();
+    return data.getLength ();
   }
 
   // ---------------------------------------------------------------------------------//
@@ -157,7 +151,7 @@ public class FileProdos extends AbstractAppleFile
   public String toString ()
   // ---------------------------------------------------------------------------------//
   {
-    int length = isForkedFile () ? 0 : dataFork.getLength ();      // fix this!!
+    int length = isForkedFile () ? 0 : data.getLength ();
 
     return String.format ("%-30s %-3s  %04X %4d %,10d", fileName, fileTypeText, keyPtr,
         getTotalBlocks (), length);
