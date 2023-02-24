@@ -111,8 +111,6 @@ public class Fs2img extends AbstractFileSystem
     text.append (String.format ("Version ............... %d%n", version));
     text.append (String.format ("Format ................ %d  %s  %s%n", format,
         twoIMGFormats[format], displayMessage));
-    //    text.append (String.format ("File system type ...... %d  %s  %s%n", format,
-    //        fileSystemTypes[format], displayMessage));
     text.append (String.format ("Flags ................. %08X%n", flags));
     text.append (String.format ("  locked .............. %s%n", locked));
     text.append (String.format ("  has Dos Volume no ... %s%n", hasDosVolumeNumber));
@@ -124,9 +122,7 @@ public class Fs2img extends AbstractFileSystem
     text.append (String.format ("Comment length ........ %,d%n", commentLength));
     text.append (String.format ("Comment ............... %s%n", comment));
     text.append (String.format ("Creator Data offset ... %,d%n", creatorDataOffset));
-    text.append (String.format ("Creator Data length ... %,d%n%n", creatorDataLength));
-
-    text.append (fileSystem.toText ());
+    text.append (String.format ("Creator Data length ... %,d", creatorDataLength));
 
     return text.toString ();
   }
