@@ -7,7 +7,7 @@ public class FileData extends AbstractAppleFile
   byte[] buffer;
 
   // ---------------------------------------------------------------------------------//
-  FileData (FsData fs, byte[] buffer, int ptr)
+  FileData (FsData fs, byte[] buffer)
   // ---------------------------------------------------------------------------------//
   {
     super (fs);
@@ -28,7 +28,7 @@ public class FileData extends AbstractAppleFile
 
   // ---------------------------------------------------------------------------------//
   @Override
-  public int getLength ()                 // in bytes (eof)
+  public int getLength ()                                 // in bytes (eof)
   // ---------------------------------------------------------------------------------//
   {
     return buffer.length;
@@ -36,7 +36,7 @@ public class FileData extends AbstractAppleFile
 
   // ---------------------------------------------------------------------------------//
   @Override
-  public int getTotalBlocks ()                   // in blocks
+  public int getTotalBlocks ()                            // in blocks
   // ---------------------------------------------------------------------------------//
   {
     return buffer.length / 512;
