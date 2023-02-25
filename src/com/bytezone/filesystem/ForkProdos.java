@@ -9,19 +9,8 @@ import com.bytezone.filesystem.FileProdos.ForkType;
 public class ForkProdos extends AbstractAppleFile
 // -----------------------------------------------------------------------------------//
 {
-  static final int VOLUME_HEADER = 0x0F;
-  static final int SUBDIRECTORY_HEADER = 0x0E;
-  static final int SUBDIRECTORY = 0x0D;
-  static final int GSOS_EXTENDED_FILE = 0x05;      // tech note #25
-  static final int PASCAL_ON_PROFILE = 0x04;       // tech note #25
-  static final int TREE = 0x03;
-  static final int SAPLING = 0x02;
-  static final int SEEDLING = 0x01;
-  static final int FREE = 0x00;
-
   private FileProdos parentFile;
   private FsProdos fileSystem;
-  //  private String name;
   private ForkType forkType;
 
   private int storageType;
@@ -35,8 +24,8 @@ public class ForkProdos extends AbstractAppleFile
 
   private byte[] data;
 
-  // All ForkProdos files have a FileProdos parent. Forks are also AppleFiles, but
-  // only the DATA and RESOURCE forks are treated as standalone files. Normal
+  // All ForkProdos files have a single FileProdos parent. Forks are also AppleFiles,
+  // but only the DATA and RESOURCE forks are treated as standalone files. Normal
   // prodos files simply use a ForkProdos for their data (as the code to read them 
   // is identical.
   // DATA and RESOURCE forks are stored as children of the FileProdos, normal
@@ -71,21 +60,21 @@ public class ForkProdos extends AbstractAppleFile
     if (dataBlock.isValid ())
       switch (storageType)
       {
-        case SEEDLING:
+        case FsProdos.SEEDLING:
           blockNos.add (keyPtr);
           break;
 
-        case SAPLING:
+        case FsProdos.SAPLING:
           blockNos.addAll (readIndex (keyPtr));
           break;
 
-        case TREE:
+        case FsProdos.TREE:
           for (Integer indexBlock : readMasterIndex (keyPtr))
             if (fileSystem.getBlock (indexBlock).isValid ())
               blockNos.addAll (readIndex (indexBlock));
           break;
 
-        case PASCAL_ON_PROFILE:
+        case FsProdos.PASCAL_ON_PROFILE:
           for (int i = keyPtr; i < fileSystem.getTotalBlocks (); i++)
             blockNos.add (i);
           break;

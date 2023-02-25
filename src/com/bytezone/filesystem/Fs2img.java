@@ -10,7 +10,8 @@ public class Fs2img extends AbstractFileSystem
   private static String[] twoIMGFormats = { "Dos", "Prodos", "NIB" };
   private static FileSystemType[] fileSystemTypes =
       { FileSystemType.DOS, FileSystemType.PRODOS, FileSystemType.NIB };
-  private static String[] creatorCodes = { "!nfc", "B2TR", "CTKG", "ShIm", "WOOF", "XGS!", "CdrP" };
+  private static String[] creatorCodes =
+      { "!nfc", "B2TR", "CTKG", "ShIm", "WOOF", "XGS!", "CdrP" };
   private static String[] creatorNames = { "ASIMOV2", "Bernie ][ the Rescue", "Catakig",
       "Sheppy's ImageMaker", "Sweet 16", "XGS", "CiderPress" };
 
@@ -43,13 +44,6 @@ public class Fs2img extends AbstractFileSystem
   {
     super (blockReader, FileSystemType.IMG2);
 
-    readCatalog ();
-  }
-
-  // ---------------------------------------------------------------------------------//
-  private void readCatalog ()
-  // ---------------------------------------------------------------------------------//
-  {
     byte[] buffer = blockReader.getDiskBuffer ();
     int diskOffset = blockReader.getDiskOffset ();
 
@@ -71,19 +65,19 @@ public class Fs2img extends AbstractFileSystem
     commentLength = Utility.unsignedLong (buffer, diskOffset + 36);
     creatorDataOffset = Utility.unsignedLong (buffer, diskOffset + 40);
     creatorDataLength = Utility.unsignedLong (buffer, diskOffset + 44);
-    comment =
-        commentOffset == 0 ? "" : new String (buffer, diskOffset + commentOffset, commentLength);
+    comment = commentOffset == 0 ? ""
+        : new String (buffer, diskOffset + commentOffset, commentLength);
 
     locked = (flags & 0x8000) != 0;
     hasDosVolumeNumber = (flags & 0x0100) != 0;
     volumeNumber = flags & 0x00FF;
 
-    BlockReader blockReader =
-        new BlockReader (twoIMGFormats[format], buffer, diskOffset + offset, length);
-    fileSystem = addFileSystem (blockReader);
+    fileSystem = addFileSystem (
+        new BlockReader (twoIMGFormats[format], buffer, diskOffset + offset, length));
 
     if (fileSystem.getFileSystemType () != fileSystemTypes[format])
-      displayMessage = String.format ("<-- wrong, actually %s", fileSystem.getFileSystemType ());
+      displayMessage =
+          String.format ("<-- wrong, actually %s", fileSystem.getFileSystemType ());
   }
 
   // ---------------------------------------------------------------------------------//
@@ -106,7 +100,8 @@ public class Fs2img extends AbstractFileSystem
 
     String message = originalLength == 0 ? "   <-- wrong!" : "";
 
-    text.append (String.format ("Creator ............... %s  %s%n", creator, getCreator (creator)));
+    text.append (String.format ("Creator ............... %s  %s%n", creator,
+        getCreator (creator)));
     text.append (String.format ("Header size ........... %d%n", headerSize));
     text.append (String.format ("Version ............... %d%n", version));
     text.append (String.format ("Format ................ %d  %s  %s%n", format,
@@ -117,7 +112,8 @@ public class Fs2img extends AbstractFileSystem
     text.append (String.format ("  Dos Volume no ....... %d%n", volumeNumber));
     text.append (String.format ("Blocks ................ %,d%n", prodosBlocks));
     text.append (String.format ("Data offset ........... %d%n", offset));
-    text.append (String.format ("Data size ............. %,d%s%n", originalLength, message));
+    text.append (
+        String.format ("Data size ............. %,d%s%n", originalLength, message));
     text.append (String.format ("Comment offset ........ %,d%n", commentOffset));
     text.append (String.format ("Comment length ........ %,d%n", commentLength));
     text.append (String.format ("Comment ............... %s%n", comment));

@@ -22,13 +22,6 @@ public class FsPascal extends AbstractFileSystem
   {
     super (blockReader, FileSystemType.PASCAL);
 
-    readCatalog ();
-  }
-
-  // ---------------------------------------------------------------------------------//
-  private void readCatalog ()
-  // ---------------------------------------------------------------------------------//
-  {
     assert getTotalCatalogBlocks () == 0;
 
     AppleBlock vtoc = getBlock (2);

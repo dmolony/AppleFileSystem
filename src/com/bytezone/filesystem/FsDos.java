@@ -13,27 +13,6 @@ public class FsDos extends AbstractFileSystem
   {
     super (blockReader, FileSystemType.DOS);
 
-    readCatalog ();
-  }
-
-  // ---------------------------------------------------------------------------------//
-  private void setVersion (byte version)
-  // ---------------------------------------------------------------------------------//
-  {
-    dosVersion = version & 0xFF;
-    //    setFileSystemName ("Dos" + switch (version)
-    //    {
-    //      case 0x01 -> "3.1";
-    //      case 0x02 -> "3.2";
-    //      case 0x03 -> "3.3";
-    //      default -> "?.?";
-    //    });
-  }
-
-  // ---------------------------------------------------------------------------------//
-  private void readCatalog ()
-  // ---------------------------------------------------------------------------------//
-  {
     assert getTotalCatalogBlocks () == 0;
     int catalogBlocks = 0;
 
@@ -46,7 +25,7 @@ public class FsDos extends AbstractFileSystem
     if (buffer[3] < 0x01 || buffer[3] > 0x03)
       throw new FileFormatException ("Dos: byte 3 invalid");
 
-    setVersion (buffer[3]);
+    dosVersion = buffer[3] & 0xFF;
 
     while (true)
     {

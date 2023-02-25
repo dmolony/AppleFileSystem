@@ -22,15 +22,6 @@ public class FsGzip extends AbstractFileSystem
   {
     super (blockReader, FileSystemType.GZIP);
 
-    readCatalog ();
-
-    assert blockReader.isMagic (0, GZIP);
-  }
-
-  // ---------------------------------------------------------------------------------//
-  private void readCatalog ()
-  // ---------------------------------------------------------------------------------//
-  {
     try (GZIPInputStream zip = new GZIPInputStream (//
         new ByteArrayInputStream (getBuffer (), getOffset (), getLength ()));)
     {
@@ -44,5 +35,7 @@ public class FsGzip extends AbstractFileSystem
     {
       throw new FileFormatException (e.getMessage ());
     }
+
+    assert blockReader.isMagic (0, GZIP);
   }
 }

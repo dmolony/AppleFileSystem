@@ -16,13 +16,6 @@ public class FsUnidos extends AbstractFileSystem
   {
     super (blockReader, FileSystemType.UNIDOS);
 
-    readCatalog ();
-  }
-
-  // ---------------------------------------------------------------------------------//
-  private void readCatalog ()
-  // ---------------------------------------------------------------------------------//
-  {
     byte[] buffer = getBuffer ();
     int offset = getOffset ();
 

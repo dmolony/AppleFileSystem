@@ -10,13 +10,6 @@ public class FsLbr extends AbstractFileSystem
   {
     super (blockReader, FileSystemType.LBR);
 
-    readCatalog ();
-  }
-
-  // ---------------------------------------------------------------------------------//
-  private void readCatalog ()
-  // ---------------------------------------------------------------------------------//
-  {
     int max = 1;
     int count = 0;
 

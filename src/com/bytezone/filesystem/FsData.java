@@ -10,13 +10,6 @@ public class FsData extends AbstractFileSystem
   {
     super (blockReader, FileSystemType.DATA);
 
-    readCatalog ();
-  }
-
-  // ---------------------------------------------------------------------------------//
-  private void readCatalog ()
-  // ---------------------------------------------------------------------------------//
-  {
     addFile (new FileData (this, getBuffer (), 0));
   }
 

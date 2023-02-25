@@ -8,7 +8,8 @@ import com.bytezone.utility.Utility;
 public class FsNuFX extends AbstractFileSystem
 // -----------------------------------------------------------------------------------//
 {
-  static final byte[] NuFile = { 0x4E, (byte) 0xF5, 0x46, (byte) 0xE9, 0x6C, (byte) 0xE5 };
+  static final byte[] NuFile =
+      { 0x4E, (byte) 0xF5, 0x46, (byte) 0xE9, 0x6C, (byte) 0xE5 };
 
   private int crc;
   private int totalRecords;
@@ -51,13 +52,6 @@ public class FsNuFX extends AbstractFileSystem
     if (!crcPassed)
       throw new FileFormatException ("Master CRC failed");
 
-    readCatalog ();
-  }
-
-  // ---------------------------------------------------------------------------------//
-  private void readCatalog ()
-  // ---------------------------------------------------------------------------------//
-  {
     int ptr = 48;
 
     for (int i = 0; i < totalRecords; i++)

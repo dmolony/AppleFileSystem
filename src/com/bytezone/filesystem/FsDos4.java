@@ -13,27 +13,6 @@ public class FsDos4 extends AbstractFileSystem
   {
     super (blockReader, FileSystemType.DOS4);
 
-    readCatalog ();
-  }
-
-  // ---------------------------------------------------------------------------------//
-  private void setVersion (byte version)
-  // ---------------------------------------------------------------------------------//
-  {
-    dosVersion = version & 0xFF;
-    //    setFileSystemName ("Dos" + switch (version)
-    //    {
-    //      case 0x41 -> "4.1";
-    //      case 0x42 -> "4.2";
-    //      case 0x43 -> "4.3";
-    //      default -> "?.?";
-    //    });
-  }
-
-  // ---------------------------------------------------------------------------------//
-  private void readCatalog ()
-  // ---------------------------------------------------------------------------------//
-  {
     assert getTotalCatalogBlocks () == 0;
     int catalogBlocks = 0;
 
@@ -43,7 +22,7 @@ public class FsDos4 extends AbstractFileSystem
     if (buffer[3] != 0x41 && buffer[3] != 0x42)
       return;
 
-    setVersion (buffer[3]);
+    dosVersion = buffer[3] & 0xFF;
 
     while (true)
     {

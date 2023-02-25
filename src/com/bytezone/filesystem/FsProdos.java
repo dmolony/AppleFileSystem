@@ -13,8 +13,8 @@ public class FsProdos extends AbstractFileSystem
   static final int VOLUME_HEADER = 0x0F;
   static final int SUBDIRECTORY_HEADER = 0x0E;
   static final int SUBDIRECTORY = 0x0D;
-  public static final int GSOS_EXTENDED_FILE = 0x05;      // tech note #25
-  public static final int PASCAL_ON_PROFILE = 0x04;       // tech note #25
+  static final int GSOS_EXTENDED_FILE = 0x05;      // tech note #25
+  static final int PASCAL_ON_PROFILE = 0x04;       // tech note #25
   static final int TREE = 0x03;
   static final int SAPLING = 0x02;
   static final int SEEDLING = 0x01;
@@ -31,13 +31,6 @@ public class FsProdos extends AbstractFileSystem
   {
     super (blockReader, FileSystemType.PRODOS);
 
-    readCatalog ();
-  }
-
-  // ---------------------------------------------------------------------------------//
-  private void readCatalog ()
-  // ---------------------------------------------------------------------------------//
-  {
     int nextBlockNo = 2;                    // first catalog block
     int prevBlockNo = -1;
 
@@ -64,16 +57,19 @@ public class FsProdos extends AbstractFileSystem
           throw new FileFormatException ("FsProdos: Invalid entry data");
 
         if (bitmapPointer < 3 || bitmapPointer > 10)
-          throw new FileFormatException ("FsProdos: Invalid bitmap block value: " + bitmapPointer);
+          throw new FileFormatException (
+              "FsProdos: Invalid bitmap block value: " + bitmapPointer);
       }
 
       prevBlockNo = Utility.unsignedShort (buffer, 0);
       nextBlockNo = Utility.unsignedShort (buffer, 2);
 
       if (!isValidBlockNo (prevBlockNo))
-        throw new FileFormatException ("FsProdos: Invalid catalog previous block - " + prevBlockNo);
+        throw new FileFormatException (
+            "FsProdos: Invalid catalog previous block - " + prevBlockNo);
       if (!isValidBlockNo (nextBlockNo))
-        throw new FileFormatException ("FsProdos: Invalid catalog next block - " + nextBlockNo);
+        throw new FileFormatException (
+            "FsProdos: Invalid catalog next block - " + nextBlockNo);
 
       ++catalogBlocks;
     }

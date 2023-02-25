@@ -12,13 +12,6 @@ public class FsBinary2 extends AbstractFileSystem
   {
     super (blockReader, FileSystemType.BIN2);
 
-    readCatalog ();
-  }
-
-  // ---------------------------------------------------------------------------------//
-  private void readCatalog ()
-  // ---------------------------------------------------------------------------------//
-  {
     assert blockReader.isMagic (0, BIN2) && blockReader.byteAt (18, (byte) 0x02);
 
     int nextBlock = 0;

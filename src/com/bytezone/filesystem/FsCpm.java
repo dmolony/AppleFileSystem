@@ -12,13 +12,6 @@ public class FsCpm extends AbstractFileSystem
   {
     super (blockReader, FileSystemType.CPM);
 
-    readCatalog ();
-  }
-
-  // ---------------------------------------------------------------------------------//
-  private void readCatalog ()
-  // ---------------------------------------------------------------------------------//
-  {
     assert getTotalCatalogBlocks () == 0;
 
     int catalogBlocks = 0;
