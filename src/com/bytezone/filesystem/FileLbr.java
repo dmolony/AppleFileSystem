@@ -7,7 +7,7 @@ public class FileLbr extends AbstractAppleFile
 // -----------------------------------------------------------------------------------//
 {
   int status;
-  String name;
+  //  String name;
   String extension;
   int firstBlock;
   int totalBlocks;
@@ -23,7 +23,7 @@ public class FileLbr extends AbstractAppleFile
     isFile = true;
 
     status = buffer[ptr] & 0xFF;
-    name = new String (buffer, ptr + 1, 8);
+    fileName = new String (buffer, ptr + 1, 8);
     extension = new String (buffer, ptr + 9, 3);
     firstBlock = Utility.unsignedShort (buffer, ptr + 12);
     totalBlocks = Utility.unsignedShort (buffer, ptr + 14);
@@ -41,10 +41,28 @@ public class FileLbr extends AbstractAppleFile
 
   // ---------------------------------------------------------------------------------//
   @Override
+  public String getCatalogLine ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return String.format ("%02X  %-8s %-3s  %,5d  %,5d  %04X  %3d", status, fileName,
+        extension, firstBlock, totalBlocks, crc, pad);
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
   public String toString ()
   // ---------------------------------------------------------------------------------//
   {
-    return String.format ("%02X  %-8s %-3s  %,5d  %,5d  %04X  %3d", status, name, extension,
-        firstBlock, totalBlocks, crc, pad);
+    StringBuilder text = new StringBuilder ();
+
+    text.append (String.format ("File name ............. %s%n", fileName));
+    text.append (
+        String.format ("File type ............. %d  %s%n", fileType, fileTypeText));
+    text.append (String.format ("Extension ............. %s%n", extension));
+    text.append (String.format ("First block ........... %,d%n", firstBlock));
+    text.append (String.format ("Total blocks .......... %,d%n", totalBlocks));
+    text.append (String.format ("CRC ................... %,d%n", crc));
+
+    return text.toString ();
   }
 }

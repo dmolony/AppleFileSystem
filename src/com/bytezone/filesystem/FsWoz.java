@@ -27,7 +27,7 @@ public class FsWoz extends AbstractFileSystem
   {
     try
     {
-      WozFile wozFile = new WozFile (getBuffer ());
+      WozFile wozFile = new WozFile (getDiskBuffer ());
       byte[] buffer = wozFile.getDiskBuffer ();
 
       addFileSystem (new BlockReader (getFileSystemType ().toString (), buffer, 0, buffer.length));

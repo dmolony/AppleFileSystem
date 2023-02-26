@@ -143,10 +143,10 @@ public abstract class AbstractAppleFile implements AppleFile
 
   // ---------------------------------------------------------------------------------//
   @Override
-  public int getLength ()                         // in bytes (eof)
+  public int getFileLength ()                         // in bytes (eof)
   // ---------------------------------------------------------------------------------//
   {
-    throw new UnsupportedOperationException ("getLength() not implemented");
+    throw new UnsupportedOperationException ("getFileLength() not implemented");
   }
 
   // ---------------------------------------------------------------------------------//

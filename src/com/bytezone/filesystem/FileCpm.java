@@ -8,7 +8,6 @@ public class FileCpm extends AbstractAppleFile
 // -----------------------------------------------------------------------------------//
 {
   private final int userNumber;
-  //  private final String type;
 
   private final boolean readOnly;
   private final boolean systemFile;
@@ -87,7 +86,7 @@ public class FileCpm extends AbstractAppleFile
 
   // ---------------------------------------------------------------------------------//
   @Override
-  public int getLength ()                 // in bytes (eof)
+  public int getFileLength ()                 // in bytes (eof)
   // ---------------------------------------------------------------------------------//
   {
     return dataBlocks.size () * getFileSystem ().getBlockSize ();
@@ -111,10 +110,31 @@ public class FileCpm extends AbstractAppleFile
 
   // ---------------------------------------------------------------------------------//
   @Override
+  public String getCatalogLine ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return String.format ("%-12s  %s  %s  %2d %3d  %3d", getFileName (),
+        readOnly ? "*" : " ", systemFile ? "*" : " ", userNumber, dataBlocks.size (),
+        recordCount);
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
   public String toString ()
   // ---------------------------------------------------------------------------------//
   {
-    return String.format ("%-12s  %s  %s  %2d %3d  %3d", getFileName (), readOnly ? "*" : " ",
-        systemFile ? "*" : " ", userNumber, dataBlocks.size (), recordCount);
+    StringBuilder text = new StringBuilder ();
+
+    text.append (String.format ("File name ............. %s%n", fileName));
+    text.append (String.format ("File type ............. %s%n", fileTypeText));
+    text.append (String.format ("Read only ............. %s%n", readOnly));
+    text.append (String.format ("System file ........... %s%n", systemFile));
+    text.append (String.format ("User number ........... %,d%n", userNumber));
+    text.append (String.format ("Extent lo ............. %,d%n", extentCounterLo));
+    text.append (String.format ("Extent hi ............. %,d%n", extentCounterHi));
+    text.append (String.format ("Data blocks ........... %,d%n", dataBlocks.size ()));
+    text.append (String.format ("Records ............... %,d", recordCount));
+
+    return text.toString ();
   }
 }

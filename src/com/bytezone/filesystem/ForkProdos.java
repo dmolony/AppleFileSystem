@@ -183,7 +183,7 @@ public class ForkProdos extends AbstractAppleFile
 
   // ---------------------------------------------------------------------------------//
   @Override
-  public int getLength ()
+  public int getFileLength ()
   // ---------------------------------------------------------------------------------//
   {
     return eof;
@@ -218,6 +218,6 @@ public class ForkProdos extends AbstractAppleFile
   // ---------------------------------------------------------------------------------//
   {
     return String.format ("%-30s %-3s  %04X %4d %,10d", fileName,
-        parentFile.getFileTypeText (), keyPtr, getTotalBlocks (), getLength ());
+        parentFile.getFileTypeText (), keyPtr, getTotalBlocks (), getFileLength ());
   }
 }

@@ -13,11 +13,11 @@ public class FileNuFX extends AbstractAppleFile
 // -----------------------------------------------------------------------------------//
 {
   private static final byte[] NuFX = { 0x4E, (byte) 0xF5, 0x46, (byte) 0xD8 };
-  private static String[] fileSystems =
-      { "", "ProDOS/SOS", "DOS 3.3", "DOS 3.2", "Apple II Pascal", "Macintosh HFS", "Macintosh MFS",
-          "Lisa File System", "Apple CP/M", "", "MS-DOS", "High Sierra", "ISO 9660", "AppleShare" };
-  private static String[] storage = { "", "Seedling", "Sapling", "Tree", "Pascal on Profile",
-      "GS/OS Extended", "", "", "", "", "", "", "", "Subdirectory" };
+  private static String[] fileSystems = { "", "ProDOS/SOS", "DOS 3.3", "DOS 3.2",
+      "Apple II Pascal", "Macintosh HFS", "Macintosh MFS", "Lisa File System",
+      "Apple CP/M", "", "MS-DOS", "High Sierra", "ISO 9660", "AppleShare" };
+  private static String[] storage = { "", "Seedling", "Sapling", "Tree",
+      "Pascal on Profile", "GS/OS Extended", "", "", "", "", "", "", "", "Subdirectory" };
   private static String[] accessChars = { "D", "R", "B", "", "", "I", "W", "R" };
 
   private final int crc;
@@ -47,6 +47,8 @@ public class FileNuFX extends AbstractAppleFile
   private int filenameThreads;
   private String threadKindText = "";
 
+  private ForkProdos data;            // for non-forked files
+
   // A Record  
   // ---------------------------------------------------------------------------------//
   FileNuFX (FsNuFX fs, byte[] buffer, int offset)
@@ -66,7 +68,11 @@ public class FileNuFX extends AbstractAppleFile
     fileSystemID = Utility.unsignedShort (buffer, offset + 14);
     separator = (char) (buffer[offset + 16] & 0x00FF);
     access = Utility.unsignedLong (buffer, offset + 18);
+
     fileType = Utility.unsignedLong (buffer, offset + 22);
+    if (fileSystemID == 1)
+      fileTypeText = fileTypes[fileType];
+
     auxType = Utility.unsignedLong (buffer, offset + 26);
     storType = Utility.unsignedShort (buffer, offset + 30);
     created = new DateTime (buffer, offset + 32);
@@ -118,10 +124,25 @@ public class FileNuFX extends AbstractAppleFile
 
   // ---------------------------------------------------------------------------------//
   @Override
+  public int getTotalBlocks ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return 0;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
   public String getFileName ()
   // ---------------------------------------------------------------------------------//
   {
     return fileName;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  public String[] getPath ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return fileName.split (separator + "");
   }
 
   // ---------------------------------------------------------------------------------//
@@ -215,7 +236,37 @@ public class FileNuFX extends AbstractAppleFile
   }
 
   // ---------------------------------------------------------------------------------//
-  public String toText ()
+  public int getFileSystemId ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return fileSystemID;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
+  public int getFileLength ()
+  // ---------------------------------------------------------------------------------//
+  {
+    for (NuFXThread thread : threads)
+      if (thread.threadClass == NuFXThread.CLASS_DATA
+          && (thread.threadKind == NuFXThread.KIND_DATA_FORK
+              || thread.threadKind == NuFXThread.KIND_DISK_IMAGE))
+        return thread.uncompressedEOF;
+
+    return 0;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
+  public String getCatalogLine ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return String.format ("%-30s  %-3s  %04X", fileName, fileTypes[fileType], auxType);
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
+  public String toString ()
   // ---------------------------------------------------------------------------------//
   {
     StringBuilder text = new StringBuilder ();
@@ -224,50 +275,51 @@ public class FileNuFX extends AbstractAppleFile
     bits = bits.substring (bits.length () - 8);
     String decode = Utility.matchFlags (access, accessChars);
 
-    text.append (String.format ("Header CRC ......... %04X   %s%n", crc,
+    text.append (String.format ("File name ............. %s%n", fileName));
+    text.append (String.format ("File type ............. %s%n%n", fileTypes[fileType]));
+    text.append (String.format ("Header CRC ............ %04X   %s%n", crc,
         crcPassed ? "Passed" : "** Failed **"));
-    text.append (String.format ("Attributes ......... %d%n", attributeSectionLength));
-    text.append (String.format ("Version ............ %d%n", version));
-    text.append (String.format ("Threads ............ %d%n", totThreads));
-    text.append (String.format ("File sys id ........ %02X     %s%n", fileSystemID,
+    text.append (String.format ("Attributes ............ %d%n", attributeSectionLength));
+    text.append (String.format ("Version ............... %d%n", version));
+    text.append (String.format ("Threads ............... %d%n%n", totThreads));
+    text.append (String.format ("File sys id ........... %02X     %s%n", fileSystemID,
         fileSystems[fileSystemID]));
-    text.append (String.format ("Separator .......... %s%n", separator));
-    text.append (String.format ("Access ............. %s  %s%n", bits, decode));
+    text.append (String.format ("Separator ............. %s%n", separator));
+    text.append (String.format ("Access ................ %s  %s%n", bits, decode));
 
     if (storType < 16)
     {
-      text.append (
-          String.format ("File type .......... %02X     %s%n", fileType, fileTypes[fileType]));
-      text.append (String.format ("Aux type ........... %04X%n", auxType));
-      text.append (
-          String.format ("Storage type ....... %02X     %s%n", storType, storage[storType]));
+      text.append (String.format ("File type ............. %02X     %s%n", fileType,
+          fileTypes[fileType]));
+      text.append (String.format ("Aux type .............. %04X%n", auxType));
+      text.append (String.format ("Storage type .......... %02X     %s%n%n", storType,
+          storage[storType]));
     }
     else
     {
-      text.append (String.format ("Zero ............... %,d%n", fileType));
-      text.append (String.format ("Total blocks ....... %,d%n", auxType));
-      text.append (String.format ("Block size ......... %,d%n", storType));
+      text.append (String.format ("Zero .................. %,d%n", fileType));
+      text.append (String.format ("Total blocks .......... %,d%n", auxType));
+      text.append (String.format ("Block size ............ %,d%n%n", storType));
     }
 
-    text.append (String.format ("Created ............ %s%n", created.format ()));
-    text.append (String.format ("Modified ........... %s%n", modified.format ()));
-    text.append (String.format ("Archived ........... %s%n", archived.format ()));
-    text.append (String.format ("Option size ........ %,d%n", optionSize));
-    text.append (String.format ("Filename len ....... %,d%n", fileNameLength));
-    text.append (String.format ("Filename ........... %s%n", fileName));
-    text.append (String.format ("Message threads .... %s%n", messageThreads));
-    text.append (String.format ("Control threads .... %s%n", controlThreads));
-    text.append (String.format ("Data threads ....... %s  %s%n", dataThreads, threadKindText));
-    text.append (String.format ("Filename threads ... %s", filenameThreads));
+    text.append (String.format ("Created ............... %s%n", created.format ()));
+    text.append (String.format ("Modified .............. %s%n", modified.format ()));
+    text.append (String.format ("Archived .............. %s%n%n", archived.format ()));
+    text.append (String.format ("Option size ........... %,d%n", optionSize));
+    text.append (String.format ("Filename len .......... %,d%n", fileNameLength));
+    text.append (String.format ("Filename .............. %s%n%n", fileName));
+    text.append (String.format ("Message threads ....... %s%n", messageThreads));
+    text.append (String.format ("Control threads ....... %s%n", controlThreads));
+    text.append (
+        String.format ("Data threads .......... %s  %s%n", dataThreads, threadKindText));
+    text.append (String.format ("Filename threads ...... %s%n%n", filenameThreads));
 
-    return text.toString ();
-  }
+    for (NuFXThread thread : threads)
+    {
+      text.append (thread);
+      text.append ("\n\n");
+    }
 
-  // ---------------------------------------------------------------------------------//
-  @Override
-  public String toString ()
-  // ---------------------------------------------------------------------------------//
-  {
-    return String.format ("%-30s  %-3s  %04X", fileName, fileTypes[fileType], auxType);
+    return Utility.rtrim (text);
   }
 }

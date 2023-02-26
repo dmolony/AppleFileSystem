@@ -8,15 +8,9 @@ import com.bytezone.filesystem.BlockReader.AddressType;
 public interface AppleFileSystem extends AppleFile
 // -----------------------------------------------------------------------------------//
 {
-  byte[] getBuffer ();
+  byte[] getDiskBuffer ();
 
-  int getOffset ();
-
-  //  void setParentFileSystem (AppleFileSystem appleFileSystem);
-
-  //  void setAppleFile (AppleFile appleFile);
-
-  //  void setHybrid ();
+  int getDiskOffset ();
 
   boolean isHybrid ();
 
@@ -48,7 +42,7 @@ public interface AppleFileSystem extends AppleFile
 
   enum FileSystemType
   {
-    DOS, PRODOS, PASCAL, CPM, NUFX, IMG2, NIB, DOS4, UNIDOS, ZIP, GZIP, HYBRID, DATA, BIN2, WOZ1,
-    WOZ2, LBR
+    DOS, PRODOS, PASCAL, CPM, NUFX, IMG2, NIB, DOS4, UNIDOS, ZIP, GZIP, HYBRID, DATA,
+    BIN2, WOZ1, WOZ2, LBR
   }
 }

@@ -10,8 +10,8 @@ public class NuFXThread
 // -----------------------------------------------------------------------------------//
 {
   private static String[] threadClassText = { "Message", "Control", "Data", "Filename" };
-  private static String[] formatText = { "Uncompressed", "Huffman squeeze", "LZW/1", "LZW/2",
-      "Unix 12-bit Compress", "Unix 16-bit Compress" };
+  private static String[] formatText = { "Uncompressed", "Huffman squeeze", "LZW/1",
+      "LZW/2", "Unix 12-bit Compress", "Unix 16-bit Compress" };
 
   private static String[][] threadKindText = {            //
       { "ASCII text", "predefined EOF", "IIgs icon" },    // message thread
@@ -126,18 +126,18 @@ public class NuFXThread
   {
     StringBuilder text = new StringBuilder ();
 
-    text.append (String.format ("  threadClass ....... %d          %s%n", threadClass,
+    text.append (String.format ("  threadClass ......... %d          %s%n", threadClass,
         threadClassText[threadClass]));
-    text.append (String.format ("  format ............ %d          %s%n", threadFormat,
+    text.append (String.format ("  format .............. %d          %s%n", threadFormat,
         formatText[threadFormat]));
-    text.append (
-        String.format ("  kind .............. %d          %s%n", threadKind, getKindText ()));
-    text.append (String.format ("  crc ............... %04X%n", threadCrc));
-    text.append (String.format ("  uncompressedEOF ... %08X %<,7d%n", uncompressedEOF));
-    text.append (String.format ("  compressedEOF ..... %08X %<,7d", compressedEOF));
+    text.append (String.format ("  kind ................ %d          %s%n", threadKind,
+        getKindText ()));
+    text.append (String.format ("  crc ................. %04X%n", threadCrc));
+    text.append (String.format ("  uncompressedEOF ..... %08X %<,7d%n", uncompressedEOF));
+    text.append (String.format ("  compressedEOF ....... %08X %<,7d", compressedEOF));
 
     if (threadFormat == 0)
-      text.append ("\n  data .............. " + getDataString ());
+      text.append ("\n  data ................ " + getDataString ());
 
     return text.toString ();
   }

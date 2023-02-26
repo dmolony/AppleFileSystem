@@ -38,7 +38,7 @@ public class FilePascal extends AbstractAppleFile
 
     fileName = Utility.getPascalString (buffer, ptr + 6);
     bytesUsedInLastBlock = Utility.unsignedShort (buffer, ptr + 22);
-    date = Utility.getPascalLocalDate (buffer, ptr + 24);             // could return null
+    date = Utility.getPascalLocalDate (buffer, ptr + 24);           // could return null
 
     for (int i = firstBlock; i < lastBlock; i++)
       dataBlocks.add (fs.getBlock (i));
@@ -54,10 +54,11 @@ public class FilePascal extends AbstractAppleFile
 
   // ---------------------------------------------------------------------------------//
   @Override
-  public int getLength ()                 // in bytes (eof)
+  public int getFileLength ()                 // in bytes (eof)
   // ---------------------------------------------------------------------------------//
   {
-    return (dataBlocks.size () - 1) * getFileSystem ().getBlockSize () + bytesUsedInLastBlock;
+    return (dataBlocks.size () - 1) * getFileSystem ().getBlockSize ()
+        + bytesUsedInLastBlock;
   }
 
   // ---------------------------------------------------------------------------------//
@@ -73,7 +74,8 @@ public class FilePascal extends AbstractAppleFile
   public String getCatalogLine ()
   // ---------------------------------------------------------------------------------//
   {
-    return toString ();
+    return String.format ("%-20s  %3d  %-4s  %03X-%03X  %3d  %s", fileName, fileType,
+        fileTypeText, firstBlock, lastBlock, bytesUsedInLastBlock, date);
   }
 
   // ---------------------------------------------------------------------------------//
@@ -81,7 +83,16 @@ public class FilePascal extends AbstractAppleFile
   public String toString ()
   // ---------------------------------------------------------------------------------//
   {
-    return String.format ("%-20s  %3d  %-4s  %03X-%03X  %3d  %s", fileName, fileType, fileTypeText,
-        firstBlock, lastBlock, bytesUsedInLastBlock, date);
+    StringBuilder text = new StringBuilder ();
+
+    text.append (String.format ("File name ............. %s%n", fileName));
+    text.append (
+        String.format ("File type ............. %d  %s%n", fileType, fileTypeText));
+    text.append (String.format ("First block ........... %d%n", firstBlock));
+    text.append (String.format ("Last block ............ %d%n", lastBlock));
+    text.append (String.format ("Bytes in last block ... %d%n", bytesUsedInLastBlock));
+    text.append (String.format ("Date .................. %s", date));
+
+    return text.toString ();
   }
 }

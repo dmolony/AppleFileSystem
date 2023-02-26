@@ -80,7 +80,7 @@ public class FileDos4 extends AbstractAppleFile
 
   // ---------------------------------------------------------------------------------//
   @Override
-  public int getLength ()                 // in bytes (eof)
+  public int getFileLength ()                 // in bytes (eof)
   // ---------------------------------------------------------------------------------//
   {
     return dataBlocks.size () * getFileSystem ().getBlockSize ();

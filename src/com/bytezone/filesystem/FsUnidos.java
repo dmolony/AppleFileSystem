@@ -16,8 +16,8 @@ public class FsUnidos extends AbstractFileSystem
   {
     super (blockReader, FileSystemType.UNIDOS);
 
-    byte[] buffer = getBuffer ();
-    int offset = getOffset ();
+    byte[] buffer = getDiskBuffer ();
+    int offset = getDiskOffset ();
 
     try
     {

@@ -121,13 +121,13 @@ public class FileProdos extends AbstractAppleFile
 
   // ---------------------------------------------------------------------------------//
   @Override
-  public int getLength ()                                         // in bytes (eof)
+  public int getFileLength ()                                         // in bytes (eof)
   // ---------------------------------------------------------------------------------//
   {
     if (isForkedFile ())
       throw new FileFormatException ("Cannot getLength() on a forked file");
 
-    return data.getLength ();
+    return data.getFileLength ();
   }
 
   // ---------------------------------------------------------------------------------//
@@ -143,7 +143,10 @@ public class FileProdos extends AbstractAppleFile
   public String getCatalogLine ()
   // ---------------------------------------------------------------------------------//
   {
-    return toString ();
+    int length = isForkedFile () ? 0 : data.getFileLength ();
+
+    return String.format ("%-30s %-3s  %04X %4d %,10d", fileName, fileTypeText, keyPtr,
+        getTotalBlocks (), length);
   }
 
   // ---------------------------------------------------------------------------------//
@@ -151,9 +154,18 @@ public class FileProdos extends AbstractAppleFile
   public String toString ()
   // ---------------------------------------------------------------------------------//
   {
-    int length = isForkedFile () ? 0 : data.getLength ();
+    StringBuilder text = new StringBuilder ();
 
-    return String.format ("%-30s %-3s  %04X %4d %,10d", fileName, fileTypeText, keyPtr,
-        getTotalBlocks (), length);
+    int length = isForkedFile () ? 0 : data.getFileLength ();
+
+    text.append (String.format ("File name ............. %s%n", fileName));
+    text.append (
+        String.format ("File type ............. %02X  %s%n", fileType, fileTypeText));
+    text.append (String.format ("Key ptr ............... %04X%n", keyPtr));
+    text.append (String.format ("Total blocks .......... %,d%n", getTotalBlocks ()));
+    text.append (String.format ("Length ................ %,d%n", length));
+    text.append (String.format ("Created ............... %s", dateC));
+
+    return text.toString ();
   }
 }

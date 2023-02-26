@@ -10,7 +10,7 @@ public class FsData extends AbstractFileSystem
   {
     super (blockReader, FileSystemType.DATA);
 
-    addFile (new FileData (this, getBuffer ()));
+    addFile (new FileData (this, getDiskBuffer ()));
   }
 
   // ---------------------------------------------------------------------------------//

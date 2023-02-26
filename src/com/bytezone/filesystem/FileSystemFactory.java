@@ -35,10 +35,12 @@ public class FileSystemFactory
 
     if (debug)
     {
+      System.out.println ("-----------------------------------------------------");
       System.out.printf ("Checking: %s%n", blockReader.getPath ());
       System.out.printf ("Length  : %,d%n", blockReader.getDiskLength ());
-      System.out.println (
-          Utility.format (blockReader.getDiskBuffer (), blockReader.getDiskOffset (), 100));
+      System.out.println (Utility.format (blockReader.getDiskBuffer (),
+          blockReader.getDiskOffset (), 100));
+      System.out.println ("-----------------------------------------------------");
     }
 
     getDos33 (blockReader);
@@ -172,7 +174,8 @@ public class FileSystemFactory
         break;
 
       case 2:
-        if (fsList.get (0).getTotalCatalogBlocks () > fsList.get (1).getTotalCatalogBlocks ())
+        if (fsList.get (0).getTotalCatalogBlocks () > fsList.get (1)
+            .getTotalCatalogBlocks ())
           fileSystems.add (fsList.get (0));
         else
           fileSystems.add (fsList.get (1));
@@ -240,6 +243,8 @@ public class FileSystemFactory
           if (fs.getTotalCatalogBlocks () > 0)
           {
             fileSystems.add (fs);
+            if (debug)
+              System.out.println ("Adding Prodos");
             break;
           }
         }
@@ -267,6 +272,8 @@ public class FileSystemFactory
           if (fs.getTotalCatalogBlocks () > 0)
           {
             fileSystems.add (fs);
+            if (debug)
+              System.out.println ("Adding Pascal");
             break;
           }
         }
@@ -355,7 +362,11 @@ public class FileSystemFactory
         FsBinary2 fs = new FsBinary2 (lbrReader);
 
         if (fs.getFiles ().size () > 0)
+        {
           fileSystems.add (fs);
+          if (debug)
+            System.out.println ("Adding Bin2");
+        }
       }
       catch (FileFormatException e)
       {
@@ -377,7 +388,11 @@ public class FileSystemFactory
         FsNuFX fs = new FsNuFX (lbrReader);
 
         if (fs.getFiles ().size () > 0)
+        {
           fileSystems.add (fs);
+          if (debug)
+            System.out.println ("Adding NuFX");
+        }
       }
       catch (FileFormatException e)
       {
@@ -459,8 +474,9 @@ public class FileSystemFactory
   private void getWoz (BlockReader blockReader)
   // ---------------------------------------------------------------------------------//
   {
-    FileSystemType fileSystemType = blockReader.isMagic (0, FsWoz.WOZ_1) ? FileSystemType.WOZ1
-        : blockReader.isMagic (0, FsWoz.WOZ_2) ? FileSystemType.WOZ2 : null;
+    FileSystemType fileSystemType =
+        blockReader.isMagic (0, FsWoz.WOZ_1) ? FileSystemType.WOZ1
+            : blockReader.isMagic (0, FsWoz.WOZ_2) ? FileSystemType.WOZ2 : null;
 
     if (fileSystemType == null)
       return;

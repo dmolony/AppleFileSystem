@@ -23,7 +23,7 @@ public class FsLbr extends AbstractFileSystem
 
         if (count++ == 0)                           // directory entry
         {
-          if (file.status != 0 || !file.name.isBlank () || !file.extension.isBlank ())
+          if (file.status != 0 || !file.fileName.isBlank () || !file.extension.isBlank ())
             throw new FileFormatException ("LBR: Invalid header");
 
           max = file.totalBlocks;                   // change outer loop

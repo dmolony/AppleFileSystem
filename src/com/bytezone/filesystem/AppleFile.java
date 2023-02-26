@@ -11,30 +11,15 @@ public interface AppleFile
 {
   public String getFileName ();
 
-  public default boolean isFileSystem ()
-  {
-    return false;
-  }
+  public boolean isFileSystem ();
 
-  public default boolean isFolder ()
-  {
-    return false;
-  }
+  public boolean isFolder ();
 
-  public default boolean isFile ()
-  {
-    return false;
-  }
+  public boolean isFile ();
 
-  public default boolean isForkedFile ()
-  {
-    return false;
-  }
+  public boolean isForkedFile ();
 
-  public default boolean isFork ()
-  {
-    return false;
-  }
+  public boolean isFork ();
 
   public void addFile (AppleFile file);             // if isFolder() or isFileSystem()
 
@@ -48,7 +33,7 @@ public interface AppleFile
 
   public void write (byte[] buffer);                // if isFile()
 
-  public int getLength ();                          // in bytes (eof)
+  public int getFileLength ();                      // in bytes (eof)
 
   public int getTotalBlocks ();                     // in data blocks
 

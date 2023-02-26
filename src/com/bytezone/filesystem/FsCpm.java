@@ -20,12 +20,12 @@ public class FsCpm extends AbstractFileSystem
     int firstBlock = 0;
     int maxBlocks = 0;
 
-    if (getBuffer ().length == 143_360)
+    if (getDiskBuffer ().length == 143_360)
     {
       firstBlock = 12;        // track 3 x (4 blocks per track)
       maxBlocks = 2;          // 2 blocks (half a track)
     }
-    else if (getBuffer ().length == 819_200)
+    else if (getDiskBuffer ().length == 819_200)
     {
       firstBlock = 16;        // track 2 x (8 blocks per track)
       maxBlocks = 8;          // 8 blocks (full track)

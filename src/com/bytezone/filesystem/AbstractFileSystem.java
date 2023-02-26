@@ -5,12 +5,13 @@ import java.util.List;
 import java.util.Objects;
 
 import com.bytezone.filesystem.BlockReader.AddressType;
+import com.bytezone.utility.Utility;
 
 // -----------------------------------------------------------------------------------//
 public abstract class AbstractFileSystem implements AppleFileSystem
 // -----------------------------------------------------------------------------------//
 {
-  protected static FileSystemFactory factory = new FileSystemFactory ();
+  protected FileSystemFactory factory;          // never static!!
 
   protected final BlockReader blockReader;
   protected int catalogBlocks;
@@ -19,17 +20,20 @@ public abstract class AbstractFileSystem implements AppleFileSystem
   // was a disk image in one of the non-standard file systems (zip, gz, NuFX 2img etc).
   // In order to obtain the parent FS, it will stored here. The AppleFile is needed to
   // keep the file details of the file that is now reinterpreted as a FS (PAR, LBR).
+
   protected AppleFileSystem appleFileSystem;    // the parent of this FS
   protected AppleFile appleFile;                // the source of this FS
 
-  protected List<AppleFile> files = new ArrayList<> ();   // files, folders and file systems
+  // If this file is a container (FS, folder, forked file, hybrid) then the children are
+  // stored here
+  protected List<AppleFile> files = new ArrayList<> ();
 
   protected FileSystemType fileSystemType;
 
   private int totalFileSystems = 0;
   private int totalFiles = 0;
 
-  protected boolean partOfHybrid;           // this FS is one of two file systems on the disk
+  protected boolean partOfHybrid;     // this FS is one of two file systems on the disk
 
   // ---------------------------------------------------------------------------------//
   public AbstractFileSystem (BlockReader blockReader, FileSystemType fileSystemType)
@@ -184,14 +188,6 @@ public abstract class AbstractFileSystem implements AppleFileSystem
 
   // ---------------------------------------------------------------------------------//
   @Override
-  public boolean isFileSystem ()
-  // ---------------------------------------------------------------------------------//
-  {
-    return true;
-  }
-
-  // ---------------------------------------------------------------------------------//
-  @Override
   public void addFile (AppleFile file)
   // ---------------------------------------------------------------------------------//
   {
@@ -240,7 +236,7 @@ public abstract class AbstractFileSystem implements AppleFileSystem
   public AppleFileSystem getFileSystem ()
   // ---------------------------------------------------------------------------------//
   {
-    return appleFileSystem;       // for embedded file systems only (usually null)
+    return appleFileSystem;           // for embedded file systems only (usually null)
   }
 
   // ---------------------------------------------------------------------------------//
@@ -248,7 +244,8 @@ public abstract class AbstractFileSystem implements AppleFileSystem
   public int getFileType ()
   // ---------------------------------------------------------------------------------//
   {
-    throw new UnsupportedOperationException ("Cannot call getFileType() on a file system");
+    throw new UnsupportedOperationException (
+        "Cannot call getFileType() on a file system");
   }
 
   // ---------------------------------------------------------------------------------//
@@ -256,12 +253,13 @@ public abstract class AbstractFileSystem implements AppleFileSystem
   public String getFileTypeText ()
   // ---------------------------------------------------------------------------------//
   {
-    throw new UnsupportedOperationException ("Cannot call getFileTypeText() on a file system");
+    throw new UnsupportedOperationException (
+        "Cannot call getFileTypeText() on a file system");
   }
 
   // ---------------------------------------------------------------------------------//
   @Override
-  public byte[] getBuffer ()
+  public byte[] getDiskBuffer ()
   // ---------------------------------------------------------------------------------//
   {
     return blockReader.getDiskBuffer ();
@@ -269,7 +267,7 @@ public abstract class AbstractFileSystem implements AppleFileSystem
 
   // ---------------------------------------------------------------------------------//
   @Override
-  public int getOffset ()
+  public int getDiskOffset ()
   // ---------------------------------------------------------------------------------//
   {
     return blockReader.getDiskOffset ();
@@ -277,7 +275,7 @@ public abstract class AbstractFileSystem implements AppleFileSystem
 
   // ---------------------------------------------------------------------------------//
   @Override
-  public int getLength ()                 // in bytes
+  public int getFileLength ()                 // in bytes
   // ---------------------------------------------------------------------------------//
   {
     return blockReader.getDiskLength ();
@@ -336,6 +334,9 @@ public abstract class AbstractFileSystem implements AppleFileSystem
   protected AppleFileSystem addFileSystem (BlockReader blockReader)
   // ---------------------------------------------------------------------------------//
   {
+    if (factory == null)
+      factory = new FileSystemFactory ();
+
     AppleFileSystem fs = factory.getFileSystem (blockReader);
 
     if (fs != null)
@@ -345,6 +346,46 @@ public abstract class AbstractFileSystem implements AppleFileSystem
     }
 
     return fs;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
+  public boolean isFileSystem ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return true;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
+  public boolean isFolder ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return false;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
+  public boolean isFile ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return false;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
+  public boolean isForkedFile ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return false;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
+  public boolean isFork ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return false;
   }
 
   // ---------------------------------------------------------------------------------//
@@ -359,14 +400,11 @@ public abstract class AbstractFileSystem implements AppleFileSystem
 
     for (AppleFile file : files)
     {
-      text.append (file);
+      text.append (file.getCatalogLine ());
       text.append ("\n");
     }
 
-    while (text.charAt (text.length () - 1) == '\n')
-      text.deleteCharAt (text.length () - 1);
-
-    return text.toString ();
+    return Utility.rtrim (text);
   }
 
   // ---------------------------------------------------------------------------------//

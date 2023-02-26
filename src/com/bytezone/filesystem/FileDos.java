@@ -116,7 +116,7 @@ public class FileDos extends AbstractAppleFile
 
   // ---------------------------------------------------------------------------------//
   @Override
-  public int getLength ()                         // in bytes (eof)
+  public int getFileLength ()                         // in bytes (eof)
   // ---------------------------------------------------------------------------------//
   {
     return length;
@@ -135,8 +135,8 @@ public class FileDos extends AbstractAppleFile
   public String getCatalogLine ()
   // ---------------------------------------------------------------------------------//
   {
-    return String.format ("%s %s %03d %-30s", locked ? "*" : " ", fileTypeText, sectorCount,
-        fileName);
+    return String.format ("%s %s %03d %-30s %,7d", locked ? "*" : " ", fileTypeText,
+        sectorCount, fileName, length);
   }
 
   // ---------------------------------------------------------------------------------//
@@ -144,7 +144,15 @@ public class FileDos extends AbstractAppleFile
   public String toString ()
   // ---------------------------------------------------------------------------------//
   {
-    return String.format ("%s %s %03d %-30s %,7d", locked ? "*" : " ", fileTypeText, sectorCount,
-        fileName, length);
+    StringBuilder text = new StringBuilder ();
+
+    text.append (String.format ("File name ............. %s%n", fileName));
+    text.append (
+        String.format ("File type ............. %d  %s%n", fileType, fileTypeText));
+    text.append (String.format ("Locked ................ %s%n", locked));
+    text.append (String.format ("Sectors ............... %,d%n", sectorCount));
+    text.append (String.format ("Length ................ %,d", length));
+
+    return text.toString ();
   }
 }

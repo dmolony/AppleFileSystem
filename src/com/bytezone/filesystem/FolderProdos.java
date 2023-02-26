@@ -52,6 +52,8 @@ public class FolderProdos extends AbstractAppleFile
     access = buffer[ptr + 0x1E] & 0xFF;
 
     fileType = buffer[ptr + 0x10] & 0xFF;
+    fileTypeText = ProdosConstants.fileTypes[fileType];
+
     keyPtr = Utility.unsignedShort (buffer, ptr + 0x11);
     size = Utility.unsignedShort (buffer, ptr + 0x13);
     eof = Utility.unsignedTriple (buffer, ptr + 0x15);
@@ -66,10 +68,25 @@ public class FolderProdos extends AbstractAppleFile
 
   // ---------------------------------------------------------------------------------//
   @Override
+  public String getCatalogLine ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return String.format ("%-30s %-3s  %04X %4d %,10d", fileName,
+        ProdosConstants.fileTypes[fileType], keyPtr, size, eof);
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
   public String toString ()
   // ---------------------------------------------------------------------------------//
   {
-    return String.format ("%-30s %-3s  %04X %4d %,10d", fileName, ProdosConstants.fileTypes[fileType],
-        keyPtr, size, eof);
+    StringBuilder text = new StringBuilder ();
+
+    text.append (String.format ("File name ............. %s%n", fileName));
+    text.append (
+        String.format ("File type ............. %d  %s%n", fileType, fileTypeText));
+    text.append (String.format ("Created ............... %s", dateCreated));
+
+    return text.toString ();
   }
 }

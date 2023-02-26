@@ -75,6 +75,7 @@ public class Tester
       bqy + "DEATHHUNT.BQY",                         // 39:
       shk + "hcomp.shk",                             // 40: NuFX / NuFX
       fva + "Fantavision.2mg",                       // 41: 
+      bxy + "GBBS_df2.41.bxy",                       // 42:
   };
 
   // ---------------------------------------------------------------------------------//
@@ -83,7 +84,7 @@ public class Tester
   {
     FileSystemFactory factory = new FileSystemFactory ();
 
-    int index = 41;
+    int index = 42;
     for (int fileNo = index; fileNo <= index; fileNo++)
     //    for (int fileNo = 0; fileNo < fileNames.length; fileNo++)
     {

@@ -28,7 +28,7 @@ public class FileData extends AbstractAppleFile
 
   // ---------------------------------------------------------------------------------//
   @Override
-  public int getLength ()                                 // in bytes (eof)
+  public int getFileLength ()                                 // in bytes (eof)
   // ---------------------------------------------------------------------------------//
   {
     return buffer.length;

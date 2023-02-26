@@ -9,10 +9,12 @@ import com.bytezone.utility.Utility;
 public class FsPascal extends AbstractFileSystem
 // -----------------------------------------------------------------------------------//
 {
-  //  private static BlockReader blockReader = new BlockReader (512, BLOCK, 0, 0);
   private static final int CATALOG_ENTRY_SIZE = 26;
 
   private String volumeName;
+  private int blockFrom;
+  private int blockTo;
+  private int entryType;
   private int blocks;         // size of disk
   private int files;          // no of files on disk
 
@@ -22,16 +24,18 @@ public class FsPascal extends AbstractFileSystem
   {
     super (blockReader, FileSystemType.PASCAL);
 
-    assert getTotalCatalogBlocks () == 0;
-
     AppleBlock vtoc = getBlock (2);
     byte[] buffer = vtoc.read ();
 
-    int blockFrom = Utility.unsignedShort (buffer, 0);
-    int blockTo = Utility.unsignedShort (buffer, 2);
+    blockFrom = Utility.unsignedShort (buffer, 0);
+    blockTo = Utility.unsignedShort (buffer, 2);
     if (blockFrom != 0 || blockTo != 6)
       throw new FileFormatException (
           String.format ("Pascal: from: %d, to: %d", blockFrom, blockTo));
+
+    entryType = Utility.unsignedShort (buffer, 4);
+    if (entryType != 0)
+      throw new FileFormatException ("Pascal: entry type != 0");
 
     int nameLength = buffer[6] & 0xFF;
     if (nameLength < 1 || nameLength > 7)
@@ -69,7 +73,10 @@ public class FsPascal extends AbstractFileSystem
     StringBuilder text = new StringBuilder (super.toText () + "\n\n");
 
     text.append (String.format ("Volume name ........... %s%n", volumeName));
-    text.append (String.format ("Total blocks .......... %,d", blocks));
+    text.append (String.format ("Directory ............. %d : %d%n", blockFrom, blockTo));
+    text.append (String.format ("Entry type ............ %,d%n", entryType));
+    text.append (String.format ("Total blocks .......... %,d%n", blocks));
+    text.append (String.format ("Total files ........... %,d", files));
 
     return text.toString ();
   }
