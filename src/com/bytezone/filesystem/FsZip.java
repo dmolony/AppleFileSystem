@@ -109,7 +109,7 @@ public class FsZip extends AbstractFileSystem
     //      for (String name : path.split ("/"))
     //        parent = getFolder (parent, name);
 
-    AppleFileSystem fs = addFileSystem (fileName, buffer);
+    AppleFileSystem fs = addFileSystem (this, fileName, buffer);
   }
 
   // ---------------------------------------------------------------------------------//
@@ -144,7 +144,8 @@ public class FsZip extends AbstractFileSystem
       String extra = bytes == null ? "" : bytes.toString ();
 
       text.append ("\n");
-      text.append (String.format ("Compressed size ... %,d%n", entry.getCompressedSize ()));
+      text.append (
+          String.format ("Compressed size ... %,d%n", entry.getCompressedSize ()));
       text.append (String.format ("Size .............. %,d%n", entry.getSize ()));
       text.append (String.format ("Name .............. %s%n", entry.getName ()));
       text.append (String.format ("Comment ........... %s%n", comment));

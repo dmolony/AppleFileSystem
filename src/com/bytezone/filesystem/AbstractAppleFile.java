@@ -172,14 +172,14 @@ public abstract class AbstractAppleFile implements AppleFile
   {
     StringBuilder text = new StringBuilder ();
 
-    text.append (toString () + "\n");
+    text.append (getCatalogLine () + "\n");
 
     if (files.size () > 0)
       for (AppleFile file : files)
         if (file.isFolder () || file.isFileSystem ())
           text.append (file.catalog () + "\n");
         else
-          text.append (file + "\n");
+          text.append (file.getCatalogLine () + "\n");
     else
       text.append ("Empty");
 

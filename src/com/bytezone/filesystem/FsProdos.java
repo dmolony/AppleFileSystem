@@ -101,14 +101,14 @@ public class FsProdos extends AbstractFileSystem
           case TREE:
             FileProdos file = new FileProdos (this, buffer, ptr);
             if (file.getFileType () == ProdosConstants.FILE_TYPE_LBR)
-              addFileSystem (file);
+              addFileSystem (this, file);
             else
               parent.addFile (file);
             break;
 
           case PASCAL_ON_PROFILE:
             file = new FileProdos (this, buffer, ptr);
-            addFileSystem (file, 1024);
+            addFileSystem (this, file, 1024);
             break;
 
           case GSOS_EXTENDED_FILE:

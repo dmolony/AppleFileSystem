@@ -7,12 +7,13 @@ public class ForkNuFX extends AbstractAppleFile
 // -----------------------------------------------------------------------------------//
 {
   private FileNuFX parentFile;
-  private FsProdos fileSystem;
+  private FsNuFX fileSystem;
   private ForkType forkType;
+  //  private byte[] buffer;
+  private NuFXThread thread;
 
   // ---------------------------------------------------------------------------------//
-  ForkNuFX (FileNuFX parentFile, ForkType forkType, int keyPtr, int storageType, int size,
-      int eof)
+  ForkNuFX (FileNuFX parentFile, ForkType forkType, NuFXThread thread)
   // ---------------------------------------------------------------------------------//
   {
     super (parentFile.getFileSystem ());
@@ -27,7 +28,31 @@ public class ForkNuFX extends AbstractAppleFile
     this.forkType = forkType;
     this.fileName = forkType == ForkType.DATA ? "Data fork"
         : forkType == ForkType.RESOURCE ? "Resource fork" : "Not forked";
-    this.fileSystem = (FsProdos) parentFile.getFileSystem ();
+
+    this.fileSystem = (FsNuFX) parentFile.getFileSystem ();
+    this.thread = thread;
   }
 
+  // ---------------------------------------------------------------------------------//
+  @Override
+  public int getFileLength ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return thread.uncompressedEOF;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  public int getFileSystemId ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return parentFile.getFileSystemId ();
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
+  public byte[] read ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return thread.getData ();
+  }
 }

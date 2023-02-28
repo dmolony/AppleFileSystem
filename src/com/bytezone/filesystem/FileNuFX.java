@@ -27,7 +27,7 @@ public class FileNuFX extends AbstractAppleFile
   private final int fileSystemID;
   private final char separator;
   private final int access;
-  //  private final int fileType;
+
   private final int auxType;
   private final int storType;
   private final DateTime created;
@@ -35,7 +35,7 @@ public class FileNuFX extends AbstractAppleFile
   private final DateTime archived;
   private final int optionSize;
   private final int fileNameLength;
-  private String fileName;
+  private String fileName1 = "";
 
   private boolean crcPassed;
   final List<NuFXThread> threads = new ArrayList<> ();
@@ -47,7 +47,7 @@ public class FileNuFX extends AbstractAppleFile
   private int filenameThreads;
   private String threadKindText = "";
 
-  private ForkProdos data;            // for non-forked files
+  private ForkNuFX dataFork;            // for non-forked files only
 
   // A Record  
   // ---------------------------------------------------------------------------------//
@@ -108,6 +108,35 @@ public class FileNuFX extends AbstractAppleFile
 
     assert totThreads == messageThreads + controlThreads + dataThreads + filenameThreads;
 
+    for (NuFXThread thread : threads)
+    {
+      if (thread.threadClass == NuFXThread.CLASS_DATA)
+      {
+        //        byte[] forkBuffer = thread.getDataBuffer ();
+
+        switch (thread.threadKind)
+        {
+          case NuFXThread.KIND_DATA_FORK:
+            if (dataThreads == 2)
+            {
+              files.add (new ForkNuFX (this, FileProdos.ForkType.DATA, thread));
+              isForkedFile = true;
+            }
+            else
+              dataFork = new ForkNuFX (this, FileProdos.ForkType.DATA, thread);
+            break;
+
+          case NuFXThread.KIND_RESOURCE_FORK:
+            isForkedFile = true;
+            files.add (new ForkNuFX (this, FileProdos.ForkType.RESOURCE, thread));
+            break;
+
+          default:
+            break;
+        }
+      }
+    }
+
     if (false)
     {
       System.out.println (this);
@@ -135,14 +164,22 @@ public class FileNuFX extends AbstractAppleFile
   public String getFileName ()
   // ---------------------------------------------------------------------------------//
   {
+    int pos = fileName.lastIndexOf (separator);
+    return pos < 0 ? fileName : fileName.substring (pos + 1);
+  }
+
+  // ---------------------------------------------------------------------------------//
+  public String getFullFileName ()
+  // ---------------------------------------------------------------------------------//
+  {
     return fileName;
   }
 
   // ---------------------------------------------------------------------------------//
-  public String[] getPath ()
+  char getSeparator ()
   // ---------------------------------------------------------------------------------//
   {
-    return fileName.split (separator + "");
+    return separator;
   }
 
   // ---------------------------------------------------------------------------------//
@@ -169,13 +206,17 @@ public class FileNuFX extends AbstractAppleFile
   public byte[] read ()
   // ---------------------------------------------------------------------------------//
   {
-    for (NuFXThread thread : threads)
-      if (thread.threadClass == NuFXThread.CLASS_DATA
-          && (thread.threadKind == NuFXThread.KIND_DATA_FORK
-              || thread.threadKind == NuFXThread.KIND_DISK_IMAGE))
-        return thread.getData ();
+    //    for (NuFXThread thread : threads)
+    //      if (thread.threadClass == NuFXThread.CLASS_DATA
+    //          && (thread.threadKind == NuFXThread.KIND_DATA_FORK
+    //              || thread.threadKind == NuFXThread.KIND_DISK_IMAGE))
+    //        return thread.getData ();
+    //
+    //    return null;
+    if (isForkedFile)
+      throw new FileFormatException ("Cannot read() a forked file");
 
-    return null;
+    return dataFork.read ();
   }
 
   // ---------------------------------------------------------------------------------//
@@ -190,7 +231,9 @@ public class FileNuFX extends AbstractAppleFile
       for (int i = start; i < end; i++)
         buffer[i] &= 0x7F;
 
-      return new String (buffer, start, fileNameLength);
+      fileName1 = new String (buffer, start, fileNameLength);
+
+      return fileName1;
     }
 
     for (NuFXThread thread : threads)
@@ -275,8 +318,11 @@ public class FileNuFX extends AbstractAppleFile
     bits = bits.substring (bits.length () - 8);
     String decode = Utility.matchFlags (access, accessChars);
 
-    text.append (String.format ("File name ............. %s%n", fileName));
-    text.append (String.format ("File type ............. %s%n%n", fileTypes[fileType]));
+    text.append (String.format ("File name ............. %s%n", getFileName ()));
+    if (!getFileName ().equals (getFullFileName ()))
+      text.append (String.format ("Full file name ........ %s%n", getFullFileName ()));
+    text.append (String.format ("File type ............. %02X  %s%n%n", fileType,
+        fileTypes[fileType]));
     text.append (String.format ("Header CRC ............ %04X   %s%n", crc,
         crcPassed ? "Passed" : "** Failed **"));
     text.append (String.format ("Attributes ............ %d%n", attributeSectionLength));
@@ -307,7 +353,7 @@ public class FileNuFX extends AbstractAppleFile
     text.append (String.format ("Archived .............. %s%n%n", archived.format ()));
     text.append (String.format ("Option size ........... %,d%n", optionSize));
     text.append (String.format ("Filename len .......... %,d%n", fileNameLength));
-    text.append (String.format ("Filename .............. %s%n%n", fileName));
+    text.append (String.format ("Filename .............. %s%n%n", fileName1));
     text.append (String.format ("Message threads ....... %s%n", messageThreads));
     text.append (String.format ("Control threads ....... %s%n", controlThreads));
     text.append (

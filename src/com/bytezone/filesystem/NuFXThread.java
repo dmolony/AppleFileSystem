@@ -15,9 +15,9 @@ public class NuFXThread
 
   private static String[][] threadKindText = {            //
       { "ASCII text", "predefined EOF", "IIgs icon" },    // message thread
-      { "create directory", "undefined", "undefined" },   // control thread
-      { "data fork", "disk image", "resource fork" },     // data thread
-      { "filename", "undefined", "undefined" } };         // filename thread
+      { "Create directory", "undefined", "undefined" },   // control thread
+      { "Data fork", "Disk image", "Resource fork" },     // data thread
+      { "Filename", "undefined", "undefined" } };         // filename thread
 
   public static final int CLASS_MESSAGE = 0;
   public static final int CLASS_CONTROL = 1;
@@ -39,7 +39,6 @@ public class NuFXThread
   final int compressedEOF;
 
   private final byte[] compressedData;
-  private final byte[] uncompressedData;
 
   // ---------------------------------------------------------------------------------//
   public NuFXThread (byte[] buffer, int offset, int dataOffset)
@@ -54,7 +53,6 @@ public class NuFXThread
     compressedEOF = Utility.unsignedLong (buffer, offset + 12);
 
     compressedData = new byte[compressedEOF];
-    uncompressedData = new byte[uncompressedEOF];
 
     System.arraycopy (buffer, dataOffset, compressedData, 0, compressedData.length);
   }
@@ -67,10 +65,10 @@ public class NuFXThread
   }
 
   // ---------------------------------------------------------------------------------//
-  byte[] getDataBuffer ()
+  int getUncompressedEOF ()
   // ---------------------------------------------------------------------------------//
   {
-    return uncompressedData;
+    return uncompressedEOF;
   }
 
   // ---------------------------------------------------------------------------------//
@@ -109,7 +107,8 @@ public class NuFXThread
         break;
     }
 
-    return uncompressedData;
+    //    return uncompressedData;
+    return null;
   }
 
   // ---------------------------------------------------------------------------------//

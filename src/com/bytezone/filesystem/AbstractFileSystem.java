@@ -228,6 +228,9 @@ public abstract class AbstractFileSystem implements AppleFileSystem
   public List<AppleBlock> getBlocks ()
   // ---------------------------------------------------------------------------------//
   {
+    if (appleFile != null)
+      return appleFile.getBlocks ();
+
     throw new UnsupportedOperationException ("Cannot call getBlocks() on a file system");
   }
 
@@ -236,7 +239,10 @@ public abstract class AbstractFileSystem implements AppleFileSystem
   public AppleFileSystem getFileSystem ()
   // ---------------------------------------------------------------------------------//
   {
-    return appleFileSystem;           // for embedded file systems only (usually null)
+    if (appleFile != null)
+      return appleFile.getFileSystem ();
+
+    return appleFileSystem;       // for embedded file systems only (usually null)
   }
 
   // ---------------------------------------------------------------------------------//
@@ -244,6 +250,9 @@ public abstract class AbstractFileSystem implements AppleFileSystem
   public int getFileType ()
   // ---------------------------------------------------------------------------------//
   {
+    if (appleFile != null)
+      return appleFile.getFileType ();
+
     throw new UnsupportedOperationException (
         "Cannot call getFileType() on a file system");
   }
@@ -253,6 +262,9 @@ public abstract class AbstractFileSystem implements AppleFileSystem
   public String getFileTypeText ()
   // ---------------------------------------------------------------------------------//
   {
+    if (appleFile != null)
+      return appleFile.getFileTypeText ();
+
     throw new UnsupportedOperationException (
         "Cannot call getFileTypeText() on a file system");
   }
@@ -275,7 +287,7 @@ public abstract class AbstractFileSystem implements AppleFileSystem
 
   // ---------------------------------------------------------------------------------//
   @Override
-  public int getFileLength ()                 // in bytes
+  public int getDiskLength ()               // in bytes
   // ---------------------------------------------------------------------------------//
   {
     return blockReader.getDiskLength ();
@@ -283,7 +295,19 @@ public abstract class AbstractFileSystem implements AppleFileSystem
 
   // ---------------------------------------------------------------------------------//
   @Override
-  public int getTotalBlocks ()           // in blocks
+  public int getFileLength ()
+  // ---------------------------------------------------------------------------------//
+  {
+    if (appleFile != null)
+      return appleFile.getFileLength ();
+
+    throw new UnsupportedOperationException (
+        "Cannot call getFileLength() on a file system");
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
+  public int getTotalBlocks ()              // in blocks
   // ---------------------------------------------------------------------------------//
   {
     return blockReader.totalBlocks;
@@ -293,27 +317,27 @@ public abstract class AbstractFileSystem implements AppleFileSystem
   // FsBinary2
   // FsProdos (LBR files)
   // ---------------------------------------------------------------------------------//
-  protected void addFileSystem (AppleFile file)
+  protected void addFileSystem (AppleFile parent, AppleFile file)
   // ---------------------------------------------------------------------------------//
   {
-    addFileSystem (file, 0);
+    addFileSystem (parent, file, 0);
   }
 
   // FsProdos (PAR files)
   // ---------------------------------------------------------------------------------//
-  protected void addFileSystem (AppleFile file, int offset)
+  protected void addFileSystem (AppleFile parent, AppleFile file, int offset)
   // ---------------------------------------------------------------------------------//
   {
     byte[] buffer = file.read ();
     BlockReader blockReader =
         new BlockReader (file.getFileName (), buffer, offset, buffer.length - offset);
 
-    AppleFileSystem fs = addFileSystem (blockReader);
+    AppleFileSystem fs = addFileSystem (parent, blockReader);
 
     if (fs == null)
     {
       System.out.println ("No file systems found");
-      addFile (file);        // not a file system, so revert to adding it as a file
+      parent.addFile (file);        // not a file system, so revert to adding it as a file
     }
     else
       ((AbstractFileSystem) fs).appleFile = file;     // don't lose the file details
@@ -322,16 +346,16 @@ public abstract class AbstractFileSystem implements AppleFileSystem
   // FsZip
   // FsGzip
   // ---------------------------------------------------------------------------------//
-  protected AppleFileSystem addFileSystem (String name, byte[] buffer)
+  protected AppleFileSystem addFileSystem (AppleFile parent, String name, byte[] buffer)
   // ---------------------------------------------------------------------------------//
   {
-    return addFileSystem (new BlockReader (name, buffer, 0, buffer.length));
+    return addFileSystem (parent, new BlockReader (name, buffer, 0, buffer.length));
   }
 
   // FsWoz
   // Fs2img
   // ---------------------------------------------------------------------------------//
-  protected AppleFileSystem addFileSystem (BlockReader blockReader)
+  protected AppleFileSystem addFileSystem (AppleFile parent, BlockReader blockReader)
   // ---------------------------------------------------------------------------------//
   {
     if (factory == null)
@@ -341,7 +365,7 @@ public abstract class AbstractFileSystem implements AppleFileSystem
 
     if (fs != null)
     {
-      addFile (fs);
+      parent.addFile (fs);
       ((AbstractFileSystem) fs).appleFileSystem = this;
     }
 
@@ -442,9 +466,6 @@ public abstract class AbstractFileSystem implements AppleFileSystem
   public String toString ()
   // ---------------------------------------------------------------------------------//
   {
-    //    if (appleFile != null)
-    //      return appleFile.toString ();
-
     return String.format ("%-15s %-6s %,8d  %d %,7d  %4d %3d %4d %3d", getFileName (),
         getFileSystemType (), blockReader.getDiskOffset (), blockReader.interleave,
         blockReader.totalBlocks, blockReader.bytesPerBlock, catalogBlocks, totalFiles,

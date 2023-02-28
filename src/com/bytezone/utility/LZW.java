@@ -128,6 +128,7 @@ abstract class LZW
       unpack ();
       unpacked = true;
     }
+
     return chunks.size () * TRACK_LENGTH;
   }
 

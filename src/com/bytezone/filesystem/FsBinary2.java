@@ -34,7 +34,7 @@ public class FsBinary2 extends AbstractFileSystem
       filesRemaining = file.getFilesFollowing ();
 
       if (file.getFileType () == ProdosConstants.FILE_TYPE_LBR)
-        addFileSystem (file);
+        addFileSystem (this, file);
       else
         addFile (file);
 

@@ -12,6 +12,8 @@ public interface AppleFileSystem extends AppleFile
 
   int getDiskOffset ();
 
+  int getDiskLength ();
+
   boolean isHybrid ();
 
   BlockReader getBlockReader ();
