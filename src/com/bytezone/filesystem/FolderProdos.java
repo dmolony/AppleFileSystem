@@ -85,7 +85,15 @@ public class FolderProdos extends AbstractAppleFile
     text.append (String.format ("File name ............. %s%n", fileName));
     text.append (
         String.format ("File type ............. %d  %s%n", fileType, fileTypeText));
-    text.append (String.format ("Created ............... %s", dateCreated));
+    text.append (String.format ("Version ............... %d%n", version));
+    text.append (String.format ("Min version ........... %d%n", minVersion));
+    text.append (String.format ("Access ................ %02X    %<7d%n", access));
+    text.append (String.format ("Size .................. %04X  %<,7d%n", size));
+    text.append (String.format ("Eof ................... %04X  %<,7d%n", eof));
+    text.append (String.format ("Auxtype ............... %04X  %<,7d%n", auxType));
+    text.append (String.format ("Key ptr ............... %04X  %<,7d%n", keyPtr));
+    text.append (String.format ("Created ............... %9s%n", dateCreated));
+    text.append (String.format ("Modified .............. %9s", dateModified));
 
     return text.toString ();
   }

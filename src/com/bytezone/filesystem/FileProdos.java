@@ -20,13 +20,13 @@ public class FileProdos extends AbstractAppleFile
   private int auxType;
   private int headerPtr;
 
-  private byte version = 0x00;
-  private byte minVersion = 0x00;
-  private byte access = (byte) 0xE3;
+  private int version = 0x00;
+  private int minVersion = 0x00;
+  private int access = (byte) 0xE3;
 
   private LocalDateTime created;
   private LocalDateTime modified;
-  private String dateC, timeC, dateM, timeM;
+  private String dateCreated, timeCreated, dateModified, timeModified;
 
   private ForkProdos data;            // for non-forked files
 
@@ -58,18 +58,18 @@ public class FileProdos extends AbstractAppleFile
     eof = Utility.unsignedTriple (buffer, ptr + 0x15);
 
     created = Utility.getAppleDate (buffer, ptr + 0x18);
-    version = buffer[ptr + 0x1C];
-    minVersion = buffer[ptr + 0x1D];
-    access = buffer[ptr + 0x1E];
+    version = buffer[ptr + 0x1C] & 0xFF;
+    minVersion = buffer[ptr + 0x1D] & 0xFF;
+    access = buffer[ptr + 0x1E] & 0xFF;
 
     auxType = Utility.unsignedShort (buffer, ptr + 0x1F);
     modified = Utility.getAppleDate (buffer, ptr + 0x21);
     headerPtr = Utility.unsignedShort (buffer, ptr + 0x25);
 
-    dateC = created == null ? NO_DATE : created.format (sdf);
-    timeC = created == null ? "" : created.format (stf);
-    dateM = modified == null ? NO_DATE : modified.format (sdf);
-    timeM = modified == null ? "" : modified.format (stf);
+    dateCreated = created == null ? NO_DATE : created.format (sdf);
+    timeCreated = created == null ? "" : created.format (stf);
+    dateModified = modified == null ? NO_DATE : modified.format (sdf);
+    timeModified = modified == null ? "" : modified.format (stf);
 
     // 
     if (isForkedFile ())
@@ -162,9 +162,15 @@ public class FileProdos extends AbstractAppleFile
     text.append (
         String.format ("File type ............. %02X  %s%n", fileType, fileTypeText));
     text.append (String.format ("Key ptr ............... %04X%n", keyPtr));
-    text.append (String.format ("Total blocks .......... %,d%n", getTotalBlocks ()));
-    text.append (String.format ("Length ................ %,d%n", length));
-    text.append (String.format ("Created ............... %s", dateC));
+    text.append (String.format ("Version ............... %d%n", version));
+    text.append (String.format ("Min version ........... %d%n", minVersion));
+    text.append (String.format ("Access ................ %02X    %<7d%n", access));
+    text.append (String.format ("Size (blocks) ......... %04X  %<,7d%n", size));
+    text.append (String.format ("Eof ................... %04X  %<,7d%n", eof));
+    text.append (String.format ("Auxtype ............... %04X  %<,7d%n", auxType));
+    text.append (String.format ("Key ptr ............... %04X  %<,7d%n", keyPtr));
+    text.append (String.format ("Created ............... %9s%n", dateCreated));
+    text.append (String.format ("Modified .............. %9s", dateModified));
 
     return text.toString ();
   }

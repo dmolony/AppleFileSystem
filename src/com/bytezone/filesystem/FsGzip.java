@@ -22,15 +22,12 @@ public class FsGzip extends AbstractFileSystem
   {
     super (blockReader, FileSystemType.GZIP);
 
-    try (GZIPInputStream zip = new GZIPInputStream (//
-        new ByteArrayInputStream (getDiskBuffer (), getDiskOffset (), getFileLength ()));)
+    try (GZIPInputStream zip = new GZIPInputStream (  //
+        new ByteArrayInputStream (                    //
+            getDiskBuffer (), getDiskOffset (), getDiskLength ()));)
     {
       addFileSystem (this, getFileName (), Utility.getFullBuffer (zip));
     }
-    //    catch (ZipException e)
-    //    {
-    //      throw new FileFormatException (e.getMessage ());
-    //    }
     catch (IOException e)
     {
       throw new FileFormatException (e.getMessage ());

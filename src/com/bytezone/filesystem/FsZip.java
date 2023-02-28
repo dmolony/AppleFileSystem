@@ -38,7 +38,7 @@ public class FsZip extends AbstractFileSystem
   // ---------------------------------------------------------------------------------//
   {
     try (ZipInputStream zip = new ZipInputStream (//
-        new ByteArrayInputStream (getDiskBuffer (), getDiskOffset (), getFileLength ()));)
+        new ByteArrayInputStream (getDiskBuffer (), getDiskOffset (), getDiskLength ()));)
     {
       ZipEntry entry;
       while ((entry = zip.getNextEntry ()) != null)
