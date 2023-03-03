@@ -92,12 +92,8 @@ public class FileProdos extends AbstractAppleFile
       int eof = Utility.unsignedTriple (buffer, ptr + 5);
 
       if (keyPtr > 0)
-        if (ptr == 0)
-          addFile (new ForkProdos (this, ForkType.DATA, keyPtr, storageType, size, eof));
-        else
-          addFile (
-              new ForkProdos (this, ForkType.RESOURCE, keyPtr, storageType, size, eof));
-
+        addFile (new ForkProdos (this, ptr == 0 ? ForkType.DATA : ForkType.RESOURCE,
+            keyPtr, storageType, size, eof));
     }
   }
 
@@ -161,16 +157,18 @@ public class FileProdos extends AbstractAppleFile
     text.append (String.format ("File name ............. %s%n", fileName));
     text.append (
         String.format ("File type ............. %02X  %s%n", fileType, fileTypeText));
-    text.append (String.format ("Key ptr ............... %04X%n", keyPtr));
     text.append (String.format ("Version ............... %d%n", version));
     text.append (String.format ("Min version ........... %d%n", minVersion));
     text.append (String.format ("Access ................ %02X    %<7d%n", access));
     text.append (String.format ("Size (blocks) ......... %04X  %<,7d%n", size));
     text.append (String.format ("Eof ................... %04X  %<,7d%n", eof));
     text.append (String.format ("Auxtype ............... %04X  %<,7d%n", auxType));
+    text.append (String.format ("Header ptr ............ %04X  %<,7d%n", headerPtr));
     text.append (String.format ("Key ptr ............... %04X  %<,7d%n", keyPtr));
-    text.append (String.format ("Created ............... %9s%n", dateCreated));
-    text.append (String.format ("Modified .............. %9s", dateModified));
+    text.append (
+        String.format ("Created ............... %9s %-5s%n", dateCreated, timeCreated));
+    text.append (
+        String.format ("Modified .............. %9s %-5s", dateModified, timeModified));
 
     return text.toString ();
   }

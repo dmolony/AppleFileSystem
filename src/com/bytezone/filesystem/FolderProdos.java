@@ -43,10 +43,6 @@ public class FolderProdos extends AbstractAppleFile
     if (nameLength > 0)
       fileName = Utility.string (buffer, ptr + 1, nameLength);
 
-    created = Utility.getAppleDate (buffer, ptr + 0x18);
-    dateCreated = created == null ? NO_DATE : created.format (df);
-    timeCreated = created == null ? "" : created.format (tf);
-
     version = buffer[ptr + 0x1C] & 0xFF;
     minVersion = buffer[ptr + 0x1D] & 0xFF;
     access = buffer[ptr + 0x1E] & 0xFF;
@@ -58,6 +54,10 @@ public class FolderProdos extends AbstractAppleFile
     size = Utility.unsignedShort (buffer, ptr + 0x13);
     eof = Utility.unsignedTriple (buffer, ptr + 0x15);
     auxType = Utility.unsignedShort (buffer, ptr + 0x1F);   // pointless ?
+
+    created = Utility.getAppleDate (buffer, ptr + 0x18);
+    dateCreated = created == null ? NO_DATE : created.format (df);
+    timeCreated = created == null ? "" : created.format (tf);
 
     modified = Utility.getAppleDate (buffer, ptr + 0x21);
     dateModified = modified == null ? NO_DATE : modified.format (df);
@@ -88,12 +88,14 @@ public class FolderProdos extends AbstractAppleFile
     text.append (String.format ("Version ............... %d%n", version));
     text.append (String.format ("Min version ........... %d%n", minVersion));
     text.append (String.format ("Access ................ %02X    %<7d%n", access));
-    text.append (String.format ("Size .................. %04X  %<,7d%n", size));
+    text.append (String.format ("Size (blocks) ......... %04X  %<,7d%n", size));
     text.append (String.format ("Eof ................... %04X  %<,7d%n", eof));
     text.append (String.format ("Auxtype ............... %04X  %<,7d%n", auxType));
     text.append (String.format ("Key ptr ............... %04X  %<,7d%n", keyPtr));
-    text.append (String.format ("Created ............... %9s%n", dateCreated));
-    text.append (String.format ("Modified .............. %9s", dateModified));
+    text.append (
+        String.format ("Created ............... %9s %-5s%n", dateCreated, timeCreated));
+    text.append (
+        String.format ("Modified .............. %9s %-5s", dateModified, timeModified));
 
     return text.toString ();
   }

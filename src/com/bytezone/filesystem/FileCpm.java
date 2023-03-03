@@ -36,6 +36,8 @@ public class FileCpm extends AbstractAppleFile
     typeBuffer[1] = (byte) (buffer[ptr + 10] & 0x7F);
     typeBuffer[2] = (byte) (buffer[ptr + 11] & 0x7F);
     fileTypeText = new String (typeBuffer).trim ();
+    //    if (fileTypeText.length () == 0)
+    //      fileTypeText = "???";
 
     userNumber = buffer[ptr] & 0xFF;
     fileName = new String (buffer, ptr + 1, 8).trim ();

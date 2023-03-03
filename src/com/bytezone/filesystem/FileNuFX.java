@@ -48,6 +48,8 @@ public class FileNuFX extends AbstractAppleFile
   private String threadKindText = "";
 
   private ForkNuFX dataFork;            // for non-forked files only
+  private boolean isDiskImage;
+  private NuFXThread diskImageThread;
 
   // A Record  
   // ---------------------------------------------------------------------------------//
@@ -109,33 +111,44 @@ public class FileNuFX extends AbstractAppleFile
     assert totThreads == messageThreads + controlThreads + dataThreads + filenameThreads;
 
     for (NuFXThread thread : threads)
-    {
-      if (thread.threadClass == NuFXThread.CLASS_DATA)
+      switch (thread.threadClass)
       {
-        //        byte[] forkBuffer = thread.getDataBuffer ();
+        case NuFXThread.CLASS_FILENAME:
+          break;
 
-        switch (thread.threadKind)
-        {
-          case NuFXThread.KIND_DATA_FORK:
-            if (dataThreads == 2)
-            {
-              files.add (new ForkNuFX (this, FileProdos.ForkType.DATA, thread));
+        case NuFXThread.CLASS_CONTROL:
+          break;
+
+        case NuFXThread.CLASS_MESSAGE:
+          break;
+
+        case NuFXThread.CLASS_DATA:
+          switch (thread.threadKind)
+          {
+            case NuFXThread.KIND_DATA_FORK:
+              if (dataThreads == 2)
+              {
+                files.add (new ForkNuFX (this, FileProdos.ForkType.DATA, thread));
+                isForkedFile = true;
+              }
+              else
+                dataFork = new ForkNuFX (this, FileProdos.ForkType.DATA, thread);
+              break;
+
+            case NuFXThread.KIND_DISK_IMAGE:
+              isDiskImage = true;
+              diskImageThread = thread;
+              break;
+
+            case NuFXThread.KIND_RESOURCE_FORK:
               isForkedFile = true;
-            }
-            else
-              dataFork = new ForkNuFX (this, FileProdos.ForkType.DATA, thread);
-            break;
+              files.add (new ForkNuFX (this, FileProdos.ForkType.RESOURCE, thread));
+              break;
 
-          case NuFXThread.KIND_RESOURCE_FORK:
-            isForkedFile = true;
-            files.add (new ForkNuFX (this, FileProdos.ForkType.RESOURCE, thread));
-            break;
-
-          default:
-            break;
-        }
+            default:
+              break;
+          }
       }
-    }
 
     if (false)
     {
@@ -206,13 +219,9 @@ public class FileNuFX extends AbstractAppleFile
   public byte[] read ()
   // ---------------------------------------------------------------------------------//
   {
-    //    for (NuFXThread thread : threads)
-    //      if (thread.threadClass == NuFXThread.CLASS_DATA
-    //          && (thread.threadKind == NuFXThread.KIND_DATA_FORK
-    //              || thread.threadKind == NuFXThread.KIND_DISK_IMAGE))
-    //        return thread.getData ();
-    //
-    //    return null;
+    if (isDiskImage)
+      return diskImageThread.getData ();
+
     if (isForkedFile)
       throw new FileFormatException ("Cannot read() a forked file");
 

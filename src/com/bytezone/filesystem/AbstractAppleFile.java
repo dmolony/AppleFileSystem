@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.bytezone.filesystem.AppleFileSystem.FileSystemType;
+import com.bytezone.utility.Utility;
 
 // -----------------------------------------------------------------------------------//
 public abstract class AbstractAppleFile implements AppleFile
@@ -80,10 +81,18 @@ public abstract class AbstractAppleFile implements AppleFile
 
   // ---------------------------------------------------------------------------------//
   @Override
+  public boolean isContainer ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return isFileSystem || isFolder || isForkedFile;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
   public void addFile (AppleFile file)
   // ---------------------------------------------------------------------------------//
   {
-    if (isFolder () || isFileSystem () || isForkedFile ())
+    if (isContainer ())
       files.add (file);
     else
       throw new UnsupportedOperationException ("cannot addFile()");
@@ -110,7 +119,7 @@ public abstract class AbstractAppleFile implements AppleFile
   public List<AppleFile> getFiles ()
   // ---------------------------------------------------------------------------------//
   {
-    if (!isFolder () && !isFileSystem () && !isForkedFile ())
+    if (!isContainer ())
       throw new UnsupportedOperationException (
           "cannot getFiles() unless Folder or FileSystem or ForkedFile");
 
@@ -176,26 +185,24 @@ public abstract class AbstractAppleFile implements AppleFile
 
     if (files.size () > 0)
       for (AppleFile file : files)
-        if (file.isFolder () || file.isFileSystem ())
+        if (file.isContainer ())
           text.append (file.catalog () + "\n");
         else
           text.append (file.getCatalogLine () + "\n");
     else
       text.append ("Empty");
 
-    while (text.charAt (text.length () - 1) == '\n')
-      text.deleteCharAt (text.length () - 1);
-
-    return text.toString ();
+    return Utility.rtrim (text);
   }
 
   // ---------------------------------------------------------------------------------//
+  //  @Override
   @Override
-  public String getCatalogLine ()
+  abstract public String getCatalogLine ();
   // ---------------------------------------------------------------------------------//
-  {
-    return String.format ("%s", fileName);
-  }
+  //  {
+  //    return String.format ("%s", fileName);
+  //  }
 
   // ---------------------------------------------------------------------------------//
   @Override

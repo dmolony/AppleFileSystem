@@ -21,6 +21,8 @@ public interface AppleFile
 
   public boolean isFork ();
 
+  public boolean isContainer ();
+
   public void addFile (AppleFile file);             // if isFolder() or isFileSystem()
 
   public List<AppleFile> getFiles ();               // if isFolder() or isFileSystem()

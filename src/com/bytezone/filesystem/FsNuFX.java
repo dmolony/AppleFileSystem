@@ -97,7 +97,15 @@ public class FsNuFX extends AbstractFileSystem
   public String toText ()
   // ---------------------------------------------------------------------------------//
   {
-    StringBuilder text = new StringBuilder (super.toText () + "\n\n");
+    return toString ();
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
+  public String toString ()
+  // ---------------------------------------------------------------------------------//
+  {
+    StringBuilder text = new StringBuilder (super.toString () + "\n\n");
 
     text.append (String.format ("Master CRC ............ %04X   %s%n", crc,
         crcPassed ? "Passed" : "** Failed **"));

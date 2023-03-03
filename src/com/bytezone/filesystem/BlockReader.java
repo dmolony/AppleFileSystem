@@ -222,7 +222,8 @@ public class BlockReader
         {
           int start = diskOffset + block.getBlockNo () * bytesPerBlock;
           if (start + bytesPerBlock <= diskBuffer.length)
-            System.arraycopy (diskBuffer, start, blockBuffer, bufferOffset, bytesPerBlock);
+            System.arraycopy (diskBuffer, start, blockBuffer, bufferOffset,
+                bytesPerBlock);
           else
             System.out.printf ("Block %d out of range%n", block.getBlockNo ());
           break;
@@ -233,7 +234,8 @@ public class BlockReader
         for (int i = 0; i < sectorsPerBlock; i++)
         {
           offset = block.getTrackNo () * bytesPerTrack
-              + interleaves[interleave][block.getSectorNo () * sectorsPerBlock + i] * SECTOR_SIZE;
+              + interleaves[interleave][block.getSectorNo () * sectorsPerBlock + i]
+                  * SECTOR_SIZE;
 
           if (diskOffset + offset + SECTOR_SIZE <= diskBuffer.length)
             System.arraycopy (diskBuffer, diskOffset + offset, blockBuffer,
@@ -296,9 +298,10 @@ public class BlockReader
 
         for (int i = 0; i < sectorsPerBlock; i++)
         {
-          offset = base + interleaves[interleave][block.getSectorNo () * sectorsPerBlock + i] * 256;
-          System.arraycopy (blockBuffer, bufferOffset + i * 256, diskBuffer, diskOffset + offset,
-              256);
+          offset = base
+              + interleaves[interleave][block.getSectorNo () * sectorsPerBlock + i] * 256;
+          System.arraycopy (blockBuffer, bufferOffset + i * 256, diskBuffer,
+              diskOffset + offset, 256);
         }
 
         break;
@@ -343,15 +346,8 @@ public class BlockReader
   public String toText ()
   // ---------------------------------------------------------------------------------//
   {
-    StringBuilder text = new StringBuilder ();
-
-    text.append (String.format ("Disk offset ........... %,d%n", diskOffset));
-    text.append (String.format ("Disk length ........... %,d%n", diskLength));
-    text.append (String.format ("Total blocks .......... %,d%n", totalBlocks));
-    text.append (String.format ("Block size ............ %d%n", bytesPerBlock));
-    text.append (String.format ("Interleave ............ %d", interleave));
-
-    return text.toString ();
+    return String.format ("Type: %s, BlockSize: %d, Interleave: %d, BlocksPerTrack: %2d",
+        addressType, bytesPerBlock, interleave, blocksPerTrack);
   }
 
   // ---------------------------------------------------------------------------------//
@@ -359,7 +355,16 @@ public class BlockReader
   public String toString ()
   // ---------------------------------------------------------------------------------//
   {
-    return String.format ("Type: %s, BlockSize: %d, Interleave: %d, BlocksPerTrack: %2d",
-        addressType, bytesPerBlock, interleave, blocksPerTrack);
+    StringBuilder text = new StringBuilder ();
+
+    text.append (String.format ("Disk offset ........... %,d%n", diskOffset));
+    text.append (String.format ("Disk length ........... %,d%n", diskLength));
+    text.append (String.format ("Address type .......... %s%n", addressType));
+    text.append (String.format ("Total blocks .......... %,d%n", totalBlocks));
+    text.append (String.format ("Bytes per block ....... %d%n", bytesPerBlock));
+    text.append (String.format ("Blocks per track ...... %d%n", blocksPerTrack));
+    text.append (String.format ("Interleave ............ %d", interleave));
+
+    return text.toString ();
   }
 }

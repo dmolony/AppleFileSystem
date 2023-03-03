@@ -10,11 +10,13 @@ public class FileDos4 extends AbstractAppleFile
 // -----------------------------------------------------------------------------------//
 {
   int sectorCount;
+  boolean locked;
 
   List<AppleBlock> indexBlocks = new ArrayList<> ();
   List<AppleBlock> dataBlocks = new ArrayList<> ();
 
-  int eof;
+  int length;
+  int address;
 
   // ---------------------------------------------------------------------------------//
   FileDos4 (FsDos4 fs, byte[] buffer, int ptr)
@@ -92,6 +94,15 @@ public class FileDos4 extends AbstractAppleFile
   // ---------------------------------------------------------------------------------//
   {
     return indexBlocks.size () + dataBlocks.size ();
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
+  public String getCatalogLine ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return String.format ("%s %s %03d %-30s %,7d", locked ? "*" : " ", fileTypeText,
+        sectorCount, fileName, length);
   }
 
   // ---------------------------------------------------------------------------------//

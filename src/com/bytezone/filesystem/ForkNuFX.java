@@ -55,4 +55,31 @@ public class ForkNuFX extends AbstractAppleFile
   {
     return thread.getData ();
   }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
+  public String getCatalogLine ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return String.format ("%-30s %-3s  %04X %4d %,10d", fileName,
+        parentFile.getFileTypeText (), 0, getTotalBlocks (), getFileLength ());
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
+  public String toString ()
+  // ---------------------------------------------------------------------------------//
+  {
+    StringBuilder text = new StringBuilder ();
+
+    text.append (String.format ("File name ............. %s%n", fileName));
+    text.append (
+        String.format ("File type ............. %02X  %s%n", fileType, fileTypeText));
+    text.append (
+        String.format ("Eof ................... %04X  %<,7d%n", getFileLength ()));
+    text.append (String.format ("Parent ................ %s%n", parentFile.fileName));
+    text.append (String.format ("File system ........... %s", fileSystem.fileSystemType));
+
+    return text.toString ();
+  }
 }

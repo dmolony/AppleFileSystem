@@ -150,8 +150,9 @@ public class FileDos extends AbstractAppleFile
     text.append (
         String.format ("File type ............. %d  %s%n", fileType, fileTypeText));
     text.append (String.format ("Locked ................ %s%n", locked));
-    text.append (String.format ("Sectors ............... %,d%n", sectorCount));
-    text.append (String.format ("Length ................ %,d", length));
+    text.append (String.format ("Sectors ............... %04X  %<,5d%n", sectorCount));
+    text.append (String.format ("Length ................ %04X  %<,5d%n", length));
+    text.append (String.format ("Address ............... %04X  %<,5d", address));
 
     return text.toString ();
   }

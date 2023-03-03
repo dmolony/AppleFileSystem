@@ -132,8 +132,8 @@ public class NuFXThread
     text.append (String.format ("  kind ................ %d          %s%n", threadKind,
         getKindText ()));
     text.append (String.format ("  crc ................. %04X%n", threadCrc));
-    text.append (String.format ("  uncompressedEOF ..... %08X %<,7d%n", uncompressedEOF));
-    text.append (String.format ("  compressedEOF ....... %08X %<,7d", compressedEOF));
+    text.append (String.format ("  uncompressedEOF ..... %08X %<,9d%n", uncompressedEOF));
+    text.append (String.format ("  compressedEOF ....... %08X %<,9d", compressedEOF));
 
     if (threadFormat == 0)
       text.append ("\n  data ................ " + getDataString ());
