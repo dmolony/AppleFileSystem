@@ -427,12 +427,7 @@ public abstract class AbstractFileSystem implements AppleFileSystem
   {
     StringBuilder text = new StringBuilder ();
 
-    //    text.append (getCatalogLine ());
-    text.append (String.format ("%-15s %-6s %,8d  %d %,7d  %4d %3d %4d %3d%n",
-        getFileName (), getFileSystemType (), blockReader.getDiskOffset (),
-        blockReader.interleave, blockReader.totalBlocks, blockReader.bytesPerBlock,
-        catalogBlocks, totalFiles, totalFileSystems));
-    //    text.append ("\n");
+    text.append (getCatalogLine2 () + "\n");
 
     for (AppleFile file : files)
     {
@@ -448,9 +443,13 @@ public abstract class AbstractFileSystem implements AppleFileSystem
   public String getCatalogLine ()
   // ---------------------------------------------------------------------------------//
   {
-    if (appleFile != null)
-      return appleFile.getCatalogLine ();
+    return appleFile == null ? getCatalogLine2 () : appleFile.getCatalogLine ();
+  }
 
+  // ---------------------------------------------------------------------------------//
+  private String getCatalogLine2 ()
+  // ---------------------------------------------------------------------------------//
+  {
     return String.format ("%-15s %-6s %,8d  %d %,7d  %4d %3d %4d %3d", getFileName (),
         getFileSystemType (), blockReader.getDiskOffset (), blockReader.interleave,
         blockReader.totalBlocks, blockReader.bytesPerBlock, catalogBlocks, totalFiles,

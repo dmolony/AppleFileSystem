@@ -31,6 +31,9 @@ public abstract class AbstractAppleFile implements AppleFile
     this.appleFileSystem = appleFileSystem;
   }
 
+  @Override
+  abstract public String getCatalogLine ();
+
   // ---------------------------------------------------------------------------------//
   @Override
   public String getFileName ()
@@ -183,26 +186,17 @@ public abstract class AbstractAppleFile implements AppleFile
 
     text.append (getCatalogLine () + "\n");
 
-    if (files.size () > 0)
-      for (AppleFile file : files)
-        if (file.isContainer ())
-          text.append (file.catalog () + "\n");
-        else
-          text.append (file.getCatalogLine () + "\n");
-    else
-      text.append ("Empty");
+    if (files.size () == 0)
+      return "Empty";
+
+    for (AppleFile file : files)
+      if (file.isContainer ())
+        text.append (file.catalog () + "\n");
+      else
+        text.append (file.getCatalogLine () + "\n");
 
     return Utility.rtrim (text);
   }
-
-  // ---------------------------------------------------------------------------------//
-  //  @Override
-  @Override
-  abstract public String getCatalogLine ();
-  // ---------------------------------------------------------------------------------//
-  //  {
-  //    return String.format ("%s", fileName);
-  //  }
 
   // ---------------------------------------------------------------------------------//
   @Override
