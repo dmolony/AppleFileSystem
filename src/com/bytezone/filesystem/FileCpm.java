@@ -111,14 +111,14 @@ public class FileCpm extends AbstractAppleFile
   }
 
   // ---------------------------------------------------------------------------------//
-  @Override
-  public String getCatalogLine ()
-  // ---------------------------------------------------------------------------------//
-  {
-    return String.format ("%-12s  %s  %s  %2d %3d  %3d", getFileName (),
-        readOnly ? "*" : " ", systemFile ? "*" : " ", userNumber, dataBlocks.size (),
-        recordCount);
-  }
+  //  @Override
+  //  public String getCatalogLine ()
+  //  // ---------------------------------------------------------------------------------//
+  //  {
+  //    return String.format ("%-12s  %s  %s  %2d %3d  %3d", getFileName (),
+  //        readOnly ? "*" : " ", systemFile ? "*" : " ", userNumber, dataBlocks.size (),
+  //        recordCount);
+  //  }
 
   // ---------------------------------------------------------------------------------//
   @Override

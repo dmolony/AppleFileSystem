@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.bytezone.filesystem.AppleFileSystem.FileSystemType;
-import com.bytezone.utility.Utility;
 
 // -----------------------------------------------------------------------------------//
 public abstract class AbstractAppleFile implements AppleFile
@@ -31,8 +30,8 @@ public abstract class AbstractAppleFile implements AppleFile
     this.appleFileSystem = appleFileSystem;
   }
 
-  @Override
-  abstract public String getCatalogLine ();
+  //  @Override
+  //  abstract public String getCatalogLine ();
 
   // ---------------------------------------------------------------------------------//
   @Override
@@ -178,25 +177,25 @@ public abstract class AbstractAppleFile implements AppleFile
   }
 
   // ---------------------------------------------------------------------------------//
-  @Override
-  public String catalog ()
-  // ---------------------------------------------------------------------------------//
-  {
-    StringBuilder text = new StringBuilder ();
-
-    text.append (getCatalogLine () + "\n");
-
-    if (files.size () == 0)
-      return "Empty";
-
-    for (AppleFile file : files)
-      if (file.isContainer ())
-        text.append (file.catalog () + "\n");
-      else
-        text.append (file.getCatalogLine () + "\n");
-
-    return Utility.rtrim (text);
-  }
+  //  @Override
+  //  public String catalog ()
+  //  // ---------------------------------------------------------------------------------//
+  //  {
+  //    StringBuilder text = new StringBuilder ();
+  //
+  //    text.append (getCatalogLine () + "\n");
+  //
+  //    if (files.size () == 0)
+  //      return "Empty";
+  //
+  //    for (AppleFile file : files)
+  //      if (file.isContainer ())
+  //        text.append (file.catalog () + "\n");
+  //      else
+  //        text.append (file.getCatalogLine () + "\n");
+  //
+  //    return Utility.rtrim (text);
+  //  }
 
   // ---------------------------------------------------------------------------------//
   @Override

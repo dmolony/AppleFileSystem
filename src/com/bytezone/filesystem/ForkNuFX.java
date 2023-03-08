@@ -57,13 +57,13 @@ public class ForkNuFX extends AbstractAppleFile
   }
 
   // ---------------------------------------------------------------------------------//
-  @Override
-  public String getCatalogLine ()
-  // ---------------------------------------------------------------------------------//
-  {
-    return String.format ("%-30s %-3s  %04X %4d %,10d", fileName,
-        parentFile.getFileTypeText (), 0, getTotalBlocks (), getFileLength ());
-  }
+  //  @Override
+  //  public String getCatalogLine ()
+  //  // ---------------------------------------------------------------------------------//
+  //  {
+  //    return String.format ("%-30s %-3s  %04X %4d %,10d", fileName,
+  //        parentFile.getFileTypeText (), 0, getTotalBlocks (), getFileLength ());
+  //  }
 
   // ---------------------------------------------------------------------------------//
   @Override

@@ -222,13 +222,13 @@ public class FileBinary2 extends AbstractAppleFile
   }
 
   // ---------------------------------------------------------------------------------//
-  @Override
-  public String getCatalogLine ()
-  // ---------------------------------------------------------------------------------//
-  {
-    return String.format ("%,6d  %-20s  %02X  %04X %03X  %3d  %,8d", dataBlocks.size (),
-        getFileName (), fileType, auxType, storageType, blocks, eof);
-  }
+  //  @Override
+  //  public String getCatalogLine ()
+  //  // ---------------------------------------------------------------------------------//
+  //  {
+  //    return String.format ("%,6d  %-20s  %02X  %04X %03X  %3d  %,8d", dataBlocks.size (),
+  //        getFileName (), fileType, auxType, storageType, blocks, eof);
+  //  }
 
   // ---------------------------------------------------------------------------------//
   @Override

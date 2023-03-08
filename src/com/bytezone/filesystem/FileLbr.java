@@ -7,7 +7,6 @@ public class FileLbr extends AbstractAppleFile
 // -----------------------------------------------------------------------------------//
 {
   int status;
-  //  String name;
   String extension;
   int firstBlock;
   int totalBlocks;
@@ -40,13 +39,13 @@ public class FileLbr extends AbstractAppleFile
   }
 
   // ---------------------------------------------------------------------------------//
-  @Override
-  public String getCatalogLine ()
-  // ---------------------------------------------------------------------------------//
-  {
-    return String.format ("%02X  %-8s %-3s  %,5d  %,5d  %04X  %3d", status, fileName,
-        extension, firstBlock, totalBlocks, crc, pad);
-  }
+  //  @Override
+  //  public String getCatalogLine ()
+  //  // ---------------------------------------------------------------------------------//
+  //  {
+  //    return String.format ("%02X  %-8s %-3s  %,5d  %,5d  %04X  %3d", status, fileName,
+  //        extension, firstBlock, totalBlocks, crc, pad);
+  //  }
 
   // ---------------------------------------------------------------------------------//
   @Override

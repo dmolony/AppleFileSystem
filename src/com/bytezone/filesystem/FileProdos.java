@@ -136,17 +136,6 @@ public class FileProdos extends AbstractAppleFile
 
   // ---------------------------------------------------------------------------------//
   @Override
-  public String getCatalogLine ()
-  // ---------------------------------------------------------------------------------//
-  {
-    int length = isForkedFile () ? 0 : data.getFileLength ();
-
-    return String.format ("%-30s %-3s  %04X %4d %,10d", fileName, fileTypeText, keyPtr,
-        getTotalBlocks (), length);
-  }
-
-  // ---------------------------------------------------------------------------------//
-  @Override
   public String toString ()
   // ---------------------------------------------------------------------------------//
   {
@@ -159,12 +148,12 @@ public class FileProdos extends AbstractAppleFile
         String.format ("File type ............. %02X  %s%n", fileType, fileTypeText));
     text.append (String.format ("Version ............... %d%n", version));
     text.append (String.format ("Min version ........... %d%n", minVersion));
-    text.append (String.format ("Access ................ %02X    %<7d%n", access));
-    text.append (String.format ("Size (blocks) ......... %04X  %<,7d%n", size));
-    text.append (String.format ("Eof ................... %04X  %<,7d%n", eof));
-    text.append (String.format ("Auxtype ............... %04X  %<,7d%n", auxType));
-    text.append (String.format ("Header ptr ............ %04X  %<,7d%n", headerPtr));
-    text.append (String.format ("Key ptr ............... %04X  %<,7d%n", keyPtr));
+    text.append (String.format ("Access ................ %02X      %<7d%n", access));
+    text.append (String.format ("Size (blocks) ......... %04X    %<,7d%n", size));
+    text.append (String.format ("Eof ................... %06X %<,8d%n", eof));
+    text.append (String.format ("Auxtype ............... %04X    %<,7d%n", auxType));
+    text.append (String.format ("Header ptr ............ %04X    %<,7d%n", headerPtr));
+    text.append (String.format ("Key ptr ............... %04X    %<,7d%n", keyPtr));
     text.append (
         String.format ("Created ............... %9s %-5s%n", dateCreated, timeCreated));
     text.append (

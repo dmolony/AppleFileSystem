@@ -309,12 +309,12 @@ public class FileNuFX extends AbstractAppleFile
   }
 
   // ---------------------------------------------------------------------------------//
-  @Override
-  public String getCatalogLine ()
-  // ---------------------------------------------------------------------------------//
-  {
-    return String.format ("%-30s  %-3s  %04X", fileName, fileTypes[fileType], auxType);
-  }
+  //  @Override
+  //  public String getCatalogLine ()
+  //  // ---------------------------------------------------------------------------------//
+  //  {
+  //    return String.format ("%-30s  %-3s  %04X", fileName, fileTypes[fileType], auxType);
+  //  }
 
   // ---------------------------------------------------------------------------------//
   @Override

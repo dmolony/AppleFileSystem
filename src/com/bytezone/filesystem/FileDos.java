@@ -131,13 +131,13 @@ public class FileDos extends AbstractAppleFile
   }
 
   // ---------------------------------------------------------------------------------//
-  @Override
-  public String getCatalogLine ()
-  // ---------------------------------------------------------------------------------//
-  {
-    return String.format ("%s %s %03d %-30s %,7d", locked ? "*" : " ", fileTypeText,
-        sectorCount, fileName, length);
-  }
+  //  @Override
+  //  public String getCatalogLine ()
+  //  // ---------------------------------------------------------------------------------//
+  //  {
+  //    return String.format ("%s %s %03d %-30s %,7d", locked ? "*" : " ", fileTypeText,
+  //        sectorCount, fileName, length);
+  //  }
 
   // ---------------------------------------------------------------------------------//
   @Override

@@ -15,6 +15,7 @@ public abstract class AbstractFileSystem implements AppleFileSystem
 
   protected final BlockReader blockReader;
   protected int catalogBlocks;
+  protected int freeBlocks;
 
   // When this FS is embedded, it either came from an existing AppleFile (eg PAR), or it
   // was a disk image in one of the non-standard file systems (zip, gz, NuFX 2img etc).
@@ -321,6 +322,14 @@ public abstract class AbstractFileSystem implements AppleFileSystem
     return blockReader.totalBlocks;
   }
 
+  // ---------------------------------------------------------------------------------//
+  @Override
+  public int getFreeBlocks ()              // in blocks
+  // ---------------------------------------------------------------------------------//
+  {
+    return freeBlocks;
+  }
+
   // FsNuFX
   // FsBinary2
   // FsProdos (LBR files)
@@ -421,47 +430,45 @@ public abstract class AbstractFileSystem implements AppleFileSystem
   }
 
   // ---------------------------------------------------------------------------------//
-  @Override
-  public String catalog ()
-  // ---------------------------------------------------------------------------------//
-  {
-    StringBuilder text = new StringBuilder ();
-
-    text.append (getCatalogLine2 () + "\n");
-
-    for (AppleFile file : files)
-    {
-      text.append (file.getCatalogLine ());
-      text.append ("\n");
-    }
-
-    return Utility.rtrim (text);
-  }
-
-  // ---------------------------------------------------------------------------------//
-  @Override
-  public String getCatalogLine ()
-  // ---------------------------------------------------------------------------------//
-  {
-    return appleFile == null ? getCatalogLine2 () : appleFile.getCatalogLine ();
-  }
-
-  // ---------------------------------------------------------------------------------//
-  private String getCatalogLine2 ()
-  // ---------------------------------------------------------------------------------//
-  {
-    return String.format ("%-15s %-6s %,8d  %d %,7d  %4d %3d %4d %3d", getFileName (),
-        getFileSystemType (), blockReader.getDiskOffset (), blockReader.interleave,
-        blockReader.totalBlocks, blockReader.bytesPerBlock, catalogBlocks, totalFiles,
-        totalFileSystems);
-  }
+  //  @Override
+  //  public String catalog ()
+  //  // ---------------------------------------------------------------------------------//
+  //  {
+  //    StringBuilder text = new StringBuilder (getCatalogLine2 () + "\n");
+  //
+  //    for (AppleFile file : files)
+  //    {
+  //      text.append (file.getCatalogLine ());
+  //      text.append ("\n");
+  //    }
+  //
+  //    return Utility.rtrim (text);
+  //  }
+  //
+  //  // ---------------------------------------------------------------------------------//
+  //  @Override
+  //  public String getCatalogLine ()
+  //  // ---------------------------------------------------------------------------------//
+  //  {
+  //    return appleFile == null ? getCatalogLine2 () : appleFile.getCatalogLine ();
+  //  }
+  //
+  //  // ---------------------------------------------------------------------------------//
+  //  private String getCatalogLine2 ()
+  //  // ---------------------------------------------------------------------------------//
+  //  {
+  //    return String.format ("%-15s %-6s %,8d  %d %,7d  %4d %3d %4d %3d", getFileName (),
+  //        getFileSystemType (), blockReader.getDiskOffset (), blockReader.interleave,
+  //        blockReader.totalBlocks, blockReader.bytesPerBlock, catalogBlocks, totalFiles,
+  //        totalFileSystems);
+  //  }
 
   // ---------------------------------------------------------------------------------//
   @Override
   public String toText ()
   // ---------------------------------------------------------------------------------//
   {
-    return getCatalogLine ();
+    return toString ();
   }
 
   // ---------------------------------------------------------------------------------//
@@ -476,8 +483,7 @@ public abstract class AbstractFileSystem implements AppleFileSystem
     text.append ("\n");
 
     text.append (blockReader.toString ());
-    text.append ("\n");
-    text.append ("\n");
+    text.append ("\n\n");
 
     text.append (String.format ("Catalog blocks ........ %d%n", catalogBlocks));
     text.append (String.format ("Total file systems .... %d%n", totalFileSystems));
@@ -488,7 +494,26 @@ public abstract class AbstractFileSystem implements AppleFileSystem
           appleFileSystem.getFileSystemType ()));
 
     if (appleFile != null)
-      text.append (String.format ("Replacing file: %n%s", appleFile.toString ()));
+    {
+      text.append (String.format ("Replacing file: %n"));
+      String catalog = appleFile.toString ();
+      String[] lines = catalog.split ("\n");
+      int limit = 24;
+      for (String line : lines)
+      {
+        if (line.length () >= limit)
+        {
+          String format = String.format ("  %%%d.%<ds %%s%%n", limit - 3, line);
+          String newline = String.format (format, line, line.substring (limit));
+          text.append (newline);
+        }
+        else
+        {
+          text.append (line);
+          text.append ("\n");
+        }
+      }
+    }
 
     return Utility.rtrim (text);
   }

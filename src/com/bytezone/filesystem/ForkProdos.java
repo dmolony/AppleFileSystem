@@ -198,13 +198,13 @@ public class ForkProdos extends AbstractAppleFile
   }
 
   // ---------------------------------------------------------------------------------//
-  @Override
-  public String getCatalogLine ()
-  // ---------------------------------------------------------------------------------//
-  {
-    return String.format ("%-30s %-3s  %04X %4d %,10d", fileName,
-        parentFile.getFileTypeText (), keyPtr, getTotalBlocks (), getFileLength ());
-  }
+  //  @Override
+  //  public String getCatalogLine ()
+  //  // ---------------------------------------------------------------------------------//
+  //  {
+  //    return String.format ("%-30s %-3s  %04X %4d %,10d", fileName,
+  //        parentFile.getFileTypeText (), keyPtr, getTotalBlocks (), getFileLength ());
+  //  }
 
   // ---------------------------------------------------------------------------------//
   public ForkType getForkType ()

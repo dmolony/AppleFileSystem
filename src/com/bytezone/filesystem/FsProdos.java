@@ -1,5 +1,7 @@
 package com.bytezone.filesystem;
 
+import java.util.BitSet;
+
 import com.bytezone.utility.Utility;
 
 // -----------------------------------------------------------------------------------//
@@ -24,6 +26,8 @@ public class FsProdos extends AbstractFileSystem
   private int entriesPerBlock;
   private int fileCount;
   private int bitmapPointer;
+  private int totalBlocks;
+  private BitSet volumeBitMap;
 
   // ---------------------------------------------------------------------------------//
   public FsProdos (BlockReader blockReader)
@@ -52,6 +56,7 @@ public class FsProdos extends AbstractFileSystem
         entriesPerBlock = buffer[0x24] & 0xFF;                    // 13
         fileCount = Utility.unsignedShort (buffer, 0x25);
         bitmapPointer = Utility.unsignedShort (buffer, 0x27);     // 6
+        totalBlocks = Utility.unsignedShort (buffer, 0x29);
 
         if (entryLength != ENTRY_SIZE || entriesPerBlock != ENTRIES_PER_BLOCK)
           throw new FileFormatException ("FsProdos: Invalid entry data");
@@ -77,6 +82,42 @@ public class FsProdos extends AbstractFileSystem
     processFolder (this, 2);
     assert fileCount == getFiles ().size ();
     setCatalogBlocks (catalogBlocks);
+
+    createVolumeBitMap ();
+  }
+
+  // ---------------------------------------------------------------------------------//
+  private void createVolumeBitMap ()
+  // ---------------------------------------------------------------------------------//
+  {
+    int bitPtr = 0;
+    int bfrPtr = 0;
+    int blockNo = bitmapPointer;
+    byte[] buffer = null;
+
+    volumeBitMap = new BitSet (totalBlocks);
+
+    while (bitPtr < totalBlocks)
+    {
+      if (bitPtr % 0x1000 == 0)
+      {
+        buffer = getBlock (blockNo++).read ();
+        bfrPtr = 0;
+      }
+
+      byte flags = buffer[bfrPtr++];
+
+      for (int i = 0; i < 8; i++)
+      {
+        if ((flags & 0x80) != 0)
+          volumeBitMap.set (bitPtr);
+
+        flags <<= 1;
+        ++bitPtr;
+      }
+    }
+
+    freeBlocks = volumeBitMap.cardinality ();
   }
 
   // ---------------------------------------------------------------------------------//
@@ -144,7 +185,17 @@ public class FsProdos extends AbstractFileSystem
   public String toText ()
   // ---------------------------------------------------------------------------------//
   {
-    StringBuilder text = new StringBuilder (super.toText () + "\n\n");
+    StringBuilder text = new StringBuilder ();
+
+    return text.toString ();
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
+  public String toString ()
+  // ---------------------------------------------------------------------------------//
+  {
+    StringBuilder text = new StringBuilder (super.toString () + "\n\n");
 
     text.append (String.format ("Entry length .......... %d%n", entryLength));
     text.append (String.format ("Entries per block ..... %d%n", entriesPerBlock));

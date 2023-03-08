@@ -70,13 +70,13 @@ public class FilePascal extends AbstractAppleFile
   }
 
   // ---------------------------------------------------------------------------------//
-  @Override
-  public String getCatalogLine ()
-  // ---------------------------------------------------------------------------------//
-  {
-    return String.format ("%-20s  %3d  %-4s  %03X-%03X  %3d  %s", fileName, fileType,
-        fileTypeText, firstBlock, lastBlock, bytesUsedInLastBlock, date);
-  }
+  //  @Override
+  //  public String getCatalogLine ()
+  //  // ---------------------------------------------------------------------------------//
+  //  {
+  //    return String.format ("%-20s  %3d  %-4s  %03X-%03X  %3d  %s", fileName, fileType,
+  //        fileTypeText, firstBlock, lastBlock, bytesUsedInLastBlock, date);
+  //  }
 
   // ---------------------------------------------------------------------------------//
   @Override

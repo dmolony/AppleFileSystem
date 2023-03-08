@@ -67,13 +67,13 @@ public class FolderProdos extends AbstractAppleFile
   }
 
   // ---------------------------------------------------------------------------------//
-  @Override
-  public String getCatalogLine ()
-  // ---------------------------------------------------------------------------------//
-  {
-    return String.format ("%-30s %-3s  %04X %4d %,10d", fileName,
-        ProdosConstants.fileTypes[fileType], keyPtr, size, eof);
-  }
+  //  @Override
+  //  public String getCatalogLine ()
+  //  // ---------------------------------------------------------------------------------//
+  //  {
+  //    return String.format ("%-30s %-3s  %04X %4d %,10d", fileName,
+  //        ProdosConstants.fileTypes[fileType], keyPtr, size, eof);
+  //  }
 
   // ---------------------------------------------------------------------------------//
   @Override

@@ -98,14 +98,14 @@ public class Tester
         continue;
       }
 
-      if (fileNo == index && true)
-      {
-        System.out.println ();
-        System.out.println (fs.catalog ());
-        System.out.println ();
+      //      if (fileNo == index && true)
+      //      {
+      //        System.out.println ();
+      //        System.out.println (fs.catalog ());
+      //        System.out.println ();
 
-        //        AppleFile file = fs.getFiles ().get (10);
-      }
+      //        AppleFile file = fs.getFiles ().get (10);
+      //      }
 
       System.out.println ();
       listFileSystems (fs, 0);

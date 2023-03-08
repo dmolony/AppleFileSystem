@@ -41,9 +41,9 @@ public interface AppleFile
 
   public List<AppleBlock> getBlocks ();
 
-  public String catalog ();
+  //  public String catalog ();
 
-  public String getCatalogLine ();
+  //  public String getCatalogLine ();
 
   public String getFileTypeText ();
 

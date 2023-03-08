@@ -26,6 +26,8 @@ public interface AppleFileSystem extends AppleFile
 
   int getBlocksPerTrack ();
 
+  int getFreeBlocks ();
+
   AppleBlock getBlock (int blockNo);
 
   AppleBlock getSector (int track, int sector);
