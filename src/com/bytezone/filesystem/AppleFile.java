@@ -11,6 +11,8 @@ public interface AppleFile
 {
   public String getFileName ();
 
+  public boolean isLocked ();                       // if isFile()
+
   public boolean isFileSystem ();
 
   public boolean isFolder ();

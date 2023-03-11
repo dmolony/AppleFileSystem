@@ -1,11 +1,16 @@
 package com.bytezone.filesystem;
 
+import java.util.BitSet;
+
+import com.bytezone.utility.Utility;
+
 // -----------------------------------------------------------------------------------//
 public class FsDos extends AbstractFileSystem
 // -----------------------------------------------------------------------------------//
 {
   static final int ENTRY_SIZE = 35;
   int dosVersion;
+  private BitSet volumeBitMap;
 
   // ---------------------------------------------------------------------------------//
   public FsDos (BlockReader blockReader)
@@ -13,7 +18,6 @@ public class FsDos extends AbstractFileSystem
   {
     super (blockReader, FileSystemType.DOS);
 
-    assert getTotalCatalogBlocks () == 0;
     int catalogBlocks = 0;
 
     AppleBlock vtoc = getSector (17, 0);
@@ -21,6 +25,7 @@ public class FsDos extends AbstractFileSystem
       throw new FileFormatException ("Dos: Invalid VTOC");
 
     byte[] buffer = vtoc.read ();
+    buildFreeSectorList (buffer);
 
     if (buffer[3] < 0x01 || buffer[3] > 0x03)
       throw new FileFormatException ("Dos: byte 3 invalid");
@@ -66,10 +71,37 @@ public class FsDos extends AbstractFileSystem
 
         ptr += ENTRY_SIZE;
       }
+
       ++catalogBlocks;
     }
 
     setCatalogBlocks (catalogBlocks);
+  }
+
+  // ---------------------------------------------------------------------------------//
+  private void buildFreeSectorList (byte[] buffer)
+  // ---------------------------------------------------------------------------------//
+  {
+    int blocksPerTrack = blockReader.blocksPerTrack;
+    int totalBlocks = blockReader.totalBlocks;
+    int totalTracks = totalBlocks / blocksPerTrack;
+
+    volumeBitMap = new BitSet (totalBlocks);
+
+    int ptr = 0x38;
+    for (int track = 0; track < totalTracks; track++)
+    {
+      int bits = Utility.unsignedLongBigEndian (buffer, ptr);
+      for (int sector = blocksPerTrack - 1; sector >= 0; sector--)
+      {
+        if ((bits & 0x80000000) != 0)
+          volumeBitMap.set (track * blocksPerTrack + sector);
+        bits <<= 1;
+      }
+      ptr += 4;
+    }
+
+    freeBlocks = volumeBitMap.cardinality ();
   }
 
   // ---------------------------------------------------------------------------------//

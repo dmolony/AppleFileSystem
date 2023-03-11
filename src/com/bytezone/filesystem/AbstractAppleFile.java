@@ -20,6 +20,7 @@ public abstract class AbstractAppleFile implements AppleFile
   protected String fileName;
   protected int fileType;
   protected String fileTypeText;
+  protected boolean isLocked;
 
   protected final List<AppleFile> files = new ArrayList<> ();
 
@@ -39,6 +40,14 @@ public abstract class AbstractAppleFile implements AppleFile
   // ---------------------------------------------------------------------------------//
   {
     return fileName;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
+  public boolean isLocked ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return isLocked;
   }
 
   // ---------------------------------------------------------------------------------//

@@ -28,6 +28,7 @@ public class BlockReader
   private String name;
 
   AddressType addressType;      // BLOCK, SECTOR
+
   int bytesPerBlock;            // 256, 512, 1024
   int interleave;               // 0, 1, 2
   int blocksPerTrack;           // 4, 8, 13, 16, 32

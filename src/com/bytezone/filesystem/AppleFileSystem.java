@@ -16,6 +16,8 @@ public interface AppleFileSystem extends AppleFile
 
   boolean isHybrid ();
 
+  AppleFile getAppleFile ();          // if is an embedded FileSystem
+
   BlockReader getBlockReader ();
 
   AppleBlock allocate ();

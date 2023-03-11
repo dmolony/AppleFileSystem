@@ -1,7 +1,6 @@
 package com.bytezone.filesystem;
 
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 
 import com.bytezone.utility.Utility;
 
@@ -9,10 +8,6 @@ import com.bytezone.utility.Utility;
 public class FileProdos extends AbstractAppleFile
 // -----------------------------------------------------------------------------------//
 {
-  private static final DateTimeFormatter sdf = DateTimeFormatter.ofPattern ("d-LLL-yy");
-  private static final DateTimeFormatter stf = DateTimeFormatter.ofPattern ("H:mm");
-  private static final String NO_DATE = "<NO DATE>";
-
   private int storageType;
   private int keyPtr;
   private int size;
@@ -26,7 +21,6 @@ public class FileProdos extends AbstractAppleFile
 
   private LocalDateTime created;
   private LocalDateTime modified;
-  private String dateCreated, timeCreated, dateModified, timeModified;
 
   private ForkProdos data;            // for non-forked files
 
@@ -62,16 +56,12 @@ public class FileProdos extends AbstractAppleFile
     minVersion = buffer[ptr + 0x1D] & 0xFF;
     access = buffer[ptr + 0x1E] & 0xFF;
 
+    isLocked = (access == 0x01);        // is this version based?
+
     auxType = Utility.unsignedShort (buffer, ptr + 0x1F);
     modified = Utility.getAppleDate (buffer, ptr + 0x21);
     headerPtr = Utility.unsignedShort (buffer, ptr + 0x25);
 
-    dateCreated = created == null ? NO_DATE : created.format (sdf);
-    timeCreated = created == null ? "" : created.format (stf);
-    dateModified = modified == null ? NO_DATE : modified.format (sdf);
-    timeModified = modified == null ? "" : modified.format (stf);
-
-    // 
     if (isForkedFile ())
       createForks ();
     else
@@ -102,6 +92,20 @@ public class FileProdos extends AbstractAppleFile
   // ---------------------------------------------------------------------------------//
   {
     return auxType;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  public LocalDateTime getCreated ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return created;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  public LocalDateTime getModified ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return modified;
   }
 
   // ---------------------------------------------------------------------------------//
@@ -141,7 +145,7 @@ public class FileProdos extends AbstractAppleFile
   {
     StringBuilder text = new StringBuilder ();
 
-    int length = isForkedFile () ? 0 : data.getFileLength ();
+    //    int length = isForkedFile () ? 0 : data.getFileLength ();
 
     text.append (String.format ("File name ............. %s%n", fileName));
     text.append (
@@ -154,10 +158,8 @@ public class FileProdos extends AbstractAppleFile
     text.append (String.format ("Auxtype ............... %04X    %<,7d%n", auxType));
     text.append (String.format ("Header ptr ............ %04X    %<,7d%n", headerPtr));
     text.append (String.format ("Key ptr ............... %04X    %<,7d%n", keyPtr));
-    text.append (
-        String.format ("Created ............... %9s %-5s%n", dateCreated, timeCreated));
-    text.append (
-        String.format ("Modified .............. %9s %-5s", dateModified, timeModified));
+    text.append (String.format ("Created ............... %9s%n", created));
+    text.append (String.format ("Modified .............. %9s", modified));
 
     return text.toString ();
   }

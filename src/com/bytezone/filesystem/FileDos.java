@@ -10,13 +10,13 @@ public class FileDos extends AbstractAppleFile
 // -----------------------------------------------------------------------------------//
 {
   int sectorCount;
-  boolean locked;
 
   List<AppleBlock> indexBlocks = new ArrayList<> ();
   List<AppleBlock> dataBlocks = new ArrayList<> ();
 
   int length;
   int address;
+  int textFileGaps;
 
   // ---------------------------------------------------------------------------------//
   FileDos (FsDos fs, byte[] buffer, int ptr)
@@ -30,7 +30,7 @@ public class FileDos extends AbstractAppleFile
     int nextSector = buffer[ptr + 1] & 0xFF;
 
     fileType = buffer[ptr + 2] & 0x7F;
-    locked = (buffer[ptr + 2] & 0x80) != 0;
+    isLocked = (buffer[ptr + 2] & 0x80) != 0;
     fileName = Utility.string (buffer, ptr + 3, 30).trim ();
     sectorCount = Utility.unsignedShort (buffer, ptr + 33);
 
@@ -75,7 +75,10 @@ public class FileDos extends AbstractAppleFile
             break loop;
         }
         else if (fileType == 0x00)            // text file
+        {
           dataBlocks.add (null);              // must be a sparse file
+          ++textFileGaps;
+        }
         else
           throw new FileFormatException ("Unexpected zero index value in TsSector");
       }
@@ -102,8 +105,8 @@ public class FileDos extends AbstractAppleFile
         // could calculate the address from the line numbers
       }
     }
-    else
-      length = dataBlocks.size () * getFileSystem ().getBlockSize ();
+    //    else
+    //      length = dataBlocks.size () * getFileSystem ().getBlockSize ();
   }
 
   // ---------------------------------------------------------------------------------//
@@ -131,13 +134,39 @@ public class FileDos extends AbstractAppleFile
   }
 
   // ---------------------------------------------------------------------------------//
-  //  @Override
-  //  public String getCatalogLine ()
-  //  // ---------------------------------------------------------------------------------//
-  //  {
-  //    return String.format ("%s %s %03d %-30s %,7d", locked ? "*" : " ", fileTypeText,
-  //        sectorCount, fileName, length);
-  //  }
+  public int getSectorCount ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return sectorCount;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  public int getAddress ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return address;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  public int getTextFileGaps ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return textFileGaps;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  public int getTotalDataSectors ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return dataBlocks.size ();
+  }
+
+  // ---------------------------------------------------------------------------------//
+  public int getTotalIndexSectors ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return indexBlocks.size ();
+  }
 
   // ---------------------------------------------------------------------------------//
   @Override
@@ -149,10 +178,11 @@ public class FileDos extends AbstractAppleFile
     text.append (String.format ("File name ............. %s%n", fileName));
     text.append (
         String.format ("File type ............. %d  %s%n", fileType, fileTypeText));
-    text.append (String.format ("Locked ................ %s%n", locked));
+    text.append (String.format ("Locked ................ %s%n", isLocked));
     text.append (String.format ("Sectors ............... %04X  %<,5d%n", sectorCount));
     text.append (String.format ("Length ................ %04X  %<,5d%n", length));
-    text.append (String.format ("Address ............... %04X  %<,5d", address));
+    text.append (String.format ("Address ............... %04X  %<,5d%n", address));
+    text.append (String.format ("Text file gaps ........ %04X  %<,5d", textFileGaps));
 
     return text.toString ();
   }

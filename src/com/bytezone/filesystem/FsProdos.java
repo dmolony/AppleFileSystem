@@ -1,5 +1,6 @@
 package com.bytezone.filesystem;
 
+import java.time.LocalDateTime;
 import java.util.BitSet;
 
 import com.bytezone.utility.Utility;
@@ -28,6 +29,8 @@ public class FsProdos extends AbstractFileSystem
   private int bitmapPointer;
   private int totalBlocks;
   private BitSet volumeBitMap;
+  private String volumeName;
+  private LocalDateTime created;
 
   // ---------------------------------------------------------------------------------//
   public FsProdos (BlockReader blockReader)
@@ -43,7 +46,7 @@ public class FsProdos extends AbstractFileSystem
 
     while (nextBlockNo != 0)
     {
-      AppleBlock vtoc = getBlock (nextBlockNo);           // VTOC sector
+      AppleBlock vtoc = getBlock (nextBlockNo);
       byte[] buffer = vtoc.read ();
 
       if (catalogBlocks == 0)
@@ -52,6 +55,9 @@ public class FsProdos extends AbstractFileSystem
         if (type != VOLUME_HEADER)
           throw new FileFormatException ("FsProdos: No Volume Header");
 
+        int length = buffer[0x04] & 0x0F;
+        volumeName = new String (buffer, 0x05, length);
+        created = Utility.getAppleDate (buffer, 0x1C);
         entryLength = buffer[0x23] & 0xFF;                        // 39
         entriesPerBlock = buffer[0x24] & 0xFF;                    // 13
         fileCount = Utility.unsignedShort (buffer, 0x25);
@@ -181,6 +187,13 @@ public class FsProdos extends AbstractFileSystem
   }
 
   // ---------------------------------------------------------------------------------//
+  public String getVolumeName ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return volumeName;
+  }
+
+  // ---------------------------------------------------------------------------------//
   @Override
   public String toText ()
   // ---------------------------------------------------------------------------------//
@@ -197,6 +210,9 @@ public class FsProdos extends AbstractFileSystem
   {
     StringBuilder text = new StringBuilder (super.toString () + "\n\n");
 
+    text.append (String.format ("Volume name ........... %s%n", volumeName));
+    text.append (
+        String.format ("Created ............... %s%n", created == null ? "" : created));
     text.append (String.format ("Entry length .......... %d%n", entryLength));
     text.append (String.format ("Entries per block ..... %d%n", entriesPerBlock));
     text.append (String.format ("File count ............ %d%n", fileCount));

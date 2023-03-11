@@ -1,5 +1,6 @@
 package com.bytezone.filesystem;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,6 +18,8 @@ public class FsPascal extends AbstractFileSystem
   private int entryType;
   private int blocks;         // size of disk
   private int files;          // no of files on disk
+  private int firstBlock;
+  private LocalDate date;
 
   // ---------------------------------------------------------------------------------//
   public FsPascal (BlockReader blockReader)
@@ -44,6 +47,9 @@ public class FsPascal extends AbstractFileSystem
     volumeName = Utility.string (buffer, 7, nameLength);
     blocks = Utility.unsignedShort (buffer, 14);      // 280, 1600, 2048
     files = Utility.unsignedShort (buffer, 16);
+    firstBlock = Utility.unsignedShort (buffer, 18);
+    date = Utility.getPascalLocalDate (buffer, 20);      // 2 bytes
+
     setCatalogBlocks (blockTo - 2);
 
     int max = Math.min (blockTo, getTotalBlocks ());
@@ -54,8 +60,14 @@ public class FsPascal extends AbstractFileSystem
 
     buffer = readBlocks (addresses);
 
+    freeBlocks = blocks - blockTo;
+
     for (int i = 1; i <= files; i++)      // skip first entry
-      this.addFile (new FilePascal (this, buffer, i * CATALOG_ENTRY_SIZE));
+    {
+      FilePascal file = new FilePascal (this, buffer, i * CATALOG_ENTRY_SIZE);
+      this.addFile (file);
+      freeBlocks -= file.getTotalBlocks ();
+    }
   }
 
   // ---------------------------------------------------------------------------------//
@@ -66,17 +78,33 @@ public class FsPascal extends AbstractFileSystem
   }
 
   // ---------------------------------------------------------------------------------//
-  @Override
-  public String toText ()
+  public String getVolumeName ()
   // ---------------------------------------------------------------------------------//
   {
-    StringBuilder text = new StringBuilder (super.toText () + "\n\n");
+    return volumeName;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  public LocalDate getDate ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return date;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
+  public String toString ()
+  // ---------------------------------------------------------------------------------//
+  {
+    StringBuilder text = new StringBuilder (super.toString () + "\n\n");
 
     text.append (String.format ("Volume name ........... %s%n", volumeName));
     text.append (String.format ("Directory ............. %d : %d%n", blockFrom, blockTo));
     text.append (String.format ("Entry type ............ %,d%n", entryType));
     text.append (String.format ("Total blocks .......... %,d%n", blocks));
-    text.append (String.format ("Total files ........... %,d", files));
+    text.append (String.format ("Total files ........... %,d%n", files));
+    text.append (String.format ("First block ........... %,d%n", firstBlock));
+    text.append (String.format ("Date .................. %s", date));
 
     return text.toString ();
   }
