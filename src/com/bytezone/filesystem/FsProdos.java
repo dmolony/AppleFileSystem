@@ -57,19 +57,22 @@ public class FsProdos extends AbstractFileSystem
 
         int length = buffer[0x04] & 0x0F;
         volumeName = new String (buffer, 0x05, length);
-        created = Utility.getAppleDate (buffer, 0x1C);
         entryLength = buffer[0x23] & 0xFF;                        // 39
         entriesPerBlock = buffer[0x24] & 0xFF;                    // 13
-        fileCount = Utility.unsignedShort (buffer, 0x25);
-        bitmapPointer = Utility.unsignedShort (buffer, 0x27);     // 6
-        totalBlocks = Utility.unsignedShort (buffer, 0x29);
 
         if (entryLength != ENTRY_SIZE || entriesPerBlock != ENTRIES_PER_BLOCK)
           throw new FileFormatException ("FsProdos: Invalid entry data");
 
+        fileCount = Utility.unsignedShort (buffer, 0x25);
+        bitmapPointer = Utility.unsignedShort (buffer, 0x27);     // 6
+        totalBlocks = Utility.unsignedShort (buffer, 0x29);
+
         if (bitmapPointer < 3 || bitmapPointer > 10)
           throw new FileFormatException (
               "FsProdos: Invalid bitmap block value: " + bitmapPointer);
+
+        // do this last to avoid the possible DateTimeException
+        created = Utility.getAppleDate (buffer, 0x1C);
       }
 
       prevBlockNo = Utility.unsignedShort (buffer, 0);

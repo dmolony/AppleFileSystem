@@ -31,9 +31,6 @@ public abstract class AbstractAppleFile implements AppleFile
     this.appleFileSystem = appleFileSystem;
   }
 
-  //  @Override
-  //  abstract public String getCatalogLine ();
-
   // ---------------------------------------------------------------------------------//
   @Override
   public String getFileName ()
@@ -103,10 +100,21 @@ public abstract class AbstractAppleFile implements AppleFile
   public void addFile (AppleFile file)
   // ---------------------------------------------------------------------------------//
   {
-    if (isContainer ())
-      files.add (file);
-    else
-      throw new UnsupportedOperationException ("cannot addFile()");
+    if (!isContainer ())
+      throw new UnsupportedOperationException ("cannot addFile() unless Container");
+
+    files.add (file);
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
+  public List<AppleFile> getFiles ()
+  // ---------------------------------------------------------------------------------//
+  {
+    if (!isContainer ())
+      throw new UnsupportedOperationException ("cannot getFiles() unless Container");
+
+    return files;
   }
 
   // ---------------------------------------------------------------------------------//
@@ -123,18 +131,6 @@ public abstract class AbstractAppleFile implements AppleFile
   // ---------------------------------------------------------------------------------//
   {
     return appleFileSystem.getFileSystemType ();
-  }
-
-  // ---------------------------------------------------------------------------------//
-  @Override
-  public List<AppleFile> getFiles ()
-  // ---------------------------------------------------------------------------------//
-  {
-    if (!isContainer ())
-      throw new UnsupportedOperationException (
-          "cannot getFiles() unless Folder or FileSystem or ForkedFile");
-
-    return files;
   }
 
   // ---------------------------------------------------------------------------------//
@@ -184,27 +180,6 @@ public abstract class AbstractAppleFile implements AppleFile
   {
     throw new UnsupportedOperationException ("getBlocks() not implemented");
   }
-
-  // ---------------------------------------------------------------------------------//
-  //  @Override
-  //  public String catalog ()
-  //  // ---------------------------------------------------------------------------------//
-  //  {
-  //    StringBuilder text = new StringBuilder ();
-  //
-  //    text.append (getCatalogLine () + "\n");
-  //
-  //    if (files.size () == 0)
-  //      return "Empty";
-  //
-  //    for (AppleFile file : files)
-  //      if (file.isContainer ())
-  //        text.append (file.catalog () + "\n");
-  //      else
-  //        text.append (file.getCatalogLine () + "\n");
-  //
-  //    return Utility.rtrim (text);
-  //  }
 
   // ---------------------------------------------------------------------------------//
   @Override

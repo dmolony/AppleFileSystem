@@ -8,8 +8,8 @@ import com.bytezone.utility.Utility;
 public class FsDos extends AbstractFileSystem
 // -----------------------------------------------------------------------------------//
 {
-  static final int ENTRY_SIZE = 35;
-  int dosVersion;
+  private static final int ENTRY_SIZE = 35;
+  private int dosVersion;
   private BitSet volumeBitMap;
 
   // ---------------------------------------------------------------------------------//

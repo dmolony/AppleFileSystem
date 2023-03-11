@@ -9,14 +9,13 @@ import com.bytezone.utility.Utility;
 public class FileDos extends AbstractAppleFile
 // -----------------------------------------------------------------------------------//
 {
-  int sectorCount;
+  private List<AppleBlock> indexBlocks = new ArrayList<> ();
+  private List<AppleBlock> dataBlocks = new ArrayList<> ();
 
-  List<AppleBlock> indexBlocks = new ArrayList<> ();
-  List<AppleBlock> dataBlocks = new ArrayList<> ();
-
-  int length;
-  int address;
-  int textFileGaps;
+  private int sectorCount;
+  private int length;
+  private int address;
+  private int textFileGaps;
 
   // ---------------------------------------------------------------------------------//
   FileDos (FsDos fs, byte[] buffer, int ptr)
@@ -87,7 +86,7 @@ public class FileDos extends AbstractAppleFile
       nextSector = sectorBuffer[2] & 0xFF;
     }
 
-    if (fileType == 0x04)                         // binary
+    if (fileType == 4)                            // binary
     {
       if (dataBlocks.size () > 0)
       {
@@ -96,7 +95,7 @@ public class FileDos extends AbstractAppleFile
         length = Utility.unsignedShort (fileBuffer, 2);
       }
     }
-    else if (fileType == 0x01 || fileType == 2)       // integer basic or applesoft
+    else if (fileType == 1 || fileType == 2)       // integer basic or applesoft
     {
       if (dataBlocks.size () > 0)
       {
@@ -105,8 +104,8 @@ public class FileDos extends AbstractAppleFile
         // could calculate the address from the line numbers
       }
     }
-    //    else
-    //      length = dataBlocks.size () * getFileSystem ().getBlockSize ();
+    else
+      length = dataBlocks.size () * getFileSystem ().getBlockSize ();
   }
 
   // ---------------------------------------------------------------------------------//
@@ -130,7 +129,7 @@ public class FileDos extends AbstractAppleFile
   public int getTotalBlocks ()                   // in blocks
   // ---------------------------------------------------------------------------------//
   {
-    return indexBlocks.size () + dataBlocks.size ();
+    return indexBlocks.size () + dataBlocks.size () - textFileGaps;
   }
 
   // ---------------------------------------------------------------------------------//
@@ -148,17 +147,17 @@ public class FileDos extends AbstractAppleFile
   }
 
   // ---------------------------------------------------------------------------------//
-  public int getTextFileGaps ()
-  // ---------------------------------------------------------------------------------//
-  {
-    return textFileGaps;
-  }
+  //  public int getTextFileGaps ()
+  //  // ---------------------------------------------------------------------------------//
+  //  {
+  //    return textFileGaps;
+  //  }
 
   // ---------------------------------------------------------------------------------//
   public int getTotalDataSectors ()
   // ---------------------------------------------------------------------------------//
   {
-    return dataBlocks.size ();
+    return dataBlocks.size () - textFileGaps;
   }
 
   // ---------------------------------------------------------------------------------//
