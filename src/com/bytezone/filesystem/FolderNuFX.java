@@ -2,25 +2,19 @@ package com.bytezone.filesystem;
 
 public class FolderNuFX extends AbstractAppleFile
 {
-
+  //      ********   this should be removed      **********
   // ---------------------------------------------------------------------------------//
   FolderNuFX (FsNuFX parent, String name)
   // ---------------------------------------------------------------------------------//
   {
     super (parent);
 
+    assert false;
+
     this.fileName = name;
 
     isFolder = true;
   }
-
-  // ---------------------------------------------------------------------------------//
-  //  @Override
-  //  public String getCatalogLine ()
-  //  // ---------------------------------------------------------------------------------//
-  //  {
-  //    return String.format ("%-30s", fileName);
-  //  }
 
   // ---------------------------------------------------------------------------------//
   @Override
@@ -30,8 +24,7 @@ public class FolderNuFX extends AbstractAppleFile
     StringBuilder text = new StringBuilder ();
 
     text.append (String.format ("File name ............. %s%n", fileName));
-    text.append (
-        String.format ("File type ............. %d  %s", fileType, fileTypeText));
+    text.append (String.format ("File type ............. %s", "NuFX Folder"));
 
     return text.toString ();
   }

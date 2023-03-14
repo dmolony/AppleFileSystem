@@ -265,8 +265,9 @@ public class Utility
   public static String rtrim (StringBuilder text)
   // ---------------------------------------------------------------------------------//
   {
-    while (text.charAt (text.length () - 1) == '\n')
-      text.deleteCharAt (text.length () - 1);
+    if (text.length () > 0)
+      while (text.charAt (text.length () - 1) == '\n')
+        text.deleteCharAt (text.length () - 1);
 
     return text.toString ();
   }

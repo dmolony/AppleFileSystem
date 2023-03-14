@@ -49,6 +49,8 @@ public interface AppleFile
 
   public String getFileTypeText ();
 
+  public String getErrorMessage ();
+
   public int getFileType ();
 
   public int getBlockSize ();                       // returns blockReader.blockSize()

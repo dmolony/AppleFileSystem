@@ -57,15 +57,6 @@ public class ForkNuFX extends AbstractAppleFile
   }
 
   // ---------------------------------------------------------------------------------//
-  //  @Override
-  //  public String getCatalogLine ()
-  //  // ---------------------------------------------------------------------------------//
-  //  {
-  //    return String.format ("%-30s %-3s  %04X %4d %,10d", fileName,
-  //        parentFile.getFileTypeText (), 0, getTotalBlocks (), getFileLength ());
-  //  }
-
-  // ---------------------------------------------------------------------------------//
   @Override
   public String toString ()
   // ---------------------------------------------------------------------------------//
@@ -73,12 +64,16 @@ public class ForkNuFX extends AbstractAppleFile
     StringBuilder text = new StringBuilder ();
 
     text.append (String.format ("File name ............. %s%n", fileName));
+    text.append (String.format ("Fork type ............. %s%n", forkType));
     text.append (
         String.format ("File type ............. %02X  %s%n", fileType, fileTypeText));
     text.append (
         String.format ("Eof ................... %04X  %<,7d%n", getFileLength ()));
     text.append (String.format ("Parent ................ %s%n", parentFile.fileName));
-    text.append (String.format ("File system ........... %s", fileSystem.fileSystemType));
+    text.append (
+        String.format ("File system ........... %s%n", fileSystem.fileSystemType));
+    text.append (String.format ("File system id ........ %d%n", getFileSystemId ()));
+    text.append (String.format ("Thread ................ %s", thread.toString ()));
 
     return text.toString ();
   }

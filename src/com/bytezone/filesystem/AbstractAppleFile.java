@@ -23,6 +23,7 @@ public abstract class AbstractAppleFile implements AppleFile
   protected boolean isLocked;
 
   protected final List<AppleFile> files = new ArrayList<> ();
+  protected String errorMessage = "";
 
   // ---------------------------------------------------------------------------------//
   AbstractAppleFile (AppleFileSystem appleFileSystem)
@@ -170,7 +171,8 @@ public abstract class AbstractAppleFile implements AppleFile
   public int getTotalBlocks ()                   // in blocks
   // ---------------------------------------------------------------------------------//
   {
-    throw new UnsupportedOperationException ("getTotalBlocks() not implemented");
+    throw new UnsupportedOperationException (
+        "getTotalBlocks() not implemented " + this.getFileType ());
   }
 
   // ---------------------------------------------------------------------------------//
@@ -195,6 +197,14 @@ public abstract class AbstractAppleFile implements AppleFile
   // ---------------------------------------------------------------------------------//
   {
     return fileTypeText;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
+  public String getErrorMessage ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return errorMessage;
   }
 
   // ---------------------------------------------------------------------------------//

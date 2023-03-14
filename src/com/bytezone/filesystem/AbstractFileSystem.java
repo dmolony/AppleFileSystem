@@ -30,6 +30,7 @@ public abstract class AbstractFileSystem implements AppleFileSystem
   protected List<AppleFile> files = new ArrayList<> ();
 
   protected FileSystemType fileSystemType;
+  protected String errorMessage = "";
 
   private int totalFileSystems = 0;
   private int totalFiles = 0;
@@ -438,6 +439,7 @@ public abstract class AbstractFileSystem implements AppleFileSystem
   }
 
   // ---------------------------------------------------------------------------------//
+  @Override
   public AppleFile getAppleFile ()
   // ---------------------------------------------------------------------------------//
   {
@@ -445,38 +447,12 @@ public abstract class AbstractFileSystem implements AppleFileSystem
   }
 
   // ---------------------------------------------------------------------------------//
-  //  @Override
-  //  public String catalog ()
-  //  // ---------------------------------------------------------------------------------//
-  //  {
-  //    StringBuilder text = new StringBuilder (getCatalogLine2 () + "\n");
-  //
-  //    for (AppleFile file : files)
-  //    {
-  //      text.append (file.getCatalogLine ());
-  //      text.append ("\n");
-  //    }
-  //
-  //    return Utility.rtrim (text);
-  //  }
-  //
-  //  // ---------------------------------------------------------------------------------//
-  //  @Override
-  //  public String getCatalogLine ()
-  //  // ---------------------------------------------------------------------------------//
-  //  {
-  //    return appleFile == null ? getCatalogLine2 () : appleFile.getCatalogLine ();
-  //  }
-  //
-  //  // ---------------------------------------------------------------------------------//
-  //  private String getCatalogLine2 ()
-  //  // ---------------------------------------------------------------------------------//
-  //  {
-  //    return String.format ("%-15s %-6s %,8d  %d %,7d  %4d %3d %4d %3d", getFileName (),
-  //        getFileSystemType (), blockReader.getDiskOffset (), blockReader.interleave,
-  //        blockReader.totalBlocks, blockReader.bytesPerBlock, catalogBlocks, totalFiles,
-  //        totalFileSystems);
-  //  }
+  @Override
+  public String getErrorMessage ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return errorMessage;
+  }
 
   // ---------------------------------------------------------------------------------//
   @Override

@@ -63,13 +63,14 @@ public class FsNuFX extends AbstractFileSystem
       char separator = file.getSeparator ();
       AppleFile container = this;
 
-      while ((pos = fileName.indexOf (separator)) >= 0)
-      {
-        container = getFolder (container, fileName.substring (0, pos));
-        fileName = fileName.substring (pos + 1);
-      }
+      //      System.out.println (fileName);
+      //      while ((pos = fileName.indexOf (separator)) >= 0)
+      //      {
+      //        container = getFolder (container, fileName.substring (0, pos));
+      //        fileName = fileName.substring (pos + 1);
+      //      }
 
-      if (file.hasDiskImage () || file.isLibrary ())
+      if (file.hasDisk () || file.isLibrary ())
         addFileSystem (container, file);
       else
         container.addFile (file);
@@ -79,17 +80,31 @@ public class FsNuFX extends AbstractFileSystem
   }
 
   // ---------------------------------------------------------------------------------//
-  private FolderNuFX getFolder (AppleFile container, String folderName)
+  //  private FolderNuFX getFolder (AppleFile container, String folderName)
+  //  // ---------------------------------------------------------------------------------//
+  //  {
+  //    for (AppleFile appleFile : container.getFiles ())
+  //      if (appleFile.getFileName ().equals (folderName) && appleFile.isFolder ())
+  //        return (FolderNuFX) appleFile;
+  //
+  //    FolderNuFX folder = new FolderNuFX (this, folderName);
+  //    container.addFile (folder);
+  //
+  //    return folder;
+  //  }
+
+  // ---------------------------------------------------------------------------------//
+  public DateTime getCreated ()
   // ---------------------------------------------------------------------------------//
   {
-    for (AppleFile appleFile : container.getFiles ())
-      if (appleFile.getFileName ().equals (folderName) && appleFile.isFolder ())
-        return (FolderNuFX) appleFile;
+    return created;
+  }
 
-    FolderNuFX folder = new FolderNuFX (this, folderName);
-    container.addFile (folder);
-
-    return folder;
+  // ---------------------------------------------------------------------------------//
+  public DateTime getModified ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return modified;
   }
 
   // ---------------------------------------------------------------------------------//

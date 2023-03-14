@@ -20,7 +20,6 @@ public class FileBinary2 extends AbstractAppleFile
   private int headerBlockNo;
 
   private int accessCode;
-  private int fileType;
   private int auxType;
   private int storageType;
   private int blocks;
@@ -98,6 +97,8 @@ public class FileBinary2 extends AbstractAppleFile
     version = buffer[126] & 0xFF;
     filesFollowing = buffer[127] & 0xFF;
 
+    setFileTypeText ();
+
     int firstBlock = headerBlockNo + 1;
     int lastBlock = firstBlock + (eof - 1) / 128;
 
@@ -133,6 +134,27 @@ public class FileBinary2 extends AbstractAppleFile
   }
 
   // ---------------------------------------------------------------------------------//
+  private void setFileTypeText ()
+  // ---------------------------------------------------------------------------------//
+  {
+    switch (osType)
+    {
+      case 0:         // Prodos/Sos
+        fileTypeText = FsProdos.getFileTypeText (fileType);
+        break;
+
+      case 1:         // Dos 3.3
+      case 2:         // Dos 3.1
+        fileTypeText = "Dos type " + fileType;
+        break;
+
+      case 3:         // Pascal
+        fileTypeText = "Pascal type " + fileType;
+        break;
+    }
+  }
+
+  // ---------------------------------------------------------------------------------//
   @Override
   public String getFileName ()
   // ---------------------------------------------------------------------------------//
@@ -156,10 +178,25 @@ public class FileBinary2 extends AbstractAppleFile
   }
 
   // ---------------------------------------------------------------------------------//
+  public int getOsType ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return osType;
+  }
+
+  // ---------------------------------------------------------------------------------//
   public int getEof ()
   // ---------------------------------------------------------------------------------//
   {
     return eof;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
+  public int getTotalBlocks ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return blocks;
   }
 
   // ---------------------------------------------------------------------------------//
@@ -177,24 +214,34 @@ public class FileBinary2 extends AbstractAppleFile
   }
 
   // ---------------------------------------------------------------------------------//
+  public boolean isEncrypted ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return (dataFlags & 0x40) != 0;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  public boolean isSparse ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return (dataFlags & 0x01) != 0;
+  }
+
+  // ---------------------------------------------------------------------------------//
   private String getFlagsText (int dataFlags)
   // ---------------------------------------------------------------------------------//
   {
     int mask = 0x80;
     StringBuilder text = new StringBuilder ();
+
     for (int i = 0; i < flags.length; i++)
     {
       if ((dataFlags & mask) != 0)
-      {
         text.append (flags[i] + ", ");
-      }
       mask >>>= 1;
     }
 
-    if (text.length () > 0)
-      text.delete (text.length () - 2, text.length ());
-
-    return text.toString ();
+    return Utility.rtrim (text);
   }
 
   // ---------------------------------------------------------------------------------//
@@ -222,15 +269,6 @@ public class FileBinary2 extends AbstractAppleFile
   }
 
   // ---------------------------------------------------------------------------------//
-  //  @Override
-  //  public String getCatalogLine ()
-  //  // ---------------------------------------------------------------------------------//
-  //  {
-  //    return String.format ("%,6d  %-20s  %02X  %04X %03X  %3d  %,8d", dataBlocks.size (),
-  //        getFileName (), fileType, auxType, storageType, blocks, eof);
-  //  }
-
-  // ---------------------------------------------------------------------------------//
   @Override
   public String toString ()
   // ---------------------------------------------------------------------------------//
@@ -240,7 +278,7 @@ public class FileBinary2 extends AbstractAppleFile
     text.append (String.format ("Header block .......... %02X%n", headerBlockNo));
     text.append (String.format ("Access code ........... %02X%n", accessCode));
     text.append (String.format ("File type ............. %02X        %s%n", fileType,
-        ProdosConstants.fileTypes[fileType]));
+        fileTypeText));
     text.append (String.format ("Aux type .............. %04X%n", auxType));
     text.append (String.format ("Storage type .......... %02X%n", storageType));
     text.append (String.format ("File size x 512 ....... %02X      %<,7d%n", blocks));
@@ -269,8 +307,13 @@ public class FileBinary2 extends AbstractAppleFile
     text.append (String.format ("Phantom file .......... %02X%n", phantomFile));
     text.append (String.format ("Data flags ............ %02X %s%n", dataFlags,
         getFlagsText (dataFlags)));
+    text.append (String.format ("  compressed? ......... %s%n", isCompressed ()));
+    text.append (String.format ("  encrypted? .......... %s%n", isEncrypted ()));
+    text.append (String.format ("  sparse? ............. %s%n", isSparse ()));
     text.append (String.format ("Version ............... %02X%n", version));
     text.append (String.format ("Files following ....... %02X%n", filesFollowing));
+    text.append (String.format ("Squeeze name .......... %s",
+        squeezeName == null ? "" : squeezeName));
 
     return text.toString ();
   }

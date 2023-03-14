@@ -182,6 +182,13 @@ public class FileNuFX extends AbstractAppleFile
   }
 
   // ---------------------------------------------------------------------------------//
+  public DateTime getArchived ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return archived;
+  }
+
+  // ---------------------------------------------------------------------------------//
   public String getFullFileName ()
   // ---------------------------------------------------------------------------------//
   {
@@ -196,6 +203,20 @@ public class FileNuFX extends AbstractAppleFile
   }
 
   // ---------------------------------------------------------------------------------//
+  public int getAuxType ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return auxType;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  public int getAccess ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return access;
+  }
+
+  // ---------------------------------------------------------------------------------//
   boolean isLibrary ()
   // ---------------------------------------------------------------------------------//
   {
@@ -203,12 +224,33 @@ public class FileNuFX extends AbstractAppleFile
   }
 
   // ---------------------------------------------------------------------------------//
-  boolean hasDiskImage ()
+  public boolean hasDisk ()
   // ---------------------------------------------------------------------------------//
   {
     for (NuFXThread thread : threads)
-      if (thread.threadClass == NuFXThread.CLASS_DATA
-          && thread.threadKind == NuFXThread.KIND_DISK_IMAGE)
+      if (thread.hasDisk ())
+        return true;
+
+    return false;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  public boolean hasFile ()
+  // ---------------------------------------------------------------------------------//
+  {
+    for (NuFXThread thread : threads)
+      if (thread.hasFile ())
+        return true;
+
+    return false;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  public boolean hasResource ()
+  // ---------------------------------------------------------------------------------//
+  {
+    for (NuFXThread thread : threads)
+      if (thread.hasResource ())
         return true;
 
     return false;
@@ -219,13 +261,22 @@ public class FileNuFX extends AbstractAppleFile
   public byte[] read ()
   // ---------------------------------------------------------------------------------//
   {
-    if (isDiskImage)
-      return diskImageThread.getData ();
-
     if (isForkedFile)
       throw new FileFormatException ("Cannot read() a forked file");
 
-    return dataFork.read ();
+    try           // some nufx files are corrupt
+    {
+      if (isDiskImage)
+        return diskImageThread.getData ();
+
+      return dataFork.read ();
+    }
+    catch (Exception e)
+    {
+      errorMessage = String.format ("Reading file %s failed : %s%n", getFullFileName (),
+          e.getMessage ());
+      return null;
+    }
   }
 
   // ---------------------------------------------------------------------------------//
@@ -300,21 +351,62 @@ public class FileNuFX extends AbstractAppleFile
   // ---------------------------------------------------------------------------------//
   {
     for (NuFXThread thread : threads)
-      if (thread.threadClass == NuFXThread.CLASS_DATA
-          && (thread.threadKind == NuFXThread.KIND_DATA_FORK
-              || thread.threadKind == NuFXThread.KIND_DISK_IMAGE))
+      if (thread.hasFile () || thread.hasResource () || thread.hasDisk ())
         return thread.uncompressedEOF;
 
     return 0;
   }
 
   // ---------------------------------------------------------------------------------//
-  //  @Override
-  //  public String getCatalogLine ()
-  //  // ---------------------------------------------------------------------------------//
-  //  {
-  //    return String.format ("%-30s  %-3s  %04X", fileName, fileTypes[fileType], auxType);
-  //  }
+  public int getUncompressedSize ()
+  // ---------------------------------------------------------------------------------//
+  {
+    if (hasDisk ())
+      return auxType * storType;
+
+    int size = 0;
+
+    for (NuFXThread thread : threads)
+      if (thread.hasFile () || thread.hasResource () || thread.hasDisk ())
+        size += thread.getUncompressedEOF ();
+
+    return size;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  public int getCompressedSize ()
+  // ---------------------------------------------------------------------------------//
+  {
+    int size = 0;
+
+    for (NuFXThread thread : threads)
+      if (thread.hasFile () || thread.hasResource () || thread.hasDisk ())
+        size += thread.compressedEOF;
+
+    return size;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  public float getCompressedPct ()
+  // ---------------------------------------------------------------------------------//
+  {
+    float pct = 100;
+    if (getUncompressedSize () > 0)
+      pct = getCompressedSize () * 100 / getUncompressedSize ();
+
+    return pct;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  public int getThreadFormat ()
+  // ---------------------------------------------------------------------------------//
+  {
+    for (NuFXThread thread : threads)
+      if (thread.hasFile () || thread.hasDisk ())
+        return thread.threadFormat;
+
+    return 0;
+  }
 
   // ---------------------------------------------------------------------------------//
   @Override
