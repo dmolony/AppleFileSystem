@@ -196,7 +196,20 @@ public class FileNuFX extends AbstractAppleFile
   }
 
   // ---------------------------------------------------------------------------------//
-  char getSeparator ()
+  public String[] getPathFolders ()
+  // ---------------------------------------------------------------------------------//
+  {
+    String[] pathItems = fileName.split ("\\" + separator);
+    String[] pathFolders = new String[pathItems.length - 1];
+
+    for (int i = 0; i < pathFolders.length; i++)
+      pathFolders[i] = pathItems[i];
+
+    return pathFolders;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  public char getSeparator ()
   // ---------------------------------------------------------------------------------//
   {
     return separator;

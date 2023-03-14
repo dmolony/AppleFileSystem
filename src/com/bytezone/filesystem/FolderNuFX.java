@@ -2,14 +2,11 @@ package com.bytezone.filesystem;
 
 public class FolderNuFX extends AbstractAppleFile
 {
-  //      ********   this should be removed      **********
   // ---------------------------------------------------------------------------------//
-  FolderNuFX (FsNuFX parent, String name)
+  public FolderNuFX (FsNuFX parent, String name)
   // ---------------------------------------------------------------------------------//
   {
     super (parent);
-
-    assert false;
 
     this.fileName = name;
 
