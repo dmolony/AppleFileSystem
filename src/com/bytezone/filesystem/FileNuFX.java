@@ -72,8 +72,8 @@ public class FileNuFX extends AbstractAppleFile
     access = Utility.unsignedLong (buffer, offset + 18);
 
     fileType = Utility.unsignedLong (buffer, offset + 22);
-    if (fileSystemID == 1)
-      fileTypeText = fileTypes[fileType];
+    //    if (fileSystemID == 1)
+    fileTypeText = fileTypes[fileType];
 
     auxType = Utility.unsignedLong (buffer, offset + 26);
     storType = Utility.unsignedShort (buffer, offset + 30);
@@ -150,17 +150,6 @@ public class FileNuFX extends AbstractAppleFile
           }
       }
 
-    if (false)
-    {
-      System.out.println (this);
-      System.out.println ();
-      for (int i = 0; i < totThreads; i++)
-      {
-        System.out.println (threads.get (i));
-        System.out.println ();
-      }
-    }
-
     rawLength = ptr - offset;
   }
 
@@ -169,7 +158,18 @@ public class FileNuFX extends AbstractAppleFile
   public int getTotalBlocks ()
   // ---------------------------------------------------------------------------------//
   {
-    return 0;
+    // this still has to account for forked files, and tree files
+    switch (storType)
+    {
+      case 1:                   // seedling
+        return 1;
+      case 2:                   // sapling
+        return (getFileLength () - 1) / 512 + 2;
+      case 3:                   // tree
+        return (getFileLength () - 1) / 512 + 3;        // wrong
+      default:
+        return 0;
+    }
   }
 
   // ---------------------------------------------------------------------------------//
@@ -252,7 +252,7 @@ public class FileNuFX extends AbstractAppleFile
   // ---------------------------------------------------------------------------------//
   {
     for (NuFXThread thread : threads)
-      if (thread.hasFile ())
+      if (thread.hasData ())
         return true;
 
     return false;
@@ -364,7 +364,7 @@ public class FileNuFX extends AbstractAppleFile
   // ---------------------------------------------------------------------------------//
   {
     for (NuFXThread thread : threads)
-      if (thread.hasFile () || thread.hasResource () || thread.hasDisk ())
+      if (thread.hasData () || thread.hasResource () || thread.hasDisk ())
         return thread.uncompressedEOF;
 
     return 0;
@@ -380,7 +380,7 @@ public class FileNuFX extends AbstractAppleFile
     int size = 0;
 
     for (NuFXThread thread : threads)
-      if (thread.hasFile () || thread.hasResource () || thread.hasDisk ())
+      if (thread.hasData () || thread.hasResource () || thread.hasDisk ())
         size += thread.getUncompressedEOF ();
 
     return size;
@@ -393,7 +393,7 @@ public class FileNuFX extends AbstractAppleFile
     int size = 0;
 
     for (NuFXThread thread : threads)
-      if (thread.hasFile () || thread.hasResource () || thread.hasDisk ())
+      if (thread.hasData () || thread.hasResource () || thread.hasDisk ())
         size += thread.compressedEOF;
 
     return size;
@@ -415,7 +415,7 @@ public class FileNuFX extends AbstractAppleFile
   // ---------------------------------------------------------------------------------//
   {
     for (NuFXThread thread : threads)
-      if (thread.hasFile () || thread.hasDisk ())
+      if (thread.hasData () || thread.hasDisk ())
         return thread.threadFormat;
 
     return 0;

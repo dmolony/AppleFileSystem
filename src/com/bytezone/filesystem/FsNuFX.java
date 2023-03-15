@@ -58,40 +58,14 @@ public class FsNuFX extends AbstractFileSystem
     {
       FileNuFX file = new FileNuFX (this, getDiskBuffer (), ptr);
 
-      String fileName = file.getFullFileName ();
-      int pos;
-      char separator = file.getSeparator ();
-      AppleFile container = this;
-
-      //      System.out.println (fileName);
-      //      while ((pos = fileName.indexOf (separator)) >= 0)
-      //      {
-      //        container = getFolder (container, fileName.substring (0, pos));
-      //        fileName = fileName.substring (pos + 1);
-      //      }
-
       if (file.hasDisk () || file.isLibrary ())
-        addFileSystem (container, file);
+        addFileSystem (this, file);
       else
-        container.addFile (file);
+        addFile (file);
 
       ptr += file.rawLength;
     }
   }
-
-  // ---------------------------------------------------------------------------------//
-  //  private FolderNuFX getFolder (AppleFile container, String folderName)
-  //  // ---------------------------------------------------------------------------------//
-  //  {
-  //    for (AppleFile appleFile : container.getFiles ())
-  //      if (appleFile.getFileName ().equals (folderName) && appleFile.isFolder ())
-  //        return (FolderNuFX) appleFile;
-  //
-  //    FolderNuFX folder = new FolderNuFX (this, folderName);
-  //    container.addFile (folder);
-  //
-  //    return folder;
-  //  }
 
   // ---------------------------------------------------------------------------------//
   public DateTime getCreated ()

@@ -107,7 +107,6 @@ public class NuFXThread
         break;
     }
 
-    //    return uncompressedData;
     return null;
   }
 
@@ -126,7 +125,7 @@ public class NuFXThread
   }
 
   // ---------------------------------------------------------------------------------//
-  boolean hasFile ()
+  boolean hasData ()
   // ---------------------------------------------------------------------------------//
   {
     return threadClass == CLASS_DATA && threadKind == KIND_DATA_FORK;
@@ -156,7 +155,7 @@ public class NuFXThread
     text.append (String.format ("  uncompressedEOF ..... %08X %<,9d%n", uncompressedEOF));
     text.append (String.format ("  compressedEOF ....... %08X %<,9d", compressedEOF));
 
-    if (threadFormat == 0)
+    if (threadClass != 2)
       text.append ("\n  data ................ " + getDataString ());
 
     return text.toString ();

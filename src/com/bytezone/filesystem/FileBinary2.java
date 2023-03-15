@@ -88,11 +88,11 @@ public class FileBinary2 extends AbstractAppleFile
     gStorage = buffer[113] & 0xFF;
     gFileSize = Utility.unsignedShort (buffer, 114);
     gEof = buffer[116] & 0xFF;
-    diskSpace = Utility.unsignedLong (buffer, 117);
+    diskSpace = Utility.unsignedLong (buffer, 117);     // total for all files
 
     osType = buffer[121] & 0xFF;
     nativeFileType = Utility.unsignedShort (buffer, 122);
-    phantomFile = buffer[124] & 0xFF;
+    phantomFile = buffer[124] & 0xFF;                   // ignore file if != 0
     dataFlags = buffer[125] & 0xFF;
     version = buffer[126] & 0xFF;
     filesFollowing = buffer[127] & 0xFF;
@@ -189,6 +189,13 @@ public class FileBinary2 extends AbstractAppleFile
   // ---------------------------------------------------------------------------------//
   {
     return eof;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  boolean isPhantomFile ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return phantomFile != 0;
   }
 
   // ---------------------------------------------------------------------------------//
@@ -310,7 +317,7 @@ public class FileBinary2 extends AbstractAppleFile
     text.append (String.format ("  compressed? ......... %s%n", isCompressed ()));
     text.append (String.format ("  encrypted? .......... %s%n", isEncrypted ()));
     text.append (String.format ("  sparse? ............. %s%n", isSparse ()));
-    text.append (String.format ("Version ............... %02X%n", version));
+    text.append (String.format ("Bin2 version .......... %02X%n", version));
     text.append (String.format ("Files following ....... %02X%n", filesFollowing));
     text.append (String.format ("Squeeze name .......... %s",
         squeezeName == null ? "" : squeezeName));
