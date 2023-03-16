@@ -14,7 +14,7 @@ public abstract class AbstractAppleFile implements AppleFile
   protected boolean isFile;
   protected boolean isFolder;
   protected boolean isFileSystem;
-  protected boolean isForkedFile;           // FileProdos only
+  protected boolean isForkedFile;             // FileProdos only
   protected boolean isFork;
 
   protected String fileName;
@@ -128,6 +128,14 @@ public abstract class AbstractAppleFile implements AppleFile
 
   // ---------------------------------------------------------------------------------//
   @Override
+  public String[] getPathFolders ()
+  // ---------------------------------------------------------------------------------//
+  {
+    throw new UnsupportedOperationException ("getPathFolders() not implemented");
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
   public FileSystemType getFileSystemType ()
   // ---------------------------------------------------------------------------------//
   {
@@ -212,6 +220,13 @@ public abstract class AbstractAppleFile implements AppleFile
   public String toString ()
   // ---------------------------------------------------------------------------------//
   {
-    return String.format ("%s", fileName);
+    StringBuilder text = new StringBuilder ();
+
+    text.append (String.format ("File name ............. %s%n", fileName));
+    text.append (
+        String.format ("File type ............. %d    %s%n", fileType, fileTypeText));
+    text.append (String.format ("File system type ...... %s%n%n", getFileSystemType ()));
+
+    return text.toString ();
   }
 }

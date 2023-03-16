@@ -198,6 +198,14 @@ public abstract class AbstractFileSystem implements AppleFileSystem
 
   // ---------------------------------------------------------------------------------//
   @Override
+  public String[] getPathFolders ()
+  // ---------------------------------------------------------------------------------//
+  {
+    throw new UnsupportedOperationException ("getPathFolders() not implemented");
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
   public void addFile (AppleFile file)
   // ---------------------------------------------------------------------------------//
   {

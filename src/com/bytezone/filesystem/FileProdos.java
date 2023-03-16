@@ -143,13 +143,8 @@ public class FileProdos extends AbstractAppleFile
   public String toString ()
   // ---------------------------------------------------------------------------------//
   {
-    StringBuilder text = new StringBuilder ();
+    StringBuilder text = new StringBuilder (super.toString ());
 
-    //    int length = isForkedFile () ? 0 : data.getFileLength ();
-
-    text.append (String.format ("File name ............. %s%n", fileName));
-    text.append (
-        String.format ("File type ............. %02X  %s%n", fileType, fileTypeText));
     text.append (String.format ("Version ............... %d%n", version));
     text.append (String.format ("Min version ........... %d%n", minVersion));
     text.append (String.format ("Access ................ %02X      %<7d%n", access));
@@ -161,6 +156,6 @@ public class FileProdos extends AbstractAppleFile
     text.append (String.format ("Created ............... %9s%n", created));
     text.append (String.format ("Modified .............. %9s", modified));
 
-    return text.toString ();
+    return Utility.rtrim (text);
   }
 }

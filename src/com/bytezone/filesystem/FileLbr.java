@@ -52,16 +52,13 @@ public class FileLbr extends AbstractAppleFile
   public String toString ()
   // ---------------------------------------------------------------------------------//
   {
-    StringBuilder text = new StringBuilder ();
+    StringBuilder text = new StringBuilder (super.toString ());
 
-    text.append (String.format ("File name ............. %s%n", fileName));
-    text.append (
-        String.format ("File type ............. %d  %s%n", fileType, fileTypeText));
     text.append (String.format ("Extension ............. %s%n", extension));
     text.append (String.format ("First block ........... %,d%n", firstBlock));
     text.append (String.format ("Total blocks .......... %,d%n", totalBlocks));
     text.append (String.format ("CRC ................... %,d%n", crc));
 
-    return text.toString ();
+    return Utility.rtrim (text);
   }
 }

@@ -280,7 +280,7 @@ public class FileBinary2 extends AbstractAppleFile
   public String toString ()
   // ---------------------------------------------------------------------------------//
   {
-    StringBuilder text = new StringBuilder ();
+    StringBuilder text = new StringBuilder (super.toString ());
 
     text.append (String.format ("Header block .......... %02X%n", headerBlockNo));
     text.append (String.format ("Access code ........... %02X%n", accessCode));
@@ -322,6 +322,6 @@ public class FileBinary2 extends AbstractAppleFile
     text.append (String.format ("Squeeze name .......... %s",
         squeezeName == null ? "" : squeezeName));
 
-    return text.toString ();
+    return Utility.rtrim (text);
   }
 }

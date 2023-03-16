@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.bytezone.filesystem.FileProdos.ForkType;
+import com.bytezone.utility.Utility;
 
 // -----------------------------------------------------------------------------------//
 public class ForkProdos extends AbstractAppleFile
@@ -198,15 +199,6 @@ public class ForkProdos extends AbstractAppleFile
   }
 
   // ---------------------------------------------------------------------------------//
-  //  @Override
-  //  public String getCatalogLine ()
-  //  // ---------------------------------------------------------------------------------//
-  //  {
-  //    return String.format ("%-30s %-3s  %04X %4d %,10d", fileName,
-  //        parentFile.getFileTypeText (), keyPtr, getTotalBlocks (), getFileLength ());
-  //  }
-
-  // ---------------------------------------------------------------------------------//
   public ForkType getForkType ()
   // ---------------------------------------------------------------------------------//
   {
@@ -218,17 +210,14 @@ public class ForkProdos extends AbstractAppleFile
   public String toString ()
   // ---------------------------------------------------------------------------------//
   {
-    StringBuilder text = new StringBuilder ();
+    StringBuilder text = new StringBuilder (super.toString ());
 
-    text.append (String.format ("File name ............. %s%n", fileName));
-    text.append (
-        String.format ("File type ............. %02X  %s%n", fileType, fileTypeText));
     text.append (String.format ("Size (blocks) ......... %04X  %<,7d%n", size));
     text.append (String.format ("Eof ................... %04X  %<,7d%n", eof));
     text.append (String.format ("Key ptr ............... %04X  %<,7d%n%n", keyPtr));
     text.append (String.format ("Parent ................ %s%n", parentFile.fileName));
     text.append (String.format ("File system ........... %s", fileSystem.fileSystemType));
 
-    return text.toString ();
+    return Utility.rtrim (text);
   }
 }

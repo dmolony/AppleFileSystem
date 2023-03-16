@@ -1,11 +1,13 @@
 package com.bytezone.filesystem;
 
-public class FolderNuFX extends AbstractAppleFile
+import com.bytezone.utility.Utility;
+
+public class Folder extends AbstractAppleFile
 {
   // This class is not used by FileSystem, but may be used by other projects when
-  // displaying NuFX file contents (eg DiskBrowser2 and AppleFormat)
+  // displaying NuFX/Zip/Gzip file contents (eg DiskBrowser2 and AppleFormat)
   // ---------------------------------------------------------------------------------//
-  public FolderNuFX (FsNuFX parent, String name)
+  public Folder (AppleFileSystem parent, String name)
   // ---------------------------------------------------------------------------------//
   {
     super (parent);
@@ -20,11 +22,10 @@ public class FolderNuFX extends AbstractAppleFile
   public String toString ()
   // ---------------------------------------------------------------------------------//
   {
-    StringBuilder text = new StringBuilder ();
+    StringBuilder text = new StringBuilder (super.toString ());
 
-    text.append (String.format ("File name ............. %s%n", fileName));
-    text.append (String.format ("File type ............. %s", "NuFX Folder"));
+    text.append (String.format ("File type ............. %s", "Folder"));
 
-    return text.toString ();
+    return Utility.rtrim (text);
   }
 }

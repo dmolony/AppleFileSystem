@@ -172,17 +172,14 @@ public class FileDos extends AbstractAppleFile
   public String toString ()
   // ---------------------------------------------------------------------------------//
   {
-    StringBuilder text = new StringBuilder ();
+    StringBuilder text = new StringBuilder (super.toString ());
 
-    text.append (String.format ("File name ............. %s%n", fileName));
-    text.append (
-        String.format ("File type ............. %d  %s%n", fileType, fileTypeText));
     text.append (String.format ("Locked ................ %s%n", isLocked));
     text.append (String.format ("Sectors ............... %04X  %<,5d%n", sectorCount));
     text.append (String.format ("Length ................ %04X  %<,5d%n", length));
     text.append (String.format ("Address ............... %04X  %<,5d%n", address));
     text.append (String.format ("Text file gaps ........ %04X  %<,5d", textFileGaps));
 
-    return text.toString ();
+    return Utility.rtrim (text);
   }
 }

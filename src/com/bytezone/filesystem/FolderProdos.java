@@ -108,11 +108,8 @@ public class FolderProdos extends AbstractAppleFile
   public String toString ()
   // ---------------------------------------------------------------------------------//
   {
-    StringBuilder text = new StringBuilder ();
+    StringBuilder text = new StringBuilder (super.toString ());
 
-    text.append (String.format ("File name ............. %s%n", fileName));
-    text.append (
-        String.format ("File type ............. %d  %s%n", fileType, fileTypeText));
     text.append (String.format ("Version ............... %d%n", version));
     text.append (String.format ("Min version ........... %d%n", minVersion));
     text.append (String.format ("Access ................ %02X    %<7d%n", access));
@@ -125,6 +122,6 @@ public class FolderProdos extends AbstractAppleFile
     text.append (
         String.format ("Modified .............. %9s %-5s", dateModified, timeModified));
 
-    return text.toString ();
+    return Utility.rtrim (text);
   }
 }

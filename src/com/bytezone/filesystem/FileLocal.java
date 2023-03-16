@@ -19,12 +19,4 @@ public class FileLocal extends AbstractAppleFile
     this.isFolder = file.isDirectory ();
     this.isFile = true;
   }
-
-  // ---------------------------------------------------------------------------------//
-  //  @Override
-  //  public String getCatalogLine ()
-  //  // ---------------------------------------------------------------------------------//
-  //  {
-  //    return null;
-  //  }
 }

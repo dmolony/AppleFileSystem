@@ -1,6 +1,7 @@
 package com.bytezone.filesystem;
 
 import com.bytezone.filesystem.FileProdos.ForkType;
+import com.bytezone.utility.Utility;
 
 // -----------------------------------------------------------------------------------//
 public class ForkNuFX extends AbstractAppleFile
@@ -63,6 +64,7 @@ public class ForkNuFX extends AbstractAppleFile
   {
     StringBuilder text = new StringBuilder ();
 
+    text.append (String.format ("File system type ...... %s%n", getFileSystemType ()));
     text.append (String.format ("File name ............. %s%n", fileName));
     text.append (String.format ("Fork type ............. %s%n", forkType));
     text.append (
@@ -75,6 +77,6 @@ public class ForkNuFX extends AbstractAppleFile
     text.append (String.format ("File system id ........ %d%n", getFileSystemId ()));
     text.append (String.format ("Thread ................ %s", thread.toString ()));
 
-    return text.toString ();
+    return Utility.rtrim (text);
   }
 }

@@ -33,6 +33,8 @@ public interface AppleFile
 
   public FileSystemType getFileSystemType ();       // if isFileSystem()
 
+  public String[] getPathFolders ();                // if file name is stored as a path
+
   public byte[] read ();                            // if isFile()
 
   public void write (byte[] buffer);                // if isFile()

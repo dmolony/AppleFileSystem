@@ -37,7 +37,7 @@ public class FsZip extends AbstractFileSystem
   private void readCatalog ()
   // ---------------------------------------------------------------------------------//
   {
-    try (ZipInputStream zip = new ZipInputStream (//
+    try (ZipInputStream zip = new ZipInputStream (
         new ByteArrayInputStream (getDiskBuffer (), getDiskOffset (), getDiskLength ()));)
     {
       ZipEntry entry;
@@ -45,13 +45,21 @@ public class FsZip extends AbstractFileSystem
       {
         zipEntries.add (entry);
 
-        if (entry.getName ().startsWith ("__") || entry.getName ().startsWith (".")
-            || entry.isDirectory () || Utility.getSuffixNo (entry.getName ()) < 0)
+        String name = entry.getName ();
+
+        if (name.startsWith ("__"))
+          continue;
+
+        if (name.startsWith (".") || entry.isDirectory ()
+            || Utility.getSuffixNo (name) < 0)
         {
           if (debug)
-            System.out.printf ("Ignoring : %s%n", entry.getName ());
+            System.out.printf ("Ignoring : %s%n", name);
           continue;
         }
+
+        System.out.printf ("%s %,9d %,9d  %-20s%n", entry.isDirectory () ? "D" : " ",
+            entry.getCompressedSize (), entry.getSize (), name);
 
         int rem = (int) entry.getSize ();
 
@@ -70,10 +78,12 @@ public class FsZip extends AbstractFileSystem
             rem -= len;
           }
 
-          addEntry (entry.getName (), buffer);
+          //          addEntry (name, buffer);
+          addFileSystem (this, name, buffer);
         }
         else
-          addEntry (entry.getName (), Utility.getFullBuffer (zip));
+          //          addEntry (name, Utility.getFullBuffer (zip));
+          addFileSystem (this, name, Utility.getFullBuffer (zip));
       }
     }
     catch (ZipException e)
@@ -128,10 +138,10 @@ public class FsZip extends AbstractFileSystem
 
   // ---------------------------------------------------------------------------------//
   @Override
-  public String toText ()
+  public String toString ()
   // ---------------------------------------------------------------------------------//
   {
-    StringBuilder text = new StringBuilder (super.toText () + "\n");
+    StringBuilder text = new StringBuilder (super.toString () + "\n");
 
     for (ZipEntry entry : zipEntries)
     {

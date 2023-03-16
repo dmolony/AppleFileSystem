@@ -1,5 +1,7 @@
 package com.bytezone.filesystem;
 
+import com.bytezone.utility.Utility;
+
 // -----------------------------------------------------------------------------------//
 public class FileData extends AbstractAppleFile
 // -----------------------------------------------------------------------------------//
@@ -55,13 +57,10 @@ public class FileData extends AbstractAppleFile
   public String toString ()
   // ---------------------------------------------------------------------------------//
   {
-    StringBuilder text = new StringBuilder ();
+    StringBuilder text = new StringBuilder (super.toString ());
 
-    text.append (String.format ("File name ............. %s%n", fileName));
-    text.append (
-        String.format ("File type ............. %d  %s%n", fileType, fileTypeText));
     text.append (String.format ("Length ................ %,d", buffer.length));
 
-    return text.toString ();
+    return Utility.rtrim (text);
   }
 }

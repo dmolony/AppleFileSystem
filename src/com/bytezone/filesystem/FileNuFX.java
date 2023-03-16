@@ -196,6 +196,7 @@ public class FileNuFX extends AbstractAppleFile
   }
 
   // ---------------------------------------------------------------------------------//
+  @Override
   public String[] getPathFolders ()
   // ---------------------------------------------------------------------------------//
   {
@@ -426,17 +427,14 @@ public class FileNuFX extends AbstractAppleFile
   public String toString ()
   // ---------------------------------------------------------------------------------//
   {
-    StringBuilder text = new StringBuilder ();
+    StringBuilder text = new StringBuilder (super.toString ());
 
     String bits = "00000000" + Integer.toBinaryString (access & 0xFF);
     bits = bits.substring (bits.length () - 8);
     String decode = Utility.matchFlags (access, accessChars);
 
-    text.append (String.format ("File name ............. %s%n", getFileName ()));
     if (!getFileName ().equals (getFullFileName ()))
       text.append (String.format ("Full file name ........ %s%n", getFullFileName ()));
-    text.append (String.format ("File type ............. %02X  %s%n%n", fileType,
-        fileTypes[fileType]));
     text.append (String.format ("Header CRC ............ %04X   %s%n", crc,
         crcPassed ? "Passed" : "** Failed **"));
     text.append (String.format ("Attributes ............ %d%n", attributeSectionLength));

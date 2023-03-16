@@ -100,6 +100,7 @@ public class Fs2img extends AbstractFileSystem
 
     String message = originalLength == 0 ? "   <-- wrong!" : "";
 
+    text.append (String.format ("File system type ...... %s%n", getFileSystemType ()));
     text.append (String.format ("Creator ............... %s  %s%n", creator,
         getCreator (creator)));
     text.append (String.format ("Header size ........... %d%n", headerSize));

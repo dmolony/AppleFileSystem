@@ -91,29 +91,17 @@ public class FilePascal extends AbstractAppleFile
   }
 
   // ---------------------------------------------------------------------------------//
-  //  @Override
-  //  public String getCatalogLine ()
-  //  // ---------------------------------------------------------------------------------//
-  //  {
-  //    return String.format ("%-20s  %3d  %-4s  %03X-%03X  %3d  %s", fileName, fileType,
-  //        fileTypeText, firstBlock, lastBlock, bytesUsedInLastBlock, date);
-  //  }
-
-  // ---------------------------------------------------------------------------------//
   @Override
   public String toString ()
   // ---------------------------------------------------------------------------------//
   {
-    StringBuilder text = new StringBuilder ();
+    StringBuilder text = new StringBuilder (super.toString ());
 
-    text.append (String.format ("File name ............. %s%n", fileName));
-    text.append (
-        String.format ("File type ............. %d  %s%n", fileType, fileTypeText));
     text.append (String.format ("First block ........... %d%n", firstBlock));
     text.append (String.format ("Last block ............ %d%n", lastBlock));
     text.append (String.format ("Bytes in last block ... %d%n", bytesUsedInLastBlock));
     text.append (String.format ("Date .................. %s", date));
 
-    return text.toString ();
+    return Utility.rtrim (text);
   }
 }

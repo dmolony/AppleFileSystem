@@ -358,8 +358,8 @@ public class BlockReader
   {
     StringBuilder text = new StringBuilder ();
 
-    text.append (String.format ("Disk offset ........... %,d%n", diskOffset));
-    text.append (String.format ("Disk length ........... %,d%n", diskLength));
+    text.append (String.format ("File system offset .... %,d%n", diskOffset));
+    text.append (String.format ("File system length .... %,d%n", diskLength));
     text.append (String.format ("Address type .......... %s%n", addressType));
     text.append (String.format ("Total blocks .......... %,d%n", totalBlocks));
     text.append (String.format ("Bytes per block ....... %d%n", bytesPerBlock));

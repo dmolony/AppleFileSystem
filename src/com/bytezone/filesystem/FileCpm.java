@@ -3,6 +3,8 @@ package com.bytezone.filesystem;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.bytezone.utility.Utility;
+
 // -----------------------------------------------------------------------------------//
 public class FileCpm extends AbstractAppleFile
 // -----------------------------------------------------------------------------------//
@@ -197,10 +199,8 @@ public class FileCpm extends AbstractAppleFile
   public String toString ()
   // ---------------------------------------------------------------------------------//
   {
-    StringBuilder text = new StringBuilder ();
+    StringBuilder text = new StringBuilder (super.toString ());
 
-    text.append (String.format ("File name ............. %s%n", fileName));
-    text.append (String.format ("File type ............. %s%n", fileTypeText));
     text.append (String.format ("Read only ............. %s%n", readOnly));
     text.append (String.format ("System file ........... %s%n", systemFile));
     text.append (String.format ("User number ........... %,d%n", userNumber));
@@ -209,6 +209,6 @@ public class FileCpm extends AbstractAppleFile
     text.append (String.format ("Data blocks ........... %,d%n", dataBlocks.size ()));
     text.append (String.format ("Records ............... %,d", recordCount));
 
-    return text.toString ();
+    return Utility.rtrim (text);
   }
 }

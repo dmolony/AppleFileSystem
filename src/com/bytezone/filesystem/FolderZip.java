@@ -1,5 +1,7 @@
 package com.bytezone.filesystem;
 
+import com.bytezone.utility.Utility;
+
 // -----------------------------------------------------------------------------------//
 public class FolderZip extends AbstractAppleFile
 // -----------------------------------------------------------------------------------//
@@ -16,18 +18,12 @@ public class FolderZip extends AbstractAppleFile
   }
 
   // ---------------------------------------------------------------------------------//
-  //  @Override
-  //  public String getCatalogLine ()
-  //  // ---------------------------------------------------------------------------------//
-  //  {
-  //    return fileName;
-  //  }
-
-  // ---------------------------------------------------------------------------------//
   @Override
   public String toString ()
   // ---------------------------------------------------------------------------------//
   {
-    return String.format ("%-30s ZIPDIR", fileName);
+    StringBuilder text = new StringBuilder (super.toString ());
+
+    return Utility.rtrim (text);
   }
 }
