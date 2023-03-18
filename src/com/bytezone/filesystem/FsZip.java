@@ -78,11 +78,9 @@ public class FsZip extends AbstractFileSystem
             rem -= len;
           }
 
-          //          addEntry (name, buffer);
           addFileSystem (this, name, buffer);
         }
         else
-          //          addEntry (name, Utility.getFullBuffer (zip));
           addFileSystem (this, name, Utility.getFullBuffer (zip));
       }
     }
@@ -94,46 +92,6 @@ public class FsZip extends AbstractFileSystem
     {
       throw new FileFormatException (e.getMessage ());
     }
-  }
-
-  // ---------------------------------------------------------------------------------//
-  private void addEntry (String path, byte[] buffer)
-  // ---------------------------------------------------------------------------------//
-  {
-    String fileName;
-
-    int pos = path.lastIndexOf ('/');
-    if (pos < 0)
-    {
-      fileName = path;
-      path = "";
-    }
-    else
-    {
-      fileName = path.substring (pos + 1);
-      path = path.substring (0, pos);
-    }
-
-    //    AppleFile parent = this;
-    //    if (!path.isEmpty ())
-    //      for (String name : path.split ("/"))
-    //        parent = getFolder (parent, name);
-
-    AppleFileSystem fs = addFileSystem (this, fileName, buffer);
-  }
-
-  // ---------------------------------------------------------------------------------//
-  private FolderZip getFolder (AppleFile parent, String name)
-  // ---------------------------------------------------------------------------------//
-  {
-    for (AppleFile file : parent.getFiles ())
-      if (file.getFileName ().equals (name) && file.isFolder ())
-        return (FolderZip) file;
-
-    FolderZip folder = new FolderZip (this, name);
-    parent.addFile (folder);
-
-    return folder;
   }
 
   // ---------------------------------------------------------------------------------//

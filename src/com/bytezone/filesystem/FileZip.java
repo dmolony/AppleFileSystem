@@ -1,54 +1,54 @@
 package com.bytezone.filesystem;
 
-import java.util.List;
-
 // -----------------------------------------------------------------------------------//
-public class FsHybrid extends AbstractFileSystem
+public class FileZip extends AbstractAppleFile
 // -----------------------------------------------------------------------------------//
 {
-  // ---------------------------------------------------------------------------------//
-  public FsHybrid (List<AppleFileSystem> fileSystems)
-  // ---------------------------------------------------------------------------------//
-  {
-    this (fileSystems.get (0));
-
-    for (AppleFileSystem fs : fileSystems)
-    {
-      addFile (fs);
-      ((AbstractFileSystem) fs).appleFileSystem = this;
-      ((AbstractFileSystem) fs).partOfHybrid = true;
-    }
-  }
+  private final char separator = '/';
 
   // ---------------------------------------------------------------------------------//
-  public FsHybrid (AppleFileSystem fs)
+  FileZip (FsZip fs, byte[] buffer, int offset)
   // ---------------------------------------------------------------------------------//
   {
-    this (fs.getBlockReader ());
-  }
+    super (fs);
 
-  // ---------------------------------------------------------------------------------//
-  public FsHybrid (BlockReader blockReader)
-  // ---------------------------------------------------------------------------------//
-  {
-    super (blockReader, FileSystemType.HYBRID);
+    isFile = true;
   }
 
   // ---------------------------------------------------------------------------------//
   @Override
-  public String toString ()
+  public String getFileName ()
   // ---------------------------------------------------------------------------------//
   {
-    StringBuilder text = new StringBuilder (super.toString ());
+    int pos = fileName.lastIndexOf (separator);
+    return pos < 0 ? fileName : fileName.substring (pos + 1);
+  }
 
-    text.append (String.format ("File name ............. %s%n", getFileName ()));
-    text.append (String.format ("File system type ...... %s%n", fileSystemType));
-    text.append ("\n");
+  // ---------------------------------------------------------------------------------//
+  public String getFullFileName ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return fileName;
+  }
 
-    for (AppleFile appleFile : files)
-      text.append (
-          String.format ("File system type ...... %s%n", appleFile.getFileSystemType ()));
+  // ---------------------------------------------------------------------------------//
+  @Override
+  public String[] getPathFolders ()
+  // ---------------------------------------------------------------------------------//
+  {
+    String[] pathItems = fileName.split ("\\" + separator);
+    String[] pathFolders = new String[pathItems.length - 1];
 
-    return text.toString ();
+    for (int i = 0; i < pathFolders.length; i++)
+      pathFolders[i] = pathItems[i];
+
+    return pathFolders;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  public char getSeparator ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return separator;
   }
 }

@@ -44,7 +44,7 @@ public interface AppleFileSystem extends AppleFile
 
   void writeBlocks (List<AppleBlock> blocks, byte[] buffer);
 
-  String toText ();
+  //  String toText ();
 
   enum FileSystemType
   {

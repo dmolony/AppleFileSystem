@@ -3,15 +3,12 @@ package com.bytezone.filesystem;
 import java.util.List;
 
 import com.bytezone.filesystem.AppleFileSystem.FileSystemType;
-import com.bytezone.utility.Utility;
 
 // -----------------------------------------------------------------------------------//
 public interface AppleFile
 // -----------------------------------------------------------------------------------//
 {
   public String getFileName ();
-
-  public boolean isLocked ();                       // if isFile()
 
   public boolean isFileSystem ();
 
@@ -25,19 +22,17 @@ public interface AppleFile
 
   public boolean isContainer ();
 
-  public void addFile (AppleFile file);             // if isFolder() or isFileSystem()
+  public String[] getPathFolders ();                // move to Utility
 
-  public List<AppleFile> getFiles ();               // if isFolder() or isFileSystem()
-
-  public AppleFileSystem getFileSystem ();          // if isFile()
-
-  public FileSystemType getFileSystemType ();       // if isFileSystem()
-
-  public String[] getPathFolders ();                // if file name is stored as a path
+  // File Stuff
 
   public byte[] read ();                            // if isFile()
 
   public void write (byte[] buffer);                // if isFile()
+
+  public AppleFileSystem getFileSystem ();          // if isFile()
+
+  public boolean isLocked ();                       // if isFile()
 
   public int getFileLength ();                      // in bytes (eof)
 
@@ -45,20 +40,19 @@ public interface AppleFile
 
   public List<AppleBlock> getBlocks ();
 
-  //  public String catalog ();
-
-  //  public String getCatalogLine ();
+  public int getFileType ();
 
   public String getFileTypeText ();
 
-  public String getErrorMessage ();
+  public String getErrorMessage ();                 // if file can't be read
 
-  public int getFileType ();
+  // File System Stuff
+
+  public FileSystemType getFileSystemType ();       // if isFileSystem()
+
+  public void addFile (AppleFile file);             // if isFolder() or isFileSystem()
+
+  public List<AppleFile> getFiles ();               // if isFolder() or isFileSystem()
 
   public int getBlockSize ();                       // returns blockReader.blockSize()
-
-  public default void dump ()
-  {
-    System.out.println (Utility.format (read ()));
-  }
 }

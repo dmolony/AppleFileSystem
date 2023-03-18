@@ -93,10 +93,10 @@ public class Fs2img extends AbstractFileSystem
 
   // ---------------------------------------------------------------------------------//
   @Override
-  public String toText ()
+  public String toString ()
   // ---------------------------------------------------------------------------------//
   {
-    StringBuilder text = new StringBuilder (super.toText () + "\n\n");
+    StringBuilder text = new StringBuilder (super.toString () + "\n\n");
 
     String message = originalLength == 0 ? "   <-- wrong!" : "";
 

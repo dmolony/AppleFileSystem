@@ -71,10 +71,10 @@ public class FsDos4 extends AbstractFileSystem
 
   // ---------------------------------------------------------------------------------//
   @Override
-  public String toText ()
+  public String toString ()
   // ---------------------------------------------------------------------------------//
   {
-    StringBuilder text = new StringBuilder (super.toText () + "\n\n");
+    StringBuilder text = new StringBuilder (super.toString () + "\n\n");
 
     text.append ("\n");
     text.append (String.format ("Dos version ........... %02X", dosVersion));

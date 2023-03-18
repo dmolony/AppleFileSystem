@@ -15,9 +15,9 @@ public class FsData extends AbstractFileSystem
 
   // ---------------------------------------------------------------------------------//
   @Override
-  public String toText ()
+  public String toString ()
   // ---------------------------------------------------------------------------------//
   {
-    return super.toText ();
+    return super.toString ();
   }
 }
