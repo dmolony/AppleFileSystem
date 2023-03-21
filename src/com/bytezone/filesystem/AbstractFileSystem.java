@@ -22,8 +22,8 @@ public abstract class AbstractFileSystem implements AppleFileSystem
   // In order to obtain the parent FS, it will stored here. The AppleFile is needed to
   // keep the file details of the file that is now reinterpreted as a FS (PAR, LBR).
 
-  protected AppleFileSystem appleFileSystem;    // the parent of this FS
-  protected AppleFile appleFile;                // the source of this FS
+  //  protected AppleFileSystem appleFileSystem;    // the parent of this FS
+  //  protected AppleFile appleFile;                // the source of this FS
 
   // If this file is a container (FS, folder, forked file, hybrid) then the children are
   // stored here
@@ -61,12 +61,12 @@ public abstract class AbstractFileSystem implements AppleFileSystem
   }
 
   // ---------------------------------------------------------------------------------//
-  @Override
-  public boolean isContainer ()
-  // ---------------------------------------------------------------------------------//
-  {
-    return true;
-  }
+  //  @Override
+  //  public boolean isContainer ()
+  //  // ---------------------------------------------------------------------------------//
+  //  {
+  //    return true;
+  //  }
 
   // ---------------------------------------------------------------------------------//
   void setCatalogBlocks (int total)
@@ -197,12 +197,12 @@ public abstract class AbstractFileSystem implements AppleFileSystem
   }
 
   // ---------------------------------------------------------------------------------//
-  @Override
-  public String[] getPathFolders ()
-  // ---------------------------------------------------------------------------------//
-  {
-    throw new UnsupportedOperationException ("getPathFolders() not implemented");
-  }
+  //  @Override
+  //  public String[] getPathFolders ()
+  //  // ---------------------------------------------------------------------------------//
+  //  {
+  //    throw new UnsupportedOperationException ("getPathFolders() not implemented");
+  //  }
 
   // ---------------------------------------------------------------------------------//
   @Override
@@ -211,10 +211,10 @@ public abstract class AbstractFileSystem implements AppleFileSystem
   {
     files.add (file);
 
-    if (file.isFileSystem ())
-      ++totalFileSystems;
-    else
-      ++totalFiles;
+    //    if (file.isFileSystem ())
+    //      ++totalFileSystems;
+    //    else
+    //      ++totalFiles;
   }
 
   // ---------------------------------------------------------------------------------//
@@ -226,66 +226,66 @@ public abstract class AbstractFileSystem implements AppleFileSystem
   }
 
   // ---------------------------------------------------------------------------------//
-  @Override
-  public byte[] read ()
-  // ---------------------------------------------------------------------------------//
-  {
-    throw new UnsupportedOperationException ("Cannot call read() on a file system");
-  }
+  //  @Override
+  //  public byte[] read ()
+  //  // ---------------------------------------------------------------------------------//
+  //  {
+  //    throw new UnsupportedOperationException ("Cannot call read() on a file system");
+  //  }
 
   // ---------------------------------------------------------------------------------//
-  @Override
-  public void write (byte[] buffer)
-  // ---------------------------------------------------------------------------------//
-  {
-    throw new UnsupportedOperationException ("Cannot call write() on a file system");
-  }
+  //  @Override
+  //  public void write (byte[] buffer)
+  //  // ---------------------------------------------------------------------------------//
+  //  {
+  //    throw new UnsupportedOperationException ("Cannot call write() on a file system");
+  //  }
 
   // ---------------------------------------------------------------------------------//
-  @Override
-  public List<AppleBlock> getBlocks ()
-  // ---------------------------------------------------------------------------------//
-  {
-    if (appleFile != null)
-      return appleFile.getBlocks ();
-
-    throw new UnsupportedOperationException ("Cannot call getBlocks() on a file system");
-  }
-
-  // ---------------------------------------------------------------------------------//
-  @Override
-  public AppleFileSystem getFileSystem ()
-  // ---------------------------------------------------------------------------------//
-  {
-    if (appleFile != null)
-      return appleFile.getFileSystem ();
-
-    return appleFileSystem;       // for embedded file systems only (usually null)
-  }
+  //  @Override
+  //  public List<AppleBlock> getBlocks ()
+  //  // ---------------------------------------------------------------------------------//
+  //  {
+  //    if (appleFile != null)
+  //      return appleFile.getBlocks ();
+  //
+  //    throw new UnsupportedOperationException ("Cannot call getBlocks() on a file system");
+  //  }
 
   // ---------------------------------------------------------------------------------//
-  @Override
-  public int getFileType ()
-  // ---------------------------------------------------------------------------------//
-  {
-    if (appleFile != null)
-      return appleFile.getFileType ();
+  //  @Override
+  //  public AppleFileSystem getFileSystem ()
+  //  // ---------------------------------------------------------------------------------//
+  //  {
+  //    if (appleFile != null)
+  //      return appleFile.getFileSystem ();
+  //
+  //    return appleFileSystem;       // for embedded file systems only (usually null)
+  //  }
 
-    throw new UnsupportedOperationException (
-        "Cannot call getFileType() on a file system");
-  }
+  // ---------------------------------------------------------------------------------//
+  //  @Override
+  //  public int getFileType ()
+  //  // ---------------------------------------------------------------------------------//
+  //  {
+  //    if (appleFile != null)
+  //      return appleFile.getFileType ();
+  //
+  //    throw new UnsupportedOperationException (
+  //        "Cannot call getFileType() on a file system");
+  //  }
 
   // ---------------------------------------------------------------------------------//
-  @Override
-  public String getFileTypeText ()
-  // ---------------------------------------------------------------------------------//
-  {
-    if (appleFile != null)
-      return appleFile.getFileTypeText ();
-
-    throw new UnsupportedOperationException (
-        "Cannot call getFileTypeText() on a file system");
-  }
+  //  @Override
+  //  public String getFileTypeText ()
+  //  // ---------------------------------------------------------------------------------//
+  //  {
+  //    if (appleFile != null)
+  //      return appleFile.getFileTypeText ();
+  //
+  //    throw new UnsupportedOperationException (
+  //        "Cannot call getFileTypeText() on a file system");
+  //  }
 
   // ---------------------------------------------------------------------------------//
   @Override
@@ -312,16 +312,16 @@ public abstract class AbstractFileSystem implements AppleFileSystem
   }
 
   // ---------------------------------------------------------------------------------//
-  @Override
-  public int getFileLength ()
-  // ---------------------------------------------------------------------------------//
-  {
-    if (appleFile != null)
-      return appleFile.getFileLength ();
-
-    throw new UnsupportedOperationException (
-        "Cannot call getFileLength() on a file system");
-  }
+  //  @Override
+  //  public int getFileLength ()
+  //  // ---------------------------------------------------------------------------------//
+  //  {
+  //    if (appleFile != null)
+  //      return appleFile.getFileLength ();
+  //
+  //    throw new UnsupportedOperationException (
+  //        "Cannot call getFileLength() on a file system");
+  //  }
 
   // ---------------------------------------------------------------------------------//
   @Override
@@ -343,124 +343,152 @@ public abstract class AbstractFileSystem implements AppleFileSystem
   // FsBinary2
   // FsProdos (LBR files)
   // ---------------------------------------------------------------------------------//
-  protected void addFileSystem (AppleFile parent, AppleFile file)
-  // ---------------------------------------------------------------------------------//
-  {
-    addFileSystem (parent, file, 0);
-  }
+  //  protected void addFileSystem (AppleFile parent, AppleFile file)
+  //  // ---------------------------------------------------------------------------------//
+  //  {
+  //    addFileSystem (parent, file, 0);
+  //  }
 
   // FsProdos (PAR files)
   // ---------------------------------------------------------------------------------//
-  protected void addFileSystem (AppleFile parent, AppleFile file, int offset)
-  // ---------------------------------------------------------------------------------//
-  {
-    byte[] buffer = file.read ();
-    BlockReader blockReader =
-        new BlockReader (file.getFileName (), buffer, offset, buffer.length - offset);
-
-    AppleFileSystem fs = addFileSystem (parent, blockReader);
-
-    if (fs == null)
-    {
-      System.out.println ("No file systems found");
-      parent.addFile (file);        // not a file system, so revert to adding it as a file
-    }
-    else
-      ((AbstractFileSystem) fs).appleFile = file;     // don't lose the file details
-  }
+  //  protected void addFileSystem (AppleFile parent, AppleFile file, int offset)
+  //  // ---------------------------------------------------------------------------------//
+  //  {
+  //    byte[] buffer = file.read ();
+  //    BlockReader blockReader =
+  //        new BlockReader (file.getFileName (), buffer, offset, buffer.length - offset);
+  //
+  //    AppleFileSystem fs = addFileSystem (parent, blockReader);
+  //
+  //    if (fs == null)
+  //    {
+  //      System.out.println ("No file systems found");
+  //      parent.addFile (file);        // not a file system, so revert to adding it as a file
+  //    }
+  //    else
+  //      ((AbstractFileSystem) fs).appleFile = file;     // don't lose the file details
+  //  }
 
   // FsZip
   // FsGzip
   // ---------------------------------------------------------------------------------//
-  protected AppleFileSystem addFileSystem (AppleFile parent, String name, byte[] buffer)
-  // ---------------------------------------------------------------------------------//
-  {
-    return addFileSystem (parent, new BlockReader (name, buffer, 0, buffer.length));
-  }
+  //  protected AppleFileSystem addFileSystem (AppleFile parent, String name, byte[] buffer)
+  //  // ---------------------------------------------------------------------------------//
+  //  {
+  //    return addFileSystem (parent, new BlockReader (name, buffer, 0, buffer.length));
+  //  }
 
   // FsWoz
   // Fs2img
   // ---------------------------------------------------------------------------------//
-  protected AppleFileSystem addFileSystem (AppleFile parent, BlockReader blockReader)
+  //  protected AppleFileSystem addFileSystem (AppleFile parent, BlockReader blockReader)
+  //  // ---------------------------------------------------------------------------------//
+  //  {
+  //    if (factory == null)
+  //      factory = new FileSystemFactory ();
+  //
+  //    AppleFileSystem fs = factory.getFileSystem (blockReader);
+  //
+  //    if (fs != null)
+  //    {
+  //      parent.addFile (fs);
+  //      ((AbstractFileSystem) fs).appleFileSystem = this;
+  //    }
+  //
+  //    return fs;
+  //  }
+
+  // ---------------------------------------------------------------------------------//
+  protected FileSystemFactory getFactory ()
   // ---------------------------------------------------------------------------------//
   {
     if (factory == null)
       factory = new FileSystemFactory ();
 
-    AppleFileSystem fs = factory.getFileSystem (blockReader);
-
-    if (fs != null)
-    {
-      parent.addFile (fs);
-      ((AbstractFileSystem) fs).appleFileSystem = this;
-    }
-
-    return fs;
+    return factory;
   }
 
   // ---------------------------------------------------------------------------------//
-  @Override
-  public boolean isLocked ()
+  protected void checkFileSystem (AbstractAppleFile file, int offset)
   // ---------------------------------------------------------------------------------//
   {
-    throw new UnsupportedOperationException ("Cannot call isLocked() on a file system");
+    byte[] buffer = file.read ();
+    BlockReader blockReader =
+        new BlockReader (file.getFileName (), buffer, offset, buffer.length - offset);
+    file.setFileSystem (getFactory ().getFileSystem (blockReader));
   }
 
   // ---------------------------------------------------------------------------------//
-  @Override
-  public boolean isFileSystem ()
+  protected void checkFileSystem (AbstractAppleFile file, BlockReader blockReader,
+      int offset)
   // ---------------------------------------------------------------------------------//
   {
-    return true;
+    file.setFileSystem (getFactory ().getFileSystem (blockReader));
   }
 
   // ---------------------------------------------------------------------------------//
-  @Override
-  public boolean isFolder ()
-  // ---------------------------------------------------------------------------------//
-  {
-    return false;
-  }
+  //  @Override
+  //  public boolean isLocked ()
+  //  // ---------------------------------------------------------------------------------//
+  //  {
+  //    throw new UnsupportedOperationException ("Cannot call isLocked() on a file system");
+  //  }
 
   // ---------------------------------------------------------------------------------//
-  @Override
-  public boolean isFile ()
-  // ---------------------------------------------------------------------------------//
-  {
-    return false;
-  }
+  //  @Override
+  //  public boolean isFileSystem ()
+  //  // ---------------------------------------------------------------------------------//
+  //  {
+  //    return true;
+  //  }
 
   // ---------------------------------------------------------------------------------//
-  @Override
-  public boolean isForkedFile ()
-  // ---------------------------------------------------------------------------------//
-  {
-    return false;
-  }
+  //  @Override
+  //  public boolean isFolder ()
+  //  // ---------------------------------------------------------------------------------//
+  //  {
+  //    return false;
+  //  }
 
   // ---------------------------------------------------------------------------------//
-  @Override
-  public boolean isFork ()
-  // ---------------------------------------------------------------------------------//
-  {
-    return false;
-  }
+  //  @Override
+  //  public boolean isFile ()
+  //  // ---------------------------------------------------------------------------------//
+  //  {
+  //    return false;
+  //  }
 
   // ---------------------------------------------------------------------------------//
-  @Override
-  public AppleFile getAppleFile ()
-  // ---------------------------------------------------------------------------------//
-  {
-    return appleFile;
-  }
+  //  @Override
+  //  public boolean isForkedFile ()
+  //  // ---------------------------------------------------------------------------------//
+  //  {
+  //    return false;
+  //  }
 
   // ---------------------------------------------------------------------------------//
-  @Override
-  public String getErrorMessage ()
+  //  @Override
+  //  public boolean isFork ()
+  //  // ---------------------------------------------------------------------------------//
+  //  {
+  //    return false;
+  //  }
+
   // ---------------------------------------------------------------------------------//
-  {
-    return errorMessage;
-  }
+  //  @Override
+  //  public AppleFile getAppleFile ()
+  //  // ---------------------------------------------------------------------------------//
+  //  {
+  //    return appleFile;
+  //  }
+
+  // ---------------------------------------------------------------------------------//
+  //  @Override
+  //  public String getErrorMessage ()
+  //  // ---------------------------------------------------------------------------------//
+  //  {
+  //    return errorMessage;
+  //  }
 
   // ---------------------------------------------------------------------------------//
   @Override
@@ -480,31 +508,31 @@ public abstract class AbstractFileSystem implements AppleFileSystem
     text.append (String.format ("Total file systems .... %d%n", totalFileSystems));
     text.append (String.format ("Total files ........... %d%n%n", totalFiles));
 
-    if (appleFileSystem != null)
-      text.append (String.format ("Parent file system .... %s%n",
-          appleFileSystem.getFileSystemType ()));
-
-    if (appleFile != null)
-    {
-      text.append (String.format ("Replacing file: %n"));
-      String catalog = appleFile.toString ();
-      String[] lines = catalog.split ("\n");
-      int limit = 24;
-      for (String line : lines)
-      {
-        if (line.length () >= limit)
-        {
-          String format = String.format ("  %%%d.%<ds %%s%%n", limit - 3, line);
-          String newline = String.format (format, line, line.substring (limit));
-          text.append (newline);
-        }
-        else
-        {
-          text.append (line);
-          text.append ("\n");
-        }
-      }
-    }
+    //    if (appleFileSystem != null)
+    //      text.append (String.format ("Parent file system .... %s%n",
+    //          appleFileSystem.getFileSystemType ()));
+    //
+    //    if (appleFile != null)
+    //    {
+    //      text.append (String.format ("Replacing file: %n"));
+    //      String catalog = appleFile.toString ();
+    //      String[] lines = catalog.split ("\n");
+    //      int limit = 24;
+    //      for (String line : lines)
+    //      {
+    //        if (line.length () >= limit)
+    //        {
+    //          String format = String.format ("  %%%d.%<ds %%s%%n", limit - 3, line);
+    //          String newline = String.format (format, line, line.substring (limit));
+    //          text.append (newline);
+    //        }
+    //        else
+    //        {
+    //          text.append (line);
+    //          text.append ("\n");
+    //        }
+    //      }
+    //    }
 
     return Utility.rtrim (text);
   }

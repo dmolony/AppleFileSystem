@@ -105,7 +105,7 @@ public class FileDos extends AbstractAppleFile
       }
     }
     else
-      length = dataBlocks.size () * getFileSystem ().getBlockSize ();
+      length = dataBlocks.size () * getParentFileSystem ().getBlockSize ();
   }
 
   // ---------------------------------------------------------------------------------//
@@ -113,7 +113,7 @@ public class FileDos extends AbstractAppleFile
   public byte[] read ()
   // ---------------------------------------------------------------------------------//
   {
-    return appleFileSystem.readBlocks (dataBlocks);
+    return parentFileSystem.readBlocks (dataBlocks);
   }
 
   // ---------------------------------------------------------------------------------//

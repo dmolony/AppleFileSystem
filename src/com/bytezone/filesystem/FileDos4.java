@@ -28,6 +28,20 @@ public class FileDos4 extends AbstractAppleFile
     int nextSector = buffer[ptr + 1] & 0xFF;
 
     fileType = buffer[ptr + 2] & 0xFF;
+
+    fileTypeText = switch (fileType)
+    {
+      case 0x00 -> "T";
+      case 0x01 -> "I";
+      case 0x02 -> "A";
+      case 0x04 -> "B";
+      case 0x08 -> "S";
+      case 0x10 -> "R";
+      case 0x20 -> "X";
+      case 0x40 -> "Y";
+      default -> "B";                   // should never happen
+    };
+
     fileName = Utility.string (buffer, ptr + 3, 24).trim ();
     sectorCount = Utility.unsignedShort (buffer, ptr + 33);
     int sectorsLeft = sectorCount;
@@ -77,7 +91,7 @@ public class FileDos4 extends AbstractAppleFile
   public byte[] read ()
   // ---------------------------------------------------------------------------------//
   {
-    return appleFileSystem.readBlocks (dataBlocks);
+    return parentFileSystem.readBlocks (dataBlocks);
   }
 
   // ---------------------------------------------------------------------------------//
@@ -85,7 +99,7 @@ public class FileDos4 extends AbstractAppleFile
   public int getFileLength ()                 // in bytes (eof)
   // ---------------------------------------------------------------------------------//
   {
-    return dataBlocks.size () * getFileSystem ().getBlockSize ();
+    return dataBlocks.size () * getParentFileSystem ().getBlockSize ();
   }
 
   // ---------------------------------------------------------------------------------//

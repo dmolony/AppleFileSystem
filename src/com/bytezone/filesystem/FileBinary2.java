@@ -256,16 +256,16 @@ public class FileBinary2 extends AbstractAppleFile
   public byte[] read ()
   // ---------------------------------------------------------------------------------//
   {
-    String suffix = Utility.getSuffix (getFileSystem ().getFileName ());
+    String suffix = Utility.getSuffix (getParentFileSystem ().getFileName ());
     if (suffix.equals ("bqy") && squeezeName != null)
     {
       Squeeze squeeze = new Squeeze ();
-      byte[] buffer = getFileSystem ().readBlocks (dataBlocks);
+      byte[] buffer = getParentFileSystem ().readBlocks (dataBlocks);
       //      System.out.println (Utility.format (buffer));
       return squeeze.unSqueeze (buffer);
     }
 
-    return appleFileSystem.readBlocks (dataBlocks);
+    return parentFileSystem.readBlocks (dataBlocks);
   }
 
   // ---------------------------------------------------------------------------------//

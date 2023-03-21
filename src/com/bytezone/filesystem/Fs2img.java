@@ -36,7 +36,7 @@ public class Fs2img extends AbstractFileSystem
   private boolean hasDosVolumeNumber;
   private int volumeNumber;
 
-  private AppleFileSystem fileSystem;
+  //  private AppleFileSystem fileSystem;
 
   // ---------------------------------------------------------------------------------//
   public Fs2img (BlockReader blockReader)
@@ -72,12 +72,17 @@ public class Fs2img extends AbstractFileSystem
     hasDosVolumeNumber = (flags & 0x0100) != 0;
     volumeNumber = flags & 0x00FF;
 
-    fileSystem = addFileSystem (this,
-        new BlockReader (twoIMGFormats[format], buffer, diskOffset + offset, length));
-
-    if (fileSystem.getFileSystemType () != fileSystemTypes[format])
-      displayMessage =
-          String.format ("<-- wrong, actually %s", fileSystem.getFileSystemType ());
+    File2img file = new File2img (this, "NAME???", buffer, diskOffset + offset, length);
+    addFile (file);
+    BlockReader blockReader2 =
+        new BlockReader (twoIMGFormats[format], buffer, diskOffset + offset, length);
+    checkFileSystem (file, blockReader2, diskOffset + offset);
+    //    fileSystem = addFileSystem (this,
+    //        new BlockReader (twoIMGFormats[format], buffer, diskOffset + offset, length));
+    //
+    //    if (fileSystem.getFileSystemType () != fileSystemTypes[format])
+    //      displayMessage =
+    //          String.format ("<-- wrong, actually %s", fileSystem.getFileSystemType ());
   }
 
   // ---------------------------------------------------------------------------------//

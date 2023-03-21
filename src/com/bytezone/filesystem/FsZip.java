@@ -78,10 +78,16 @@ public class FsZip extends AbstractFileSystem
             rem -= len;
           }
 
-          addFileSystem (this, name, buffer);
+          FileZip file = new FileZip (this, name, buffer);
+          addFile (file);
+          //          addFileSystem (this, name, buffer);
         }
         else
-          addFileSystem (this, name, Utility.getFullBuffer (zip));
+        {
+          FileZip file = new FileZip (this, name, Utility.getFullBuffer (zip));
+          addFile (file);
+          //          addFileSystem (this, name, Utility.getFullBuffer (zip));
+        }
       }
     }
     catch (ZipException e)

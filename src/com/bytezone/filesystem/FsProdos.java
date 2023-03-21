@@ -1,10 +1,10 @@
 package com.bytezone.filesystem;
 
-import java.time.LocalDateTime;
 import java.util.BitSet;
 
 import com.bytezone.utility.Utility;
 
+// see https://prodos8.com/docs/techref/file-organization/
 // -----------------------------------------------------------------------------------//
 public class FsProdos extends AbstractFileSystem
 // -----------------------------------------------------------------------------------//
@@ -23,14 +23,9 @@ public class FsProdos extends AbstractFileSystem
   static final int SEEDLING = 0x01;
   static final int FREE = 0x00;
 
-  private int entryLength;
-  private int entriesPerBlock;
-  private int fileCount;
-  private int bitmapPointer;
-  private int totalBlocks;
   private BitSet volumeBitMap;
-  private String volumeName;
-  private LocalDateTime created;
+
+  private FolderProdos rootFolder;
 
   // ---------------------------------------------------------------------------------//
   public FsProdos (BlockReader blockReader)
@@ -55,24 +50,16 @@ public class FsProdos extends AbstractFileSystem
         if (type != VOLUME_HEADER)
           throw new FileFormatException ("FsProdos: No Volume Header");
 
-        int length = buffer[0x04] & 0x0F;
-        volumeName = new String (buffer, 0x05, length);
-        entryLength = buffer[0x23] & 0xFF;                        // 39
-        entriesPerBlock = buffer[0x24] & 0xFF;                    // 13
+        rootFolder = new FolderProdos (this, buffer, 4);
+        addFile (rootFolder);
 
-        if (entryLength != ENTRY_SIZE || entriesPerBlock != ENTRIES_PER_BLOCK)
+        if (rootFolder.entryLength != ENTRY_SIZE
+            || rootFolder.entriesPerBlock != ENTRIES_PER_BLOCK)
           throw new FileFormatException ("FsProdos: Invalid entry data");
 
-        fileCount = Utility.unsignedShort (buffer, 0x25);
-        bitmapPointer = Utility.unsignedShort (buffer, 0x27);     // 6
-        totalBlocks = Utility.unsignedShort (buffer, 0x29);
-
-        if (bitmapPointer < 3 || bitmapPointer > 10)
+        if (rootFolder.keyPtr < 3 || rootFolder.keyPtr > 10)
           throw new FileFormatException (
-              "FsProdos: Invalid bitmap block value: " + bitmapPointer);
-
-        // do this last to avoid the possible DateTimeException
-        created = Utility.getAppleDate (buffer, 0x1C);
+              "FsProdos: Invalid bitmap block value: " + rootFolder.keyPtr);
       }
 
       prevBlockNo = Utility.unsignedShort (buffer, 0);
@@ -81,6 +68,7 @@ public class FsProdos extends AbstractFileSystem
       if (!isValidBlockNo (prevBlockNo))
         throw new FileFormatException (
             "FsProdos: Invalid catalog previous block - " + prevBlockNo);
+
       if (!isValidBlockNo (nextBlockNo))
         throw new FileFormatException (
             "FsProdos: Invalid catalog next block - " + nextBlockNo);
@@ -88,11 +76,79 @@ public class FsProdos extends AbstractFileSystem
       ++catalogBlocks;
     }
 
-    processFolder (this, 2);
-    assert fileCount == getFiles ().size ();
+    processFolder (rootFolder, 2);
+    assert rootFolder.fileCount == getFiles ().size ();
     setCatalogBlocks (catalogBlocks);
 
     createVolumeBitMap ();
+  }
+
+  // ---------------------------------------------------------------------------------//
+  private void processFolder (FolderProdos parent, int blockNo)
+  // ---------------------------------------------------------------------------------//
+  {
+    AppleBlock catalogBlock = getBlock (blockNo);
+    FileProdos file = null;
+
+    while (catalogBlock.getBlockNo () != 0)
+    {
+      byte[] buffer = catalogBlock.read ();
+
+      int ptr = 4;
+      for (int i = 0; i < ENTRIES_PER_BLOCK; i++)
+      {
+        int blockType = (buffer[ptr] & 0xF0) >>> 4;
+
+        switch (blockType)
+        {
+          case SEEDLING:
+          case SAPLING:
+          case TREE:
+            file = new FileProdos (this, buffer, ptr);
+            parent.addFile (file);
+
+            if (file.getFileType () == ProdosConstants.FILE_TYPE_LBR)
+              checkFileSystem (file, 0);
+
+            break;
+
+          case PASCAL_ON_PROFILE:
+            file = new FileProdos (this, buffer, ptr);
+            parent.addFile (file);
+            checkFileSystem (file, 1024);
+            break;
+
+          case GSOS_EXTENDED_FILE:
+            parent.addFile (new FileProdos (this, buffer, ptr));
+            break;
+
+          case SUBDIRECTORY:
+            FolderProdos folder = new FolderProdos (this, buffer, ptr);
+            parent.addFile (folder);
+            processFolder (folder, folder.fileEntry.keyPtr);        // recursive
+            break;
+
+          case SUBDIRECTORY_HEADER:
+            parent.addDirectoryHeader (buffer, ptr);
+            break;
+
+          case VOLUME_HEADER:
+            break;
+
+          case FREE:
+            break;
+
+          default:
+            System.out.printf ("Unknown Blocktype: %02X%n", blockType);
+        }
+        ptr += ENTRY_SIZE;
+      }
+
+      catalogBlock = getBlock (Utility.unsignedShort (buffer, 2));
+
+      if (!catalogBlock.isValid ())
+        throw new FileFormatException ("FsProdos: Invalid catalog");
+    }
   }
 
   // ---------------------------------------------------------------------------------//
@@ -101,12 +157,12 @@ public class FsProdos extends AbstractFileSystem
   {
     int bitPtr = 0;
     int bfrPtr = 0;
-    int blockNo = bitmapPointer;
+    int blockNo = rootFolder.keyPtr;
     byte[] buffer = null;
 
-    volumeBitMap = new BitSet (totalBlocks);
+    volumeBitMap = new BitSet (rootFolder.totalBlocks);
 
-    while (bitPtr < totalBlocks)
+    while (bitPtr < rootFolder.totalBlocks)
     {
       if (bitPtr % 0x1000 == 0)
       {
@@ -130,70 +186,10 @@ public class FsProdos extends AbstractFileSystem
   }
 
   // ---------------------------------------------------------------------------------//
-  private void processFolder (AppleFile parent, int blockNo)
-  // ---------------------------------------------------------------------------------//
-  {
-    AppleBlock catalogBlock = getBlock (blockNo);
-
-    while (catalogBlock.getBlockNo () != 0)
-    {
-      byte[] buffer = catalogBlock.read ();
-
-      int ptr = 4;
-      for (int i = 0; i < ENTRIES_PER_BLOCK; i++)
-      {
-        int blockType = (buffer[ptr] & 0xF0) >>> 4;
-
-        switch (blockType)
-        {
-          case SEEDLING:
-          case SAPLING:
-          case TREE:
-            FileProdos file = new FileProdos (this, buffer, ptr);
-            if (file.getFileType () == ProdosConstants.FILE_TYPE_LBR)
-              addFileSystem (this, file);
-            else
-              parent.addFile (file);
-            break;
-
-          case PASCAL_ON_PROFILE:
-            file = new FileProdos (this, buffer, ptr);
-            addFileSystem (this, file, 1024);
-            break;
-
-          case GSOS_EXTENDED_FILE:
-            parent.addFile (new FileProdos (this, buffer, ptr));
-            break;
-
-          case SUBDIRECTORY:
-            FolderProdos folder = new FolderProdos (this, buffer, ptr);
-            parent.addFile (folder);
-            processFolder (folder, folder.keyPtr);        // recursive
-            break;
-
-          case SUBDIRECTORY_HEADER:
-          case VOLUME_HEADER:
-          case FREE:
-            break;
-
-          default:
-            System.out.printf ("Unknown Blocktype: %02X%n", blockType);
-        }
-        ptr += ENTRY_SIZE;
-      }
-
-      catalogBlock = getBlock (Utility.unsignedShort (buffer, 2));
-
-      if (!catalogBlock.isValid ())
-        throw new FileFormatException ("FsProdos: Invalid catalog");
-    }
-  }
-
-  // ---------------------------------------------------------------------------------//
   public String getVolumeName ()
   // ---------------------------------------------------------------------------------//
   {
-    return volumeName;
+    return rootFolder.fileName;
   }
 
   // ---------------------------------------------------------------------------------//
@@ -210,13 +206,14 @@ public class FsProdos extends AbstractFileSystem
   {
     StringBuilder text = new StringBuilder (super.toString () + "\n\n");
 
-    text.append (String.format ("Volume name ........... %s%n", volumeName));
-    text.append (
-        String.format ("Created ............... %s%n", created == null ? "" : created));
-    text.append (String.format ("Entry length .......... %d%n", entryLength));
-    text.append (String.format ("Entries per block ..... %d%n", entriesPerBlock));
-    text.append (String.format ("File count ............ %d%n", fileCount));
-    text.append (String.format ("Bitmap ptr ............ %d", bitmapPointer));
+    text.append (rootFolder);
+    //    text.append (String.format ("Volume name ........... %s%n", volumeName));
+    //    text.append (
+    //        String.format ("Created ............... %s%n", created == null ? "" : created));
+    //    text.append (String.format ("Entry length .......... %d%n", entryLength));
+    //    text.append (String.format ("Entries per block ..... %d%n", entriesPerBlock));
+    //    text.append (String.format ("File count ............ %d%n", fileCount));
+    //    text.append (String.format ("Bitmap ptr ............ %d", bitmapPointer));
 
     return text.toString ();
   }

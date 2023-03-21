@@ -17,7 +17,7 @@ public class ForkNuFX extends AbstractAppleFile
   ForkNuFX (FileNuFX parentFile, ForkType forkType, NuFXThread thread)
   // ---------------------------------------------------------------------------------//
   {
-    super (parentFile.getFileSystem ());
+    super (parentFile.getParentFileSystem ());
 
     isFile = true;
     isFork = forkType != null;
@@ -30,7 +30,7 @@ public class ForkNuFX extends AbstractAppleFile
     this.fileName = forkType == ForkType.DATA ? "Data fork"
         : forkType == ForkType.RESOURCE ? "Resource fork" : "Not forked";
 
-    this.fileSystem = (FsNuFX) parentFile.getFileSystem ();
+    this.fileSystem = (FsNuFX) parentFile.getParentFileSystem ();
     this.thread = thread;
   }
 
@@ -64,7 +64,7 @@ public class ForkNuFX extends AbstractAppleFile
   {
     StringBuilder text = new StringBuilder ();
 
-    text.append (String.format ("File system type ...... %s%n", getFileSystemType ()));
+    //    text.append (String.format ("File system type ...... %s%n", getFileSystemType ()));
     text.append (String.format ("File name ............. %s%n", fileName));
     text.append (String.format ("Fork type ............. %s%n", forkType));
     text.append (

@@ -84,11 +84,12 @@ public class Tester
   {
     FileSystemFactory factory = new FileSystemFactory ();
 
-    int index = 42;
+    int index = 10;
     for (int fileNo = index; fileNo <= index; fileNo++)
     //    for (int fileNo = 0; fileNo < fileNames.length; fileNo++)
     {
-      //      System.out.printf ("%n%d %s%n", fileNo, fileNames[fileNo].substring (base.length ()));
+      System.out.printf ("%n%d %s%n", fileNo,
+          fileNames[fileNo].substring (base.length ()));
 
       AppleFileSystem fs = factory.getFileSystem (Path.of (fileNames[fileNo]));
 
@@ -103,27 +104,28 @@ public class Tester
       //        System.out.println ();
       //        System.out.println (fs.catalog ());
       //        System.out.println ();
-
+      //
       //        AppleFile file = fs.getFiles ().get (10);
       //      }
 
-      System.out.println ();
-      listFileSystems (fs, 0);
+      //      System.out.println ();
+      listFiles (fs, 0);
     }
   }
 
   // ---------------------------------------------------------------------------------//
-  private void listFileSystems (AppleFile container, int depth)
+  private void listFiles (AppleFileContainer container, int depth)
   // ---------------------------------------------------------------------------------//
   {
-    if (container.isFileSystem ())
-      System.out.printf ("%2d  %s%n", depth, container);
-
     for (AppleFile file : container.getFiles ())
-      if (file.isFileSystem () || file.isFolder ())
-        listFileSystems (file, depth + 1);
-    //      else
-    //        System.out.printf ("%2d  %s%n", depth, file);
+    {
+      System.out.printf ("%2d  %03d  %-4s %s %s%n", depth, file.getTotalBlocks (),
+          file.getFileTypeText (), file.isLocked () ? "*" : " ", file.getFileName ());
+      if (file instanceof AppleFileContainer afc)
+        listFiles (afc, depth + 1);
+      else if (file.isFileSystem ())
+        listFiles (file.getEmbeddedFileSystem (), depth + 1);
+    }
   }
 
   // ---------------------------------------------------------------------------------//

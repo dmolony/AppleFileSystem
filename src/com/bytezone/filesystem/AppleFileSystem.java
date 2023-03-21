@@ -5,9 +5,13 @@ import java.util.List;
 import com.bytezone.filesystem.BlockReader.AddressType;
 
 // -----------------------------------------------------------------------------------//
-public interface AppleFileSystem extends AppleFile
+public interface AppleFileSystem extends AppleFileContainer
 // -----------------------------------------------------------------------------------//
 {
+  FileSystemType getFileSystemType ();
+
+  String getFileName ();
+
   byte[] getDiskBuffer ();
 
   int getDiskOffset ();
@@ -15,8 +19,6 @@ public interface AppleFileSystem extends AppleFile
   int getDiskLength ();
 
   boolean isHybrid ();
-
-  AppleFile getAppleFile ();          // if is an embedded FileSystem
 
   BlockReader getBlockReader ();
 
@@ -27,6 +29,10 @@ public interface AppleFileSystem extends AppleFile
   AddressType getType ();             // BLOCK, SECTOR
 
   int getBlocksPerTrack ();
+
+  public int getTotalBlocks ();
+
+  public int getBlockSize ();
 
   int getFreeBlocks ();
 
@@ -43,8 +49,6 @@ public interface AppleFileSystem extends AppleFile
   void writeBlock (AppleBlock block, byte[] buffer);
 
   void writeBlocks (List<AppleBlock> blocks, byte[] buffer);
-
-  //  String toText ();
 
   enum FileSystemType
   {

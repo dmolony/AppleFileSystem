@@ -7,12 +7,12 @@ public class FileZip extends AbstractAppleFile
   private final char separator = '/';
 
   // ---------------------------------------------------------------------------------//
-  FileZip (FsZip fs, byte[] buffer, int offset)
+  FileZip (FsZip fs, String name, byte[] buffer)
   // ---------------------------------------------------------------------------------//
   {
     super (fs);
 
-    isFile = true;
+    //    isFile = true;
   }
 
   // ---------------------------------------------------------------------------------//

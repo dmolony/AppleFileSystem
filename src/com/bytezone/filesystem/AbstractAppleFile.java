@@ -3,17 +3,16 @@ package com.bytezone.filesystem;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.bytezone.filesystem.AppleFileSystem.FileSystemType;
-
 // -----------------------------------------------------------------------------------//
 public abstract class AbstractAppleFile implements AppleFile
 // -----------------------------------------------------------------------------------//
 {
-  protected AppleFileSystem appleFileSystem;  // FS of the disk on which this file exists
+  protected AppleFileSystem parentFileSystem;
+  protected AppleFileSystem embeddedFileSystem;
 
   protected boolean isFile;
   protected boolean isFolder;
-  protected boolean isFileSystem;
+  //  protected boolean isFileSystem;
   protected boolean isForkedFile;             // FileProdos only
   protected boolean isFork;
 
@@ -29,7 +28,7 @@ public abstract class AbstractAppleFile implements AppleFile
   AbstractAppleFile (AppleFileSystem appleFileSystem)
   // ---------------------------------------------------------------------------------//
   {
-    this.appleFileSystem = appleFileSystem;
+    this.parentFileSystem = appleFileSystem;
   }
 
   // ---------------------------------------------------------------------------------//
@@ -53,7 +52,7 @@ public abstract class AbstractAppleFile implements AppleFile
   public boolean isFileSystem ()
   // ---------------------------------------------------------------------------------//
   {
-    return isFileSystem;
+    return embeddedFileSystem != null;
   }
 
   // ---------------------------------------------------------------------------------//
@@ -93,37 +92,30 @@ public abstract class AbstractAppleFile implements AppleFile
   public boolean isContainer ()
   // ---------------------------------------------------------------------------------//
   {
-    return isFileSystem || isFolder || isForkedFile;
+    return isFileSystem () || isFolder () || isForkedFile ();
   }
 
   // ---------------------------------------------------------------------------------//
   @Override
-  public void addFile (AppleFile file)
+  public AppleFileSystem getParentFileSystem ()
   // ---------------------------------------------------------------------------------//
   {
-    if (!isContainer ())
-      throw new UnsupportedOperationException ("cannot addFile() unless Container");
-
-    files.add (file);
+    return parentFileSystem;
   }
 
   // ---------------------------------------------------------------------------------//
   @Override
-  public List<AppleFile> getFiles ()
+  public AppleFileSystem getEmbeddedFileSystem ()
   // ---------------------------------------------------------------------------------//
   {
-    if (!isContainer ())
-      throw new UnsupportedOperationException ("cannot getFiles() unless Container");
-
-    return files;
+    return embeddedFileSystem;
   }
 
   // ---------------------------------------------------------------------------------//
-  @Override
-  public AppleFileSystem getFileSystem ()
+  void setFileSystem (AppleFileSystem fileSystem)
   // ---------------------------------------------------------------------------------//
   {
-    return appleFileSystem;
+    embeddedFileSystem = fileSystem;
   }
 
   // ---------------------------------------------------------------------------------//
@@ -135,20 +127,20 @@ public abstract class AbstractAppleFile implements AppleFile
   }
 
   // ---------------------------------------------------------------------------------//
-  @Override
-  public FileSystemType getFileSystemType ()
-  // ---------------------------------------------------------------------------------//
-  {
-    return appleFileSystem.getFileSystemType ();
-  }
+  //  @Override
+  //  public FileSystemType getFileSystemType ()
+  //  // ---------------------------------------------------------------------------------//
+  //  {
+  //    return appleFileSystem.getFileSystemType ();
+  //  }
 
   // ---------------------------------------------------------------------------------//
-  @Override
-  public int getBlockSize ()
-  // ---------------------------------------------------------------------------------//
-  {
-    return appleFileSystem.getBlockSize ();
-  }
+  //  @Override
+  //  public int getBlockSize ()
+  //  // ---------------------------------------------------------------------------------//
+  //  {
+  //    return appleFileSystem.getBlockSize ();
+  //  }
 
   // ---------------------------------------------------------------------------------//
   @Override
@@ -179,8 +171,8 @@ public abstract class AbstractAppleFile implements AppleFile
   public int getTotalBlocks ()                   // in blocks
   // ---------------------------------------------------------------------------------//
   {
-    throw new UnsupportedOperationException (
-        "getTotalBlocks() not implemented " + this.getFileType ());
+    throw new UnsupportedOperationException (String.format (
+        "getTotalBlocks() not implemented %d %s%n", this.getFileType (), getFileName ()));
   }
 
   // ---------------------------------------------------------------------------------//
@@ -225,7 +217,7 @@ public abstract class AbstractAppleFile implements AppleFile
     text.append (String.format ("File name ............. %s%n", fileName));
     text.append (
         String.format ("File type ............. %d    %s%n", fileType, fileTypeText));
-    text.append (String.format ("File system type ...... %s%n%n", getFileSystemType ()));
+    //    text.append (String.format ("File system type ...... %s%n%n", getFileSystemType ()));
 
     return text.toString ();
   }

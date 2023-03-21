@@ -36,19 +36,19 @@ public class ForkProdos extends AbstractAppleFile
       int size, int eof)
   // ---------------------------------------------------------------------------------//
   {
-    super (parentFile.getFileSystem ());
+    super (parentFile.getParentFileSystem ());
 
-    isFile = true;
-    isFork = forkType != null;
+    //    isFile = true;
+    //    isFork = forkType != null;
 
-    fileType = parentFile.getFileType ();
-    fileTypeText = parentFile.getFileTypeText ();
+    //    fileType = parentFile.getFileType ();
+    //    fileTypeText = parentFile.getFileTypeText ();
 
     this.parentFile = parentFile;
     this.forkType = forkType;
     this.fileName = forkType == ForkType.DATA ? "Data fork"
         : forkType == ForkType.RESOURCE ? "Resource fork" : "Not forked";
-    this.fileSystem = (FsProdos) parentFile.getFileSystem ();
+    this.fileSystem = (FsProdos) parentFile.getParentFileSystem ();
 
     this.storageType = storageType;
     this.keyPtr = keyPtr;
@@ -81,7 +81,7 @@ public class ForkProdos extends AbstractAppleFile
           break;
 
         default:
-          System.out.printf ("Impossible %02X%n", storageType);
+          System.out.printf ("Impossible storage type: %02X%n", storageType);
           break;
       }
 
@@ -156,20 +156,20 @@ public class ForkProdos extends AbstractAppleFile
   }
 
   // ---------------------------------------------------------------------------------//
-  @Override
-  public void addFile (AppleFile file)
-  // ---------------------------------------------------------------------------------//
-  {
-    throw new UnsupportedOperationException ("cannot addFile() to a fork");
-  }
+  //  @Override
+  //  public void addFile (AppleFile file)
+  //  // ---------------------------------------------------------------------------------//
+  //  {
+  //    throw new UnsupportedOperationException ("cannot addFile() to a fork");
+  //  }
 
   // ---------------------------------------------------------------------------------//
-  @Override
-  public List<AppleFile> getFiles ()
-  // ---------------------------------------------------------------------------------//
-  {
-    throw new UnsupportedOperationException ("cannot getFiles() from a fork");
-  }
+  //  @Override
+  //  public List<AppleFile> getFiles ()
+  //  // ---------------------------------------------------------------------------------//
+  //  {
+  //    throw new UnsupportedOperationException ("cannot getFiles() from a fork");
+  //  }
 
   // ---------------------------------------------------------------------------------//
   @Override

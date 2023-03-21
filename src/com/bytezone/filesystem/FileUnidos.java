@@ -1,24 +1,13 @@
 package com.bytezone.filesystem;
 
-// -----------------------------------------------------------------------------------//
-public class FsUnidos extends AbstractFileSystem
-// -----------------------------------------------------------------------------------//
+public class FileUnidos extends AbstractAppleFile
 {
-  private static final int UNIDOS_SIZE = 409_600;
-
-  private boolean debug = true;
 
   // ---------------------------------------------------------------------------------//
-  public FsUnidos (BlockReader blockReader)
+  FileUnidos (FsUnidos fs, String name, byte[] buffer, int offset, int length)
   // ---------------------------------------------------------------------------------//
   {
-    super (blockReader, FileSystemType.UNIDOS);
-
-    byte[] buffer = getDiskBuffer ();
-    int offset = getDiskOffset ();
-
-    addFile (new FileUnidos (this, "NAME 1", buffer, offset, UNIDOS_SIZE));
-    addFile (new FileUnidos (this, "NAME 2", buffer, offset + UNIDOS_SIZE, UNIDOS_SIZE));
+    super (fs);
 
     //    try
     //    {
@@ -46,16 +35,4 @@ public class FsUnidos extends AbstractFileSystem
     //        System.out.println (e);
     //    }
   }
-
-  // ---------------------------------------------------------------------------------//
-  //  @Override
-  //  public String toText ()
-  //  // ---------------------------------------------------------------------------------//
-  //  {
-  //    StringBuilder text = new StringBuilder (super.toText () + "\n\n");
-  //
-  //    //    text.append (String.format ("Entry length .......... %d%n", entryLength));
-  //
-  //    return text.toString ();
-  //  }
 }
