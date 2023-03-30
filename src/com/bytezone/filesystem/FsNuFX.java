@@ -58,10 +58,15 @@ public class FsNuFX extends AbstractFileSystem
     {
       FileNuFX file = new FileNuFX (this, getDiskBuffer (), ptr);
 
-      //      if (file.hasDisk () || file.isLibrary ())
-      //        addFileSystem (this, file);
-      //      else
-      addFile (file);
+      if (file.hasDisk () || file.isLibrary ())
+      {
+        byte[] fileBuffer = file.read ();
+        checkFileSystem (file.getFileName (), fileBuffer);
+        //        checkEmbeddedFileSystem (file, 0);
+        //        addFile (file);
+      }
+      else
+        addFile (file);
 
       ptr += file.rawLength;
     }

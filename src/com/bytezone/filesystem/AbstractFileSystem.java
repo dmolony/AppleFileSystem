@@ -8,7 +8,8 @@ import com.bytezone.filesystem.BlockReader.AddressType;
 import com.bytezone.utility.Utility;
 
 // -----------------------------------------------------------------------------------//
-public abstract class AbstractFileSystem implements AppleFileSystem
+public abstract class AbstractFileSystem
+    implements AppleFileSystem, AppleFileSystemContainer
 // -----------------------------------------------------------------------------------//
 {
   protected FileSystemFactory factory;          // never static!!
@@ -28,12 +29,13 @@ public abstract class AbstractFileSystem implements AppleFileSystem
   // If this file is a container (FS, folder, forked file, hybrid) then the children are
   // stored here
   protected List<AppleFile> files = new ArrayList<> ();
+  protected List<AppleFileSystem> fileSystems = new ArrayList<> ();
 
   protected FileSystemType fileSystemType;
   protected String errorMessage = "";
 
-  private int totalFileSystems = 0;
-  private int totalFiles = 0;
+  //  private int totalFileSystems = 0;
+  //  private int totalFiles = 0;
 
   protected boolean partOfHybrid;     // this FS is one of two file systems on the disk
 
@@ -206,15 +208,26 @@ public abstract class AbstractFileSystem implements AppleFileSystem
 
   // ---------------------------------------------------------------------------------//
   @Override
+  public void addFileSystem (AppleFileSystem fileSystem)
+  // ---------------------------------------------------------------------------------//
+  {
+    fileSystems.add (fileSystem);
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
+  public List<AppleFileSystem> getFileSystems ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return fileSystems;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
   public void addFile (AppleFile file)
   // ---------------------------------------------------------------------------------//
   {
     files.add (file);
-
-    //    if (file.isFileSystem ())
-    //      ++totalFileSystems;
-    //    else
-    //      ++totalFiles;
   }
 
   // ---------------------------------------------------------------------------------//
@@ -409,21 +422,56 @@ public abstract class AbstractFileSystem implements AppleFileSystem
   }
 
   // ---------------------------------------------------------------------------------//
-  protected void checkFileSystem (AbstractAppleFile file, int offset)
+  protected AppleFileSystem checkEmbeddedFileSystem (AbstractAppleFile file, int offset)
   // ---------------------------------------------------------------------------------//
   {
     byte[] buffer = file.read ();
     BlockReader blockReader =
         new BlockReader (file.getFileName (), buffer, offset, buffer.length - offset);
-    file.setFileSystem (getFactory ().getFileSystem (blockReader));
+    AppleFileSystem fs = getFactory ().getFileSystem (blockReader);
+
+    if (fs != null)
+      file.embedFileSystem (fs);            // embedded FS
+
+    return fs;
   }
 
   // ---------------------------------------------------------------------------------//
-  protected void checkFileSystem (AbstractAppleFile file, BlockReader blockReader,
-      int offset)
+  //  protected AppleFileSystem checkEmbeddedFileSystem (AbstractAppleFile file,
+  //      BlockReader blockReader)
+  //  // ---------------------------------------------------------------------------------//
+  //  {
+  //    AppleFileSystem fs = getFactory ().getFileSystem (blockReader);
+  //
+  //    if (fs != null)
+  //      file.embedFileSystem (fs);            // embedded FS
+  //
+  //    return fs;
+  //  }
+
+  // ---------------------------------------------------------------------------------//
+  protected AppleFileSystem checkFileSystem (String name, byte[] buffer)
   // ---------------------------------------------------------------------------------//
   {
-    file.setFileSystem (getFactory ().getFileSystem (blockReader));
+    BlockReader blockReader = new BlockReader (name, buffer, 0, buffer.length);
+    AppleFileSystem fs = getFactory ().getFileSystem (blockReader);
+
+    if (fs != null)
+      addFileSystem (fs);
+
+    return fs;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  protected AppleFileSystem checkFileSystem (BlockReader blockReader)
+  // ---------------------------------------------------------------------------------//
+  {
+    AppleFileSystem fs = getFactory ().getFileSystem (blockReader);
+
+    if (fs != null)
+      addFileSystem (fs);
+
+    return fs;
   }
 
   // ---------------------------------------------------------------------------------//
@@ -505,8 +553,8 @@ public abstract class AbstractFileSystem implements AppleFileSystem
     text.append ("\n\n");
 
     text.append (String.format ("Catalog blocks ........ %d%n", catalogBlocks));
-    text.append (String.format ("Total file systems .... %d%n", totalFileSystems));
-    text.append (String.format ("Total files ........... %d%n%n", totalFiles));
+    text.append (String.format ("Total file systems .... %d%n", fileSystems.size ()));
+    text.append (String.format ("Total files ........... %d%n%n", files.size ()));
 
     //    if (appleFileSystem != null)
     //      text.append (String.format ("Parent file system .... %s%n",

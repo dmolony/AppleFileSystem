@@ -216,7 +216,7 @@ public class FileSystemFactory
 
         FsUnidos fs = new FsUnidos (unidosReader);
 
-        if (fs.getFiles ().size () == 2)            // should be exactly 2 dos file systems
+        if (fs.getFileSystems ().size () == 2)  // should be exactly 2 dos file systems
           fileSystems.add (fs);
       }
       catch (FileFormatException e)
@@ -361,7 +361,7 @@ public class FileSystemFactory
 
         FsBinary2 fs = new FsBinary2 (lbrReader);
 
-        if (fs.getFiles ().size () > 0)
+        if (fs.getFileSystems ().size () > 0)
         {
           fileSystems.add (fs);
           if (debug)
@@ -387,7 +387,7 @@ public class FileSystemFactory
 
         FsNuFX fs = new FsNuFX (lbrReader);
 
-        if (fs.getFiles ().size () > 0)
+        if (fs.getFileSystems ().size () > 0 || fs.getFiles ().size () > 0)
         {
           fileSystems.add (fs);
           if (debug)
@@ -416,7 +416,7 @@ public class FileSystemFactory
 
         Fs2img fs = new Fs2img (lbrReader);
 
-        if (fs.getFiles ().size () > 0)
+        if (fs.getFileSystems ().size () > 0)
           fileSystems.add (fs);
       }
       catch (FileFormatException e)
@@ -438,7 +438,7 @@ public class FileSystemFactory
 
         FsZip fs = new FsZip (lbrReader);
 
-        if (fs.getFiles ().size () > 0)
+        if (fs.getFileSystems ().size () > 0)
           fileSystems.add (fs);
       }
       catch (FileFormatException e)
@@ -460,7 +460,7 @@ public class FileSystemFactory
 
         FsGzip fs = new FsGzip (lbrReader);
 
-        if (fs.getFiles ().size () > 0)
+        if (fs.getFileSystems ().size () > 0)
           fileSystems.add (fs);
       }
       catch (FileFormatException e)
@@ -488,7 +488,7 @@ public class FileSystemFactory
 
       FsWoz fs = new FsWoz (lbrReader, fileSystemType);
 
-      if (fs.getFiles ().size () > 0)
+      if (fs.getFileSystems ().size () > 0)
         fileSystems.add (fs);
     }
     catch (FileFormatException e)

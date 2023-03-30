@@ -18,20 +18,13 @@ public class FsWoz extends AbstractFileSystem
   {
     super (blockReader, fileSystemType);
 
-    readCatalog ();
-  }
-
-  // ---------------------------------------------------------------------------------//
-  private void readCatalog ()
-  // ---------------------------------------------------------------------------------//
-  {
     try
     {
       WozFile wozFile = new WozFile (getDiskBuffer ());
       byte[] buffer = wozFile.getDiskBuffer ();
 
-      //      addFileSystem (this,
-      //          new BlockReader (getFileSystemType ().toString (), buffer, 0, buffer.length));
+      if (buffer != null)
+        checkFileSystem (fileSystemType.toString (), buffer);
     }
     catch (DiskNibbleException e)
     {

@@ -315,8 +315,8 @@ public class Utility
       }
       catch (DateTimeException e)
       {
-        System.out.printf ("Bad date/time: %d %d %d %d %d %n", year, month, day, hour,
-            minute);
+        //        System.out.printf ("Bad date/time: %d %d %d %d %d %n", year, month, day, hour,
+        //            minute);
       }
     }
 

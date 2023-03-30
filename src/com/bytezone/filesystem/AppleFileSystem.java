@@ -5,7 +5,7 @@ import java.util.List;
 import com.bytezone.filesystem.BlockReader.AddressType;
 
 // -----------------------------------------------------------------------------------//
-public interface AppleFileSystem extends AppleFileContainer
+public interface AppleFileSystem extends AppleContainer
 // -----------------------------------------------------------------------------------//
 {
   FileSystemType getFileSystemType ();

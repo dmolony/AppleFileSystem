@@ -28,6 +28,8 @@ public class FileLbr extends AbstractAppleFile
     totalBlocks = Utility.unsignedShort (buffer, ptr + 14);
     crc = Utility.unsignedShort (buffer, ptr + 16);
     pad = Utility.unsignedShort (buffer, ptr + 26);
+
+    fileTypeText = extension;
   }
 
   // ---------------------------------------------------------------------------------//
@@ -39,13 +41,12 @@ public class FileLbr extends AbstractAppleFile
   }
 
   // ---------------------------------------------------------------------------------//
-  //  @Override
-  //  public String getCatalogLine ()
-  //  // ---------------------------------------------------------------------------------//
-  //  {
-  //    return String.format ("%02X  %-8s %-3s  %,5d  %,5d  %04X  %3d", status, fileName,
-  //        extension, firstBlock, totalBlocks, crc, pad);
-  //  }
+  @Override
+  public int getTotalBlocks ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return totalBlocks;
+  }
 
   // ---------------------------------------------------------------------------------//
   @Override
@@ -54,6 +55,7 @@ public class FileLbr extends AbstractAppleFile
   {
     StringBuilder text = new StringBuilder (super.toString ());
 
+    text.append (String.format ("Status ................ %d%n", status));
     text.append (String.format ("Extension ............. %s%n", extension));
     text.append (String.format ("First block ........... %,d%n", firstBlock));
     text.append (String.format ("Total blocks .......... %,d%n", totalBlocks));

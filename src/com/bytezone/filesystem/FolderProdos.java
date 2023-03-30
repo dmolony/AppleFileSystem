@@ -8,7 +8,7 @@ import java.util.List;
 import com.bytezone.utility.Utility;
 
 // -----------------------------------------------------------------------------------//
-public class FolderProdos extends AbstractAppleFile implements AppleFileContainer
+public class FolderProdos extends AbstractAppleFile implements AppleContainer
 // -----------------------------------------------------------------------------------//
 {
   private static final DateTimeFormatter df = DateTimeFormatter.ofPattern ("d-LLL-yy");
@@ -106,6 +106,21 @@ public class FolderProdos extends AbstractAppleFile implements AppleFileContaine
 
   // ---------------------------------------------------------------------------------//
   @Override
+  public void addFileSystem (AppleFileSystem fileSystem)
+  // ---------------------------------------------------------------------------------//
+  {
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
+  public List<AppleFileSystem> getFileSystems ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return null;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
   public void addFile (AppleFile file)
   // ---------------------------------------------------------------------------------//
   {
@@ -127,8 +142,11 @@ public class FolderProdos extends AbstractAppleFile implements AppleFileContaine
   {
     StringBuilder text = new StringBuilder (super.toString ());
 
-    text.append (fileEntry);
-    text.append ("\n\n");
+    if (fileEntry != null)
+    {
+      text.append (fileEntry);
+      text.append ("\n\n");
+    }
 
     text.append (String.format ("Type .................. %s%n",
         folderType == 0x75 ? "Sub Directory" : "Volume Directory"));

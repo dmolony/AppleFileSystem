@@ -84,12 +84,11 @@ public class Tester
   {
     FileSystemFactory factory = new FileSystemFactory ();
 
-    int index = 10;
+    int index = 28;
     for (int fileNo = index; fileNo <= index; fileNo++)
     //    for (int fileNo = 0; fileNo < fileNames.length; fileNo++)
     {
-      System.out.printf ("%n%d %s%n", fileNo,
-          fileNames[fileNo].substring (base.length ()));
+      System.out.printf ("%d %s%n", fileNo, fileNames[fileNo].substring (base.length ()));
 
       AppleFileSystem fs = factory.getFileSystem (Path.of (fileNames[fileNo]));
 
@@ -114,18 +113,34 @@ public class Tester
   }
 
   // ---------------------------------------------------------------------------------//
-  private void listFiles (AppleFileContainer container, int depth)
+  private void listFiles (AppleContainer container, int depth)
   // ---------------------------------------------------------------------------------//
   {
+    if (container instanceof AppleFileSystem afs)
+    {
+      System.out.printf ("%2d  %04d  %-4s   %s%n", depth, afs.getTotalBlocks (),
+          afs.getFileSystemType (), afs.getFileName ());
+      //      System.out.println (container);
+    }
+
     for (AppleFile file : container.getFiles ())
     {
-      System.out.printf ("%2d  %03d  %-4s %s %s%n", depth, file.getTotalBlocks (),
+      System.out.printf ("%2d  %04d  %-4s %s %s%n", depth + 1, file.getTotalBlocks (),
           file.getFileTypeText (), file.isLocked () ? "*" : " ", file.getFileName ());
-      if (file instanceof AppleFileContainer afc)
-        listFiles (afc, depth + 1);
-      else if (file.isFileSystem ())
+
+      if (file instanceof AppleContainer ac)                    // folder
+        listFiles (ac, depth + 1);
+      else if (file.isEmbeddedFileSystem ())                    // PAR, LBR
         listFiles (file.getEmbeddedFileSystem (), depth + 1);
     }
+
+    if (container.getFileSystems () != null)
+      for (AppleFileSystem fileSystem : container.getFileSystems ())
+      {
+        //        System.out.printf ("%2d  %04d  %-4s   %s%n", depth, fileSystem.getTotalBlocks (),
+        //            fileSystem.getFileSystemType (), fileSystem.getFileName ());
+        listFiles (fileSystem, depth + 1);
+      }
   }
 
   // ---------------------------------------------------------------------------------//

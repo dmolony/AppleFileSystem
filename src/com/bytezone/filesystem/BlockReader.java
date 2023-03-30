@@ -344,14 +344,6 @@ public class BlockReader
   }
 
   // ---------------------------------------------------------------------------------//
-  public String toText ()
-  // ---------------------------------------------------------------------------------//
-  {
-    return String.format ("Type: %s, BlockSize: %d, Interleave: %d, BlocksPerTrack: %2d",
-        addressType, bytesPerBlock, interleave, blocksPerTrack);
-  }
-
-  // ---------------------------------------------------------------------------------//
   @Override
   public String toString ()
   // ---------------------------------------------------------------------------------//

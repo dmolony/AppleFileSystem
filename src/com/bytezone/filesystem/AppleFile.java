@@ -8,7 +8,7 @@ public interface AppleFile
 {
   public String getFileName ();
 
-  public boolean isFileSystem ();                   // if file has an embedded FS
+  public boolean isEmbeddedFileSystem ();
 
   public boolean isFolder ();
 

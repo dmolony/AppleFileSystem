@@ -5,6 +5,7 @@ import java.util.BitSet;
 import com.bytezone.utility.Utility;
 
 // see https://prodos8.com/docs/techref/file-organization/
+// see https://prodos8.com/docs/technote/25/
 // -----------------------------------------------------------------------------------//
 public class FsProdos extends AbstractFileSystem
 // -----------------------------------------------------------------------------------//
@@ -108,14 +109,14 @@ public class FsProdos extends AbstractFileSystem
             parent.addFile (file);
 
             if (file.getFileType () == ProdosConstants.FILE_TYPE_LBR)
-              checkFileSystem (file, 0);
+              checkEmbeddedFileSystem (file, 0);
 
             break;
 
           case PASCAL_ON_PROFILE:
             file = new FileProdos (this, buffer, ptr);
             parent.addFile (file);
-            checkFileSystem (file, 1024);
+            checkEmbeddedFileSystem (file, 1024);
             break;
 
           case GSOS_EXTENDED_FILE:
