@@ -51,19 +51,12 @@ public class FileEntryProdos
     eof = Utility.unsignedTriple (buffer, ptr + 0x15);
 
     created = Utility.getAppleDate (buffer, ptr + 0x18);
-    dateCreated = created == null ? NO_DATE : created.format (df);
-    timeCreated = created == null ? "" : created.format (tf);
-
     version = buffer[ptr + 0x1C] & 0xFF;
     minVersion = buffer[ptr + 0x1D] & 0xFF;
     access = buffer[ptr + 0x1E] & 0xFF;
 
     auxType = Utility.unsignedShort (buffer, ptr + 0x1F);
-
     modified = Utility.getAppleDate (buffer, ptr + 0x21);
-    dateModified = modified == null ? NO_DATE : modified.format (df);
-    timeModified = modified == null ? "" : modified.format (tf);
-
     headerPtr = Utility.unsignedShort (buffer, ptr + 0x25);
 
     //    isLocked = (access & 0xE0) == (byte) 0xE0;
@@ -71,6 +64,12 @@ public class FileEntryProdos
 
     fileTypeText = ProdosConstants.fileTypes[fileType];
     storageTypeText = ProdosConstants.storageTypes[storageType];
+
+    dateCreated = created == null ? NO_DATE : created.format (df);
+    timeCreated = created == null ? "" : created.format (tf);
+
+    dateModified = modified == null ? NO_DATE : modified.format (df);
+    timeModified = modified == null ? "" : modified.format (tf);
   }
 
   // ---------------------------------------------------------------------------------//

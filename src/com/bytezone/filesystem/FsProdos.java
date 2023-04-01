@@ -11,22 +11,7 @@ import com.bytezone.utility.Utility;
 public class FsProdos extends AbstractFileSystem
 // -----------------------------------------------------------------------------------//
 {
-  static final int ENTRY_SIZE = 39;
-  static final int ENTRIES_PER_BLOCK = 13;
-  static final int BLOCK_ENTRY_SIZE = ENTRY_SIZE * ENTRIES_PER_BLOCK;
-
-  static final int VOLUME_HEADER = 0x0F;
-  static final int SUBDIRECTORY_HEADER = 0x0E;
-  static final int SUBDIRECTORY = 0x0D;
-  static final int GSOS_EXTENDED_FILE = 0x05;      // tech note #25
-  static final int PASCAL_ON_PROFILE = 0x04;       // tech note #25
-  static final int TREE = 0x03;
-  static final int SAPLING = 0x02;
-  static final int SEEDLING = 0x01;
-  static final int FREE = 0x00;
-
-  private BitSet volumeBitMap;
-
+  private final BitSet volumeBitMap;
   private DirectoryEntryProdos directoryEntry;
 
   // ---------------------------------------------------------------------------------//
@@ -50,14 +35,14 @@ public class FsProdos extends AbstractFileSystem
       {
         directoryEntry = new DirectoryEntryProdos (buffer, 4);
         //        int type = (buffer[0x04] & 0xF0) >>> 4;
-        if (directoryEntry.storageType != VOLUME_HEADER)
+        if (directoryEntry.storageType != ProdosConstants.VOLUME_HEADER)
           throw new FileFormatException ("FsProdos: No Volume Header");
 
         //        rootFolder = new FolderProdos (this, buffer, 4);
         //        addFile (rootFolder);
 
-        if (directoryEntry.entryLength != ENTRY_SIZE
-            || directoryEntry.entriesPerBlock != ENTRIES_PER_BLOCK)
+        if (directoryEntry.entryLength != ProdosConstants.ENTRY_SIZE
+            || directoryEntry.entriesPerBlock != ProdosConstants.ENTRIES_PER_BLOCK)
           throw new FileFormatException ("FsProdos: Invalid entry data");
 
         if (directoryEntry.keyPtr < 3 || directoryEntry.keyPtr > 10)
@@ -85,7 +70,7 @@ public class FsProdos extends AbstractFileSystem
     assert directoryEntry.fileCount == getFiles ().size ();
     setCatalogBlocks (catalogBlocks);
 
-    createVolumeBitMap ();
+    volumeBitMap = createVolumeBitMap ();
   }
 
   // ---------------------------------------------------------------------------------//
@@ -100,15 +85,15 @@ public class FsProdos extends AbstractFileSystem
       byte[] buffer = catalogBlock.read ();
 
       int ptr = 4;
-      for (int i = 0; i < ENTRIES_PER_BLOCK; i++)
+      for (int i = 0; i < ProdosConstants.ENTRIES_PER_BLOCK; i++)
       {
         int blockType = (buffer[ptr] & 0xF0) >>> 4;
 
         switch (blockType)
         {
-          case SEEDLING:
-          case SAPLING:
-          case TREE:
+          case ProdosConstants.SEEDLING:
+          case ProdosConstants.SAPLING:
+          case ProdosConstants.TREE:
             file = new FileProdos (this, buffer, ptr);
             parent.addFile (file);
 
@@ -117,36 +102,36 @@ public class FsProdos extends AbstractFileSystem
 
             break;
 
-          case PASCAL_ON_PROFILE:
+          case ProdosConstants.PASCAL_ON_PROFILE:
             file = new FileProdos (this, buffer, ptr);
             parent.addFile (file);
             checkEmbeddedFileSystem (file, 1024);
             break;
 
-          case GSOS_EXTENDED_FILE:
+          case ProdosConstants.GSOS_EXTENDED_FILE:
             parent.addFile (new FileProdos (this, buffer, ptr));
             break;
 
-          case SUBDIRECTORY:
+          case ProdosConstants.SUBDIRECTORY:
             FolderProdos folder = new FolderProdos (this, buffer, ptr);
             parent.addFile (folder);
             processFolder (folder, folder.fileEntry.keyPtr);        // recursive
             break;
 
-          case SUBDIRECTORY_HEADER:
+          case ProdosConstants.SUBDIRECTORY_HEADER:
             ((FolderProdos) parent).addDirectoryEntry (buffer, ptr);
             break;
 
-          case VOLUME_HEADER:
+          case ProdosConstants.VOLUME_HEADER:
             break;
 
-          case FREE:
+          case ProdosConstants.FREE:
             break;
 
           default:
             System.out.printf ("Unknown Blocktype: %02X%n", blockType);
         }
-        ptr += ENTRY_SIZE;
+        ptr += ProdosConstants.ENTRY_SIZE;
       }
 
       catalogBlock = getBlock (Utility.unsignedShort (buffer, 2));
@@ -157,7 +142,7 @@ public class FsProdos extends AbstractFileSystem
   }
 
   // ---------------------------------------------------------------------------------//
-  private void createVolumeBitMap ()
+  private BitSet createVolumeBitMap ()
   // ---------------------------------------------------------------------------------//
   {
     int bitPtr = 0;
@@ -165,7 +150,7 @@ public class FsProdos extends AbstractFileSystem
     int blockNo = directoryEntry.keyPtr;
     byte[] buffer = null;
 
-    volumeBitMap = new BitSet (directoryEntry.totalBlocks);
+    BitSet bitMap = new BitSet (directoryEntry.totalBlocks);
 
     while (bitPtr < directoryEntry.totalBlocks)
     {
@@ -180,7 +165,7 @@ public class FsProdos extends AbstractFileSystem
       for (int i = 0; i < 8; i++)
       {
         if ((flags & 0x80) != 0)
-          volumeBitMap.set (bitPtr);
+          bitMap.set (bitPtr);
 
         flags <<= 1;
         ++bitPtr;
@@ -188,6 +173,8 @@ public class FsProdos extends AbstractFileSystem
     }
 
     freeBlocks = volumeBitMap.cardinality ();
+
+    return bitMap;
   }
 
   // ---------------------------------------------------------------------------------//

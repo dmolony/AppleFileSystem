@@ -31,7 +31,7 @@ public class FileProdos extends AbstractAppleFile
     fileName = fileEntry.fileName;
     fileType = fileEntry.fileType;
     fileTypeText = ProdosConstants.fileTypes[fileEntry.fileType];
-    isForkedFile = fileEntry.storageType == FsProdos.GSOS_EXTENDED_FILE;
+    isForkedFile = fileEntry.storageType == ProdosConstants.GSOS_EXTENDED_FILE;
     isLocked = fileEntry.isLocked;
 
     if (isForkedFile)

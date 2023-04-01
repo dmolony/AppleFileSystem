@@ -61,21 +61,21 @@ public class ForkProdos extends AbstractAppleFile implements AppleContainer
     if (dataBlock.isValid ())
       switch (storageType)
       {
-        case FsProdos.SEEDLING:
+        case ProdosConstants.SEEDLING:
           blockNos.add (keyPtr);
           break;
 
-        case FsProdos.SAPLING:
+        case ProdosConstants.SAPLING:
           blockNos.addAll (readIndex (keyPtr));
           break;
 
-        case FsProdos.TREE:
+        case ProdosConstants.TREE:
           for (Integer indexBlock : readMasterIndex (keyPtr))
             if (fileSystem.getBlock (indexBlock).isValid ())
               blockNos.addAll (readIndex (indexBlock));
           break;
 
-        case FsProdos.PASCAL_ON_PROFILE:
+        case ProdosConstants.PASCAL_ON_PROFILE:
           for (int i = keyPtr; i < fileSystem.getTotalBlocks (); i++)
             blockNos.add (i);
           break;
