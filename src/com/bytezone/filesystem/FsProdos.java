@@ -25,10 +25,6 @@ public class FsProdos extends AbstractFileSystem
   static final int SEEDLING = 0x01;
   static final int FREE = 0x00;
 
-  static final String[] storageTypes = { "Deleted", "Seedling", "Sapling", "Tree",
-      "Pascal on Profile", "GSOS Extended", "", "", "", "", "", "", "", "Subdirectory",
-      "Subdirectory Header", "Volume Directory Header" };
-
   private BitSet volumeBitMap;
 
   private DirectoryEntryProdos directoryEntry;

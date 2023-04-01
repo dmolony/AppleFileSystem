@@ -55,7 +55,11 @@ public interface ProdosConstants
   static int SEEDLING = 1;
   static int FREE = 0;
 
-  static String[] fileTypes = { //
+  static final String[] storageTypes = { "Deleted", "Seedling", "Sapling", "Tree",
+      "Pascal on Profile", "GSOS Extended", "", "", "", "", "", "", "", "Subdirectory",
+      "Subdirectory Header", "Volume Directory Header" };
+
+  static final String[] fileTypes = { //
       "NON", "BAD", "PCD", "PTX", "TXT", "PDA", "BIN", "FNT", //
       "FOT", "BA3", "DA3", "WPF", "SOS", "$0D", "$0E", "DIR", //
       "RPD", "RPI", "AFD", "AFM", "AFR", "SCL", "PFS", "$17", //

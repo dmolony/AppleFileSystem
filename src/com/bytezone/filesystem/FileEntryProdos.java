@@ -70,7 +70,7 @@ public class FileEntryProdos
     isLocked = access == 0x01;
 
     fileTypeText = ProdosConstants.fileTypes[fileType];
-    storageTypeText = FsProdos.storageTypes[storageType];
+    storageTypeText = ProdosConstants.storageTypes[storageType];
   }
 
   // ---------------------------------------------------------------------------------//
