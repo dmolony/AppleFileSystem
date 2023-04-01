@@ -108,6 +108,20 @@ public class Fs2img extends AbstractFileSystem
 
   // ---------------------------------------------------------------------------------//
   @Override
+  public String getCatalog ()
+  // ---------------------------------------------------------------------------------//
+  {
+    StringBuilder text = new StringBuilder ();
+
+    for (AppleFile file : getFiles ())
+      text.append (
+          String.format ("%-15s %s%n", file.getFileName (), file.getFileSystemType ()));
+
+    return text.toString ();
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
   public String toString ()
   // ---------------------------------------------------------------------------------//
   {

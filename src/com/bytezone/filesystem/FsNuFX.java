@@ -10,6 +10,9 @@ public class FsNuFX extends AbstractFileSystem
 {
   static final byte[] NuFile =
       { 0x4E, (byte) 0xF5, 0x46, (byte) 0xE9, 0x6C, (byte) 0xE5 };
+  private static final String UNDERLINE_NUFX =
+      "------------------------------------------------------"
+          + "-----------------------";
 
   private int crc;
   private int totalRecords;
@@ -84,6 +87,90 @@ public class FsNuFX extends AbstractFileSystem
   // ---------------------------------------------------------------------------------//
   {
     return modified;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  private String getNuFXLine (FileNuFX file)
+  // ---------------------------------------------------------------------------------//
+  {
+    String lockedFlag = (file.getAccess () | 0xC3) == 1 ? "+" : " ";
+    String forkedFlag = file.hasResource () ? "+" : " ";
+
+    if (file.hasDisk ())
+      return String.format ("%s%-27.27s %-4s %-6s %-15s  %s  %3.0f%%   %7d%n", lockedFlag,
+          file.getFileName (), "Disk", (file.getUncompressedSize () / 1024) + "k",
+          file.getArchived ().format2 (), threadFormats[file.getThreadFormat ()],
+          file.getCompressedPct (), file.getUncompressedSize ());
+    else
+      return String.format ("%s%-27.27s %s%s $%04X  %-15s  %s  %3.0f%%   %7d%n",
+          lockedFlag, file.getFullFileName (), file.getFileTypeText (), forkedFlag,
+          file.getAuxType (), file.getArchived ().format2 (),
+          threadFormats[file.getThreadFormat ()], file.getCompressedPct (),
+          file.getUncompressedSize ());
+
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
+  public String getCatalog ()
+  // ---------------------------------------------------------------------------------//
+  {
+    StringBuilder text = new StringBuilder ();
+
+    //    if (appleFile instanceof FileNuFX)          // forked file
+    //    {
+    //      for (AppleFile file2 : appleFile.getFiles ())
+    //        text.append (file2.getFileName () + "(fork) \n");
+    //      return text.toString ();
+    //    }
+
+    //    if (appleFile instanceof Folder)
+    //    {
+    //      for (AppleFile file2 : appleFile.getFiles ())
+    //        text.append (getNuFXLine ((FileNuFX) file2));
+    //      return text.toString ();
+    //    }
+
+    text.append (
+        String.format (" %-15.15s Created:%-17s Mod:%-17s   Recs:%5d%n%n", getFileName (),
+            getCreated ().format2 (), getModified ().format2 (), getFiles ().size ()));
+
+    text.append (" Name                        Type Auxtyp Archived"
+        + "         Fmat Size Un-Length\n");
+
+    text.append (String.format ("%s%n", UNDERLINE_NUFX));
+
+    int totalUncompressedSize = 0;
+    int totalCompressedSize = 0;
+
+    for (AppleFile file : getFiles ())
+      if (file instanceof FileNuFX file2)
+      {
+        text.append (getNuFXLine (file2));
+
+        totalUncompressedSize += file2.getUncompressedSize ();
+        totalCompressedSize += file2.getCompressedSize ();
+      }
+
+    //    for (AppleFileSystem fs : getFileSystems ())
+    //    {
+    //      FileNuFX file2 = (FileNuFX) fs.getAppleFile ();
+    //      text.append (getNuFXLine (file2));
+    //      totalUncompressedSize += file2.getUncompressedSize ();
+    //      totalCompressedSize += file2.getCompressedSize ();
+    //    }
+    //      else
+    //        text.append (file.getFileName () + " ??? \n");
+
+    text.append (String.format ("%s%n", UNDERLINE_NUFX));
+
+    float pct = 0;
+    if (totalUncompressedSize > 0)
+      pct = totalCompressedSize * 100 / totalUncompressedSize;
+    text.append (String.format (" Uncomp:%7d  Comp:%7d  %%of orig:%3.0f%%%n%n",
+        totalUncompressedSize, totalCompressedSize, pct));
+
+    return text.toString ();
   }
 
   // ---------------------------------------------------------------------------------//

@@ -58,7 +58,7 @@ public class FileNuFX extends AbstractAppleFile
   {
     super (fs);
 
-    isFile = true;
+    //    isFile = true;
 
     if (!Utility.isMagic (buffer, offset, NuFX))
       throw new FileFormatException ("NuFX not found");

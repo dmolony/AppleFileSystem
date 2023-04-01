@@ -469,7 +469,7 @@ public class Utility
 
     while (true)
     {
-      byte[] buffer = new byte[1024];
+      byte[] buffer = new byte[2048];
       bytesRead = zip.read (buffer);
 
       if (bytesRead < 0)

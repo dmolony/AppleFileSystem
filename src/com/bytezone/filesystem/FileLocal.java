@@ -17,6 +17,6 @@ public class FileLocal extends AbstractAppleFile
     this.file = file;
     this.fileName = file.getName ();
     this.isFolder = file.isDirectory ();
-    this.isFile = true;
+    //    this.isFile = true;
   }
 }

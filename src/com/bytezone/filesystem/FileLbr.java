@@ -19,7 +19,7 @@ public class FileLbr extends AbstractAppleFile
   {
     super (fs);
 
-    isFile = true;
+    //    isFile = true;
 
     status = buffer[ptr] & 0xFF;
     fileName = new String (buffer, ptr + 1, 8);

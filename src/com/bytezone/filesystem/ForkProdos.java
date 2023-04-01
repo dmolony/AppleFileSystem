@@ -7,7 +7,7 @@ import com.bytezone.filesystem.FileProdos.ForkType;
 import com.bytezone.utility.Utility;
 
 // -----------------------------------------------------------------------------------//
-public class ForkProdos extends AbstractAppleFile
+public class ForkProdos extends AbstractAppleFile implements AppleContainer
 // -----------------------------------------------------------------------------------//
 {
   private FileProdos parentFile;
@@ -203,6 +203,64 @@ public class ForkProdos extends AbstractAppleFile
   // ---------------------------------------------------------------------------------//
   {
     return forkType;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
+  public void addFile (AppleFile file)
+  // ---------------------------------------------------------------------------------//
+  {
+    // TODO Auto-generated method stub
+
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
+  public List<AppleFile> getFiles ()
+  // ---------------------------------------------------------------------------------//
+  {
+    // TODO Auto-generated method stub
+    return null;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
+  public void addFileSystem (AppleFileSystem fileSystem)
+  // ---------------------------------------------------------------------------------//
+  {
+    // TODO Auto-generated method stub
+
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
+  public List<AppleFileSystem> getFileSystems ()
+  // ---------------------------------------------------------------------------------//
+  {
+    // TODO Auto-generated method stub
+    return null;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
+  public String getCatalog ()
+  // ---------------------------------------------------------------------------------//
+  {
+    //        FileProdos parent = ((ForkProdos) file).getParentFile ();
+    //
+    //        LocalDateTime created = parent.getCreated ();
+    //        LocalDateTime modified = parent.getModified ();
+    //
+    //        String dateCreated = created == null ? NO_DATE : created.format (sdf);
+    //        String timeCreated = created == null ? "" : created.format (stf);
+    //        String dateModified = modified == null ? NO_DATE : modified.format (sdf);
+    //        String timeModified = modified == null ? "" : modified.format (stf);
+    //
+    //        text.append (String.format (" %-15s       %5d  %9s %5s  %9s %5s %8d%n",
+    //            file.getFileName (), file.getTotalBlocks (), dateModified, timeModified,
+    //            dateCreated, timeCreated, file.getFileLength (), file.getFileLength ()));
+
+    return null;
   }
 
   // ---------------------------------------------------------------------------------//

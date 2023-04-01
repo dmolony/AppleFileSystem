@@ -27,7 +27,7 @@ public class FilePascal extends AbstractAppleFile
   {
     super (fs);
 
-    isFile = true;
+    //    isFile = true;
 
     firstBlock = Utility.unsignedShort (buffer, ptr);
     lastBlock = Utility.unsignedShort (buffer, ptr + 2);

@@ -1,5 +1,7 @@
 package com.bytezone.filesystem;
 
+import com.bytezone.utility.Utility;
+
 // -----------------------------------------------------------------------------------//
 public class FsCpm extends AbstractFileSystem
 // -----------------------------------------------------------------------------------//
@@ -63,6 +65,32 @@ public class FsCpm extends AbstractFileSystem
     }
 
     setCatalogBlocks (catalogBlocks);
+  }
+
+  // ---------------------------------------------------------------------------------//
+  public String getCpmCatalog ()
+  // ---------------------------------------------------------------------------------//
+  {
+    StringBuilder text = new StringBuilder ();
+
+    String line = "----  ---------  ---  - -  ----\n";
+
+    text.append ("User  Name       Typ  R S  Size\n");
+    text.append (line);
+
+    for (AppleFile file1 : getFiles ())
+    {
+      FileCpm file = (FileCpm) file1;
+
+      char ro = file.isReadOnly () ? '*' : ' ';
+      char sf = file.isSystemFile () ? '*' : ' ';
+
+      text.append (String.format ("%3d   %-8s   %-3s  %s %s   %03d%n",
+          file.getUserNumber (), file.getShortName (), file.getFileTypeText (), ro, sf,
+          file.getTotalBlocks ()));
+    }
+
+    return Utility.rtrim (text);
   }
 
   // ---------------------------------------------------------------------------------//

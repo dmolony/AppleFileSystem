@@ -2,6 +2,8 @@ package com.bytezone.filesystem;
 
 import java.util.List;
 
+import com.bytezone.filesystem.AppleFileSystem.FileSystemType;
+
 // -----------------------------------------------------------------------------------//
 public interface AppleFile
 // -----------------------------------------------------------------------------------//
@@ -29,6 +31,8 @@ public interface AppleFile
   public AppleFileSystem getParentFileSystem ();
 
   public AppleFileSystem getEmbeddedFileSystem ();
+
+  public FileSystemType getFileSystemType ();
 
   public boolean isLocked ();
 

@@ -27,7 +27,7 @@ public class FileCpm extends AbstractAppleFile
   {
     super (parent);
 
-    isFile = true;
+    //    isFile = true;
 
     // hi-bits of type are used for flags
     readOnly = (buffer[ptr + 9] & 0x80) != 0;

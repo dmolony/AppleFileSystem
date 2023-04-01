@@ -1,5 +1,7 @@
 package com.bytezone.filesystem;
 
+import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -12,6 +14,14 @@ public abstract class AbstractFileSystem
     implements AppleFileSystem, AppleFileSystemContainer
 // -----------------------------------------------------------------------------------//
 {
+  protected static final DateTimeFormatter sdf = DateTimeFormatter.ofPattern ("d-LLL-yy");
+  protected static final DateTimeFormatter stf = DateTimeFormatter.ofPattern ("H:mm");
+  protected static final String NO_DATE = "<NO DATE>";
+  protected static final String[] threadFormats = { "unc", "sq ", "lz1", "lz2", "", "" };
+
+  protected static final DateTimeFormatter dtf =
+      DateTimeFormatter.ofLocalizedDate (FormatStyle.SHORT);
+
   protected FileSystemFactory factory;          // never static!!
 
   protected final BlockReader blockReader;
@@ -537,6 +547,14 @@ public abstract class AbstractFileSystem
   //  {
   //    return errorMessage;
   //  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
+  public String getCatalog ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return "Must override getCatalog()";
+  }
 
   // ---------------------------------------------------------------------------------//
   @Override

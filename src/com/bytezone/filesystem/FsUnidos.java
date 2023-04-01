@@ -51,4 +51,17 @@ public class FsUnidos extends AbstractFileSystem
         System.out.println (e);
     }
   }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
+  public String getCatalog ()
+  // ---------------------------------------------------------------------------------//
+  {
+    StringBuilder text = new StringBuilder ();
+
+    for (AppleFile file : getFiles ())
+      text.append (String.format ("%s%n", file.getFileName ()));
+
+    return text.toString ();
+  }
 }

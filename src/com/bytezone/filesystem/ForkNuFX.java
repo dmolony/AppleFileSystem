@@ -19,7 +19,7 @@ public class ForkNuFX extends AbstractAppleFile
   {
     super (parentFile.getParentFileSystem ());
 
-    isFile = true;
+    //    isFile = true;
     isFork = forkType != null;
 
     fileType = parentFile.getFileType ();

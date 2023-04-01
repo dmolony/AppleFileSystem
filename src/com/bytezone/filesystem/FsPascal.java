@@ -93,6 +93,39 @@ public class FsPascal extends AbstractFileSystem
 
   // ---------------------------------------------------------------------------------//
   @Override
+  public String getCatalog ()
+  // ---------------------------------------------------------------------------------//
+  {
+    StringBuilder text = new StringBuilder ();
+
+    String line = "----   ---------------   ----   --------  -------   ----   ----";
+
+    String date = getDate () == null ? "--" : getDate ().format (dtf);
+
+    text.append (String.format ("Volume : %s%n", getVolumeName ()));
+    text.append (String.format ("Date   : %s%n%n", date));
+    text.append ("Blks   Name              Type     Date     Length   Frst   Last\n");
+    text.append (line);
+    text.append ("\n");
+
+    for (AppleFile file : getFiles ())
+    {
+      text.append (String.format ("%4d   %-15s   %-4s   %8s  %,7d   %4d   %4d%n",
+          file.getTotalBlocks (), file.getFileName (), file.getFileTypeText (),
+          ((FilePascal) file).getDate ().format (dtf), file.getFileLength (),
+          ((FilePascal) file).getFirstBlock (), ((FilePascal) file).getLastBlock ()));
+    }
+
+    text.append (line);
+    text.append (
+        String.format ("%nBlocks free : %3d  Blocks used : %3d  Total blocks : %3d",
+            getFreeBlocks (), getTotalBlocks () - getFreeBlocks (), getTotalBlocks ()));
+
+    return Utility.rtrim (text);
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
   public String toString ()
   // ---------------------------------------------------------------------------------//
   {

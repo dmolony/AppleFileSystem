@@ -15,27 +15,14 @@ public class FolderProdos extends AbstractAppleFile implements AppleContainer
   private static final DateTimeFormatter tf = DateTimeFormatter.ofPattern ("H:mm");
   private static final String NO_DATE = "<NO DATE>";
 
-  FileEntryProdos fileEntry;
-
-  int storageType;
-  int version;
-  int minVersion;
-  int access;
-  int entryLength;
-  int entriesPerBlock;
-  int fileCount;
-  int keyPtr;               // bitmap ptr or first directory block
-  int totalBlocks;          // if VDH
-  int parentEntry;          // if subdirectory;
-  int parentEntryLength;    // if subdirectory
-
-  int folderType;           // 0 = Volume Directory, 0x75 = Subdirectory
-
-  LocalDateTime created;
-  String dateCreated, timeCreated;
+  FileEntryProdos fileEntry;                  // SDH only
+  DirectoryEntryProdos directoryEntry;        // both VDH and SDH
 
   List<AppleFile> files = new ArrayList<> ();
 
+  // This file is used by both a VDH and SDH. The VDH has only a DirectoryEntry,
+  // but an SDH is created first as a normal file (with a FileEntry), and then has
+  // the DirectoryEntry added when the subdirectory is processed.
   // ---------------------------------------------------------------------------------//
   FolderProdos (FsProdos parent, byte[] buffer, int ptr)
   // ---------------------------------------------------------------------------------//
@@ -43,49 +30,26 @@ public class FolderProdos extends AbstractAppleFile implements AppleContainer
     super (parent);
 
     if ((buffer[ptr] & 0xF0) == 0xF0)         // Volume Directory Header
-      addDirectoryHeader (buffer, ptr);
+    {
+      fileTypeText = "VOL";
+      directoryEntry = new DirectoryEntryProdos (buffer, ptr);
+    }
     else                                      // Subdirectory
+    {
       fileEntry = new FileEntryProdos (buffer, ptr);
+      fileName = fileEntry.fileName;
+      fileType = fileEntry.fileType;
+      fileTypeText = ProdosConstants.fileTypes[fileEntry.fileType];
+    }
 
     isFolder = true;
   }
 
   // ---------------------------------------------------------------------------------//
-  void addDirectoryHeader (byte[] buffer, int ptr)
+  void addDirectoryEntry (byte[] buffer, int ptr)
   // ---------------------------------------------------------------------------------//
   {
-    storageType = (buffer[ptr] & 0xF0) >>> 4;
-    int nameLength = buffer[ptr] & 0x0F;
-    if (nameLength > 0)
-      fileName = Utility.string (buffer, ptr + 1, nameLength);
-
-    folderType = buffer[ptr + 0x10] & 0xFF;
-
-    created = Utility.getAppleDate (buffer, ptr + 0x18);
-    dateCreated = created == null ? NO_DATE : created.format (df);
-    timeCreated = created == null ? "" : created.format (tf);
-
-    version = buffer[ptr + 0x1C] & 0xFF;
-    minVersion = buffer[ptr + 0x1D] & 0xFF;
-    access = buffer[ptr + 0x1E] & 0xFF;
-    entryLength = buffer[ptr + 0x1F] & 0xFF;
-    entriesPerBlock = buffer[ptr + 0x20] & 0xFF;
-    fileCount = Utility.unsignedShort (buffer, ptr + 0x21);
-
-    // bitmap pointer for VOL, first directory block for DIR
-    keyPtr = Utility.unsignedShort (buffer, ptr + 0x23);
-
-    if (folderType == 0x00)         // volume directory header
-    {
-      fileTypeText = "VOL";
-      totalBlocks = Utility.unsignedShort (buffer, ptr + 0x25);
-    }
-    else                            // subdirectory header - WTF is 0x76?
-    {
-      fileTypeText = "DIR";
-      parentEntry = buffer[ptr + 0x25] & 0xFF;
-      parentEntryLength = buffer[ptr + 0x26] & 0xFF;
-    }
+    this.directoryEntry = new DirectoryEntryProdos (buffer, ptr);
   }
 
   // ---------------------------------------------------------------------------------//
@@ -93,7 +57,7 @@ public class FolderProdos extends AbstractAppleFile implements AppleContainer
   public int getTotalBlocks ()
   // ---------------------------------------------------------------------------------//
   {
-    return totalBlocks;
+    return directoryEntry.totalBlocks;
   }
 
   // ---------------------------------------------------------------------------------//
@@ -101,7 +65,7 @@ public class FolderProdos extends AbstractAppleFile implements AppleContainer
   public String getFileName ()
   // ---------------------------------------------------------------------------------//
   {
-    return fileName;
+    return directoryEntry.fileName;
   }
 
   // ---------------------------------------------------------------------------------//
@@ -136,6 +100,66 @@ public class FolderProdos extends AbstractAppleFile implements AppleContainer
   }
 
   // ---------------------------------------------------------------------------------//
+  public LocalDateTime getCreated ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return directoryEntry.created;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  public LocalDateTime getModified ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return fileEntry.modified;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
+  public int getFileLength ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return 0;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
+  public byte[] read ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return null;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
+  public String getCatalog ()
+  // ---------------------------------------------------------------------------------//
+  {
+    StringBuilder text = new StringBuilder ();
+
+    //    LocalDateTime created = this.created;
+    //    LocalDateTime modified = fileEntry.modified;
+
+    String dateCreated =
+        directoryEntry.created == null ? NO_DATE : directoryEntry.created.format (df);
+    String timeCreated =
+        directoryEntry.created == null ? "" : directoryEntry.created.format (tf);
+    //    String dateModified = modified == null ? NO_DATE : modified.format (df);
+    //    String timeModified = modified == null ? "" : modified.format (tf);
+
+    text.append (String.format ("%s%-15s %3s   %5d  %9s %5s %n", isLocked ? "*" : " ",
+        fileName, fileTypeText, directoryEntry.totalBlocks, dateCreated, timeCreated));
+
+    return text.toString ();
+
+    //
+    //        text.append (String.format ("%s%-15s %3s   %5d  %9s %5s  %9s %5s %8d %n",
+    //            file.isLocked () ? "*" : " ", file.getFileName (), file.getFileTypeText (),
+    //            file.getTotalBlocks (), dateModified, timeModified, dateCreated, timeCreated,
+    //            file.getFileLength ()));
+    //      
+  }
+
+  // ---------------------------------------------------------------------------------//
   @Override
   public String toString ()
   // ---------------------------------------------------------------------------------//
@@ -148,28 +172,7 @@ public class FolderProdos extends AbstractAppleFile implements AppleContainer
       text.append ("\n\n");
     }
 
-    text.append (String.format ("Type .................. %s%n",
-        folderType == 0x75 ? "Sub Directory" : "Volume Directory"));
-    text.append (String.format ("Version ............... %d%n", version));
-    text.append (String.format ("Min version ........... %d%n", minVersion));
-    text.append (String.format ("Access ................ %02X    %<7d%n", access));
-    text.append (
-        String.format ("Created ............... %9s %-5s%n", dateCreated, timeCreated));
-    text.append (String.format ("Entry length .......... %d%n", entryLength));
-    text.append (String.format ("Entries per block ..... %d%n", entriesPerBlock));
-    text.append (String.format ("File count ............ %d%n", fileCount));
-
-    if (folderType == 0x75)
-    {
-      text.append (String.format ("Parent pointer ........ %d%n", keyPtr));
-      text.append (String.format ("Parent entry .......... %d%n", parentEntry));
-      text.append (String.format ("Parent entry length ... %d%n", parentEntryLength));
-    }
-    else
-    {
-      text.append (String.format ("Bitmap pointer ........ %d%n", keyPtr));
-      text.append (String.format ("Total blocks .......... %d%n", totalBlocks));
-    }
+    text.append (directoryEntry);
 
     return Utility.rtrim (text);
   }

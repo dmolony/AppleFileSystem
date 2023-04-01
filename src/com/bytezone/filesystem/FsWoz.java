@@ -31,4 +31,18 @@ public class FsWoz extends AbstractFileSystem
       e.printStackTrace ();
     }
   }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
+  public String getCatalog ()
+  // ---------------------------------------------------------------------------------//
+  {
+    StringBuilder text = new StringBuilder ();
+
+    for (AppleFile file : getFiles ())
+      text.append (
+          String.format ("%-15s %s%n", file.getFileName (), file.getFileSystemType ()));
+
+    return text.toString ();
+  }
 }

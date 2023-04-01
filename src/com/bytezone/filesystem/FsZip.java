@@ -28,15 +28,6 @@ public class FsZip extends AbstractFileSystem
   {
     super (blockReader, FileSystemType.ZIP);
 
-    readCatalog ();
-
-    assert blockReader.isMagic (0, ZIP);
-  }
-
-  // ---------------------------------------------------------------------------------//
-  private void readCatalog ()
-  // ---------------------------------------------------------------------------------//
-  {
     try (ZipInputStream zip = new ZipInputStream (
         new ByteArrayInputStream (getDiskBuffer (), getDiskOffset (), getDiskLength ()));)
     {
@@ -58,8 +49,8 @@ public class FsZip extends AbstractFileSystem
           continue;
         }
 
-        System.out.printf ("%s %,9d %,9d  %-20s%n", entry.isDirectory () ? "D" : " ",
-            entry.getCompressedSize (), entry.getSize (), name);
+        //        System.out.printf ("%s %,9d %,9d  %-20s%n", entry.isDirectory () ? "D" : " ",
+        //            entry.getCompressedSize (), entry.getSize (), name);
 
         int rem = (int) entry.getSize ();
 
@@ -78,15 +69,13 @@ public class FsZip extends AbstractFileSystem
             rem -= len;
           }
 
-          FileZip file = new FileZip (this, name, buffer);
-          addFile (file);
-          //          addFileSystem (this, name, buffer);
+          checkFileSystem (name, buffer);
         }
         else
         {
-          FileZip file = new FileZip (this, name, Utility.getFullBuffer (zip));
-          addFile (file);
-          //          addFileSystem (this, name, Utility.getFullBuffer (zip));
+          byte[] buffer = Utility.getFullBuffer (zip);
+          if (buffer.length > 0)
+            checkFileSystem (name, buffer);
         }
       }
     }
@@ -98,6 +87,22 @@ public class FsZip extends AbstractFileSystem
     {
       throw new FileFormatException (e.getMessage ());
     }
+
+    assert blockReader.isMagic (0, ZIP);
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
+  public String getCatalog ()
+  // ---------------------------------------------------------------------------------//
+  {
+    StringBuilder text = new StringBuilder ();
+
+    for (AppleFile file : getFiles ())
+      text.append (
+          String.format ("%-15s %s%n", file.getFileName (), file.getFileSystemType ()));
+
+    return text.toString ();
   }
 
   // ---------------------------------------------------------------------------------//

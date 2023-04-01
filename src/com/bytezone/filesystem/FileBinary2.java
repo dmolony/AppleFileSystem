@@ -59,7 +59,7 @@ public class FileBinary2 extends AbstractAppleFile
   {
     super (fs);
 
-    isFile = true;
+    //    isFile = true;
     this.headerBlockNo = headerBlockNo;
 
     byte[] buffer = fs.getBlock (headerBlockNo).read ();

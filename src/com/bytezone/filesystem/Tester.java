@@ -70,12 +70,12 @@ public class Tester
       zip + "Archive.zip",                           // 34: zip (no disk suffix)
       gz + "ascii_express_pro.dsk.gz",               // 35: zip - wrong suffix (2 Dos disks)
       gz + "catsmeow.dsk.gz",                        // 36: gzip
-      cpm1 + "CPAM 3.5.po",                          // 37: unknown
-      bxy + "ANLIST.BXY",                            // 38:
-      bqy + "DEATHHUNT.BQY",                         // 39:
+      cpm1 + "CPAM 3.5.po",                          // 37: cpam
+      bxy + "ANLIST.BXY",                            // 38: bin2 / nufx
+      bqy + "DEATHHUNT.BQY",                         // 39: bin2 / squeeze
       shk + "hcomp.shk",                             // 40: NuFX / NuFX
-      fva + "Fantavision.2mg",                       // 41: 
-      bxy + "GBBS_df2.41.bxy",                       // 42:
+      fva + "Fantavision.2mg",                       // 41: 2img / prodos
+      bxy + "GBBS_df2.41.bxy",                       // 42: bin2 / nufx / prodos
   };
 
   // ---------------------------------------------------------------------------------//
@@ -84,7 +84,7 @@ public class Tester
   {
     FileSystemFactory factory = new FileSystemFactory ();
 
-    int index = 28;
+    int index = 35;
     for (int fileNo = index; fileNo <= index; fileNo++)
     //    for (int fileNo = 0; fileNo < fileNames.length; fileNo++)
     {

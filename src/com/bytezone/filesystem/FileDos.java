@@ -23,7 +23,7 @@ public class FileDos extends AbstractAppleFile
   {
     super (fs);
 
-    isFile = true;
+    //    isFile = true;
 
     int nextTrack = buffer[ptr] & 0xFF;
     int nextSector = buffer[ptr + 1] & 0xFF;

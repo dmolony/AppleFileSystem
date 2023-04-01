@@ -361,7 +361,7 @@ public class FileSystemFactory
 
         FsBinary2 fs = new FsBinary2 (lbrReader);
 
-        if (fs.getFileSystems ().size () > 0)
+        if (fs.getFileSystems ().size () > 0 || fs.getFiles ().size () > 0)
         {
           fileSystems.add (fs);
           if (debug)

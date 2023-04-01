@@ -3,6 +3,8 @@ package com.bytezone.filesystem;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.bytezone.filesystem.AppleFileSystem.FileSystemType;
+
 // -----------------------------------------------------------------------------------//
 public abstract class AbstractAppleFile implements AppleFile
 // -----------------------------------------------------------------------------------//
@@ -10,7 +12,7 @@ public abstract class AbstractAppleFile implements AppleFile
   protected AppleFileSystem parentFileSystem;
   protected AppleFileSystem embeddedFileSystem;
 
-  protected boolean isFile;
+  protected boolean isFile = true;
   protected boolean isFolder;
   //  protected boolean isFileSystem;
   protected boolean isForkedFile;             // FileProdos only
@@ -105,6 +107,14 @@ public abstract class AbstractAppleFile implements AppleFile
 
   // ---------------------------------------------------------------------------------//
   @Override
+  public FileSystemType getFileSystemType ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return parentFileSystem.getFileSystemType ();
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
   public AppleFileSystem getEmbeddedFileSystem ()
   // ---------------------------------------------------------------------------------//
   {
@@ -123,7 +133,8 @@ public abstract class AbstractAppleFile implements AppleFile
   public String[] getPathFolders ()
   // ---------------------------------------------------------------------------------//
   {
-    throw new UnsupportedOperationException ("getPathFolders() not implemented");
+    throw new UnsupportedOperationException (
+        "getPathFolders() not implemented in " + fileName);
   }
 
   // ---------------------------------------------------------------------------------//
@@ -147,7 +158,7 @@ public abstract class AbstractAppleFile implements AppleFile
   public byte[] read ()
   // ---------------------------------------------------------------------------------//
   {
-    throw new UnsupportedOperationException ("read() not implemented");
+    throw new UnsupportedOperationException ("read() not implemented in " + fileName);
   }
 
   // ---------------------------------------------------------------------------------//
@@ -155,7 +166,7 @@ public abstract class AbstractAppleFile implements AppleFile
   public void write (byte[] buffer)
   // ---------------------------------------------------------------------------------//
   {
-    throw new UnsupportedOperationException ("write() not implemented");
+    throw new UnsupportedOperationException ("write() not implemented in " + fileName);
   }
 
   // ---------------------------------------------------------------------------------//
@@ -163,7 +174,8 @@ public abstract class AbstractAppleFile implements AppleFile
   public int getFileLength ()                         // in bytes (eof)
   // ---------------------------------------------------------------------------------//
   {
-    throw new UnsupportedOperationException ("getFileLength() not implemented");
+    throw new UnsupportedOperationException (
+        "getFileLength() not implemented in " + fileName);
   }
 
   // ---------------------------------------------------------------------------------//
@@ -171,8 +183,8 @@ public abstract class AbstractAppleFile implements AppleFile
   public int getTotalBlocks ()                   // in blocks
   // ---------------------------------------------------------------------------------//
   {
-    throw new UnsupportedOperationException (String.format (
-        "getTotalBlocks() not implemented %d %s%n", this.getFileType (), getFileName ()));
+    throw new UnsupportedOperationException (String
+        .format ("getTotalBlocks() not implemented %s %s%n", fileTypeText, fileName));
   }
 
   // ---------------------------------------------------------------------------------//
@@ -180,7 +192,8 @@ public abstract class AbstractAppleFile implements AppleFile
   public List<AppleBlock> getBlocks ()
   // ---------------------------------------------------------------------------------//
   {
-    throw new UnsupportedOperationException ("getBlocks() not implemented");
+    throw new UnsupportedOperationException (
+        "getBlocks() not implemented in " + fileName);
   }
 
   // ---------------------------------------------------------------------------------//
@@ -216,7 +229,7 @@ public abstract class AbstractAppleFile implements AppleFile
 
     text.append (String.format ("File name ............. %s%n", fileName));
     text.append (
-        String.format ("File type ............. %d    %s%n", fileType, fileTypeText));
+        String.format ("File type ............. %d    %s%n%n", fileType, fileTypeText));
     //    text.append (String.format ("File system type ...... %s%n%n", getFileSystemType ()));
 
     return text.toString ();

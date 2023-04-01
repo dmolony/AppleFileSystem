@@ -26,8 +26,7 @@ public class FsGzip extends AbstractFileSystem
         new ByteArrayInputStream (                    //
             getDiskBuffer (), getDiskOffset (), getDiskLength ()));)
     {
-      //      addFileSystem (this, getFileName (), Utility.getFullBuffer (zip));
-      addFile (new FileGzip (this, getFileName (), Utility.getFullBuffer (zip)));
+      checkFileSystem (blockReader.getName (), Utility.getFullBuffer (zip));
     }
     catch (IOException e)
     {
@@ -35,5 +34,27 @@ public class FsGzip extends AbstractFileSystem
     }
 
     assert blockReader.isMagic (0, GZIP);
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
+  public String getCatalog ()
+  // ---------------------------------------------------------------------------------//
+  {
+    StringBuilder text = new StringBuilder ();
+
+    for (AppleFile file : getFiles ())
+      text.append (
+          String.format ("%-15s %s%n", file.getFileName (), file.getFileSystemType ()));
+
+    return text.toString ();
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
+  public String toString ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return super.toString ();
   }
 }

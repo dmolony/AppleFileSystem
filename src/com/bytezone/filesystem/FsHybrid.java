@@ -35,6 +35,21 @@ public class FsHybrid extends AbstractFileSystem
   }
 
   // ---------------------------------------------------------------------------------//
+  public String getHybridCatalog ()
+  // ---------------------------------------------------------------------------------//
+  {
+    StringBuilder text = new StringBuilder ();
+
+    for (AppleFileSystem fs : getFileSystems ())
+    {
+      text.append (fs.getCatalog ());
+      text.append ("\n\n");
+    }
+
+    return text.toString ();
+  }
+
+  // ---------------------------------------------------------------------------------//
   @Override
   public String toString ()
   // ---------------------------------------------------------------------------------//
