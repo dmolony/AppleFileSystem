@@ -31,12 +31,15 @@ public class DirectoryEntryProdos
 
   final LocalDateTime created;
   final String dateCreated, timeCreated;
+  final String storageTypeText;
 
   // ---------------------------------------------------------------------------------//
   public DirectoryEntryProdos (byte[] buffer, int ptr)
   // ---------------------------------------------------------------------------------//
   {
     storageType = (buffer[ptr] & 0xF0) >>> 4;
+    storageTypeText = ProdosConstants.storageTypes[storageType];
+
     int nameLength = buffer[ptr] & 0x0F;
     fileName = nameLength > 0 ? Utility.string (buffer, ptr + 1, nameLength) : "";
 
@@ -78,7 +81,7 @@ public class DirectoryEntryProdos
     StringBuilder text = new StringBuilder ();
 
     text.append (String.format ("Storage type .......... %02X  %s%n", storageType,
-        storageType == 0x0E ? "Subdirectory Header" : "Volume Directory Header"));
+        storageTypeText));
     text.append (String.format ("File name ............. %s%n", fileName));
     text.append (String.format ("Reserved .............. $%02X%n", folderType));
     text.append (

@@ -19,7 +19,7 @@ public class FileEntryProdos
 
   final int storageType;
   final int keyPtr;
-  final int size;
+  final int blocksUsed;
   final int eof;
   final int auxType;
   final int headerPtr;
@@ -47,7 +47,7 @@ public class FileEntryProdos
 
     fileType = buffer[ptr + 0x10] & 0xFF;
     keyPtr = Utility.unsignedShort (buffer, ptr + 0x11);
-    size = Utility.unsignedShort (buffer, ptr + 0x13);
+    blocksUsed = Utility.unsignedShort (buffer, ptr + 0x13);
     eof = Utility.unsignedTriple (buffer, ptr + 0x15);
 
     created = Utility.getAppleDate (buffer, ptr + 0x18);
@@ -73,6 +73,10 @@ public class FileEntryProdos
   }
 
   // ---------------------------------------------------------------------------------//
+  // According to Inside Prodos:
+  // BLOCKS_USED: The total number of blocks used by this file including index blocks
+  //              and data blocks.
+  // ---------------------------------------------------------------------------------//
   @Override
   public String toString ()
   // ---------------------------------------------------------------------------------//
@@ -85,7 +89,7 @@ public class FileEntryProdos
     text.append (
         String.format ("File type ............. %02X  %s%n", fileType, fileTypeText));
     text.append (String.format ("Key ptr ............... %04X    %<,7d%n", keyPtr));
-    text.append (String.format ("Blocks used ........... %04X    %<,7d%n", size));
+    text.append (String.format ("Blocks used ........... %04X    %<,7d%n", blocksUsed));
     text.append (String.format ("Eof ................... %06X %<,8d%n", eof));
     text.append (
         String.format ("Created ............... %9s %-5s%n", dateCreated, timeCreated));

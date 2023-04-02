@@ -7,16 +7,12 @@ import java.util.List;
 import java.util.Objects;
 
 import com.bytezone.filesystem.BlockReader.AddressType;
-import com.bytezone.utility.Utility;
 
 // -----------------------------------------------------------------------------------//
 public abstract class AbstractFileSystem
     implements AppleFileSystem, AppleFileSystemContainer
 // -----------------------------------------------------------------------------------//
 {
-  protected static final DateTimeFormatter sdf = DateTimeFormatter.ofPattern ("d-LLL-yy");
-  protected static final DateTimeFormatter stf = DateTimeFormatter.ofPattern ("H:mm");
-  protected static final String NO_DATE = "<NO DATE>";
   protected static final String[] threadFormats = { "unc", "sq ", "lz1", "lz2", "", "" };
 
   protected static final DateTimeFormatter dtf =
@@ -550,6 +546,14 @@ public abstract class AbstractFileSystem
 
   // ---------------------------------------------------------------------------------//
   @Override
+  public String getPath ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return "";
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
   public String getCatalog ()
   // ---------------------------------------------------------------------------------//
   {
@@ -600,6 +604,6 @@ public abstract class AbstractFileSystem
     //      }
     //    }
 
-    return Utility.rtrim (text);
+    return text.toString ();
   }
 }

@@ -105,39 +105,6 @@ public class FsDos extends AbstractFileSystem
   }
 
   // ---------------------------------------------------------------------------------//
-  String getFileDetails (FileDos file)
-  // ---------------------------------------------------------------------------------//
-  {
-    int actualSize = file.getTotalIndexSectors () + file.getTotalDataSectors ();
-
-    String addressText =
-        file.getAddress () == 0 ? "" : String.format ("$%4X", file.getAddress ());
-
-    String lengthText = file.getFileLength () == 0 ? ""
-        : String.format ("$%4X  %<,6d", file.getFileLength ());
-
-    String message = "";
-    String lockedFlag = (file.isLocked ()) ? "*" : " ";
-
-    if (file.getSectorCount () != actualSize)
-      message += "Actual size (" + actualSize + ") ";
-    //    if (file.getTotalDataSectors () == 0)
-    //      message += "No data ";
-    if (file.getSectorCount () > 999)
-      message += "Reported " + file.getSectorCount ();
-
-    String text = String.format ("%1s  %1s  %03d  %-30.30s  %-5s  %-13s %3d %3d   %s",
-        lockedFlag, file.getFileTypeText (), file.getSectorCount () % 1000,
-        file.getFileName (), addressText, lengthText, file.getTotalIndexSectors (),
-        file.getTotalDataSectors (), message.trim ());
-
-    //    if (actualSize == 0)
-    //      text = text.substring (0, 50);
-
-    return text;
-  }
-
-  // ---------------------------------------------------------------------------------//
   @Override
   public String getCatalog ()
   // ---------------------------------------------------------------------------------//
@@ -155,7 +122,7 @@ public class FsDos extends AbstractFileSystem
     {
       //      if (countEntries (fileEntry) > 1)
       //        entry += "** duplicate **";
-      text.append (getFileDetails ((FileDos) file));
+      text.append (file.getCatalogLine ());
       text.append ("\n");
     }
 

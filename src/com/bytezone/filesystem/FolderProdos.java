@@ -11,12 +11,13 @@ import com.bytezone.utility.Utility;
 public class FolderProdos extends AbstractAppleFile implements AppleContainer
 // -----------------------------------------------------------------------------------//
 {
-  private static final DateTimeFormatter df = DateTimeFormatter.ofPattern ("d-LLL-yy");
-  private static final DateTimeFormatter tf = DateTimeFormatter.ofPattern ("H:mm");
-  private static final String NO_DATE = "<NO DATE>";
+  protected static final DateTimeFormatter sdf = DateTimeFormatter.ofPattern ("d-LLL-yy");
+  protected static final DateTimeFormatter stf = DateTimeFormatter.ofPattern ("H:mm");
+  protected static final String NO_DATE = "<NO DATE>";
 
   FileEntryProdos fileEntry;                  // SDH only
   DirectoryEntryProdos directoryEntry;        // both VDH and SDH
+  AppleContainer container;
 
   List<AppleFile> files = new ArrayList<> ();
 
@@ -24,15 +25,18 @@ public class FolderProdos extends AbstractAppleFile implements AppleContainer
   // but an SDH is created first as a normal file (with a FileEntry), and then has
   // the DirectoryEntry added when the subdirectory is processed.
   // ---------------------------------------------------------------------------------//
-  FolderProdos (FsProdos parent, byte[] buffer, int ptr)
+  FolderProdos (FsProdos parent, AppleContainer container, byte[] buffer, int ptr)
   // ---------------------------------------------------------------------------------//
   {
     super (parent);
+
+    this.container = container;
 
     if ((buffer[ptr] & 0xF0) == 0xF0)         // Volume Directory Header
     {
       fileTypeText = "VOL";
       directoryEntry = new DirectoryEntryProdos (buffer, ptr);
+      //      fileTypeText = ProdosConstants.fileTypes[directoryEntry.fileType];
     }
     else                                      // Subdirectory
     {
@@ -57,7 +61,7 @@ public class FolderProdos extends AbstractAppleFile implements AppleContainer
   public int getTotalBlocks ()
   // ---------------------------------------------------------------------------------//
   {
-    return directoryEntry.totalBlocks;
+    return fileEntry.blocksUsed;
   }
 
   // ---------------------------------------------------------------------------------//
@@ -118,7 +122,7 @@ public class FolderProdos extends AbstractAppleFile implements AppleContainer
   public int getFileLength ()
   // ---------------------------------------------------------------------------------//
   {
-    return 0;
+    return fileEntry.eof;
   }
 
   // ---------------------------------------------------------------------------------//
@@ -131,32 +135,65 @@ public class FolderProdos extends AbstractAppleFile implements AppleContainer
 
   // ---------------------------------------------------------------------------------//
   @Override
+  public String getPath ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return container.getPath () + "/" + getFileName ();
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
+  public String getCatalogLine ()
+  // ---------------------------------------------------------------------------------//
+  {
+    StringBuilder text = new StringBuilder ();
+
+    LocalDateTime created = getCreated ();
+    LocalDateTime modified = getModified ();
+
+    int fileLength = isForkedFile () ? 0 : getFileLength ();
+
+    String dateCreated = created == null ? NO_DATE : created.format (sdf);
+    String timeCreated = created == null ? "" : created.format (stf);
+    String dateModified = modified == null ? NO_DATE : modified.format (sdf);
+    String timeModified = modified == null ? "" : modified.format (stf);
+
+    String forkFlag = isForkedFile () ? "+" : " ";
+
+    text.append (String.format ("%s%-15s %3s%s  %5d  %9s %5s  %9s %5s %8d%n",
+        isLocked () ? "*" : " ", getFileName (), getFileTypeText (), forkFlag,
+        getTotalBlocks (), dateModified, timeModified, dateCreated, timeCreated,
+        fileLength));
+
+    return Utility.rtrim (text);
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
   public String getCatalog ()
   // ---------------------------------------------------------------------------------//
   {
     StringBuilder text = new StringBuilder ();
 
-    //    LocalDateTime created = this.created;
-    //    LocalDateTime modified = fileEntry.modified;
+    text.append (String.format ("%s%n%n", getPath ()));
 
-    String dateCreated =
-        directoryEntry.created == null ? NO_DATE : directoryEntry.created.format (df);
-    String timeCreated =
-        directoryEntry.created == null ? "" : directoryEntry.created.format (tf);
-    //    String dateModified = modified == null ? NO_DATE : modified.format (df);
-    //    String timeModified = modified == null ? "" : modified.format (tf);
+    text.append (" NAME           TYPE  BLOCKS  "
+        + "MODIFIED         CREATED          ENDFILE SUBTYPE" + "\n\n");
 
-    text.append (String.format ("%s%-15s %3s   %5d  %9s %5s %n", isLocked ? "*" : " ",
-        fileName, fileTypeText, directoryEntry.totalBlocks, dateCreated, timeCreated));
+    for (AppleFile file : getFiles ())
+    {
+      text.append (file.getCatalogLine ());
+      text.append ("\n");
+    }
+
+    int totalBlocks = getParentFileSystem ().getTotalBlocks ();
+    int freeBlocks = getParentFileSystem ().getFreeBlocks ();
+
+    text.append (
+        String.format ("%nBLOCKS FREE:%5d     BLOCKS USED:%5d     TOTAL BLOCKS:%5d%n",
+            freeBlocks, totalBlocks - freeBlocks, totalBlocks));
 
     return text.toString ();
-
-    //
-    //        text.append (String.format ("%s%-15s %3s   %5d  %9s %5s  %9s %5s %8d %n",
-    //            file.isLocked () ? "*" : " ", file.getFileName (), file.getFileTypeText (),
-    //            file.getTotalBlocks (), dateModified, timeModified, dateCreated, timeCreated,
-    //            file.getFileLength ()));
-    //      
   }
 
   // ---------------------------------------------------------------------------------//

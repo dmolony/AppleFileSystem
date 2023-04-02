@@ -19,4 +19,6 @@ public interface AppleContainer
   public FileSystemType getFileSystemType ();
 
   public String getCatalog ();
+
+  public String getPath ();
 }

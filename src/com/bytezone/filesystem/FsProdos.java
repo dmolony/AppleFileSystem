@@ -1,6 +1,5 @@
 package com.bytezone.filesystem;
 
-import java.time.LocalDateTime;
 import java.util.BitSet;
 
 import com.bytezone.utility.Utility;
@@ -32,23 +31,18 @@ public class FsProdos extends AbstractFileSystem
       byte[] buffer = vtoc.read ();
 
       if (catalogBlocks == 0)
-      {
         directoryEntry = new DirectoryEntryProdos (buffer, 4);
-        //        int type = (buffer[0x04] & 0xF0) >>> 4;
-        if (directoryEntry.storageType != ProdosConstants.VOLUME_HEADER)
-          throw new FileFormatException ("FsProdos: No Volume Header");
 
-        //        rootFolder = new FolderProdos (this, buffer, 4);
-        //        addFile (rootFolder);
+      if (directoryEntry.storageType != ProdosConstants.VOLUME_HEADER)
+        throw new FileFormatException ("FsProdos: No Volume Header");
 
-        if (directoryEntry.entryLength != ProdosConstants.ENTRY_SIZE
-            || directoryEntry.entriesPerBlock != ProdosConstants.ENTRIES_PER_BLOCK)
-          throw new FileFormatException ("FsProdos: Invalid entry data");
+      if (directoryEntry.entryLength != ProdosConstants.ENTRY_SIZE
+          || directoryEntry.entriesPerBlock != ProdosConstants.ENTRIES_PER_BLOCK)
+        throw new FileFormatException ("FsProdos: Invalid entry data");
 
-        if (directoryEntry.keyPtr < 3 || directoryEntry.keyPtr > 10)
-          throw new FileFormatException (
-              "FsProdos: Invalid bitmap block value: " + directoryEntry.keyPtr);
-      }
+      if (directoryEntry.keyPtr < 3 || directoryEntry.keyPtr > 10)
+        throw new FileFormatException (
+            "FsProdos: Invalid bitmap block value: " + directoryEntry.keyPtr);
 
       prevBlockNo = Utility.unsignedShort (buffer, 0);
       nextBlockNo = Utility.unsignedShort (buffer, 2);
@@ -65,12 +59,12 @@ public class FsProdos extends AbstractFileSystem
     }
 
     processFolder (this, 2);
-    //    System.out.printf ("%-15s has %d files%n", directoryEntry.fileName,
-    //        getFiles ().size ());
+
     assert directoryEntry.fileCount == getFiles ().size ();
     setCatalogBlocks (catalogBlocks);
 
     volumeBitMap = createVolumeBitMap ();
+    freeBlocks = volumeBitMap.cardinality ();
   }
 
   // ---------------------------------------------------------------------------------//
@@ -94,7 +88,7 @@ public class FsProdos extends AbstractFileSystem
           case ProdosConstants.SEEDLING:
           case ProdosConstants.SAPLING:
           case ProdosConstants.TREE:
-            file = new FileProdos (this, buffer, ptr);
+            file = new FileProdos (this, parent, buffer, ptr);
             parent.addFile (file);
 
             if (file.getFileType () == ProdosConstants.FILE_TYPE_LBR)
@@ -103,17 +97,17 @@ public class FsProdos extends AbstractFileSystem
             break;
 
           case ProdosConstants.PASCAL_ON_PROFILE:
-            file = new FileProdos (this, buffer, ptr);
+            file = new FileProdos (this, parent, buffer, ptr);
             parent.addFile (file);
             checkEmbeddedFileSystem (file, 1024);
             break;
 
           case ProdosConstants.GSOS_EXTENDED_FILE:
-            parent.addFile (new FileProdos (this, buffer, ptr));
+            parent.addFile (new FileProdos (this, parent, buffer, ptr));
             break;
 
           case ProdosConstants.SUBDIRECTORY:
-            FolderProdos folder = new FolderProdos (this, buffer, ptr);
+            FolderProdos folder = new FolderProdos (this, parent, buffer, ptr);
             parent.addFile (folder);
             processFolder (folder, folder.fileEntry.keyPtr);        // recursive
             break;
@@ -172,17 +166,15 @@ public class FsProdos extends AbstractFileSystem
       }
     }
 
-    freeBlocks = volumeBitMap.cardinality ();
-
     return bitMap;
   }
 
   // ---------------------------------------------------------------------------------//
-  public String getVolumeName ()
-  // ---------------------------------------------------------------------------------//
-  {
-    return directoryEntry.fileName;
-  }
+  //  public String getVolumeName ()
+  //  // ---------------------------------------------------------------------------------//
+  //  {
+  //    return directoryEntry.fileName;
+  //  }
 
   // ---------------------------------------------------------------------------------//
   public static String getFileTypeText (int fileType)
@@ -192,62 +184,29 @@ public class FsProdos extends AbstractFileSystem
   }
 
   // ---------------------------------------------------------------------------------//
-  private String getSubType (FileProdos file)
+  @Override
+  public String getPath ()
   // ---------------------------------------------------------------------------------//
   {
-    switch (file.getFileType ())
-    {
-      case ProdosConstants.FILE_TYPE_TEXT:
-        return String.format ("R=%5d", file.getAuxType ());
-
-      case ProdosConstants.FILE_TYPE_BINARY:
-      case ProdosConstants.FILE_TYPE_PNT:
-      case ProdosConstants.FILE_TYPE_PIC:
-      case ProdosConstants.FILE_TYPE_FOT:
-        return String.format ("A=$%4X", file.getAuxType ());
-    }
-
-    return "";
+    return String.format ("/%s", directoryEntry.fileName);
   }
 
   // ---------------------------------------------------------------------------------//
-  public String getProdosCatalog ()
+  @Override
+  public String getCatalog ()
   // ---------------------------------------------------------------------------------//
   {
     StringBuilder text = new StringBuilder ();
 
-    text.append ("/" + directoryEntry.fileName + "\n\n");
+    text.append (String.format ("%s%n%n", getPath ()));
 
     text.append (" NAME           TYPE  BLOCKS  "
         + "MODIFIED         CREATED          ENDFILE SUBTYPE" + "\n\n");
 
     for (AppleFile file : getFiles ())
     {
-      //      if (file.isEmbeddedFileSystem ())                             // LBR or PAR
-      //        file = (AppleFileSystem) getAppleFile ();
-
-      //      else if (file.isFile ())
-      {
-        FileProdos prodos = (FileProdos) file;
-
-        LocalDateTime created = prodos.getCreated ();
-        LocalDateTime modified = prodos.getModified ();
-
-        int fileLength = file.isForkedFile () ? 0 : file.getFileLength ();
-
-        String dateCreated = created == null ? NO_DATE : created.format (sdf);
-        String timeCreated = created == null ? "" : created.format (stf);
-        String dateModified = modified == null ? NO_DATE : modified.format (sdf);
-        String timeModified = modified == null ? "" : modified.format (stf);
-
-        String forkFlag = file.isForkedFile () ? "+" : " ";
-
-        text.append (String.format (
-            "%s%-15s %3s%s  %5d  %9s %5s  %9s %5s %8d %7s    %04X%n",
-            file.isLocked () ? "*" : " ", file.getFileName (), file.getFileTypeText (),
-            forkFlag, file.getTotalBlocks (), dateModified, timeModified, dateCreated,
-            timeCreated, fileLength, getSubType (prodos), prodos.getAuxType ()));
-      }
+      text.append (file.getCatalogLine ());
+      text.append ("\n");
     }
 
     int totalBlocks = getTotalBlocks ();
@@ -265,17 +224,10 @@ public class FsProdos extends AbstractFileSystem
   public String toString ()
   // ---------------------------------------------------------------------------------//
   {
-    StringBuilder text = new StringBuilder (super.toString () + "\n\n");
+    StringBuilder text = new StringBuilder (super.toString ());
 
     text.append (directoryEntry);
-    //    text.append (String.format ("Volume name ........... %s%n", volumeName));
-    //    text.append (
-    //        String.format ("Created ............... %s%n", created == null ? "" : created));
-    //    text.append (String.format ("Entry length .......... %d%n", entryLength));
-    //    text.append (String.format ("Entries per block ..... %d%n", entriesPerBlock));
-    //    text.append (String.format ("File count ............ %d%n", fileCount));
-    //    text.append (String.format ("Bitmap ptr ............ %d", bitmapPointer));
 
-    return text.toString ();
+    return Utility.rtrim (text);
   }
 }

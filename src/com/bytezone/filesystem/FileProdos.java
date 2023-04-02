@@ -1,6 +1,7 @@
 package com.bytezone.filesystem;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -10,7 +11,12 @@ import com.bytezone.utility.Utility;
 public class FileProdos extends AbstractAppleFile
 // -----------------------------------------------------------------------------------//
 {
+  protected static final DateTimeFormatter sdf = DateTimeFormatter.ofPattern ("d-LLL-yy");
+  protected static final DateTimeFormatter stf = DateTimeFormatter.ofPattern ("H:mm");
+  protected static final String NO_DATE = "<NO DATE>";
+
   private FileEntryProdos fileEntry;
+  private AppleContainer container;
 
   private ForkProdos data;                                      // for non-forked files
   private List<ForkProdos> forks = new ArrayList<> ();          // for forked files
@@ -21,11 +27,12 @@ public class FileProdos extends AbstractAppleFile
   }
 
   // ---------------------------------------------------------------------------------//
-  FileProdos (FsProdos parent, byte[] buffer, int ptr)
+  FileProdos (FsProdos parent, AppleContainer container, byte[] buffer, int ptr)
   // ---------------------------------------------------------------------------------//
   {
     super (parent);
 
+    this.container = container;
     fileEntry = new FileEntryProdos (buffer, ptr);
 
     fileName = fileEntry.fileName;
@@ -38,7 +45,7 @@ public class FileProdos extends AbstractAppleFile
       createForks ();
     else
       data = new ForkProdos (this, null, fileEntry.keyPtr, fileEntry.storageType,
-          fileEntry.size, fileEntry.eof);
+          fileEntry.blocksUsed, fileEntry.eof);
   }
 
   // ---------------------------------------------------------------------------------//
@@ -108,7 +115,60 @@ public class FileProdos extends AbstractAppleFile
   public int getTotalBlocks ()                                    // in blocks
   // ---------------------------------------------------------------------------------//
   {
-    return fileEntry.size;                    // size of both forks if GSOS extended
+    return fileEntry.blocksUsed;                // size of both forks if GSOS extended
+  }
+
+  // ---------------------------------------------------------------------------------//
+  String getPath ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return container.getPath () + "/" + getFileName ();
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
+  public String getCatalogLine ()
+  // ---------------------------------------------------------------------------------//
+  {
+    StringBuilder text = new StringBuilder ();
+
+    LocalDateTime created = getCreated ();
+    LocalDateTime modified = getModified ();
+
+    int fileLength = isForkedFile () ? 0 : getFileLength ();
+
+    String dateCreated = created == null ? NO_DATE : created.format (sdf);
+    String timeCreated = created == null ? "" : created.format (stf);
+    String dateModified = modified == null ? NO_DATE : modified.format (sdf);
+    String timeModified = modified == null ? "" : modified.format (stf);
+
+    String forkFlag = isForkedFile () ? "+" : " ";
+
+    text.append (String.format ("%s%-15s %3s%s  %5d  %9s %5s  %9s %5s %8d %7s%n",
+        isLocked () ? "*" : " ", getFileName (), getFileTypeText (), forkFlag,
+        getTotalBlocks (), dateModified, timeModified, dateCreated, timeCreated,
+        fileLength, getSubType ()));
+
+    return Utility.rtrim (text);
+  }
+
+  // ---------------------------------------------------------------------------------//
+  private String getSubType ()
+  // ---------------------------------------------------------------------------------//
+  {
+    switch (getFileType ())
+    {
+      case ProdosConstants.FILE_TYPE_TEXT:
+        return String.format ("R=%5d", getAuxType ());
+
+      case ProdosConstants.FILE_TYPE_BINARY:
+      case ProdosConstants.FILE_TYPE_PNT:
+      case ProdosConstants.FILE_TYPE_PIC:
+      case ProdosConstants.FILE_TYPE_FOT:
+        return String.format ("A=$%4X", getAuxType ());
+    }
+
+    return "";
   }
 
   // ---------------------------------------------------------------------------------//

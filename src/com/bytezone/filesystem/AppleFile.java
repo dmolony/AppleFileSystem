@@ -47,4 +47,6 @@ public interface AppleFile
   public String getFileTypeText ();
 
   public String getErrorMessage ();                 // if file can't be read
+
+  public String getCatalogLine ();
 }

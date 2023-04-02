@@ -169,6 +169,39 @@ public class FileDos extends AbstractAppleFile
 
   // ---------------------------------------------------------------------------------//
   @Override
+  public String getCatalogLine ()
+  // ---------------------------------------------------------------------------------//
+  {
+    int actualSize = getTotalIndexSectors () + getTotalDataSectors ();
+
+    String addressText = getAddress () == 0 ? "" : String.format ("$%4X", getAddress ());
+
+    String lengthText =
+        getFileLength () == 0 ? "" : String.format ("$%4X  %<,6d", getFileLength ());
+
+    String message = "";
+    String lockedFlag = (isLocked ()) ? "*" : " ";
+
+    if (getSectorCount () != actualSize)
+      message += "Actual size (" + actualSize + ") ";
+    //    if (file.getTotalDataSectors () == 0)
+    //      message += "No data ";
+    if (getSectorCount () > 999)
+      message += "Reported " + getSectorCount ();
+
+    String text =
+        String.format ("%1s  %1s  %03d  %-30.30s  %-5s  %-13s %3d %3d   %s", lockedFlag,
+            getFileTypeText (), getSectorCount () % 1000, getFileName (), addressText,
+            lengthText, getTotalIndexSectors (), getTotalDataSectors (), message.trim ());
+
+    //    if (actualSize == 0)
+    //      text = text.substring (0, 50);
+
+    return text;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
   public String toString ()
   // ---------------------------------------------------------------------------------//
   {

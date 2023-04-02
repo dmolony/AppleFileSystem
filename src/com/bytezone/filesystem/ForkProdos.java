@@ -7,7 +7,7 @@ import com.bytezone.filesystem.FileProdos.ForkType;
 import com.bytezone.utility.Utility;
 
 // -----------------------------------------------------------------------------------//
-public class ForkProdos extends AbstractAppleFile implements AppleContainer
+public class ForkProdos extends AbstractAppleFile
 // -----------------------------------------------------------------------------------//
 {
   private FileProdos parentFile;
@@ -15,6 +15,7 @@ public class ForkProdos extends AbstractAppleFile implements AppleContainer
   private ForkType forkType;
 
   private int storageType;
+  private String storageTypeText;
   private int size;
   private int eof;
   private int keyPtr;
@@ -30,7 +31,7 @@ public class ForkProdos extends AbstractAppleFile implements AppleContainer
   // prodos files simply use a ForkProdos for their data (as the code to read them 
   // is identical.
   // DATA and RESOURCE forks are stored as children of the FileProdos, normal
-  // prodos files keep a private reference to its 'fork' data.
+  // prodos files keep a private reference to its data 'fork'.
   // ---------------------------------------------------------------------------------//
   ForkProdos (FileProdos parentFile, ForkType forkType, int keyPtr, int storageType,
       int size, int eof)
@@ -54,6 +55,8 @@ public class ForkProdos extends AbstractAppleFile implements AppleContainer
     this.keyPtr = keyPtr;
     this.size = size;
     this.eof = eof;
+
+    storageTypeText = ProdosConstants.storageTypes[storageType];
 
     List<Integer> blockNos = new ArrayList<> ();
     AppleBlock dataBlock = fileSystem.getBlock (keyPtr);
@@ -176,8 +179,20 @@ public class ForkProdos extends AbstractAppleFile implements AppleContainer
   public byte[] read ()
   // ---------------------------------------------------------------------------------//
   {
+    // maybe this routine should always declare the buffer and pass it to read()
     if (data == null)
+    {
       data = fileSystem.readBlocks (dataBlocks);
+
+      if (data.length < eof)
+      {
+        // see TOTAL.REPLAY/X/COLUMNS/COL2P/COLUMNS.MGEMS
+        System.out.printf ("Buffer not long enough in %s%n", parentFile.getPath ());
+        byte[] temp = new byte[eof];
+        System.arraycopy (data, 0, temp, 0, data.length);
+        data = temp;
+      }
+    }
 
     return data;
   }
@@ -207,69 +222,13 @@ public class ForkProdos extends AbstractAppleFile implements AppleContainer
 
   // ---------------------------------------------------------------------------------//
   @Override
-  public void addFile (AppleFile file)
-  // ---------------------------------------------------------------------------------//
-  {
-    // TODO Auto-generated method stub
-
-  }
-
-  // ---------------------------------------------------------------------------------//
-  @Override
-  public List<AppleFile> getFiles ()
-  // ---------------------------------------------------------------------------------//
-  {
-    // TODO Auto-generated method stub
-    return null;
-  }
-
-  // ---------------------------------------------------------------------------------//
-  @Override
-  public void addFileSystem (AppleFileSystem fileSystem)
-  // ---------------------------------------------------------------------------------//
-  {
-    // TODO Auto-generated method stub
-
-  }
-
-  // ---------------------------------------------------------------------------------//
-  @Override
-  public List<AppleFileSystem> getFileSystems ()
-  // ---------------------------------------------------------------------------------//
-  {
-    // TODO Auto-generated method stub
-    return null;
-  }
-
-  // ---------------------------------------------------------------------------------//
-  @Override
-  public String getCatalog ()
-  // ---------------------------------------------------------------------------------//
-  {
-    //        FileProdos parent = ((ForkProdos) file).getParentFile ();
-    //
-    //        LocalDateTime created = parent.getCreated ();
-    //        LocalDateTime modified = parent.getModified ();
-    //
-    //        String dateCreated = created == null ? NO_DATE : created.format (sdf);
-    //        String timeCreated = created == null ? "" : created.format (stf);
-    //        String dateModified = modified == null ? NO_DATE : modified.format (sdf);
-    //        String timeModified = modified == null ? "" : modified.format (stf);
-    //
-    //        text.append (String.format (" %-15s       %5d  %9s %5s  %9s %5s %8d%n",
-    //            file.getFileName (), file.getTotalBlocks (), dateModified, timeModified,
-    //            dateCreated, timeCreated, file.getFileLength (), file.getFileLength ()));
-
-    return null;
-  }
-
-  // ---------------------------------------------------------------------------------//
-  @Override
   public String toString ()
   // ---------------------------------------------------------------------------------//
   {
     StringBuilder text = new StringBuilder (super.toString ());
 
+    text.append (String.format ("Storage type .......... %02X  %s%n", storageType,
+        storageTypeText));
     text.append (String.format ("Size (blocks) ......... %04X  %<,7d%n", size));
     text.append (String.format ("Eof ................... %04X  %<,7d%n", eof));
     text.append (String.format ("Key ptr ............... %04X  %<,7d%n%n", keyPtr));
