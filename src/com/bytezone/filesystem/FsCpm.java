@@ -68,7 +68,8 @@ public class FsCpm extends AbstractFileSystem
   }
 
   // ---------------------------------------------------------------------------------//
-  public String getCpmCatalog ()
+  @Override
+  public String getCatalog ()
   // ---------------------------------------------------------------------------------//
   {
     StringBuilder text = new StringBuilder ();
@@ -78,16 +79,10 @@ public class FsCpm extends AbstractFileSystem
     text.append ("User  Name       Typ  R S  Size\n");
     text.append (line);
 
-    for (AppleFile file1 : getFiles ())
+    for (AppleFile file : getFiles ())
     {
-      FileCpm file = (FileCpm) file1;
-
-      char ro = file.isReadOnly () ? '*' : ' ';
-      char sf = file.isSystemFile () ? '*' : ' ';
-
-      text.append (String.format ("%3d   %-8s   %-3s  %s %s   %03d%n",
-          file.getUserNumber (), file.getShortName (), file.getFileTypeText (), ro, sf,
-          file.getTotalBlocks ()));
+      text.append (file.getCatalogLine ());
+      text.append ("\n");
     }
 
     return Utility.rtrim (text);

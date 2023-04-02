@@ -225,7 +225,7 @@ public abstract class AbstractAppleFile implements AppleFile
   public String getCatalogLine ()
   // ---------------------------------------------------------------------------------//
   {
-    return "catalog line";
+    return fileName;
   }
 
   // ---------------------------------------------------------------------------------//

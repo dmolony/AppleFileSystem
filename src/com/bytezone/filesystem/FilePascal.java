@@ -1,6 +1,8 @@
 package com.bytezone.filesystem;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -10,6 +12,9 @@ import com.bytezone.utility.Utility;
 public class FilePascal extends AbstractAppleFile
 // -----------------------------------------------------------------------------------//
 {
+  private static final DateTimeFormatter dtf =
+      DateTimeFormatter.ofLocalizedDate (FormatStyle.SHORT);
+
   private static final String[] fileTypes =
       { "Volume", "Bad ", "Code", "Text", "Info", "Data", "Graf", "Foto", "SecureDir" };
 
@@ -92,6 +97,16 @@ public class FilePascal extends AbstractAppleFile
 
   // ---------------------------------------------------------------------------------//
   @Override
+  public String getCatalogLine ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return String.format ("%4d   %-15s   %-4s   %8s  %,7d   %4d   %4d", getTotalBlocks (),
+        getFileName (), getFileTypeText (), getDate ().format (dtf), getFileLength (),
+        getFirstBlock (), getLastBlock ());
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
   public String toString ()
   // ---------------------------------------------------------------------------------//
   {
@@ -100,7 +115,7 @@ public class FilePascal extends AbstractAppleFile
     text.append (String.format ("First block ........... %d%n", firstBlock));
     text.append (String.format ("Last block ............ %d%n", lastBlock));
     text.append (String.format ("Bytes in last block ... %d%n", bytesUsedInLastBlock));
-    text.append (String.format ("Date .................. %s", date));
+    text.append (String.format ("Date .................. %s", getDate ().format (dtf)));
 
     return Utility.rtrim (text);
   }

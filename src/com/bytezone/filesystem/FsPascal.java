@@ -1,6 +1,8 @@
 package com.bytezone.filesystem;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -10,6 +12,9 @@ import com.bytezone.utility.Utility;
 public class FsPascal extends AbstractFileSystem
 // -----------------------------------------------------------------------------------//
 {
+  private static final DateTimeFormatter dtf =
+      DateTimeFormatter.ofLocalizedDate (FormatStyle.SHORT);
+
   private static final int CATALOG_ENTRY_SIZE = 26;
 
   private String volumeName;
@@ -110,10 +115,8 @@ public class FsPascal extends AbstractFileSystem
 
     for (AppleFile file : getFiles ())
     {
-      text.append (String.format ("%4d   %-15s   %-4s   %8s  %,7d   %4d   %4d%n",
-          file.getTotalBlocks (), file.getFileName (), file.getFileTypeText (),
-          ((FilePascal) file).getDate ().format (dtf), file.getFileLength (),
-          ((FilePascal) file).getFirstBlock (), ((FilePascal) file).getLastBlock ()));
+      text.append (file.getCatalogLine ());
+      text.append ("\n");
     }
 
     text.append (line);
@@ -129,7 +132,7 @@ public class FsPascal extends AbstractFileSystem
   public String toString ()
   // ---------------------------------------------------------------------------------//
   {
-    StringBuilder text = new StringBuilder (super.toString () + "\n\n");
+    StringBuilder text = new StringBuilder (super.toString ());
 
     text.append (String.format ("Volume name ........... %s%n", volumeName));
     text.append (String.format ("Directory ............. %d : %d%n", blockFrom, blockTo));

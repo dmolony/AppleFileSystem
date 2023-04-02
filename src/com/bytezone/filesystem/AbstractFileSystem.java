@@ -1,7 +1,5 @@
 package com.bytezone.filesystem;
 
-import java.time.format.DateTimeFormatter;
-import java.time.format.FormatStyle;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -14,9 +12,6 @@ public abstract class AbstractFileSystem
 // -----------------------------------------------------------------------------------//
 {
   protected static final String[] threadFormats = { "unc", "sq ", "lz1", "lz2", "", "" };
-
-  protected static final DateTimeFormatter dtf =
-      DateTimeFormatter.ofLocalizedDate (FormatStyle.SHORT);
 
   protected FileSystemFactory factory;          // never static!!
 

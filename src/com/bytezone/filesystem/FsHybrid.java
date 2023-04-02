@@ -16,7 +16,7 @@ public class FsHybrid extends AbstractFileSystem
     {
       addFileSystem (fs);
       //      ((AbstractFileSystem) fs).appleFileSystem = this;
-      //      ((AbstractFileSystem) fs).partOfHybrid = true;
+      ((AbstractFileSystem) fs).partOfHybrid = true;
     }
   }
 
@@ -35,7 +35,8 @@ public class FsHybrid extends AbstractFileSystem
   }
 
   // ---------------------------------------------------------------------------------//
-  public String getHybridCatalog ()
+  @Override
+  public String getCatalog ()
   // ---------------------------------------------------------------------------------//
   {
     StringBuilder text = new StringBuilder ();

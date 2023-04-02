@@ -148,7 +148,7 @@ public class FsDos extends AbstractFileSystem
   public String toString ()
   // ---------------------------------------------------------------------------------//
   {
-    StringBuilder text = new StringBuilder (super.toString () + "\n\n");
+    StringBuilder text = new StringBuilder (super.toString ());
 
     text.append (String.format ("Dos version ........... %02X", dosVersion));
 
