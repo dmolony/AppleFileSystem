@@ -97,7 +97,7 @@ public class BlockReader
     this.blocksPerTrack = blocksPerTrack;
 
     bytesPerTrack = bytesPerBlock * blocksPerTrack;
-    totalBlocks = diskLength / bytesPerBlock;
+    totalBlocks = (diskLength - 1) / bytesPerBlock + 1;   // includes partial blocks
   }
 
   // ---------------------------------------------------------------------------------//
@@ -222,9 +222,11 @@ public class BlockReader
         if (interleave == 0)
         {
           int start = diskOffset + block.getBlockNo () * bytesPerBlock;
-          if (start + bytesPerBlock <= diskBuffer.length)
-            System.arraycopy (diskBuffer, start, blockBuffer, bufferOffset,
-                bytesPerBlock);
+          int xfrBytes = Math.min (bytesPerBlock, diskBuffer.length - start);
+
+          //          if (start + bytesPerBlock <= diskBuffer.length)
+          if (xfrBytes > 0)
+            System.arraycopy (diskBuffer, start, blockBuffer, bufferOffset, xfrBytes);
           else
             System.out.printf ("Block %d out of range%n", block.getBlockNo ());
           break;

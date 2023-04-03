@@ -34,13 +34,11 @@ public class FsBinary2 extends AbstractFileSystem
       filesRemaining = file.getFilesFollowing ();
 
       if (!file.isPhantomFile ())
+      {
         if (file.getFileType () == ProdosConstants.FILE_TYPE_LBR)
-        {
-          byte[] buffer = file.read ();
-          checkFileSystem (file.getFileName (), buffer);
-        }
-        else
-          addFile (file);
+          checkEmbeddedFileSystem (file, 0);
+        addFile (file);
+      }
 
       nextBlock += ((file.getEof () - 1) / 128 + 2);
 
@@ -59,8 +57,10 @@ public class FsBinary2 extends AbstractFileSystem
     StringBuilder text = new StringBuilder ();
 
     for (AppleFile file : getFiles ())
-      text.append (
-          String.format ("%-15s %s%n", file.getFileName (), file.getFileSystemType ()));
+    {
+      text.append (file.getCatalogLine ());
+      text.append ("\n");
+    }
 
     return text.toString ();
   }

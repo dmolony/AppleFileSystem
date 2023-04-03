@@ -110,7 +110,7 @@ public class FsZip extends AbstractFileSystem
   public String toString ()
   // ---------------------------------------------------------------------------------//
   {
-    StringBuilder text = new StringBuilder (super.toString () + "\n");
+    StringBuilder text = new StringBuilder (super.toString ());
 
     for (ZipEntry entry : zipEntries)
     {

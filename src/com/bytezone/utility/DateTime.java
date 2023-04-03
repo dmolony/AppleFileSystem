@@ -3,6 +3,7 @@ package com.bytezone.utility;
 import java.time.DateTimeException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Locale;
 
 // -----------------------------------------------------------------------------------//
 public class DateTime
@@ -12,8 +13,10 @@ public class DateTime
       "Aug", "Sep", "Oct", "Nov", "Dec" };
   private static String[] days = { "", "Sunday", "Monday", "Tuesday", "Wednesday",
       "Thursday", "Friday", "Saturday" };
+
+  private static Locale US = Locale.US;          // to force 3 character months
   private static final DateTimeFormatter dtf =
-      DateTimeFormatter.ofPattern ("dd-LLL-yy HH:mm");
+      DateTimeFormatter.ofPattern ("dd-MMM-yy HH:mm", US);
 
   private final int second;
   private final int minute;

@@ -62,17 +62,21 @@ public class FsNuFX extends AbstractFileSystem
       FileNuFX file = new FileNuFX (this, getDiskBuffer (), ptr);
 
       if (file.hasDisk () || file.isLibrary ())
-      {
-        byte[] fileBuffer = file.read ();
-        checkFileSystem (file.getFileName (), fileBuffer);
-        //        checkEmbeddedFileSystem (file, 0);
-        //        addFile (file);
-      }
-      else
-        addFile (file);
+        checkEmbeddedFileSystem (file, 0);
+
+      addFile (file);         // never uses fileSystems<>
 
       ptr += file.rawLength;
     }
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
+  public void addFileSystem (AppleFileSystem fileSystem)
+  // ---------------------------------------------------------------------------------//
+  {
+    // all disk images are stored as embedded file systems
+    throw new UnsupportedOperationException ("addFileSystem() not permitted for FsNuFX");
   }
 
   // ---------------------------------------------------------------------------------//
@@ -87,27 +91,6 @@ public class FsNuFX extends AbstractFileSystem
   // ---------------------------------------------------------------------------------//
   {
     return modified;
-  }
-
-  // ---------------------------------------------------------------------------------//
-  private String getNuFXLine (FileNuFX file)
-  // ---------------------------------------------------------------------------------//
-  {
-    String lockedFlag = (file.getAccess () | 0xC3) == 1 ? "+" : " ";
-    String forkedFlag = file.hasResource () ? "+" : " ";
-
-    if (file.hasDisk ())
-      return String.format ("%s%-27.27s %-4s %-6s %-15s  %s  %3.0f%%   %7d%n", lockedFlag,
-          file.getFileName (), "Disk", (file.getUncompressedSize () / 1024) + "k",
-          file.getArchived ().format2 (), threadFormats[file.getThreadFormat ()],
-          file.getCompressedPct (), file.getUncompressedSize ());
-    else
-      return String.format ("%s%-27.27s %s%s $%04X  %-15s  %s  %3.0f%%   %7d%n",
-          lockedFlag, file.getFullFileName (), file.getFileTypeText (), forkedFlag,
-          file.getAuxType (), file.getArchived ().format2 (),
-          threadFormats[file.getThreadFormat ()], file.getCompressedPct (),
-          file.getUncompressedSize ());
-
   }
 
   // ---------------------------------------------------------------------------------//
@@ -146,21 +129,12 @@ public class FsNuFX extends AbstractFileSystem
     for (AppleFile file : getFiles ())
       if (file instanceof FileNuFX file2)
       {
-        text.append (getNuFXLine (file2));
+        text.append (file2.getCatalogLine ());
+        text.append ("\n");
 
         totalUncompressedSize += file2.getUncompressedSize ();
         totalCompressedSize += file2.getCompressedSize ();
       }
-
-    //    for (AppleFileSystem fs : getFileSystems ())
-    //    {
-    //      FileNuFX file2 = (FileNuFX) fs.getAppleFile ();
-    //      text.append (getNuFXLine (file2));
-    //      totalUncompressedSize += file2.getUncompressedSize ();
-    //      totalCompressedSize += file2.getCompressedSize ();
-    //    }
-    //      else
-    //        text.append (file.getFileName () + " ??? \n");
 
     text.append (String.format ("%s%n", UNDERLINE_NUFX));
 

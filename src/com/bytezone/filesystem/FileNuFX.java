@@ -19,6 +19,7 @@ public class FileNuFX extends AbstractAppleFile
   private static String[] storage = { "", "Seedling", "Sapling", "Tree",
       "Pascal on Profile", "GS/OS Extended", "", "", "", "", "", "", "", "Subdirectory" };
   private static String[] accessChars = { "D", "R", "B", "", "", "I", "W", "R" };
+  protected static final String[] threadFormats = { "unc", "sq ", "lz1", "lz2", "", "" };
 
   private final int crc;
   private final int attributeSectionLength;
@@ -420,6 +421,26 @@ public class FileNuFX extends AbstractAppleFile
         return thread.threadFormat;
 
     return 0;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
+  public String getCatalogLine ()
+  // ---------------------------------------------------------------------------------//
+  {
+    String lockedFlag = (getAccess () | 0xC3) == 1 ? "+" : " ";
+    String forkedFlag = hasResource () ? "+" : " ";
+
+    if (isEmbeddedFileSystem ())
+      return String.format ("%s%-27.27s %-4s %-6s %-15s  %s  %3.0f%%   %7d", lockedFlag,
+          getFileName (), "Disk", (getUncompressedSize () / 1024) + "k",
+          getArchived ().format2 (), threadFormats[getThreadFormat ()],
+          getCompressedPct (), getUncompressedSize ());
+
+    return String.format ("%s%-27.27s %s%s $%04X  %-15s  %s  %3.0f%%   %7d", lockedFlag,
+        getFullFileName (), getFileTypeText (), forkedFlag, getAuxType (),
+        getArchived ().format2 (), threadFormats[getThreadFormat ()], getCompressedPct (),
+        getUncompressedSize ());
   }
 
   // ---------------------------------------------------------------------------------//

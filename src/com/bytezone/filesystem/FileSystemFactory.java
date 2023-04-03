@@ -359,6 +359,9 @@ public class FileSystemFactory
         BlockReader lbrReader = new BlockReader (blockReader);
         lbrReader.setParameters (128, AddressType.BLOCK, 0, 0);
 
+        if (debug)
+          System.out.println ("Bin2 magic OK");
+
         FsBinary2 fs = new FsBinary2 (lbrReader);
 
         if (fs.getFileSystems ().size () > 0 || fs.getFiles ().size () > 0)

@@ -11,7 +11,6 @@ public abstract class AbstractFileSystem
     implements AppleFileSystem, AppleFileSystemContainer
 // -----------------------------------------------------------------------------------//
 {
-  protected static final String[] threadFormats = { "unc", "sq ", "lz1", "lz2", "", "" };
 
   protected FileSystemFactory factory;          // never static!!
 

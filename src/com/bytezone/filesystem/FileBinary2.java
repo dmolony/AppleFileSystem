@@ -50,6 +50,7 @@ public class FileBinary2 extends AbstractAppleFile
 
   private List<AppleBlock> dataBlocks = new ArrayList<> ();
   private String squeezeName;
+
   private boolean debug = false;
   private boolean validBlocks = true;
 
@@ -123,7 +124,7 @@ public class FileBinary2 extends AbstractAppleFile
     }
 
     if (debug)
-      System.out.println (toText ());
+      System.out.println (toString ());
   }
 
   // ---------------------------------------------------------------------------------//
@@ -269,10 +270,12 @@ public class FileBinary2 extends AbstractAppleFile
   }
 
   // ---------------------------------------------------------------------------------//
-  public String toText ()
+  @Override
+  public String getCatalogLine ()
   // ---------------------------------------------------------------------------------//
   {
-    return toString ();
+    return String.format ("%-15s %-3s  %04X  %s  %,7d", fileName, fileTypeText, auxType,
+        created.isPresent () ? created.get () : "", eof);
   }
 
   // ---------------------------------------------------------------------------------//
