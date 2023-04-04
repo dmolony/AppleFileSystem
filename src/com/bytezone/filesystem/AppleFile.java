@@ -10,23 +10,19 @@ public interface AppleFile
 {
   public String getFileName ();
 
+  public int getFileType ();
+
+  public String getFileTypeText ();
+
   public boolean isEmbeddedFileSystem ();
 
   public boolean isFolder ();
-
-  //  public boolean isFile ();
 
   public boolean isForkedFile ();
 
   public boolean isFork ();
 
   public boolean isContainer ();
-
-  //  public String[] getPathFolders ();                // move to Utility
-
-  public byte[] read ();
-
-  public void write (byte[] buffer);
 
   public AppleFileSystem getParentFileSystem ();
 
@@ -42,11 +38,11 @@ public interface AppleFile
 
   public List<AppleBlock> getBlocks ();
 
-  public int getFileType ();
+  public String getCatalogLine ();
 
-  public String getFileTypeText ();
+  public byte[] read ();
+
+  public void write (byte[] buffer);
 
   public String getErrorMessage ();                 // if file can't be read
-
-  public String getCatalogLine ();
 }

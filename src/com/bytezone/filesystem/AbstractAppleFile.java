@@ -14,8 +14,7 @@ public abstract class AbstractAppleFile implements AppleFile
 
   protected boolean isFile = true;
   protected boolean isFolder;
-  //  protected boolean isFileSystem;
-  protected boolean isForkedFile;             // FileProdos only
+  protected boolean isForkedFile;             // FileProdos only (or FileNuFX?)
   protected boolean isFork;
 
   protected String fileName;
@@ -64,14 +63,6 @@ public abstract class AbstractAppleFile implements AppleFile
   {
     return isFolder;
   }
-
-  // ---------------------------------------------------------------------------------//
-  //  @Override
-  //  public boolean isFile ()
-  //  // ---------------------------------------------------------------------------------//
-  //  {
-  //    return isFile;
-  //  }
 
   // ---------------------------------------------------------------------------------//
   @Override
@@ -127,31 +118,6 @@ public abstract class AbstractAppleFile implements AppleFile
   {
     embeddedFileSystem = fileSystem;
   }
-
-  // ---------------------------------------------------------------------------------//
-  //  @Override
-  //  public String[] getPathFolders ()
-  //  // ---------------------------------------------------------------------------------//
-  //  {
-  //    throw new UnsupportedOperationException (
-  //        "getPathFolders() not implemented in " + fileName);
-  //  }
-
-  // ---------------------------------------------------------------------------------//
-  //  @Override
-  //  public FileSystemType getFileSystemType ()
-  //  // ---------------------------------------------------------------------------------//
-  //  {
-  //    return appleFileSystem.getFileSystemType ();
-  //  }
-
-  // ---------------------------------------------------------------------------------//
-  //  @Override
-  //  public int getBlockSize ()
-  //  // ---------------------------------------------------------------------------------//
-  //  {
-  //    return appleFileSystem.getBlockSize ();
-  //  }
 
   // ---------------------------------------------------------------------------------//
   @Override
@@ -237,8 +203,11 @@ public abstract class AbstractAppleFile implements AppleFile
 
     text.append (String.format ("File name ............. %s%n", fileName));
     text.append (
-        String.format ("File type ............. %d    %s%n%n", fileType, fileTypeText));
-    //    text.append (String.format ("File system type ...... %s%n%n", getFileSystemType ()));
+        String.format ("File type ............. %d    %s%n", fileType, fileTypeText));
+    text.append (String.format ("File system type ...... %s%n", getFileSystemType ()));
+    if (embeddedFileSystem != null)
+      text.append (String.format ("Embedded FS type ...... %s%n",
+          embeddedFileSystem.getFileSystemType ()));
 
     return text.toString ();
   }

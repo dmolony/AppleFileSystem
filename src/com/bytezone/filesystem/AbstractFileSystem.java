@@ -7,8 +7,7 @@ import java.util.Objects;
 import com.bytezone.filesystem.BlockReader.AddressType;
 
 // -----------------------------------------------------------------------------------//
-public abstract class AbstractFileSystem
-    implements AppleFileSystem, AppleFileSystemContainer
+public abstract class AbstractFileSystem implements AppleFileSystem
 // -----------------------------------------------------------------------------------//
 {
 
@@ -18,14 +17,6 @@ public abstract class AbstractFileSystem
   protected int catalogBlocks;
   protected int freeBlocks;
 
-  // When this FS is embedded, it either came from an existing AppleFile (eg PAR), or it
-  // was a disk image in one of the non-standard file systems (zip, gz, NuFX 2img etc).
-  // In order to obtain the parent FS, it will stored here. The AppleFile is needed to
-  // keep the file details of the file that is now reinterpreted as a FS (PAR, LBR).
-
-  //  protected AppleFileSystem appleFileSystem;    // the parent of this FS
-  //  protected AppleFile appleFile;                // the source of this FS
-
   // If this file is a container (FS, folder, forked file, hybrid) then the children are
   // stored here
   protected List<AppleFile> files = new ArrayList<> ();
@@ -33,9 +24,6 @@ public abstract class AbstractFileSystem
 
   protected FileSystemType fileSystemType;
   protected String errorMessage = "";
-
-  //  private int totalFileSystems = 0;
-  //  private int totalFiles = 0;
 
   protected boolean partOfHybrid;     // this FS is one of two file systems on the disk
 
@@ -61,14 +49,6 @@ public abstract class AbstractFileSystem
   {
     return partOfHybrid;
   }
-
-  // ---------------------------------------------------------------------------------//
-  //  @Override
-  //  public boolean isContainer ()
-  //  // ---------------------------------------------------------------------------------//
-  //  {
-  //    return true;
-  //  }
 
   // ---------------------------------------------------------------------------------//
   void setCatalogBlocks (int total)
@@ -188,8 +168,6 @@ public abstract class AbstractFileSystem
     blockReader.write (blocks, buffer);
   }
 
-  // AppleFile methods
-
   // ---------------------------------------------------------------------------------//
   @Override
   public String getFileName ()
@@ -197,14 +175,6 @@ public abstract class AbstractFileSystem
   {
     return blockReader.getName ();
   }
-
-  // ---------------------------------------------------------------------------------//
-  //  @Override
-  //  public String[] getPathFolders ()
-  //  // ---------------------------------------------------------------------------------//
-  //  {
-  //    throw new UnsupportedOperationException ("getPathFolders() not implemented");
-  //  }
 
   // ---------------------------------------------------------------------------------//
   @Override
@@ -239,68 +209,6 @@ public abstract class AbstractFileSystem
   }
 
   // ---------------------------------------------------------------------------------//
-  //  @Override
-  //  public byte[] read ()
-  //  // ---------------------------------------------------------------------------------//
-  //  {
-  //    throw new UnsupportedOperationException ("Cannot call read() on a file system");
-  //  }
-
-  // ---------------------------------------------------------------------------------//
-  //  @Override
-  //  public void write (byte[] buffer)
-  //  // ---------------------------------------------------------------------------------//
-  //  {
-  //    throw new UnsupportedOperationException ("Cannot call write() on a file system");
-  //  }
-
-  // ---------------------------------------------------------------------------------//
-  //  @Override
-  //  public List<AppleBlock> getBlocks ()
-  //  // ---------------------------------------------------------------------------------//
-  //  {
-  //    if (appleFile != null)
-  //      return appleFile.getBlocks ();
-  //
-  //    throw new UnsupportedOperationException ("Cannot call getBlocks() on a file system");
-  //  }
-
-  // ---------------------------------------------------------------------------------//
-  //  @Override
-  //  public AppleFileSystem getFileSystem ()
-  //  // ---------------------------------------------------------------------------------//
-  //  {
-  //    if (appleFile != null)
-  //      return appleFile.getFileSystem ();
-  //
-  //    return appleFileSystem;       // for embedded file systems only (usually null)
-  //  }
-
-  // ---------------------------------------------------------------------------------//
-  //  @Override
-  //  public int getFileType ()
-  //  // ---------------------------------------------------------------------------------//
-  //  {
-  //    if (appleFile != null)
-  //      return appleFile.getFileType ();
-  //
-  //    throw new UnsupportedOperationException (
-  //        "Cannot call getFileType() on a file system");
-  //  }
-
-  // ---------------------------------------------------------------------------------//
-  //  @Override
-  //  public String getFileTypeText ()
-  //  // ---------------------------------------------------------------------------------//
-  //  {
-  //    if (appleFile != null)
-  //      return appleFile.getFileTypeText ();
-  //
-  //    throw new UnsupportedOperationException (
-  //        "Cannot call getFileTypeText() on a file system");
-  //  }
-
-  // ---------------------------------------------------------------------------------//
   @Override
   public byte[] getDiskBuffer ()
   // ---------------------------------------------------------------------------------//
@@ -323,18 +231,6 @@ public abstract class AbstractFileSystem
   {
     return blockReader.getDiskLength ();
   }
-
-  // ---------------------------------------------------------------------------------//
-  //  @Override
-  //  public int getFileLength ()
-  //  // ---------------------------------------------------------------------------------//
-  //  {
-  //    if (appleFile != null)
-  //      return appleFile.getFileLength ();
-  //
-  //    throw new UnsupportedOperationException (
-  //        "Cannot call getFileLength() on a file system");
-  //  }
 
   // ---------------------------------------------------------------------------------//
   @Override
@@ -397,70 +293,6 @@ public abstract class AbstractFileSystem
   }
 
   // ---------------------------------------------------------------------------------//
-  //  @Override
-  //  public boolean isLocked ()
-  //  // ---------------------------------------------------------------------------------//
-  //  {
-  //    throw new UnsupportedOperationException ("Cannot call isLocked() on a file system");
-  //  }
-
-  // ---------------------------------------------------------------------------------//
-  //  @Override
-  //  public boolean isFileSystem ()
-  //  // ---------------------------------------------------------------------------------//
-  //  {
-  //    return true;
-  //  }
-
-  // ---------------------------------------------------------------------------------//
-  //  @Override
-  //  public boolean isFolder ()
-  //  // ---------------------------------------------------------------------------------//
-  //  {
-  //    return false;
-  //  }
-
-  // ---------------------------------------------------------------------------------//
-  //  @Override
-  //  public boolean isFile ()
-  //  // ---------------------------------------------------------------------------------//
-  //  {
-  //    return false;
-  //  }
-
-  // ---------------------------------------------------------------------------------//
-  //  @Override
-  //  public boolean isForkedFile ()
-  //  // ---------------------------------------------------------------------------------//
-  //  {
-  //    return false;
-  //  }
-
-  // ---------------------------------------------------------------------------------//
-  //  @Override
-  //  public boolean isFork ()
-  //  // ---------------------------------------------------------------------------------//
-  //  {
-  //    return false;
-  //  }
-
-  // ---------------------------------------------------------------------------------//
-  //  @Override
-  //  public AppleFile getAppleFile ()
-  //  // ---------------------------------------------------------------------------------//
-  //  {
-  //    return appleFile;
-  //  }
-
-  // ---------------------------------------------------------------------------------//
-  //  @Override
-  //  public String getErrorMessage ()
-  //  // ---------------------------------------------------------------------------------//
-  //  {
-  //    return errorMessage;
-  //  }
-
-  // ---------------------------------------------------------------------------------//
   @Override
   public String getPath ()
   // ---------------------------------------------------------------------------------//
@@ -518,32 +350,6 @@ public abstract class AbstractFileSystem
     text.append (String.format ("Catalog blocks ........ %d%n", catalogBlocks));
     text.append (String.format ("Total file systems .... %d%n", fileSystems.size ()));
     text.append (String.format ("Total files ........... %d%n%n", files.size ()));
-
-    //    if (appleFileSystem != null)
-    //      text.append (String.format ("Parent file system .... %s%n",
-    //          appleFileSystem.getFileSystemType ()));
-    //
-    //    if (appleFile != null)
-    //    {
-    //      text.append (String.format ("Replacing file: %n"));
-    //      String catalog = appleFile.toString ();
-    //      String[] lines = catalog.split ("\n");
-    //      int limit = 24;
-    //      for (String line : lines)
-    //      {
-    //        if (line.length () >= limit)
-    //        {
-    //          String format = String.format ("  %%%d.%<ds %%s%%n", limit - 3, line);
-    //          String newline = String.format (format, line, line.substring (limit));
-    //          text.append (newline);
-    //        }
-    //        else
-    //        {
-    //          text.append (line);
-    //          text.append ("\n");
-    //        }
-    //      }
-    //    }
 
     return text.toString ();
   }

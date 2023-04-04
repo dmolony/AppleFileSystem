@@ -8,7 +8,7 @@ import com.bytezone.filesystem.BlockReader.AddressType;
 public interface AppleFileSystem extends AppleContainer
 // -----------------------------------------------------------------------------------//
 {
-  //  FileSystemType getFileSystemType ();
+  FileSystemType getFileSystemType ();
 
   String getFileName ();
 

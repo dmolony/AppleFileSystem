@@ -2,7 +2,6 @@ package com.bytezone.filesystem;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.nio.file.attribute.FileTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.zip.ZipEntry;
@@ -70,8 +69,7 @@ public class FsZip extends AbstractFileSystem
             rem -= len;
           }
 
-          //          checkFileSystem (name, buffer);
-          FileZip file = new FileZip (this, name, buffer);
+          FileZip file = new FileZip (this, name, buffer, entry);
           checkEmbeddedFileSystem (file, 0);
           addFile (file);
         }
@@ -80,8 +78,7 @@ public class FsZip extends AbstractFileSystem
           byte[] buffer = Utility.getFullBuffer (zip);
           if (buffer.length > 0)
           {
-            //            checkFileSystem (name, buffer);
-            FileZip file = new FileZip (this, name, buffer);
+            FileZip file = new FileZip (this, name, buffer, entry);
             checkEmbeddedFileSystem (file, 0);
             addFile (file);
           }
@@ -124,27 +121,10 @@ public class FsZip extends AbstractFileSystem
   {
     StringBuilder text = new StringBuilder (super.toString ());
 
-    for (ZipEntry entry : zipEntries)
+    for (AppleFile file : files)
     {
-      String comment = entry.getComment ();
-      if (comment == null)
-        comment = "";
-      FileTime fileTime = entry.getCreationTime ();
-      String creationTime = fileTime == null ? "" : fileTime.toString ();
-      byte[] bytes = entry.getExtra ();
-      String extra = bytes == null ? "" : bytes.toString ();
-
+      text.append (file);
       text.append ("\n");
-      text.append (
-          String.format ("Compressed size ... %,d%n", entry.getCompressedSize ()));
-      text.append (String.format ("Size .............. %,d%n", entry.getSize ()));
-      text.append (String.format ("Name .............. %s%n", entry.getName ()));
-      text.append (String.format ("Comment ........... %s%n", comment));
-      text.append (String.format ("CRC ............... %,d%n", entry.getCrc ()));
-      text.append (String.format ("Creation time ..... %s%n", creationTime));
-      text.append (String.format ("Extra ............. %s%n", extra));
-      text.append (String.format ("Method ............ %,d%n", entry.getMethod ()));
-      text.append (String.format ("Is directory ...... %s%n", entry.isDirectory ()));
     }
 
     return text.toString ();

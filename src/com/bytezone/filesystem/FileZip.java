@@ -1,20 +1,27 @@
 package com.bytezone.filesystem;
 
+import java.nio.file.attribute.FileTime;
+import java.util.zip.ZipEntry;
+
+import com.bytezone.utility.Utility;
+
 // -----------------------------------------------------------------------------------//
 public class FileZip extends AbstractAppleFile implements AppleFilePath
 // -----------------------------------------------------------------------------------//
 {
   byte[] buffer;
   private final char separator = '/';
+  private final ZipEntry zipEntry;
 
   // ---------------------------------------------------------------------------------//
-  FileZip (FsZip fs, String fileName, byte[] buffer)
+  FileZip (FsZip fs, String fileName, byte[] buffer, ZipEntry entry)
   // ---------------------------------------------------------------------------------//
   {
     super (fs);
 
     this.buffer = buffer;
     this.fileName = fileName;
+    this.zipEntry = entry;
   }
 
   // ---------------------------------------------------------------------------------//
@@ -62,5 +69,35 @@ public class FileZip extends AbstractAppleFile implements AppleFilePath
   // ---------------------------------------------------------------------------------//
   {
     return fileName;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
+  public String toString ()
+  // ---------------------------------------------------------------------------------//
+  {
+    StringBuilder text = new StringBuilder (super.toString ());
+
+    String comment = zipEntry.getComment ();
+    if (comment == null)
+      comment = "";
+    FileTime fileTime = zipEntry.getCreationTime ();
+    String creationTime = fileTime == null ? "" : fileTime.toString ();
+    byte[] bytes = zipEntry.getExtra ();
+    String extra = bytes == null ? "" : Utility.format (bytes);
+
+    text.append ("\n");
+    text.append (
+        String.format ("Compressed size ....... %,d%n", zipEntry.getCompressedSize ()));
+    text.append (String.format ("Size .................. %,d%n", zipEntry.getSize ()));
+    text.append (String.format ("Name .................. %s%n", zipEntry.getName ()));
+    text.append (String.format ("Comment ............... %s%n", comment));
+    text.append (String.format ("CRC ................... %,d%n", zipEntry.getCrc ()));
+    text.append (String.format ("Creation time ......... %s%n", creationTime));
+    text.append (String.format ("Extra ................. %s%n", extra));
+    text.append (String.format ("Method ................ %,d%n", zipEntry.getMethod ()));
+    text.append (String.format ("Is directory .......... %s%n", zipEntry.isDirectory ()));
+
+    return text.toString ();
   }
 }

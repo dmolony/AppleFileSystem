@@ -25,18 +25,6 @@ public class Folder extends AbstractAppleFile implements AppleContainer
 
   // ---------------------------------------------------------------------------------//
   @Override
-  public String toString ()
-  // ---------------------------------------------------------------------------------//
-  {
-    StringBuilder text = new StringBuilder (super.toString ());
-
-    text.append (String.format ("File type ............. %s", "Folder"));
-
-    return Utility.rtrim (text);
-  }
-
-  // ---------------------------------------------------------------------------------//
-  @Override
   public void addFile (AppleFile file)
   // ---------------------------------------------------------------------------------//
   {
@@ -69,6 +57,14 @@ public class Folder extends AbstractAppleFile implements AppleContainer
 
   // ---------------------------------------------------------------------------------//
   @Override
+  public String getPath ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return null;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
   public String getCatalog ()
   // ---------------------------------------------------------------------------------//
   {
@@ -90,9 +86,13 @@ public class Folder extends AbstractAppleFile implements AppleContainer
 
   // ---------------------------------------------------------------------------------//
   @Override
-  public String getPath ()
+  public String toString ()
   // ---------------------------------------------------------------------------------//
   {
-    return null;
+    StringBuilder text = new StringBuilder (super.toString ());
+
+    text.append (String.format ("File type ............. %s", "Folder"));
+
+    return Utility.rtrim (text);
   }
 }
