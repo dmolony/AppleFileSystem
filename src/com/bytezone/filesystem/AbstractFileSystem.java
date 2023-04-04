@@ -352,65 +352,6 @@ public abstract class AbstractFileSystem
     return freeBlocks;
   }
 
-  // FsNuFX
-  // FsBinary2
-  // FsProdos (LBR files)
-  // ---------------------------------------------------------------------------------//
-  //  protected void addFileSystem (AppleFile parent, AppleFile file)
-  //  // ---------------------------------------------------------------------------------//
-  //  {
-  //    addFileSystem (parent, file, 0);
-  //  }
-
-  // FsProdos (PAR files)
-  // ---------------------------------------------------------------------------------//
-  //  protected void addFileSystem (AppleFile parent, AppleFile file, int offset)
-  //  // ---------------------------------------------------------------------------------//
-  //  {
-  //    byte[] buffer = file.read ();
-  //    BlockReader blockReader =
-  //        new BlockReader (file.getFileName (), buffer, offset, buffer.length - offset);
-  //
-  //    AppleFileSystem fs = addFileSystem (parent, blockReader);
-  //
-  //    if (fs == null)
-  //    {
-  //      System.out.println ("No file systems found");
-  //      parent.addFile (file);        // not a file system, so revert to adding it as a file
-  //    }
-  //    else
-  //      ((AbstractFileSystem) fs).appleFile = file;     // don't lose the file details
-  //  }
-
-  // FsZip
-  // FsGzip
-  // ---------------------------------------------------------------------------------//
-  //  protected AppleFileSystem addFileSystem (AppleFile parent, String name, byte[] buffer)
-  //  // ---------------------------------------------------------------------------------//
-  //  {
-  //    return addFileSystem (parent, new BlockReader (name, buffer, 0, buffer.length));
-  //  }
-
-  // FsWoz
-  // Fs2img
-  // ---------------------------------------------------------------------------------//
-  //  protected AppleFileSystem addFileSystem (AppleFile parent, BlockReader blockReader)
-  //  // ---------------------------------------------------------------------------------//
-  //  {
-  //    if (factory == null)
-  //      factory = new FileSystemFactory ();
-  //
-  //    AppleFileSystem fs = factory.getFileSystem (blockReader);
-  //
-  //    if (fs != null)
-  //    {
-  //      parent.addFile (fs);
-  //      ((AbstractFileSystem) fs).appleFileSystem = this;
-  //    }
-  //
-  //    return fs;
-  //  }
-
   // ---------------------------------------------------------------------------------//
   protected FileSystemFactory getFactory ()
   // ---------------------------------------------------------------------------------//
@@ -437,29 +378,10 @@ public abstract class AbstractFileSystem
   }
 
   // ---------------------------------------------------------------------------------//
-  //  protected AppleFileSystem checkEmbeddedFileSystem (AbstractAppleFile file,
-  //      BlockReader blockReader)
-  //  // ---------------------------------------------------------------------------------//
-  //  {
-  //    AppleFileSystem fs = getFactory ().getFileSystem (blockReader);
-  //
-  //    if (fs != null)
-  //      file.embedFileSystem (fs);            // embedded FS
-  //
-  //    return fs;
-  //  }
-
-  // ---------------------------------------------------------------------------------//
   protected AppleFileSystem checkFileSystem (String name, byte[] buffer)
   // ---------------------------------------------------------------------------------//
   {
-    BlockReader blockReader = new BlockReader (name, buffer, 0, buffer.length);
-    AppleFileSystem fs = getFactory ().getFileSystem (blockReader);
-
-    if (fs != null)
-      addFileSystem (fs);
-
-    return fs;
+    return checkFileSystem (new BlockReader (name, buffer, 0, buffer.length));
   }
 
   // ---------------------------------------------------------------------------------//
@@ -551,7 +473,32 @@ public abstract class AbstractFileSystem
   public String getCatalog ()
   // ---------------------------------------------------------------------------------//
   {
-    return "Must override getCatalog()";
+    StringBuilder text = new StringBuilder ();
+
+    text.append (String.format ("Default catalog for : %s%n%n", getFileName ()));
+
+    if (getFiles ().size () > 0)
+    {
+      text.append ("Files:\n");
+      for (AppleFile file : getFiles ())
+      {
+        text.append (file.getCatalogLine ());
+        text.append ("\n");
+      }
+    }
+
+    if (getFileSystems ().size () > 0)
+    {
+      text.append ("File systems:\n");
+      for (AppleFileSystem fileSystem : getFileSystems ())
+      {
+        text.append (String.format ("%-5s %s%n", fileSystem.getFileSystemType (),
+            fileSystem.getFileName ()));
+        text.append ("\n");
+      }
+    }
+
+    return text.toString ();
   }
 
   // ---------------------------------------------------------------------------------//

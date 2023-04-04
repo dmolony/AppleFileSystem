@@ -14,7 +14,7 @@ public interface AppleFile
 
   public boolean isFolder ();
 
-  public boolean isFile ();
+  //  public boolean isFile ();
 
   public boolean isForkedFile ();
 
@@ -22,7 +22,7 @@ public interface AppleFile
 
   public boolean isContainer ();
 
-  public String[] getPathFolders ();                // move to Utility
+  //  public String[] getPathFolders ();                // move to Utility
 
   public byte[] read ();
 

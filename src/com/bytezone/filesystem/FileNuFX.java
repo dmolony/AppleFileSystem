@@ -9,7 +9,7 @@ import com.bytezone.utility.DateTime;
 import com.bytezone.utility.Utility;
 
 // -----------------------------------------------------------------------------------//
-public class FileNuFX extends AbstractAppleFile
+public class FileNuFX extends AbstractAppleFile implements AppleFilePath
 // -----------------------------------------------------------------------------------//
 {
   private static final byte[] NuFX = { 0x4E, (byte) 0xF5, 0x46, (byte) 0xD8 };
@@ -58,8 +58,6 @@ public class FileNuFX extends AbstractAppleFile
   // ---------------------------------------------------------------------------------//
   {
     super (fs);
-
-    //    isFile = true;
 
     if (!Utility.isMagic (buffer, offset, NuFX))
       throw new FileFormatException ("NuFX not found");
@@ -174,6 +172,13 @@ public class FileNuFX extends AbstractAppleFile
   }
 
   // ---------------------------------------------------------------------------------//
+  public DateTime getArchived ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return archived;
+  }
+
+  // ---------------------------------------------------------------------------------//
   @Override
   public String getFileName ()
   // ---------------------------------------------------------------------------------//
@@ -183,13 +188,7 @@ public class FileNuFX extends AbstractAppleFile
   }
 
   // ---------------------------------------------------------------------------------//
-  public DateTime getArchived ()
-  // ---------------------------------------------------------------------------------//
-  {
-    return archived;
-  }
-
-  // ---------------------------------------------------------------------------------//
+  @Override
   public String getFullFileName ()
   // ---------------------------------------------------------------------------------//
   {
@@ -211,6 +210,7 @@ public class FileNuFX extends AbstractAppleFile
   }
 
   // ---------------------------------------------------------------------------------//
+  @Override
   public char getSeparator ()
   // ---------------------------------------------------------------------------------//
   {

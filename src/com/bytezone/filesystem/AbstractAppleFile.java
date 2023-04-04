@@ -66,12 +66,12 @@ public abstract class AbstractAppleFile implements AppleFile
   }
 
   // ---------------------------------------------------------------------------------//
-  @Override
-  public boolean isFile ()
-  // ---------------------------------------------------------------------------------//
-  {
-    return isFile;
-  }
+  //  @Override
+  //  public boolean isFile ()
+  //  // ---------------------------------------------------------------------------------//
+  //  {
+  //    return isFile;
+  //  }
 
   // ---------------------------------------------------------------------------------//
   @Override
@@ -129,13 +129,13 @@ public abstract class AbstractAppleFile implements AppleFile
   }
 
   // ---------------------------------------------------------------------------------//
-  @Override
-  public String[] getPathFolders ()
-  // ---------------------------------------------------------------------------------//
-  {
-    throw new UnsupportedOperationException (
-        "getPathFolders() not implemented in " + fileName);
-  }
+  //  @Override
+  //  public String[] getPathFolders ()
+  //  // ---------------------------------------------------------------------------------//
+  //  {
+  //    throw new UnsupportedOperationException (
+  //        "getPathFolders() not implemented in " + fileName);
+  //  }
 
   // ---------------------------------------------------------------------------------//
   //  @Override

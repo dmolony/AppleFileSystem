@@ -113,9 +113,9 @@ public class Fs2img extends AbstractFileSystem
   {
     StringBuilder text = new StringBuilder ();
 
-    for (AppleFile file : getFiles ())
+    for (AppleFileSystem fs : getFileSystems ())
       text.append (
-          String.format ("%-15s %s%n", file.getFileName (), file.getFileSystemType ()));
+          String.format ("%-15s %s%n", fs.getFileName (), fs.getFileSystemType ()));
 
     return text.toString ();
   }
@@ -125,7 +125,7 @@ public class Fs2img extends AbstractFileSystem
   public String toString ()
   // ---------------------------------------------------------------------------------//
   {
-    StringBuilder text = new StringBuilder (super.toString () + "\n\n");
+    StringBuilder text = new StringBuilder (super.toString ());
 
     String message = originalLength == 0 ? "   <-- wrong!" : "";
 

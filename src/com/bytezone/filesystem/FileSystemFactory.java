@@ -419,7 +419,7 @@ public class FileSystemFactory
 
         Fs2img fs = new Fs2img (lbrReader);
 
-        if (fs.getFileSystems ().size () > 0)
+        if (fs.getFileSystems ().size () > 0 || fs.getFiles ().size () > 0)
           fileSystems.add (fs);
       }
       catch (FileFormatException e)
@@ -441,7 +441,7 @@ public class FileSystemFactory
 
         FsZip fs = new FsZip (lbrReader);
 
-        if (fs.getFileSystems ().size () > 0)
+        if (fs.getFiles ().size () > 0 || fs.getFileSystems ().size () > 0)
           fileSystems.add (fs);
       }
       catch (FileFormatException e)
@@ -463,7 +463,7 @@ public class FileSystemFactory
 
         FsGzip fs = new FsGzip (lbrReader);
 
-        if (fs.getFileSystems ().size () > 0)
+        if (fs.getFiles ().size () > 0 || fs.getFileSystems ().size () > 0)
           fileSystems.add (fs);
       }
       catch (FileFormatException e)
@@ -491,7 +491,7 @@ public class FileSystemFactory
 
       FsWoz fs = new FsWoz (lbrReader, fileSystemType);
 
-      if (fs.getFileSystems ().size () > 0)
+      if (fs.getFileSystems ().size () > 0 || fs.getFiles ().size () > 0)
         fileSystems.add (fs);
     }
     catch (FileFormatException e)

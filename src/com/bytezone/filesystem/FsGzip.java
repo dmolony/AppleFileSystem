@@ -37,18 +37,18 @@ public class FsGzip extends AbstractFileSystem
   }
 
   // ---------------------------------------------------------------------------------//
-  @Override
-  public String getCatalog ()
-  // ---------------------------------------------------------------------------------//
-  {
-    StringBuilder text = new StringBuilder ();
-
-    for (AppleFile file : getFiles ())
-      text.append (
-          String.format ("%-15s %s%n", file.getFileName (), file.getFileSystemType ()));
-
-    return text.toString ();
-  }
+  //  @Override
+  //  public String getCatalog ()
+  //  // ---------------------------------------------------------------------------------//
+  //  {
+  //    StringBuilder text = new StringBuilder ();
+  //
+  //    for (AppleFileSystem fileSystem : getFileSystems ())
+  //      text.append (String.format ("%-5s %-15s%n", fileSystem.getFileSystemType (),
+  //          fileSystem.getFileName ()));
+  //
+  //    return text.toString ();
+  //  }
 
   // ---------------------------------------------------------------------------------//
   @Override

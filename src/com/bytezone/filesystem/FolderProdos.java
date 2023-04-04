@@ -17,9 +17,10 @@ public class FolderProdos extends AbstractAppleFile implements AppleContainer
 
   FileEntryProdos fileEntry;                  // SDH only
   DirectoryEntryProdos directoryEntry;        // both VDH and SDH
-  AppleContainer container;
+  AppleContainer parent;
 
   List<AppleFile> files = new ArrayList<> ();
+  List<AppleFileSystem> fileSystems = new ArrayList<> ();
 
   // This file is used by both a VDH and SDH. The VDH has only a DirectoryEntry,
   // but an SDH is created first as a normal file (with a FileEntry), and then has
@@ -30,7 +31,7 @@ public class FolderProdos extends AbstractAppleFile implements AppleContainer
   {
     super (parent);
 
-    this.container = container;
+    this.parent = container;
 
     if ((buffer[ptr] & 0xF0) == 0xF0)         // Volume Directory Header
     {
@@ -77,6 +78,7 @@ public class FolderProdos extends AbstractAppleFile implements AppleContainer
   public void addFileSystem (AppleFileSystem fileSystem)
   // ---------------------------------------------------------------------------------//
   {
+    fileSystems.add (fileSystem);           // Not used AFAIK
   }
 
   // ---------------------------------------------------------------------------------//
@@ -84,7 +86,7 @@ public class FolderProdos extends AbstractAppleFile implements AppleContainer
   public List<AppleFileSystem> getFileSystems ()
   // ---------------------------------------------------------------------------------//
   {
-    return null;
+    return fileSystems;
   }
 
   // ---------------------------------------------------------------------------------//
@@ -138,7 +140,7 @@ public class FolderProdos extends AbstractAppleFile implements AppleContainer
   public String getPath ()
   // ---------------------------------------------------------------------------------//
   {
-    return container.getPath () + "/" + getFileName ();
+    return parent.getPath () + "/" + getFileName ();
   }
 
   // ---------------------------------------------------------------------------------//

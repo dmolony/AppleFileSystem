@@ -1,34 +1,36 @@
 package com.bytezone.filesystem;
 
 // -----------------------------------------------------------------------------------//
-public class FileZip extends AbstractAppleFile
+public class FileZip extends AbstractAppleFile implements AppleFilePath
 // -----------------------------------------------------------------------------------//
 {
+  byte[] buffer;
   private final char separator = '/';
 
   // ---------------------------------------------------------------------------------//
-  FileZip (FsZip fs, String name, byte[] buffer)
+  FileZip (FsZip fs, String fileName, byte[] buffer)
   // ---------------------------------------------------------------------------------//
   {
     super (fs);
 
-    //    isFile = true;
+    this.buffer = buffer;
+    this.fileName = fileName;
   }
 
   // ---------------------------------------------------------------------------------//
   @Override
-  public String getFileName ()
+  public byte[] read ()
   // ---------------------------------------------------------------------------------//
   {
-    int pos = fileName.lastIndexOf (separator);
-    return pos < 0 ? fileName : fileName.substring (pos + 1);
+    return buffer;
   }
 
   // ---------------------------------------------------------------------------------//
-  public String getFullFileName ()
+  @Override
+  public char getSeparator ()
   // ---------------------------------------------------------------------------------//
   {
-    return fileName;
+    return separator;
   }
 
   // ---------------------------------------------------------------------------------//
@@ -46,9 +48,19 @@ public class FileZip extends AbstractAppleFile
   }
 
   // ---------------------------------------------------------------------------------//
-  public char getSeparator ()
+  @Override
+  public String getFileName ()
   // ---------------------------------------------------------------------------------//
   {
-    return separator;
+    int pos = fileName.lastIndexOf (separator);
+    return pos < 0 ? fileName : fileName.substring (pos + 1);
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
+  public String getFullFileName ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return fileName;
   }
 }

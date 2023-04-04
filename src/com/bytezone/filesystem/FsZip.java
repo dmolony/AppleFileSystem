@@ -49,8 +49,9 @@ public class FsZip extends AbstractFileSystem
           continue;
         }
 
-        //        System.out.printf ("%s %,9d %,9d  %-20s%n", entry.isDirectory () ? "D" : " ",
-        //            entry.getCompressedSize (), entry.getSize (), name);
+        if (false)
+          System.out.printf ("%s %,9d %,9d  %-20s%n", entry.isDirectory () ? "D" : " ",
+              entry.getCompressedSize (), entry.getSize (), name);
 
         int rem = (int) entry.getSize ();
 
@@ -69,13 +70,21 @@ public class FsZip extends AbstractFileSystem
             rem -= len;
           }
 
-          checkFileSystem (name, buffer);
+          //          checkFileSystem (name, buffer);
+          FileZip file = new FileZip (this, name, buffer);
+          checkEmbeddedFileSystem (file, 0);
+          addFile (file);
         }
         else
         {
           byte[] buffer = Utility.getFullBuffer (zip);
           if (buffer.length > 0)
-            checkFileSystem (name, buffer);
+          {
+            //            checkFileSystem (name, buffer);
+            FileZip file = new FileZip (this, name, buffer);
+            checkEmbeddedFileSystem (file, 0);
+            addFile (file);
+          }
         }
       }
     }
@@ -92,18 +101,21 @@ public class FsZip extends AbstractFileSystem
   }
 
   // ---------------------------------------------------------------------------------//
-  @Override
-  public String getCatalog ()
-  // ---------------------------------------------------------------------------------//
-  {
-    StringBuilder text = new StringBuilder ();
-
-    for (AppleFile file : getFiles ())
-      text.append (
-          String.format ("%-15s %s%n", file.getFileName (), file.getFileSystemType ()));
-
-    return text.toString ();
-  }
+  //  @Override
+  //  public String getCatalog ()
+  //  // ---------------------------------------------------------------------------------//
+  //  {
+  //    StringBuilder text = new StringBuilder ();
+  //
+  //    for (AppleFile file : getFiles ())
+  //      text.append (file.getCatalogLine ());
+  //
+  //    for (AppleFileSystem fileSystem : getFileSystems ())
+  //      text.append (String.format ("%-5s %s%n", fileSystem.getFileSystemType (),
+  //          fileSystem.getFileName ()));
+  //
+  //    return text.toString ();
+  //  }
 
   // ---------------------------------------------------------------------------------//
   @Override
