@@ -70,7 +70,7 @@ public class FsZip extends AbstractFileSystem
           }
 
           FileZip file = new FileZip (this, name, buffer, entry);
-          checkEmbeddedFileSystem (file, 0);
+          addEmbeddedFileSystem (file, 0);
           addFile (file);
         }
         else
@@ -79,7 +79,7 @@ public class FsZip extends AbstractFileSystem
           if (buffer.length > 0)
           {
             FileZip file = new FileZip (this, name, buffer, entry);
-            checkEmbeddedFileSystem (file, 0);
+            addEmbeddedFileSystem (file, 0);
             addFile (file);
           }
         }

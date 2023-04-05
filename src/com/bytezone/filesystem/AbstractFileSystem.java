@@ -258,7 +258,7 @@ public abstract class AbstractFileSystem implements AppleFileSystem
   }
 
   // ---------------------------------------------------------------------------------//
-  protected AppleFileSystem checkEmbeddedFileSystem (AbstractAppleFile file, int offset)
+  protected AppleFileSystem addEmbeddedFileSystem (AbstractAppleFile file, int offset)
   // ---------------------------------------------------------------------------------//
   {
     byte[] buffer = file.read ();
@@ -273,14 +273,14 @@ public abstract class AbstractFileSystem implements AppleFileSystem
   }
 
   // ---------------------------------------------------------------------------------//
-  protected AppleFileSystem checkFileSystem (String name, byte[] buffer)
+  protected AppleFileSystem addFileSystem (String name, byte[] buffer)
   // ---------------------------------------------------------------------------------//
   {
-    return checkFileSystem (new BlockReader (name, buffer, 0, buffer.length));
+    return addFileSystem (new BlockReader (name, buffer, 0, buffer.length));
   }
 
   // ---------------------------------------------------------------------------------//
-  protected AppleFileSystem checkFileSystem (BlockReader blockReader)
+  protected AppleFileSystem addFileSystem (BlockReader blockReader)
   // ---------------------------------------------------------------------------------//
   {
     AppleFileSystem fs = getFactory ().getFileSystem (blockReader);

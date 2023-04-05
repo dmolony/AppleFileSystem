@@ -76,7 +76,7 @@ public class Fs2img extends AbstractFileSystem
 
     BlockReader blockReader2 =
         new BlockReader (twoIMGFormats[format], buffer, diskOffset + offset, length);
-    AppleFileSystem fileSystem = checkFileSystem (blockReader2);
+    AppleFileSystem fileSystem = addFileSystem (blockReader2);
 
     //    fileSystem = addFileSystem (this,
     //        new BlockReader (twoIMGFormats[format], buffer, diskOffset + offset, length));

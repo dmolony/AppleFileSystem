@@ -36,7 +36,7 @@ public class FsBinary2 extends AbstractFileSystem
       if (!file.isPhantomFile ())
       {
         if (file.getFileType () == ProdosConstants.FILE_TYPE_LBR)
-          checkEmbeddedFileSystem (file, 0);
+          addEmbeddedFileSystem (file, 0);
         addFile (file);
       }
 

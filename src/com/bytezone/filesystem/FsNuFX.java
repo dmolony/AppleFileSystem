@@ -62,7 +62,7 @@ public class FsNuFX extends AbstractFileSystem
       FileNuFX file = new FileNuFX (this, getDiskBuffer (), ptr);
 
       if (file.hasDisk () || file.isLibrary ())
-        checkEmbeddedFileSystem (file, 0);
+        addEmbeddedFileSystem (file, 0);
 
       addFile (file);         // never uses fileSystems<>
 
@@ -71,13 +71,13 @@ public class FsNuFX extends AbstractFileSystem
   }
 
   // ---------------------------------------------------------------------------------//
-  @Override
-  public void addFileSystem (AppleFileSystem fileSystem)
-  // ---------------------------------------------------------------------------------//
-  {
-    // all disk images are stored as embedded file systems
-    throw new UnsupportedOperationException ("addFileSystem() not permitted for FsNuFX");
-  }
+  //  @Override
+  //  public void addFileSystem (AppleFileSystem fileSystem)
+  //  // ---------------------------------------------------------------------------------//
+  //  {
+  //    // all disk images are stored as embedded file systems
+  //    throw new UnsupportedOperationException ("addFileSystem() not permitted for FsNuFX");
+  //  }
 
   // ---------------------------------------------------------------------------------//
   public DateTime getCreated ()

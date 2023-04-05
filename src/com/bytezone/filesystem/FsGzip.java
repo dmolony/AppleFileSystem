@@ -26,7 +26,7 @@ public class FsGzip extends AbstractFileSystem
         new ByteArrayInputStream (                    //
             getDiskBuffer (), getDiskOffset (), getDiskLength ()));)
     {
-      checkFileSystem (blockReader.getName (), Utility.getFullBuffer (zip));
+      addFileSystem (blockReader.getName (), Utility.getFullBuffer (zip));
     }
     catch (IOException e)
     {

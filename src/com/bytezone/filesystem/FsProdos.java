@@ -92,14 +92,14 @@ public class FsProdos extends AbstractFileSystem
             parent.addFile (file);
 
             if (file.getFileType () == ProdosConstants.FILE_TYPE_LBR)
-              checkEmbeddedFileSystem (file, 0);
+              addEmbeddedFileSystem (file, 0);
 
             break;
 
           case ProdosConstants.PASCAL_ON_PROFILE:
             file = new FileProdos (this, parent, buffer, ptr);
             parent.addFile (file);
-            checkEmbeddedFileSystem (file, 1024);
+            addEmbeddedFileSystem (file, 1024);
             break;
 
           case ProdosConstants.GSOS_EXTENDED_FILE:

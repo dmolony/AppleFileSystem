@@ -23,7 +23,7 @@ public class FsWoz extends AbstractFileSystem
     byte[] buffer = wozFile.getDiskBuffer ();
 
     if (buffer != null)
-      checkFileSystem (fileSystemType.toString (), buffer);
+      addFileSystem (fileSystemType.toString (), buffer);
   }
 
   // ---------------------------------------------------------------------------------//
