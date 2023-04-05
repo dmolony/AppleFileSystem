@@ -10,7 +10,6 @@ public class ForkNuFX extends AbstractAppleFile
   private FileNuFX parentFile;
   private FsNuFX fileSystem;
   private ForkType forkType;
-  //  private byte[] buffer;
   private NuFXThread thread;
 
   // ---------------------------------------------------------------------------------//
@@ -19,7 +18,6 @@ public class ForkNuFX extends AbstractAppleFile
   {
     super (parentFile.getParentFileSystem ());
 
-    //    isFile = true;
     isFork = forkType != null;
 
     fileType = parentFile.getFileType ();

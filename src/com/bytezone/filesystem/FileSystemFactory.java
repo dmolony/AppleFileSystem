@@ -18,6 +18,7 @@ public class FileSystemFactory
   private static final int CPAM_SIZE = 819_200;
 
   private List<AppleFileSystem> fileSystems;
+  private List<String> errorMessages;
   private boolean debug = false;
 
   // ---------------------------------------------------------------------------------//
@@ -32,6 +33,7 @@ public class FileSystemFactory
   // ---------------------------------------------------------------------------------//
   {
     fileSystems = new ArrayList<> ();
+    errorMessages = new ArrayList<> ();
 
     if (debug)
     {
@@ -77,7 +79,10 @@ public class FileSystemFactory
     {
       case 0:
         blockReader.setParameters (256, AddressType.SECTOR, 0, 16);
-        return new FsData (blockReader);
+        AppleFileSystem fs = new FsData (blockReader);
+        if (errorMessages.size () > 0)
+          fs.setErrorMessage (errorMessages.get (0));
+        return fs;
 
       case 1:
         return fileSystems.get (0);
@@ -494,10 +499,12 @@ public class FileSystemFactory
       if (fs.getFileSystems ().size () > 0 || fs.getFiles ().size () > 0)
         fileSystems.add (fs);
     }
-    catch (FileFormatException e)
+    catch (Exception e)
     {
       if (debug)
         System.out.println (e);
+
+      errorMessages.add (e.toString ());
     }
   }
 }

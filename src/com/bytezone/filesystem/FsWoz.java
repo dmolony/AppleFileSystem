@@ -14,35 +14,29 @@ public class FsWoz extends AbstractFileSystem
 
   // ---------------------------------------------------------------------------------//
   public FsWoz (BlockReader blockReader, FileSystemType fileSystemType)
+      throws DiskNibbleException
   // ---------------------------------------------------------------------------------//
   {
     super (blockReader, fileSystemType);
 
-    try
-    {
-      WozFile wozFile = new WozFile (getDiskBuffer ());
-      byte[] buffer = wozFile.getDiskBuffer ();
+    WozFile wozFile = new WozFile (getDiskBuffer ());
+    byte[] buffer = wozFile.getDiskBuffer ();
 
-      if (buffer != null)
-        checkFileSystem (fileSystemType.toString (), buffer);
-    }
-    catch (DiskNibbleException e)
-    {
-      e.printStackTrace ();
-    }
+    if (buffer != null)
+      checkFileSystem (fileSystemType.toString (), buffer);
   }
 
   // ---------------------------------------------------------------------------------//
-  @Override
-  public String getCatalog ()
-  // ---------------------------------------------------------------------------------//
-  {
-    StringBuilder text = new StringBuilder ();
-
-    for (AppleFile file : getFiles ())
-      text.append (
-          String.format ("%-15s %s%n", file.getFileName (), file.getFileSystemType ()));
-
-    return text.toString ();
-  }
+  //  @Override
+  //  public String getCatalog ()
+  //  // ---------------------------------------------------------------------------------//
+  //  {
+  //    StringBuilder text = new StringBuilder ();
+  //
+  //    for (AppleFile file : getFiles ())
+  //      text.append (
+  //          String.format ("%-15s %s%n", file.getFileName (), file.getFileSystemType ()));
+  //
+  //    return text.toString ();
+  //  }
 }

@@ -10,7 +10,6 @@ import com.bytezone.filesystem.BlockReader.AddressType;
 public abstract class AbstractFileSystem implements AppleFileSystem
 // -----------------------------------------------------------------------------------//
 {
-
   protected FileSystemFactory factory;          // never static!!
 
   protected final BlockReader blockReader;
@@ -330,7 +329,26 @@ public abstract class AbstractFileSystem implements AppleFileSystem
       }
     }
 
+    if (!errorMessage.isEmpty ())
+      text.append ("\n" + errorMessage);
+
     return text.toString ();
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
+  public String getErrorMessage ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return errorMessage;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
+  public void setErrorMessage (String errorMessage)
+  // ---------------------------------------------------------------------------------//
+  {
+    this.errorMessage = errorMessage;
   }
 
   // ---------------------------------------------------------------------------------//

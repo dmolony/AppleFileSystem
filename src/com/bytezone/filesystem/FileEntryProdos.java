@@ -2,6 +2,7 @@ package com.bytezone.filesystem;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Locale;
 
 import com.bytezone.utility.Utility;
 
@@ -9,7 +10,9 @@ import com.bytezone.utility.Utility;
 public class FileEntryProdos
 // -----------------------------------------------------------------------------------//
 {
-  private static final DateTimeFormatter df = DateTimeFormatter.ofPattern ("d-LLL-yy");
+  private static Locale US = Locale.US;          // to force 3 character months
+  private static final DateTimeFormatter df =
+      DateTimeFormatter.ofPattern ("d-LLL-yy", US);
   private static final DateTimeFormatter tf = DateTimeFormatter.ofPattern ("H:mm");
   private static final String NO_DATE = "<NO DATE>";
 

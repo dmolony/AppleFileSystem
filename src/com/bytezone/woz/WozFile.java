@@ -15,8 +15,10 @@ import com.bytezone.utility.Utility;
 public class WozFile
 //-----------------------------------------------------------------------------------//
 {
-  private static final byte[] address16prologue = { (byte) 0xD5, (byte) 0xAA, (byte) 0x96 };
-  private static final byte[] address13prologue = { (byte) 0xD5, (byte) 0xAA, (byte) 0xB5 };
+  private static final byte[] address16prologue =
+      { (byte) 0xD5, (byte) 0xAA, (byte) 0x96 };
+  private static final byte[] address13prologue =
+      { (byte) 0xD5, (byte) 0xAA, (byte) 0xB5 };
   private static final byte[] dataPrologue = { (byte) 0xD5, (byte) 0xAA, (byte) 0xAD };
   private static final byte[] epilogue = { (byte) 0xDE, (byte) 0xAA, (byte) 0xEB };
   // apparently it can be DE AA Ex
@@ -127,8 +129,8 @@ public class WozFile
     int size = val32 (buffer, ptr + 4);
     if (size <= 0 || size + ptr + 8 > buffer.length)
     {
-      if (info != null)
-        System.out.println (info);
+      //      if (info != null)
+      //        System.out.println (info);
       throw new DiskNibbleException (String.format ("Invalid chunk size: %08X%n", size));
     }
 
@@ -137,9 +139,10 @@ public class WozFile
       int val = buffer[ptr + i] & 0xFF;
       if (val < 'A' || val > 'Z')               // not uppercase ascii
       {
-        if (info != null)
-          System.out.println (info);
-        throw new DiskNibbleException (String.format ("Invalid chunk name character: %02X%n", val));
+        //        if (info != null)
+        //          System.out.println (info);
+        throw new DiskNibbleException (
+            String.format ("Invalid chunk name character: %02X%n", val));
       }
     }
 
@@ -361,7 +364,8 @@ public class WozFile
       String diskTypeText = diskType == 1 ? "5.25" : "3.5";
 
       text.append (String.format ("Version ............. %d%n", wozVersion));
-      text.append (String.format ("Disk type ........... %d  (%s\")%n", diskType, diskTypeText));
+      text.append (
+          String.format ("Disk type ........... %d  (%s\")%n", diskType, diskTypeText));
       text.append (String.format ("Write protected ..... %d%n", writeProtected));
       text.append (String.format ("Synchronized ........ %d%n", synchronised));
       text.append (String.format ("Cleaned ............. %d%n", cleaned));
@@ -369,8 +373,9 @@ public class WozFile
 
       if (wozVersion > 1)
       {
-        String bootSectorFormatText = bootSectorFormat == 0 ? "Unknown"
-            : bootSectorFormat == 1 ? "16 sector" : bootSectorFormat == 2 ? "13 sector" : "Hybrid";
+        String bootSectorFormatText =
+            bootSectorFormat == 0 ? "Unknown" : bootSectorFormat == 1 ? "16 sector"
+                : bootSectorFormat == 2 ? "13 sector" : "Hybrid";
 
         text.append (String.format ("%nSides ............... %d%n", sides));
         text.append (String.format ("Boot sector format .. %d  (%s)%n", bootSectorFormat,
@@ -458,7 +463,8 @@ public class WozFile
         bitCount = val16 (rawBuffer, ptr + DATA_SIZE + 2);
 
         if (debug1)
-          System.out.println ((String.format ("Bytes: %2d,  Bits: %,8d%n%n", bytesUsed, bitCount)));
+          System.out.println (
+              (String.format ("Bytes: %2d,  Bits: %,8d%n%n", bytesUsed, bitCount)));
       }
       else
       {
@@ -601,8 +607,10 @@ public class WozFile
       for (Sector sector : sectors)
         if (sector.dataOffset > 0)
         {
-          byte[] decodedBuffer = diskReader.decodeSector (newBuffer, sector.dataOffset + 3);
-          int ptr = SECTOR_SIZE * (sector.trackNo * diskSectors + interleave[ndx][sector.sectorNo]);
+          byte[] decodedBuffer =
+              diskReader.decodeSector (newBuffer, sector.dataOffset + 3);
+          int ptr = SECTOR_SIZE
+              * (sector.trackNo * diskSectors + interleave[ndx][sector.sectorNo]);
           System.arraycopy (decodedBuffer, 0, diskBuffer, ptr, decodedBuffer.length);
         }
     }
@@ -614,7 +622,8 @@ public class WozFile
     {
       StringBuilder text = new StringBuilder ();
       if (info.wozVersion == 1)
-        text.append (String.format ("WOZ1: Bytes: %2d,  Bits: %,8d%n%n", bytesUsed, bitCount));
+        text.append (
+            String.format ("WOZ1: Bytes: %2d,  Bits: %,8d%n%n", bytesUsed, bitCount));
       else
         text.append (String.format ("WOZ2: Start: %4d,  Blocks: %2d,  Bits: %,8d%n%n",
             startingBlock, blockCount, bitCount));
@@ -714,8 +723,9 @@ public class WozFile
       String fld = info.diskType == 1 ? "Vol" : info.diskType == 2 ? "Sde" : "???";
       String dataOffsetText = dataOffset < 0 ? "" : String.format ("%04X", dataOffset);
 
-      return String.format ("%s: %02X  Trk: %02X  Sct: %02X  Chk: %02X  Add: %04X  Dat: %s", fld,
-          volume, trackNo, sectorNo, checksum, addressOffset, dataOffsetText);
+      return String.format (
+          "%s: %02X  Trk: %02X  Sct: %02X  Chk: %02X  Add: %04X  Dat: %s", fld, volume,
+          trackNo, sectorNo, checksum, addressOffset, dataOffsetText);
     }
 
     // ---------------------------------------------------------------------------------//

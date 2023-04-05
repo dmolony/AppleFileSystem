@@ -50,6 +50,10 @@ public interface AppleFileSystem extends AppleContainer
 
   void writeBlocks (List<AppleBlock> blocks, byte[] buffer);
 
+  public void setErrorMessage (String errorMessage);    // if file can't be read
+
+  public String getErrorMessage ();                 // if file can't be read
+
   enum FileSystemType
   {
     DOS, PRODOS, PASCAL, CPM, NUFX, IMG2, NIB, DOS4, UNIDOS, ZIP, GZIP, HYBRID, DATA,
