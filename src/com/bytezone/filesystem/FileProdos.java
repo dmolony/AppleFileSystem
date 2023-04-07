@@ -9,7 +9,7 @@ import java.util.Locale;
 import com.bytezone.utility.Utility;
 
 // -----------------------------------------------------------------------------------//
-public class FileProdos extends AbstractAppleFile
+public class FileProdos extends AbstractAppleFile implements ForkedFile
 // -----------------------------------------------------------------------------------//
 {
   private static Locale US = Locale.US;          // to force 3 character months
@@ -19,10 +19,10 @@ public class FileProdos extends AbstractAppleFile
   protected static final String NO_DATE = "<NO DATE>";
 
   private FileEntryProdos fileEntry;
-  private AppleContainer container;
+  private AppleContainer container;                             // parent
 
   private ForkProdos data;                                      // for non-forked files
-  private List<ForkProdos> forks = new ArrayList<> ();          // for forked files
+  private List<AppleFile> forks = new ArrayList<> ();          // for forked files
 
   public enum ForkType
   {
@@ -41,6 +41,7 @@ public class FileProdos extends AbstractAppleFile
     fileName = fileEntry.fileName;
     fileType = fileEntry.fileType;
     fileTypeText = ProdosConstants.fileTypes[fileEntry.fileType];
+
     isForkedFile = fileEntry.storageType == ProdosConstants.GSOS_EXTENDED_FILE;
     isLocked = fileEntry.isLocked;
 
@@ -130,6 +131,36 @@ public class FileProdos extends AbstractAppleFile
 
   // ---------------------------------------------------------------------------------//
   @Override
+  public List<AppleFile> getForks ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return forks;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
+  public String getCatalog ()
+  // ---------------------------------------------------------------------------------//
+  {
+    if (!isForkedFile)
+      throw new FileFormatException ("Cannot getCatalog() on a non-forked file");
+
+    StringBuilder text = new StringBuilder ();
+
+    text.append (" NAME           TYPE  BLOCKS  "
+        + "MODIFIED         CREATED          ENDFILE SUBTYPE" + "\n\n");
+
+    for (AppleFile file : getForks ())
+    {
+      text.append (file.getCatalogLine ());
+      text.append ("\n");
+    }
+
+    return text.toString ();
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
   public String getCatalogLine ()
   // ---------------------------------------------------------------------------------//
   {
@@ -182,6 +213,10 @@ public class FileProdos extends AbstractAppleFile
     StringBuilder text = new StringBuilder (super.toString ());
 
     text.append (fileEntry);
+    text.append ("\n\n");
+
+    if (data != null)
+      text.append (data);
 
     return Utility.rtrim (text);
   }

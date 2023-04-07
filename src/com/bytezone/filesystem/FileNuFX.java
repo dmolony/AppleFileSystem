@@ -9,7 +9,7 @@ import com.bytezone.utility.DateTime;
 import com.bytezone.utility.Utility;
 
 // -----------------------------------------------------------------------------------//
-public class FileNuFX extends AbstractAppleFile implements AppleFilePath
+public class FileNuFX extends AbstractAppleFile implements AppleFilePath, ForkedFile
 // -----------------------------------------------------------------------------------//
 {
   private static final byte[] NuFX = { 0x4E, (byte) 0xF5, 0x46, (byte) 0xD8 };
@@ -51,6 +51,8 @@ public class FileNuFX extends AbstractAppleFile implements AppleFilePath
   private ForkNuFX dataFork;            // for non-forked files only
   private boolean isDiskImage;
   private NuFXThread diskImageThread;
+
+  protected final List<AppleFile> forks = new ArrayList<> ();
 
   // A Record  
   // ---------------------------------------------------------------------------------//
@@ -127,7 +129,7 @@ public class FileNuFX extends AbstractAppleFile implements AppleFilePath
             case NuFXThread.KIND_DATA_FORK:
               if (dataThreads == 2)
               {
-                files.add (new ForkNuFX (this, FileProdos.ForkType.DATA, thread));
+                forks.add (new ForkNuFX (this, FileProdos.ForkType.DATA, thread));
                 isForkedFile = true;
               }
               else
@@ -141,7 +143,7 @@ public class FileNuFX extends AbstractAppleFile implements AppleFilePath
 
             case NuFXThread.KIND_RESOURCE_FORK:
               isForkedFile = true;
-              files.add (new ForkNuFX (this, FileProdos.ForkType.RESOURCE, thread));
+              forks.add (new ForkNuFX (this, FileProdos.ForkType.RESOURCE, thread));
               break;
 
             default:
@@ -421,6 +423,25 @@ public class FileNuFX extends AbstractAppleFile implements AppleFilePath
         return thread.threadFormat;
 
     return 0;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
+  public List<AppleFile> getForks ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return forks;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
+  public String getCatalog ()
+  // ---------------------------------------------------------------------------------//
+  {
+    if (!isForkedFile)
+      throw new FileFormatException ("Cannot getCatalog() on a non-forked file");
+
+    return "Forked NuFX catalog";
   }
 
   // ---------------------------------------------------------------------------------//

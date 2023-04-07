@@ -86,6 +86,10 @@ public class FileEntryProdos
   {
     StringBuilder text = new StringBuilder ();
 
+    //    String message = "";
+    //    if (dataBlocks.size () * 512 < eof)
+    //      message = "<-- past data blocks";
+
     text.append (String.format ("Storage type .......... %02X  %s%n", storageType,
         storageTypeText));
     text.append (String.format ("File name ............. %s%n", fileName));

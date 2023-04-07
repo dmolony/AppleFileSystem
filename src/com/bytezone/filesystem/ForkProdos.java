@@ -1,7 +1,10 @@
 package com.bytezone.filesystem;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import com.bytezone.filesystem.FileProdos.ForkType;
 import com.bytezone.utility.Utility;
@@ -10,6 +13,12 @@ import com.bytezone.utility.Utility;
 public class ForkProdos extends AbstractAppleFile
 // -----------------------------------------------------------------------------------//
 {
+  private static Locale US = Locale.US;          // to force 3 character months
+  protected static final DateTimeFormatter sdf =
+      DateTimeFormatter.ofPattern ("d-LLL-yy", US);
+  protected static final DateTimeFormatter stf = DateTimeFormatter.ofPattern ("H:mm");
+  protected static final String NO_DATE = "<NO DATE>";
+
   private FileProdos parentFile;
   private FsProdos fileSystem;
   private ForkType forkType;
@@ -39,11 +48,10 @@ public class ForkProdos extends AbstractAppleFile
   {
     super (parentFile.getParentFileSystem ());
 
-    //    isFile = true;
-    //    isFork = forkType != null;
+    isFork = forkType != null;
 
-    //    fileType = parentFile.getFileType ();
-    //    fileTypeText = parentFile.getFileTypeText ();
+    fileType = parentFile.getFileType ();
+    fileTypeText = parentFile.getFileTypeText ();
 
     this.parentFile = parentFile;
     this.forkType = forkType;
@@ -159,22 +167,6 @@ public class ForkProdos extends AbstractAppleFile
   }
 
   // ---------------------------------------------------------------------------------//
-  //  @Override
-  //  public void addFile (AppleFile file)
-  //  // ---------------------------------------------------------------------------------//
-  //  {
-  //    throw new UnsupportedOperationException ("cannot addFile() to a fork");
-  //  }
-
-  // ---------------------------------------------------------------------------------//
-  //  @Override
-  //  public List<AppleFile> getFiles ()
-  //  // ---------------------------------------------------------------------------------//
-  //  {
-  //    throw new UnsupportedOperationException ("cannot getFiles() from a fork");
-  //  }
-
-  // ---------------------------------------------------------------------------------//
   @Override
   public byte[] read ()
   // ---------------------------------------------------------------------------------//
@@ -188,6 +180,7 @@ public class ForkProdos extends AbstractAppleFile
       {
         // see TOTAL.REPLAY/X/COLUMNS/COL2P/COLUMNS.MGEMS
         System.out.printf ("Buffer not long enough in %s%n", parentFile.getPath ());
+        System.out.printf ("EOF: %06X, buffer length: %06X%n", eof, data.length);
         byte[] temp = new byte[eof];
         System.arraycopy (data, 0, temp, 0, data.length);
         data = temp;
@@ -222,18 +215,77 @@ public class ForkProdos extends AbstractAppleFile
 
   // ---------------------------------------------------------------------------------//
   @Override
+  public String getCatalogLine ()
+  // ---------------------------------------------------------------------------------//
+  {
+    StringBuilder text = new StringBuilder ();
+
+    LocalDateTime created = parentFile.getCreated ();
+    LocalDateTime modified = parentFile.getModified ();
+
+    int fileLength = isForkedFile () ? 0 : getFileLength ();
+
+    String dateCreated = created == null ? NO_DATE : created.format (sdf);
+    String timeCreated = created == null ? "" : created.format (stf);
+    String dateModified = modified == null ? NO_DATE : modified.format (sdf);
+    String timeModified = modified == null ? "" : modified.format (stf);
+
+    String forkFlag = isForkedFile () ? "+" : " ";
+
+    text.append (String.format ("%s%-15s %3s%s  %5d  %9s %5s  %9s %5s %8d %7s%n",
+        isLocked () ? "*" : " ", getFileName (), getFileTypeText (), forkFlag,
+        getTotalBlocks (), dateModified, timeModified, dateCreated, timeCreated,
+        fileLength, getSubType ()));
+
+    return Utility.rtrim (text);
+  }
+
+  // ---------------------------------------------------------------------------------//
+  private String getSubType ()
+  // ---------------------------------------------------------------------------------//
+  {
+    switch (getFileType ())
+    {
+      case ProdosConstants.FILE_TYPE_TEXT:
+        return String.format ("R=%5d", parentFile.getAuxType ());
+
+      case ProdosConstants.FILE_TYPE_BINARY:
+      case ProdosConstants.FILE_TYPE_PNT:
+      case ProdosConstants.FILE_TYPE_PIC:
+      case ProdosConstants.FILE_TYPE_FOT:
+        return String.format ("A=$%4X", parentFile.getAuxType ());
+    }
+
+    return "";
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
   public String toString ()
   // ---------------------------------------------------------------------------------//
   {
-    StringBuilder text = new StringBuilder (super.toString ());
+    StringBuilder text = new StringBuilder ();
 
-    text.append (String.format ("Storage type .......... %02X  %s%n", storageType,
-        storageTypeText));
-    text.append (String.format ("Size (blocks) ......... %04X  %<,7d%n", size));
-    text.append (String.format ("Eof ................... %04X  %<,7d%n", eof));
-    text.append (String.format ("Key ptr ............... %04X  %<,7d%n%n", keyPtr));
-    text.append (String.format ("Parent ................ %s%n", parentFile.fileName));
-    text.append (String.format ("File system ........... %s", fileSystem.fileSystemType));
+    if (isFork)         // an actual fork, not the default data for a FileProdos
+    {
+      text.append (String.format ("Parent ................ %s%n", parentFile.fileName));
+      text.append (
+          String.format ("File system ........... %s", fileSystem.fileSystemType));
+      text.append (String.format ("Storage type .......... %02X  %s%n", storageType,
+          storageTypeText));
+      text.append (String.format ("Key ptr ............... %04X    %<,7d%n%n", keyPtr));
+      text.append (String.format ("Size (blocks) ......... %04X    %<,7d%n", size));
+    }
+
+    String message =
+        dataBlocks.size () * 512 < eof ? message = "<-- past data blocks" : "";
+
+    text.append (
+        String.format ("Index blocks .......... %04X    %<,7d%n", indexBlocks.size ()));
+    text.append (
+        String.format ("Data blocks ........... %04X    %<,7d%n", dataBlocks.size ()));
+    text.append (
+        String.format ("Eof ................... %06X  %<,7d  %s%n", eof, message));
 
     return Utility.rtrim (text);
   }

@@ -1,6 +1,5 @@
 package com.bytezone.filesystem;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import com.bytezone.filesystem.AppleFileSystem.FileSystemType;
@@ -22,7 +21,6 @@ public abstract class AbstractAppleFile implements AppleFile
   protected String fileTypeText;
   protected boolean isLocked;
 
-  protected final List<AppleFile> files = new ArrayList<> ();
   protected String errorMessage = "";
 
   // ---------------------------------------------------------------------------------//
