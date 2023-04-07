@@ -19,15 +19,15 @@ public class ForkProdos extends AbstractAppleFile
   protected static final DateTimeFormatter stf = DateTimeFormatter.ofPattern ("H:mm");
   protected static final String NO_DATE = "<NO DATE>";
 
-  private FileProdos parentFile;
-  private FsProdos fileSystem;
-  private ForkType forkType;
+  final FileProdos parentFile;
+  final FsProdos fileSystem;
+  final ForkType forkType;
 
-  private int storageType;
-  private String storageTypeText;
-  private int size;
-  private int eof;
-  private int keyPtr;
+  final int storageType;
+  final String storageTypeText;
+  final int size;
+  final int eof;
+  final int keyPtr;
 
   private AppleBlock masterIndexBlock;
   private final List<AppleBlock> indexBlocks = new ArrayList<> ();

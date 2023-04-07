@@ -41,6 +41,14 @@ public class ForkNuFX extends AbstractAppleFile
   }
 
   // ---------------------------------------------------------------------------------//
+  @Override
+  public int getTotalBlocks ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return (thread.uncompressedEOF - 1) / 512 + 1;      // wrong, but close
+  }
+
+  // ---------------------------------------------------------------------------------//
   public int getFileSystemId ()
   // ---------------------------------------------------------------------------------//
   {
@@ -73,7 +81,7 @@ public class ForkNuFX extends AbstractAppleFile
     text.append (
         String.format ("File system ........... %s%n", fileSystem.fileSystemType));
     text.append (String.format ("File system id ........ %d%n", getFileSystemId ()));
-    text.append (String.format ("Thread ................ %s", thread.toString ()));
+    text.append (String.format ("Thread ................ %n%n%s%n", thread.toString ()));
 
     return Utility.rtrim (text);
   }

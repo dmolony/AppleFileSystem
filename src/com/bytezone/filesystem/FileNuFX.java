@@ -48,10 +48,10 @@ public class FileNuFX extends AbstractAppleFile implements AppleFilePath, Forked
   private int filenameThreads;
   private String threadKindText = "";
 
-  private ForkNuFX dataFork;            // for non-forked files only
   private boolean isDiskImage;
   private NuFXThread diskImageThread;
 
+  private ForkNuFX dataFork;            // for non-forked files only
   protected final List<AppleFile> forks = new ArrayList<> ();
 
   // A Record  
@@ -73,14 +73,15 @@ public class FileNuFX extends AbstractAppleFile implements AppleFilePath, Forked
     access = Utility.unsignedLong (buffer, offset + 18);
 
     fileType = Utility.unsignedLong (buffer, offset + 22);
-    //    if (fileSystemID == 1)
     fileTypeText = fileTypes[fileType];
 
     auxType = Utility.unsignedLong (buffer, offset + 26);
     storType = Utility.unsignedShort (buffer, offset + 30);
+
     created = new DateTime (buffer, offset + 32);
     modified = new DateTime (buffer, offset + 40);
     archived = new DateTime (buffer, offset + 48);
+
     optionSize = Utility.unsignedShort (buffer, offset + 56);
     fileNameLength = Utility.unsignedShort (buffer, offset + attributeSectionLength - 2);
 
@@ -159,7 +160,6 @@ public class FileNuFX extends AbstractAppleFile implements AppleFilePath, Forked
   public int getTotalBlocks ()
   // ---------------------------------------------------------------------------------//
   {
-    // this still has to account for forked files, and tree files
     switch (storType)
     {
       case 1:                   // seedling
@@ -168,6 +168,11 @@ public class FileNuFX extends AbstractAppleFile implements AppleFilePath, Forked
         return (getFileLength () - 1) / 512 + 2;
       case 3:                   // tree
         return (getFileLength () - 1) / 512 + 3;        // wrong
+      case 5:                   // forked file
+        int size = 1;
+        for (AppleFile fork : forks)
+          size += fork.getTotalBlocks ();
+        return size;                                    // also wrong
       default:
         return 0;
     }
@@ -367,11 +372,15 @@ public class FileNuFX extends AbstractAppleFile implements AppleFilePath, Forked
   public int getFileLength ()
   // ---------------------------------------------------------------------------------//
   {
-    for (NuFXThread thread : threads)
-      if (thread.hasData () || thread.hasResource () || thread.hasDisk ())
-        return thread.uncompressedEOF;
-
-    return 0;
+    //    int size = 0;
+    //
+    //    for (NuFXThread thread : threads)
+    //      if (thread.hasData () || thread.hasResource () || thread.hasDisk ())
+    //        //        return thread.uncompressedEOF;
+    //        size += thread.getUncompressedEOF ();
+    //
+    //    return size;
+    return getUncompressedSize ();
   }
 
   // ---------------------------------------------------------------------------------//
