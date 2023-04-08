@@ -156,7 +156,7 @@ public class FsDos extends AbstractFileSystem
               + "Used sectors: %3d    Total sectors: %3d",
           freeSectors, totalSectors - freeSectors, totalSectors));
 
-    return text.toString ();
+    return Utility.rtrim (text);
   }
 
   // ---------------------------------------------------------------------------------//

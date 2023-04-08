@@ -59,8 +59,11 @@ public class FsUnidos extends AbstractFileSystem
   {
     StringBuilder text = new StringBuilder ();
 
-    for (AppleFile file : getFiles ())
-      text.append (String.format ("%s%n", file.getFileName ()));
+    for (AppleFileSystem fileSystem : getFileSystems ())
+    {
+      text.append (fileSystem.getCatalog ());
+      text.append ("\n\n");
+    }
 
     return text.toString ();
   }
