@@ -11,6 +11,13 @@ public class FsDos extends AbstractFileSystem
   private static final int ENTRY_SIZE = 35;
   private int dosVersion;
   private BitSet volumeBitMap;
+  private int volumeNumber;
+  private int maxTSpairs;
+  private int lastTrackAllocated;
+  private byte direction;
+  private int tracksPerDisk;
+  private int sectorsPerTrack;
+  private int bytesPerSector;
 
   // ---------------------------------------------------------------------------------//
   public FsDos (BlockReader blockReader)
@@ -30,7 +37,14 @@ public class FsDos extends AbstractFileSystem
     if (buffer[3] < 0x01 || buffer[3] > 0x03)
       throw new FileFormatException ("Dos: byte 3 invalid");
 
-    dosVersion = buffer[3] & 0xFF;
+    dosVersion = buffer[0x03] & 0xFF;
+    volumeNumber = buffer[0x06] & 0xFF;
+    maxTSpairs = buffer[0x27] & 0xFF;
+    lastTrackAllocated = buffer[0x30] & 0xFF;
+    direction = buffer[0x31];
+    tracksPerDisk = buffer[0x34] & 0xFF;
+    sectorsPerTrack = buffer[0x35] & 0xFF;
+    bytesPerSector = Utility.signedShort (buffer, 0x36);
 
     while (true)
     {
@@ -111,6 +125,8 @@ public class FsDos extends AbstractFileSystem
   {
     StringBuilder text = new StringBuilder ();
 
+    text.append (String.format ("Volume : %03d%n%n", volumeNumber));
+
     String underline = "- --- ---  ------------------------------  -----  -------------"
         + "  -- ----  -------------------\n";
 
@@ -150,8 +166,17 @@ public class FsDos extends AbstractFileSystem
   {
     StringBuilder text = new StringBuilder (super.toString ());
 
-    text.append (String.format ("Dos version ........... %02X", dosVersion));
+    text.append (String.format ("Dos version ........... %02X%n", dosVersion));
+    text.append (String.format ("Volume number ......... %02X  %<,7d%n", volumeNumber));
+    text.append (String.format ("Max TS pairs .......... %02X  %<,7d%n", maxTSpairs));
+    text.append (
+        String.format ("Last track allocated .. %02X  %<,7d%n", lastTrackAllocated));
+    text.append (String.format ("Direction ............. %02X  %<,7d%n", direction));
+    text.append (String.format ("Tracks per disk ....... %02X  %<,7d%n", tracksPerDisk));
+    text.append (
+        String.format ("Sectors per track ..... %02X  %<,7d%n", sectorsPerTrack));
+    text.append (String.format ("Bytes per sector ...... %03X  %<,6d%n", bytesPerSector));
 
-    return text.toString ();
+    return Utility.rtrim (text);
   }
 }

@@ -93,12 +93,12 @@ public class FsCpm extends AbstractFileSystem
   public String toString ()
   // ---------------------------------------------------------------------------------//
   {
-    StringBuilder text = new StringBuilder (super.toString () + "\n\n");
+    StringBuilder text = new StringBuilder (super.toString ());
 
     text.append (String.format ("Entry length .......... %d%n", 32));
     text.append (String.format ("Entries per block ..... %d%n", getBlockSize () / 32));
     text.append (String.format ("File count ............ %d", getFiles ().size ()));
 
-    return text.toString ();
+    return Utility.rtrim (text);
   }
 }
