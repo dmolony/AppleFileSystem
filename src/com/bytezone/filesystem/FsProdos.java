@@ -1,6 +1,7 @@
 package com.bytezone.filesystem;
 
 import java.util.BitSet;
+import java.util.Optional;
 
 import com.bytezone.utility.Utility;
 
@@ -12,6 +13,7 @@ public class FsProdos extends AbstractFileSystem
 {
   private final BitSet volumeBitMap;
   private DirectoryEntryProdos directoryEntry;
+  private boolean isDosMaster;
 
   // ---------------------------------------------------------------------------------//
   public FsProdos (BlockReader blockReader)
@@ -65,6 +67,9 @@ public class FsProdos extends AbstractFileSystem
 
     volumeBitMap = createVolumeBitMap ();
     freeBlocks = volumeBitMap.cardinality ();
+
+    if (isDosMaster)
+      isDosMaster = checkDosMaster ();
   }
 
   // ---------------------------------------------------------------------------------//
@@ -93,6 +98,10 @@ public class FsProdos extends AbstractFileSystem
 
             if (file.getFileType () == ProdosConstants.FILE_TYPE_LBR)
               addEmbeddedFileSystem (file, 0);
+
+            if (file.getFileType () == ProdosConstants.FILE_TYPE_SYS
+                && file.getFileName ().equals ("DOS.3.3"))
+              isDosMaster = true;                             // possibly
 
             break;
 
@@ -182,6 +191,33 @@ public class FsProdos extends AbstractFileSystem
   // ---------------------------------------------------------------------------------//
   {
     return String.format ("/%s", directoryEntry.fileName);
+  }
+
+  // ---------------------------------------------------------------------------------//
+  private boolean checkDosMaster ()
+  // ---------------------------------------------------------------------------------//
+  {
+    Optional<AppleFile> opt = getFile ("DOS.3.3");
+    if (opt.isEmpty ())
+      return false;
+
+    AbstractAppleFile appleFile = (AbstractAppleFile) opt.get ();
+
+    byte[] diskBuffer = getDiskBuffer ();
+    BlockReader diskReader = new BlockReader ("Disk", diskBuffer, 0, diskBuffer.length);
+
+    byte[] fileBuffer = appleFile.read ();
+    BlockReader fileReader =
+        new BlockReader (appleFile.getFileName (), fileBuffer, 0, fileBuffer.length);
+
+    FsDosMaster afs = new FsDosMaster (diskReader, fileReader);
+    if (afs != null && afs.getFileSystems ().size () > 0)
+    {
+      appleFile.embedFileSystem (afs);
+      return true;
+    }
+
+    return false;
   }
 
   // ---------------------------------------------------------------------------------//

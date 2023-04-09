@@ -438,6 +438,52 @@ public class Utility
   }
 
   // ---------------------------------------------------------------------------------//
+  public static byte[] setHiBits (String text)
+  // ---------------------------------------------------------------------------------//
+  {
+    byte[] textBytes = new byte[text.length ()];
+    int ptr = 0;
+
+    for (byte b : text.getBytes ())
+      textBytes[ptr++] = (byte) (b | 0x80);
+
+    return textBytes;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  public static int find (byte[] buffer, String key)
+  // ---------------------------------------------------------------------------------//
+  {
+    return find (buffer, key.getBytes ());
+  }
+
+  // ---------------------------------------------------------------------------------//
+  public static int find (byte[] buffer, byte[] key)
+  // ---------------------------------------------------------------------------------//
+  {
+    for (int i = 0; i < buffer.length; i++)
+      if (matches (buffer, i, key))
+      {
+        //        System.out.printf ("Matches at %04X%n", i);
+        return i;
+      }
+
+    return -1;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  public static boolean matches (byte[] buffer, int offset, byte[] key)
+  // ---------------------------------------------------------------------------------//
+  {
+    int ptr = 0;
+    while (offset < buffer.length && ptr < key.length)
+      if (buffer[offset++] != key[ptr++])
+        return false;
+
+    return true;
+  }
+
+  // ---------------------------------------------------------------------------------//
   public static String matchFlags (int flag, String[] chars)
   // ---------------------------------------------------------------------------------//
   {

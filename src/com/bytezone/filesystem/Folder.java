@@ -2,6 +2,7 @@ package com.bytezone.filesystem;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import com.bytezone.utility.Utility;
 
@@ -61,6 +62,18 @@ public class Folder extends AbstractAppleFile implements AppleContainer
   // ---------------------------------------------------------------------------------//
   {
     return null;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
+  public Optional<AppleFile> getFile (String fileName)
+  // ---------------------------------------------------------------------------------//
+  {
+    for (AppleFile file : files)
+      if (file.getFileName ().equals (fileName))
+        return Optional.of (file);
+
+    return Optional.empty ();
   }
 
   // ---------------------------------------------------------------------------------//

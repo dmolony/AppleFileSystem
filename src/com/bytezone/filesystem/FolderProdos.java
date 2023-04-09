@@ -5,6 +5,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Optional;
 
 import com.bytezone.utility.Utility;
 
@@ -144,6 +145,18 @@ public class FolderProdos extends AbstractAppleFile implements AppleContainer
   // ---------------------------------------------------------------------------------//
   {
     return parent.getPath () + "/" + getFileName ();
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
+  public Optional<AppleFile> getFile (String fileName)
+  // ---------------------------------------------------------------------------------//
+  {
+    for (AppleFile file : files)
+      if (file.getFileName ().equals (fileName))
+        return Optional.of (file);
+
+    return Optional.empty ();
   }
 
   // ---------------------------------------------------------------------------------//

@@ -3,6 +3,7 @@ package com.bytezone.filesystem;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 import com.bytezone.filesystem.BlockReader.AddressType;
 
@@ -209,6 +210,18 @@ public abstract class AbstractFileSystem implements AppleFileSystem
 
   // ---------------------------------------------------------------------------------//
   @Override
+  public Optional<AppleFile> getFile (String fileName)
+  // ---------------------------------------------------------------------------------//
+  {
+    for (AppleFile file : files)
+      if (file.getFileName ().equals (fileName))
+        return Optional.of (file);
+
+    return Optional.empty ();
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
   public byte[] getDiskBuffer ()
   // ---------------------------------------------------------------------------------//
   {
@@ -258,7 +271,7 @@ public abstract class AbstractFileSystem implements AppleFileSystem
   }
 
   // ---------------------------------------------------------------------------------//
-  protected AppleFileSystem addEmbeddedFileSystem (AbstractAppleFile file, int offset)
+  protected AppleFileSystem addEmbeddedFileSystem (AppleFile file, int offset)
   // ---------------------------------------------------------------------------------//
   {
     byte[] buffer = file.read ();
@@ -267,7 +280,12 @@ public abstract class AbstractFileSystem implements AppleFileSystem
     AppleFileSystem fs = getFactory ().getFileSystem (blockReader);
 
     if (fs != null)
-      file.embedFileSystem (fs);            // embedded FS
+    {
+      if (fs.getFileSystemType () == FileSystemType.DATA)
+        fs = null;
+      else
+        ((AbstractAppleFile) file).embedFileSystem (fs);            // embedded FS
+    }
 
     return fs;
   }
@@ -322,11 +340,8 @@ public abstract class AbstractFileSystem implements AppleFileSystem
     {
       text.append ("File systems:\n");
       for (AppleFileSystem fileSystem : getFileSystems ())
-      {
         text.append (String.format ("%-5s %s%n", fileSystem.getFileSystemType (),
             fileSystem.getFileName ()));
-        text.append ("\n");
-      }
     }
 
     if (!errorMessage.isEmpty ())
