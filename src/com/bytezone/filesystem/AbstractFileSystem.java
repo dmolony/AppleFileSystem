@@ -14,7 +14,7 @@ public abstract class AbstractFileSystem implements AppleFileSystem
   protected FileSystemFactory factory;          // never static!!
 
   protected final BlockReader blockReader;
-  protected int catalogBlocks;
+  protected int totalCatalogBlocks;
   protected int freeBlocks;
 
   // If this file is a container (FS, folder, forked file, hybrid) then the children are
@@ -39,7 +39,7 @@ public abstract class AbstractFileSystem implements AppleFileSystem
   int getTotalCatalogBlocks ()
   // ---------------------------------------------------------------------------------//
   {
-    return catalogBlocks;
+    return totalCatalogBlocks;
   }
 
   // ---------------------------------------------------------------------------------//
@@ -51,10 +51,10 @@ public abstract class AbstractFileSystem implements AppleFileSystem
   }
 
   // ---------------------------------------------------------------------------------//
-  void setCatalogBlocks (int total)
+  void setTotalCatalogBlocks (int total)
   // ---------------------------------------------------------------------------------//
   {
-    catalogBlocks = total;
+    totalCatalogBlocks = total;
   }
 
   // ---------------------------------------------------------------------------------//
@@ -380,7 +380,7 @@ public abstract class AbstractFileSystem implements AppleFileSystem
     text.append (blockReader.toString ());
     text.append ("\n\n");
 
-    text.append (String.format ("Catalog blocks ........ %d%n", catalogBlocks));
+    text.append (String.format ("Catalog blocks ........ %d%n", totalCatalogBlocks));
     text.append (String.format ("Total file systems .... %d%n", fileSystems.size ()));
     text.append (String.format ("Total files ........... %d%n%n", files.size ()));
 

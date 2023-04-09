@@ -150,6 +150,9 @@ public class FileSystemFactory
   private void getDos33 (BlockReader blockReader)
   // ---------------------------------------------------------------------------------//
   {
+    if (debug)
+      System.out.println ("Checking Dos33");
+
     List<FsDos> fsList = new ArrayList<> (2);
 
     if (blockReader.getDiskLength () == SECTOR_16_SIZE)
@@ -160,6 +163,9 @@ public class FileSystemFactory
           dos33Reader.setParameters (256, AddressType.SECTOR, i, 16);
 
           FsDos fs = new FsDos (dos33Reader);
+
+          if (debug)
+            System.out.printf ("Found %d catalog blocks%n", fs.getTotalCatalogBlocks ());
 
           if (fs.getTotalCatalogBlocks () > 0)
           {
@@ -174,6 +180,9 @@ public class FileSystemFactory
             System.out.println (e);
         }
 
+    if (debug)
+      System.out.println ("Tried both interleaves");
+
     switch (fsList.size ())
     {
       case 1:
@@ -187,6 +196,9 @@ public class FileSystemFactory
         else
           fileSystems.add (fsList.get (1));
     }
+
+    if (debug)
+      System.out.println ("Finished Dos33");
   }
 
   // ---------------------------------------------------------------------------------//

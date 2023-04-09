@@ -27,7 +27,7 @@ public class FsLbr extends AbstractFileSystem
             throw new FileFormatException ("LBR: Invalid header");
 
           max = file.totalBlocks;                   // change outer loop
-          setCatalogBlocks (file.totalBlocks);
+          setTotalCatalogBlocks (file.totalBlocks);
           continue;
         }
 

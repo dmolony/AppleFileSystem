@@ -1,6 +1,8 @@
 package com.bytezone.filesystem;
 
+import java.util.ArrayList;
 import java.util.BitSet;
+import java.util.List;
 
 import com.bytezone.utility.Utility;
 
@@ -18,6 +20,7 @@ public class FsDos extends AbstractFileSystem
   private int tracksPerDisk;
   private int sectorsPerTrack;
   private int bytesPerSector;
+  private int deletedFiles;
 
   // ---------------------------------------------------------------------------------//
   public FsDos (BlockReader blockReader)
@@ -25,7 +28,7 @@ public class FsDos extends AbstractFileSystem
   {
     super (blockReader, FileSystemType.DOS);
 
-    int catalogBlocks = 0;
+    //    int catalogBlocks = 0;
 
     AppleBlock vtoc = getSector (17, 0);
     if (!vtoc.isValid ())
@@ -46,6 +49,8 @@ public class FsDos extends AbstractFileSystem
     sectorsPerTrack = buffer[0x35] & 0xFF;
     bytesPerSector = Utility.signedShort (buffer, 0x36);
 
+    List<AppleBlock> catalogSectors = new ArrayList<> ();   // to check for looping
+
     while (true)
     {
       int track = buffer[1] & 0xFF;
@@ -60,6 +65,11 @@ public class FsDos extends AbstractFileSystem
 
       buffer = catalogSector.read ();
 
+      if (checkDuplicate (catalogSectors, catalogSector))
+        throw new FileFormatException ("Dos: Duplicate catalog sector (looping)");
+
+      catalogSectors.add (catalogSector);
+
       int ptr = 11;
 
       while (ptr < buffer.length && buffer[ptr] != 0)
@@ -67,6 +77,7 @@ public class FsDos extends AbstractFileSystem
         if ((buffer[ptr] & 0x80) != 0)        // deleted file
         {
           // could make a list for Extras' panel
+          ++deletedFiles;
         }
         else
         {
@@ -86,10 +97,21 @@ public class FsDos extends AbstractFileSystem
         ptr += ENTRY_SIZE;
       }
 
-      ++catalogBlocks;
+      //      ++catalogBlocks;
     }
 
-    setCatalogBlocks (catalogBlocks);
+    setTotalCatalogBlocks (catalogSectors.size ());
+  }
+
+  // ---------------------------------------------------------------------------------//
+  private boolean checkDuplicate (List<AppleBlock> catalogSectors, AppleBlock testSector)
+  // ---------------------------------------------------------------------------------//
+  {
+    for (AppleBlock catalogSector : catalogSectors)
+      if (catalogSector.getBlockNo () == testSector.getBlockNo ())
+        return true;
+
+    return false;
   }
 
   // ---------------------------------------------------------------------------------//

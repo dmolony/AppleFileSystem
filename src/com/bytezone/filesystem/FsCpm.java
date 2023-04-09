@@ -64,7 +64,7 @@ public class FsCpm extends AbstractFileSystem
       ++catalogBlocks;
     }
 
-    setCatalogBlocks (catalogBlocks);
+    setTotalCatalogBlocks (catalogBlocks);
   }
 
   // ---------------------------------------------------------------------------------//

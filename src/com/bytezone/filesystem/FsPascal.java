@@ -55,7 +55,7 @@ public class FsPascal extends AbstractFileSystem
     firstBlock = Utility.unsignedShort (buffer, 18);
     date = Utility.getPascalLocalDate (buffer, 20);      // 2 bytes
 
-    setCatalogBlocks (blockTo - 2);
+    setTotalCatalogBlocks (blockTo - 2);
 
     int max = Math.min (blockTo, getTotalBlocks ());
 

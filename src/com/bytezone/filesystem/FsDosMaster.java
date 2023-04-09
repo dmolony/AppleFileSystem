@@ -14,8 +14,8 @@ public class FsDosMaster extends AbstractFileSystem
     byte[] buffer = fileReader.getDiskBuffer ();
     byte[] diskBuffer = diskReader.getDiskBuffer ();
 
-    System.out.printf ("Disk length: %,d%n", diskBuffer.length);
-    System.out.printf ("File length: %,d%n", buffer.length);
+    //    System.out.printf ("Disk length: %,d%n", diskBuffer.length);
+    //    System.out.printf ("File length: %,d%n", buffer.length);
 
     byte[] copyright = Utility.setHiBits ("Copyright 1988 by Glen Bredon");
     int pos = Utility.find (buffer, copyright);
@@ -73,7 +73,7 @@ public class FsDosMaster extends AbstractFileSystem
       }
       catch (FileFormatException e)
       {
-        System.out.println (e);
+        //        System.out.println (e);
       }
     }
   }

@@ -66,7 +66,7 @@ public class FsDos4 extends AbstractFileSystem
       }
       ++catalogBlocks;
     }
-    setCatalogBlocks (catalogBlocks);
+    setTotalCatalogBlocks (catalogBlocks);
   }
 
   // ---------------------------------------------------------------------------------//

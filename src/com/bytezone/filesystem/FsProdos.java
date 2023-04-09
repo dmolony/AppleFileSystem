@@ -24,7 +24,7 @@ public class FsProdos extends AbstractFileSystem
     int nextBlockNo = 2;                    // first catalog block
     int prevBlockNo = -1;
 
-    assert catalogBlocks == 0;
+    assert totalCatalogBlocks == 0;
     int catalogBlocks = 0;
 
     while (nextBlockNo != 0)
@@ -63,7 +63,7 @@ public class FsProdos extends AbstractFileSystem
     processFolder (this, 2);
 
     assert directoryEntry.fileCount == getFiles ().size ();
-    setCatalogBlocks (catalogBlocks);
+    setTotalCatalogBlocks (catalogBlocks);
 
     volumeBitMap = createVolumeBitMap ();
     freeBlocks = volumeBitMap.cardinality ();
