@@ -21,6 +21,7 @@ public class FsDos extends AbstractFileSystem
   private int sectorsPerTrack;
   private int bytesPerSector;
   private int deletedFiles;
+  private int failedFiles;
 
   // ---------------------------------------------------------------------------------//
   public FsDos (BlockReader blockReader)
@@ -63,13 +64,12 @@ public class FsDos extends AbstractFileSystem
       if (!catalogSector.isValid ())
         throw new FileFormatException ("Dos: Invalid catalog sector");
 
-      buffer = catalogSector.read ();
-
       if (checkDuplicate (catalogSectors, catalogSector))
         throw new FileFormatException ("Dos: Duplicate catalog sector (looping)");
 
       catalogSectors.add (catalogSector);
 
+      buffer = catalogSector.read ();
       int ptr = 11;
 
       while (ptr < buffer.length && buffer[ptr] != 0)
@@ -88,6 +88,7 @@ public class FsDos extends AbstractFileSystem
           }
           catch (FileFormatException e)
           {
+            ++failedFiles;
             // could prepare list of failures for Extras' panel
             //            String fileName = Utility.string (buffer, ptr + 3, 30).trim ();
             //            System.out.println (fileName + " failed");

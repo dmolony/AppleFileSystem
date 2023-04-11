@@ -68,7 +68,7 @@ public class FsDosMaster extends AbstractFileSystem
       try
       {
         FsDos fs = new FsDos (slotReader);
-        if (fs != null)
+        if (fs != null && fs.files.size () > 0)
           addFileSystem (fs);
       }
       catch (FileFormatException e)
