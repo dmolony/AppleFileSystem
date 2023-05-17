@@ -3,6 +3,7 @@ package com.bytezone.filesystem;
 import java.util.List;
 
 import com.bytezone.filesystem.AppleFileSystem.FileSystemType;
+import com.bytezone.filesystem.FileProdos.ForkType;
 
 // -----------------------------------------------------------------------------------//
 public abstract class AbstractAppleFile implements AppleFile
@@ -166,6 +167,15 @@ public abstract class AbstractAppleFile implements AppleFile
   // ---------------------------------------------------------------------------------//
   {
     return fileType;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
+  public ForkType getForkType ()
+  // ---------------------------------------------------------------------------------//
+  {
+    throw new UnsupportedOperationException (
+        "getForkType() not implemented in " + fileName);
   }
 
   // ---------------------------------------------------------------------------------//

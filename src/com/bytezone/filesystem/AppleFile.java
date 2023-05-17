@@ -3,6 +3,7 @@ package com.bytezone.filesystem;
 import java.util.List;
 
 import com.bytezone.filesystem.AppleFileSystem.FileSystemType;
+import com.bytezone.filesystem.FileProdos.ForkType;
 
 // -----------------------------------------------------------------------------------//
 public interface AppleFile
@@ -21,6 +22,8 @@ public interface AppleFile
   public boolean isForkedFile ();
 
   public boolean isFork ();
+
+  public ForkType getForkType ();
 
   public boolean isContainer ();
 
