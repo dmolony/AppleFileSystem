@@ -268,9 +268,9 @@ public class ForkProdos extends AbstractAppleFile
 
     if (isFork)         // an actual fork, not the default data for a FileProdos
     {
-      text.append (String.format ("Parent ................ %s%n", parentFile.fileName));
+      text.append (String.format ("File name ............. %s%n", parentFile.fileName));
       text.append (
-          String.format ("File system ........... %s", fileSystem.fileSystemType));
+          String.format ("File system type ...... %s%n%n", fileSystem.fileSystemType));
       text.append (String.format ("Storage type .......... %02X  %s%n", storageType,
           storageTypeText));
       text.append (String.format ("Key ptr ............... %04X    %<,7d%n%n", keyPtr));

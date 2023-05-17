@@ -200,12 +200,12 @@ public abstract class AbstractAppleFile implements AppleFile
     StringBuilder text = new StringBuilder ();
 
     text.append (String.format ("File name ............. %s%n", fileName));
-    text.append (
-        String.format ("File type ............. %d    %s%n", fileType, fileTypeText));
     text.append (String.format ("File system type ...... %s%n", getFileSystemType ()));
     if (embeddedFileSystem != null)
       text.append (String.format ("Embedded FS type ...... %s%n",
           embeddedFileSystem.getFileSystemType ()));
+    text.append (
+        String.format ("File type ............. %02X  %s%n%n", fileType, fileTypeText));
 
     return text.toString ();
   }
