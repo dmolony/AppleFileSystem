@@ -132,7 +132,7 @@ public class Tester
 
       if (file instanceof AppleContainer ac)                    // folder
         listFiles (ac, depth + 1);
-      else if (file.isEmbeddedFileSystem ())                    // PAR, LBR
+      else if (file.hasEmbeddedFileSystem ())                    // PAR, LBR
         listFiles (file.getEmbeddedFileSystem (), depth + 1);
     }
 

@@ -15,7 +15,7 @@ public interface AppleFile
 
   public String getFileTypeText ();
 
-  public boolean isEmbeddedFileSystem ();
+  public boolean hasEmbeddedFileSystem ();
 
   public boolean isFolder ();
 

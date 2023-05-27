@@ -461,7 +461,7 @@ public class FileNuFX extends AbstractAppleFile implements AppleFilePath, Forked
     String lockedFlag = (getAccess () | 0xC3) == 1 ? "+" : " ";
     String forkedFlag = hasResource () ? "+" : " ";
 
-    if (isEmbeddedFileSystem ())
+    if (hasEmbeddedFileSystem ())
       return String.format ("%s%-27.27s %-4s %-6s %-15s  %s  %3.0f%%   %7d", lockedFlag,
           getFileName (), "Disk", (getUncompressedSize () / 1024) + "k",
           getArchived ().format2 (), threadFormats[getThreadFormat ()],

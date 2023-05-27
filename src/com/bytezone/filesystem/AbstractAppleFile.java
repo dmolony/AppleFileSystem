@@ -49,7 +49,7 @@ public abstract class AbstractAppleFile implements AppleFile
 
   // ---------------------------------------------------------------------------------//
   @Override
-  public boolean isEmbeddedFileSystem ()
+  public boolean hasEmbeddedFileSystem ()
   // ---------------------------------------------------------------------------------//
   {
     return embeddedFileSystem != null;
@@ -84,7 +84,7 @@ public abstract class AbstractAppleFile implements AppleFile
   public boolean isContainer ()
   // ---------------------------------------------------------------------------------//
   {
-    return isEmbeddedFileSystem () || isFolder () || isForkedFile ();
+    return hasEmbeddedFileSystem () || isFolder () || isForkedFile ();
   }
 
   // ---------------------------------------------------------------------------------//
