@@ -24,8 +24,6 @@ public class FileDos extends AbstractAppleFile
   {
     super (fs);
 
-    //    isFile = true;
-
     int nextTrack = buffer[ptr] & 0xFF;
     int nextSector = buffer[ptr + 1] & 0xFF;
 
@@ -75,9 +73,9 @@ public class FileDos extends AbstractAppleFile
           if (--sectorsLeft <= 0)
             break loop;
         }
-        else if (fileType == 0x00)            // text file
+        else if (fileType == 0x00)                // text file
         {
-          dataBlocks.add (null);              // must be a sparse file
+          dataBlocks.add (null);                  // must be a sparse file
           ++textFileGaps;
         }
         else
@@ -97,7 +95,7 @@ public class FileDos extends AbstractAppleFile
         length = Utility.unsignedShort (fileBuffer, 2);
       }
     }
-    else if (fileType == 1 || fileType == 2)       // integer basic or applesoft
+    else if (fileType == 1 || fileType == 2)      // integer basic or applesoft
     {
       if (dataBlocks.size () > 0)
       {
@@ -120,7 +118,7 @@ public class FileDos extends AbstractAppleFile
 
   // ---------------------------------------------------------------------------------//
   @Override
-  public int getFileLength ()                         // in bytes (eof)
+  public int getFileLength ()                       // in bytes (eof)
   // ---------------------------------------------------------------------------------//
   {
     return length;
@@ -128,7 +126,7 @@ public class FileDos extends AbstractAppleFile
 
   // ---------------------------------------------------------------------------------//
   @Override
-  public int getTotalBlocks ()                   // in blocks
+  public int getTotalBlocks ()                      // in blocks
   // ---------------------------------------------------------------------------------//
   {
     return indexBlocks.size () + dataBlocks.size () - textFileGaps;
