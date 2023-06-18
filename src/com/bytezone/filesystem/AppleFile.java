@@ -23,6 +23,8 @@ public interface AppleFile
 
   public boolean isFork ();
 
+  public boolean isActualFile ();              // reject DOS catalog nonsense files
+
   public ForkType getForkType ();
 
   public boolean isContainer ();

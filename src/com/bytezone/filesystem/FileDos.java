@@ -16,6 +16,7 @@ public class FileDos extends AbstractAppleFile
   private int length;
   private int address;
   private int textFileGaps;
+  private boolean validName;
 
   // ---------------------------------------------------------------------------------//
   FileDos (FsDos fs, byte[] buffer, int ptr)
@@ -31,6 +32,7 @@ public class FileDos extends AbstractAppleFile
     fileType = buffer[ptr + 2] & 0x7F;
     isLocked = (buffer[ptr + 2] & 0x80) != 0;
     fileName = Utility.string (buffer, ptr + 3, 30).trim ();
+    validName = checkName (buffer, ptr + 3, 30);
     sectorCount = Utility.unsignedShort (buffer, ptr + 33);
 
     fileTypeText = switch (fileType)
@@ -42,7 +44,7 @@ public class FileDos extends AbstractAppleFile
       case 0x08 -> "S";
       case 0x10 -> "R";
       case 0x20 -> "X";
-      case 0x40 -> "Y";
+      case 0x40 -> "B";
       default -> "B";                   // should never happen
     };
 
@@ -198,6 +200,29 @@ public class FileDos extends AbstractAppleFile
     //      text = text.substring (0, 50);
 
     return text;
+  }
+
+  // This is mainly used to keep the stupid Beagle Bros files out of the file tree
+  // ---------------------------------------------------------------------------------//
+  @Override
+  public boolean isActualFile ()
+  // ---------------------------------------------------------------------------------//
+  {
+    if (dataBlocks.size () == 0)
+      return false;
+
+    return validName;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  private boolean checkName (byte[] buffer, int offset, int length)
+  // ---------------------------------------------------------------------------------//
+  {
+    while (length-- > 0)
+      if (buffer[offset++] == (byte) 0x88)      // backspace
+        return false;
+
+    return true;
   }
 
   // ---------------------------------------------------------------------------------//
