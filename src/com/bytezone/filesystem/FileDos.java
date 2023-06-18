@@ -29,8 +29,8 @@ public class FileDos extends AbstractAppleFile
 
     fileType = buffer[ptr + 2] & 0x7F;
     isLocked = (buffer[ptr + 2] & 0x80) != 0;
-    fileName = Utility.string (buffer, ptr + 3, 30).trim ();
-    validName = checkName (buffer, ptr + 3, 30);
+    fileName = Utility.string (buffer, ptr + 3, 30);
+    validName = checkName (buffer, ptr + 3, 30);          // check for invalid characters
     sectorCount = Utility.unsignedShort (buffer, ptr + 33);
 
     fileTypeText = switch (fileType)
@@ -177,8 +177,7 @@ public class FileDos extends AbstractAppleFile
 
     if (getSectorCount () != actualSize)
       message += "Actual size (" + actualSize + ") ";
-    //    if (file.getTotalDataSectors () == 0)
-    //      message += "No data ";
+
     if (getSectorCount () > 999)
       message += "Reported " + getSectorCount ();
 
@@ -186,9 +185,6 @@ public class FileDos extends AbstractAppleFile
         String.format ("%1s  %1s  %03d  %-30.30s  %-5s  %-13s %3d %3d   %s", lockedFlag,
             getFileTypeText (), getSectorCount () % 1000, getFileName (), addressText,
             lengthText, getTotalIndexSectors (), getTotalDataSectors (), message.trim ());
-
-    //    if (actualSize == 0)
-    //      text = text.substring (0, 50);
 
     return text;
   }
@@ -199,10 +195,7 @@ public class FileDos extends AbstractAppleFile
   public boolean isActualFile ()
   // ---------------------------------------------------------------------------------//
   {
-    if (dataBlocks.size () == 0)
-      return false;
-
-    return validName;
+    return validName && dataBlocks.size () > 0;
   }
 
   // ---------------------------------------------------------------------------------//
