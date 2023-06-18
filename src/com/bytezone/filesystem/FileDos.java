@@ -43,7 +43,7 @@ public class FileDos extends AbstractAppleFile
       case 0x04 -> "B";
       case 0x08 -> "S";
       case 0x10 -> "R";
-      case 0x20 -> "X";
+      case 0x20 -> "B";
       case 0x40 -> "B";
       default -> "B";                   // should never happen
     };
@@ -147,13 +147,6 @@ public class FileDos extends AbstractAppleFile
   {
     return address;
   }
-
-  // ---------------------------------------------------------------------------------//
-  //  public int getTextFileGaps ()
-  //  // ---------------------------------------------------------------------------------//
-  //  {
-  //    return textFileGaps;
-  //  }
 
   // ---------------------------------------------------------------------------------//
   public int getTotalDataSectors ()
