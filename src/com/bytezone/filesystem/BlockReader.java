@@ -35,7 +35,7 @@ public class BlockReader
   int bytesPerTrack;            // 3328, 4096, 8192
   int totalBlocks;
 
-  enum AddressType
+  public enum AddressType
   {
     BLOCK, SECTOR
   }
