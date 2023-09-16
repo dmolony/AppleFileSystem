@@ -1,5 +1,7 @@
 package com.bytezone.filesystem;
 
+import com.bytezone.filesystem.AppleBlock.BlockType;
+
 // -----------------------------------------------------------------------------------//
 public class FsLbr extends AbstractFileSystem
 // -----------------------------------------------------------------------------------//
@@ -15,7 +17,7 @@ public class FsLbr extends AbstractFileSystem
 
     for (int i = 0; i < max; i++)
     {
-      byte[] buffer = getBlock (i).read ();
+      byte[] buffer = getBlock (i, BlockType.FILE_DATA).read ();
 
       for (int j = 0; j < 4; j++)
       {

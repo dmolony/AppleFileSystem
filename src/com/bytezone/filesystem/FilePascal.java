@@ -6,6 +6,7 @@ import java.time.format.FormatStyle;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.bytezone.filesystem.AppleBlock.BlockType;
 import com.bytezone.utility.Utility;
 
 // -----------------------------------------------------------------------------------//
@@ -46,7 +47,7 @@ public class FilePascal extends AbstractAppleFile
     date = Utility.getPascalLocalDate (buffer, ptr + 24);           // could return null
 
     for (int i = firstBlock; i < lastBlock; i++)
-      dataBlocks.add (fs.getBlock (i));
+      dataBlocks.add (fs.getBlock (i, BlockType.FILE_DATA));
   }
 
   // ---------------------------------------------------------------------------------//

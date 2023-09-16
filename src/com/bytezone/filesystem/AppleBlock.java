@@ -14,13 +14,10 @@ public interface AppleBlock
 
   byte[] read ();
 
-  //  void write (byte[] buffer);
+  BlockType getBlockType ();
 
-  //  void write ();
-
-  //  default void dump ()
-  //  {
-  //    System.out.println (toString ());
-  //    System.out.println (Utility.format (read ()));
-  //  };
+  public enum BlockType
+  {
+    EMPTY, OS_DATA, FILE_DATA, ORPHAN
+  }
 }

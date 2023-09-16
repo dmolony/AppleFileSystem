@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
+import com.bytezone.filesystem.AppleBlock.BlockType;
 import com.bytezone.utility.Utility;
 
 // -----------------------------------------------------------------------------------//
@@ -56,7 +57,8 @@ public class FileProdos extends AbstractAppleFile implements ForkedFile
   private void createForks ()
   // ---------------------------------------------------------------------------------//
   {
-    byte[] buffer = getParentFileSystem ().getBlock (fileEntry.keyPtr).read ();
+    byte[] buffer =
+        getParentFileSystem ().getBlock (fileEntry.keyPtr, BlockType.OS_DATA).read ();
 
     for (int ptr = 0; ptr < 512; ptr += 256)
     {

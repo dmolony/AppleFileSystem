@@ -1,5 +1,7 @@
 package com.bytezone.filesystem;
 
+import com.bytezone.filesystem.AppleBlock.BlockType;
+
 // -----------------------------------------------------------------------------------//
 public class FsDos4 extends AbstractFileSystem
 // -----------------------------------------------------------------------------------//
@@ -16,7 +18,7 @@ public class FsDos4 extends AbstractFileSystem
     assert getTotalCatalogBlocks () == 0;
     int catalogBlocks = 0;
 
-    AppleBlock vtoc = getSector (17, 0);
+    AppleBlock vtoc = getSector (17, 0, BlockType.OS_DATA);
     byte[] buffer = vtoc.read ();
 
     if (buffer[3] != 0x41 && buffer[3] != 0x42)
@@ -35,7 +37,7 @@ public class FsDos4 extends AbstractFileSystem
       track &= 0x3F;
       sector &= 0x1F;
 
-      AppleBlock catalogSector = getSector (track, sector);
+      AppleBlock catalogSector = getSector (track, sector, BlockType.OS_DATA);
       if (!catalogSector.isValid ())
         return;
 

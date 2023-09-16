@@ -3,6 +3,7 @@ package com.bytezone.filesystem;
 import java.util.BitSet;
 import java.util.Optional;
 
+import com.bytezone.filesystem.AppleBlock.BlockType;
 import com.bytezone.utility.Utility;
 
 // see https://prodos8.com/docs/techref/file-organization/
@@ -29,7 +30,7 @@ public class FsProdos extends AbstractFileSystem
 
     while (nextBlockNo != 0)
     {
-      AppleBlock vtoc = getBlock (nextBlockNo);
+      AppleBlock vtoc = getBlock (nextBlockNo, BlockType.OS_DATA);
       byte[] buffer = vtoc.read ();
 
       if (catalogBlocks == 0)
@@ -76,7 +77,7 @@ public class FsProdos extends AbstractFileSystem
   private void processFolder (AppleContainer parent, int blockNo)
   // ---------------------------------------------------------------------------------//
   {
-    AppleBlock catalogBlock = getBlock (blockNo);
+    AppleBlock catalogBlock = getBlock (blockNo, BlockType.OS_DATA);
     FileProdos file = null;
 
     while (catalogBlock.getBlockNo () != 0)
@@ -137,7 +138,7 @@ public class FsProdos extends AbstractFileSystem
         ptr += ProdosConstants.ENTRY_SIZE;
       }
 
-      catalogBlock = getBlock (Utility.unsignedShort (buffer, 2));
+      catalogBlock = getBlock (Utility.unsignedShort (buffer, 2), BlockType.OS_DATA);
 
       if (!catalogBlock.isValid ())
         throw new FileFormatException ("FsProdos: Invalid catalog");
@@ -159,7 +160,7 @@ public class FsProdos extends AbstractFileSystem
     {
       if (bitPtr % 0x1000 == 0)
       {
-        buffer = getBlock (blockNo++).read ();
+        buffer = getBlock (blockNo++, BlockType.OS_DATA).read ();
         bfrPtr = 0;
       }
 

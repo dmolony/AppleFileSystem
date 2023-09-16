@@ -2,6 +2,7 @@ package com.bytezone.filesystem;
 
 import java.util.List;
 
+import com.bytezone.filesystem.AppleBlock.BlockType;
 import com.bytezone.filesystem.BlockReader.AddressType;
 
 // -----------------------------------------------------------------------------------//
@@ -36,11 +37,11 @@ public interface AppleFileSystem extends AppleContainer
 
   int getFreeBlocks ();
 
-  AppleBlock getBlock (int blockNo);
+  AppleBlock getBlock (int blockNo, BlockType blockType);
 
-  AppleBlock getSector (int track, int sector);
+  AppleBlock getSector (int track, int sector, BlockType blockType);
 
-  AppleBlock getSector (byte[] buffer, int offset);
+  AppleBlock getSector (byte[] buffer, int offset, BlockType blockType);
 
   byte[] readBlock (AppleBlock block);
 

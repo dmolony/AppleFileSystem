@@ -1,5 +1,6 @@
 package com.bytezone.filesystem;
 
+import com.bytezone.filesystem.AppleBlock.BlockType;
 import com.bytezone.utility.Utility;
 
 // -----------------------------------------------------------------------------------//
@@ -35,7 +36,7 @@ public class FsCpm extends AbstractFileSystem
 
     OUT: for (int i = 0; i < maxBlocks; i++)
     {
-      byte[] buffer = getBlock (firstBlock + i).read ();
+      byte[] buffer = getBlock (firstBlock + i, BlockType.OS_DATA).read ();
 
       for (int j = 0; j < buffer.length; j += 32)
       {

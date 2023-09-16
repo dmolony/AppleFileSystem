@@ -6,6 +6,7 @@ import java.time.format.FormatStyle;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.bytezone.filesystem.AppleBlock.BlockType;
 import com.bytezone.utility.Utility;
 
 // -----------------------------------------------------------------------------------//
@@ -32,7 +33,7 @@ public class FsPascal extends AbstractFileSystem
   {
     super (blockReader, FileSystemType.PASCAL);
 
-    AppleBlock vtoc = getBlock (2);
+    AppleBlock vtoc = getBlock (2, BlockType.OS_DATA);
     byte[] buffer = vtoc.read ();
 
     blockFrom = Utility.unsignedShort (buffer, 0);
@@ -61,7 +62,7 @@ public class FsPascal extends AbstractFileSystem
 
     List<AppleBlock> addresses = new ArrayList<> ();
     for (int i = 2; i < max; i++)
-      addresses.add (getBlock (i));
+      addresses.add (getBlock (i, BlockType.FILE_DATA));
 
     buffer = readBlocks (addresses);
 

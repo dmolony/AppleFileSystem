@@ -3,6 +3,7 @@ package com.bytezone.filesystem;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.bytezone.filesystem.AppleBlock.BlockType;
 import com.bytezone.utility.Utility;
 
 // -----------------------------------------------------------------------------------//
@@ -51,7 +52,7 @@ public class FileDos4 extends AbstractAppleFile
       nextTrack &= 0x3F;
       nextSector &= 0x1F;
 
-      AppleBlock tsSector = fs.getSector (nextTrack, nextSector);
+      AppleBlock tsSector = fs.getSector (nextTrack, nextSector, BlockType.OS_DATA);
       if (!tsSector.isValid ())
         throw new FileFormatException ("Invalid TS sector");
 
@@ -65,7 +66,7 @@ public class FileDos4 extends AbstractAppleFile
         int fileTrack = sectorBuffer[i] & 0xFF;
         int fileSector = sectorBuffer[i + 1] & 0xFF;
 
-        AppleBlock dataSector = fs.getSector (fileTrack, fileSector);
+        AppleBlock dataSector = fs.getSector (fileTrack, fileSector, BlockType.FILE_DATA);
         if (!dataSector.isValid ())
           throw new FileFormatException ("Invalid data sector");
 

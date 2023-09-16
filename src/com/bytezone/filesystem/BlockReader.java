@@ -6,6 +6,7 @@ import java.nio.file.Path;
 import java.util.List;
 import java.util.Objects;
 
+import com.bytezone.filesystem.AppleBlock.BlockType;
 import com.bytezone.utility.Utility;
 
 // -----------------------------------------------------------------------------------//
@@ -34,6 +35,7 @@ public class BlockReader
   int blocksPerTrack;           // 4, 8, 13, 16, 32
   int bytesPerTrack;            // 3328, 4096, 8192
   int totalBlocks;
+  AppleBlock[] appleBlocks;
 
   public enum AddressType
   {
@@ -98,6 +100,7 @@ public class BlockReader
 
     bytesPerTrack = bytesPerBlock * blocksPerTrack;
     totalBlocks = (diskLength - 1) / bytesPerBlock + 1;   // includes partial blocks
+    appleBlocks = new AppleBlock[totalBlocks];
   }
 
   // ---------------------------------------------------------------------------------//
@@ -151,31 +154,50 @@ public class BlockReader
   }
 
   // ---------------------------------------------------------------------------------//
-  public AppleBlock getBlock (AppleFileSystem fs, int blockNo)
+  public AppleBlock getBlock (AppleFileSystem fs, int blockNo, BlockType blockType)
   // ---------------------------------------------------------------------------------//
   {
-    assert addressType == AddressType.BLOCK;
-    return new BlockProdos (fs, blockNo);
+    //    assert addressType == AddressType.BLOCK;
+
+    if (appleBlocks[blockNo] == null)
+      appleBlocks[blockNo] = new BlockProdos (fs, blockNo, blockType);
+
+    if (appleBlocks[blockNo].getBlockType () != blockType && blockType != null)
+      appleBlocks[blockNo] = new BlockProdos (fs, blockNo, blockType);
+
+    return appleBlocks[blockNo];
   }
 
   // ---------------------------------------------------------------------------------//
-  public AppleBlock getSector (AppleFileSystem fs, int track, int sector)
+  public AppleBlock getSector (AppleFileSystem fs, int track, int sector,
+      BlockType blockType)
   // ---------------------------------------------------------------------------------//
   {
     assert addressType == AddressType.SECTOR;
-    return new BlockDos (fs, track, sector);
+
+    int blockNo = track * blocksPerTrack + sector;
+
+    if (appleBlocks[blockNo] == null)
+      appleBlocks[blockNo] = new BlockDos (fs, track, sector, blockType);
+
+    return appleBlocks[blockNo];
   }
 
   // ---------------------------------------------------------------------------------//
-  public AppleBlock getSector (AppleFileSystem fs, byte[] buffer, int offset)
+  public AppleBlock getSector (AppleFileSystem fs, byte[] buffer, int offset,
+      BlockType blockType)
   // ---------------------------------------------------------------------------------//
   {
+    assert addressType == AddressType.SECTOR;
+
     int track = buffer[offset] & 0xFF;
     int sector = buffer[++offset] & 0xFF;
+    int blockNo = track * blocksPerTrack + sector;
 
-    assert addressType == AddressType.SECTOR;
+    if (appleBlocks[blockNo] == null)
+      appleBlocks[blockNo] = new BlockDos (fs, track, sector, blockType);
 
-    return new BlockDos (fs, track, sector);
+    return appleBlocks[blockNo];
   }
 
   // ---------------------------------------------------------------------------------//

@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import com.bytezone.filesystem.AppleBlock.BlockType;
 import com.bytezone.utility.Squeeze;
 import com.bytezone.utility.Utility;
 
@@ -63,7 +64,7 @@ public class FileBinary2 extends AbstractAppleFile
     //    isFile = true;
     this.headerBlockNo = headerBlockNo;
 
-    byte[] buffer = fs.getBlock (headerBlockNo).read ();
+    byte[] buffer = fs.getBlock (headerBlockNo, BlockType.OS_DATA).read ();
 
     accessCode = buffer[3] & 0xFF;
     fileType = buffer[4] & 0xFF;
@@ -113,12 +114,12 @@ public class FileBinary2 extends AbstractAppleFile
         break;
       }
 
-      dataBlocks.add (fs.getBlock (block));
+      dataBlocks.add (fs.getBlock (block, BlockType.FILE_DATA));
     }
 
     if (validBlocks && (isCompressed () || fileName.endsWith (".QQ")))
     {
-      buffer = fs.getBlock (headerBlockNo + 1).read ();
+      buffer = fs.getBlock (headerBlockNo + 1, BlockType.FILE_DATA).read ();
       if (buffer[0] == 0x76 && buffer[1] == (byte) 0xFF)      // squeeze
         squeezeName = Utility.getCString (buffer, 4);
     }

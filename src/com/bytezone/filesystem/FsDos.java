@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.List;
 
+import com.bytezone.filesystem.AppleBlock.BlockType;
 import com.bytezone.utility.Utility;
 
 // -----------------------------------------------------------------------------------//
@@ -31,7 +32,7 @@ public class FsDos extends AbstractFileSystem
 
     //    int catalogBlocks = 0;
 
-    AppleBlock vtoc = getSector (17, 0);
+    AppleBlock vtoc = getSector (17, 0, BlockType.OS_DATA);
     if (!vtoc.isValid ())
       throw new FileFormatException ("Dos: Invalid VTOC");
 
@@ -60,7 +61,7 @@ public class FsDos extends AbstractFileSystem
       if (track == 0)
         break;
 
-      AppleBlock catalogSector = getSector (track, sector);
+      AppleBlock catalogSector = getSector (track, sector, BlockType.OS_DATA);
       if (!catalogSector.isValid ())
         throw new FileFormatException ("Dos: Invalid catalog sector");
 
