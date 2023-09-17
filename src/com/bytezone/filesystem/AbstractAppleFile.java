@@ -157,7 +157,7 @@ public abstract class AbstractAppleFile implements AppleFile
   // ---------------------------------------------------------------------------------//
   {
     throw new UnsupportedOperationException (String
-        .format ("getTotalBlocks() not implemented %s %s%n", fileTypeText, fileName));
+        .format ("getTotalBlocks() not implemented %s in %s%n", fileTypeText, fileName));
   }
 
   // ---------------------------------------------------------------------------------//

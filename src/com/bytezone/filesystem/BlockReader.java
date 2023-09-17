@@ -157,12 +157,19 @@ public class BlockReader
   public AppleBlock getBlock (AppleFileSystem fs, int blockNo, BlockType blockType)
   // ---------------------------------------------------------------------------------//
   {
-    //    assert addressType == AddressType.BLOCK;
-
-    if (appleBlocks[blockNo] == null)
-      appleBlocks[blockNo] = new BlockProdos (fs, blockNo, blockType);
-
-    if (appleBlocks[blockNo].getBlockType () != blockType && blockType != null)
+    if (appleBlocks[blockNo] == null)           // first time here
+      if (blockType != null)                    // we know what it should be
+        appleBlocks[blockNo] = new BlockProdos (fs, blockNo, blockType);
+      else
+      {
+        AppleBlock block = new BlockProdos (fs, blockNo, BlockType.EMPTY);
+        if (isEmpty (block))
+          appleBlocks[blockNo] = block;
+        else
+          appleBlocks[blockNo] = new BlockProdos (fs, blockNo, BlockType.ORPHAN);
+      }
+    else                                        // has already been set
+    if (blockType != null)                      // but we want to change it
       appleBlocks[blockNo] = new BlockProdos (fs, blockNo, blockType);
 
     return appleBlocks[blockNo];
@@ -350,6 +357,18 @@ public class BlockReader
   // ---------------------------------------------------------------------------------//
   {
     return blockNo >= 0 && blockNo < totalBlocks;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  boolean isEmpty (AppleBlock block)
+  // ---------------------------------------------------------------------------------//
+  {
+    byte[] buffer = block.read ();
+    for (byte b : buffer)
+      if (b != 0)               // won't work for CPM disks
+        return false;
+
+    return true;
   }
 
   // ---------------------------------------------------------------------------------//
