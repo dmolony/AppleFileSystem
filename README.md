@@ -3,3 +3,6 @@ This library is intended for other programs to use when needing access to the co
  of Apple II disk images. It is currently used by [WizardryApp](https://github.com/dmolony/WizardryApp),
   and will be used by the next version of
    [DiskBrowser](https://github.com/dmolony/DiskBrowser2).
+   
+### Example Screens
+![Teaser](resources/teaser.png?raw=true "This will change")
