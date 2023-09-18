@@ -153,7 +153,7 @@ public abstract class AbstractAppleFile implements AppleFile
 
   // ---------------------------------------------------------------------------------//
   @Override
-  public int getTotalBlocks ()                   // in blocks
+  public int getTotalBlocks ()                        // in blocks
   // ---------------------------------------------------------------------------------//
   {
     throw new UnsupportedOperationException (String

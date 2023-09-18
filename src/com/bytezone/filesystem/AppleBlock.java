@@ -1,7 +1,7 @@
 package com.bytezone.filesystem;
 
 // -----------------------------------------------------------------------------------//
-public interface AppleBlock
+public interface AppleBlock         // this could be renamed to Address
 // -----------------------------------------------------------------------------------//
 {
   int getBlockNo ();
