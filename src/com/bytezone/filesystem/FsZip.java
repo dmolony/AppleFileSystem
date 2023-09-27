@@ -69,19 +69,13 @@ public class FsZip extends AbstractFileSystem
             rem -= len;
           }
 
-          FileZip file = new FileZip (this, name, buffer, entry);
-          AppleFileSystem afs = addEmbeddedFileSystem (file, 0);
-          addFile (file);
+          addZipFile (new FileZip (this, name, buffer, entry));
         }
         else
         {
           byte[] buffer = Utility.getFullBuffer (zip);
           if (buffer.length > 0)
-          {
-            FileZip file = new FileZip (this, name, buffer, entry);
-            AppleFileSystem afs = addEmbeddedFileSystem (file, 0);
-            addFile (file);
-          }
+            addZipFile (new FileZip (this, name, buffer, entry));
         }
       }
     }
@@ -95,6 +89,14 @@ public class FsZip extends AbstractFileSystem
     }
 
     assert blockReader.isMagic (0, ZIP);
+  }
+
+  // ---------------------------------------------------------------------------------//
+  void addZipFile (FileZip file)
+  // ---------------------------------------------------------------------------------//
+  {
+    addEmbeddedFileSystem (file, 0);            // create FS and embed it
+    addFile (file);
   }
 
   // ---------------------------------------------------------------------------------//

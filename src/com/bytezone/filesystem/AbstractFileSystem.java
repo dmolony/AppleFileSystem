@@ -271,6 +271,7 @@ public abstract class AbstractFileSystem implements AppleFileSystem
     return factory;
   }
 
+  // Called when an AppleFile should contain a FileSystem (LIB, PAR, FileZip etc)
   // ---------------------------------------------------------------------------------//
   protected AppleFileSystem addEmbeddedFileSystem (AppleFile file, int offset)
   // ---------------------------------------------------------------------------------//
