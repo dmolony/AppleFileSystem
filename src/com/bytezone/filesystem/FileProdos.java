@@ -10,7 +10,7 @@ import com.bytezone.filesystem.AppleBlock.BlockType;
 import com.bytezone.utility.Utility;
 
 // -----------------------------------------------------------------------------------//
-public class FileProdos extends AbstractAppleFile implements ForkedFile
+public class FileProdos extends AbstractAppleFile implements AppleForkedFile
 // -----------------------------------------------------------------------------------//
 {
   private static Locale US = Locale.US;          // to force 3 character months

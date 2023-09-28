@@ -9,7 +9,7 @@ import com.bytezone.utility.DateTime;
 import com.bytezone.utility.Utility;
 
 // -----------------------------------------------------------------------------------//
-public class FileNuFX extends AbstractAppleFile implements AppleFilePath, ForkedFile
+public class FileNuFX extends AbstractAppleFile implements AppleFilePath, AppleForkedFile
 // -----------------------------------------------------------------------------------//
 {
   private static final byte[] NuFX = { 0x4E, (byte) 0xF5, 0x46, (byte) 0xD8 };

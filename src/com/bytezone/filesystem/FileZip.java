@@ -14,14 +14,14 @@ public class FileZip extends AbstractAppleFile implements AppleFilePath
   private final ZipEntry zipEntry;
 
   // ---------------------------------------------------------------------------------//
-  FileZip (FsZip fs, String fileName, byte[] buffer, ZipEntry entry)
+  FileZip (FsZip fs, String fileName, byte[] buffer, ZipEntry zipEntry)
   // ---------------------------------------------------------------------------------//
   {
     super (fs);
 
     this.buffer = buffer;
     this.fileName = fileName;
-    this.zipEntry = entry;
+    this.zipEntry = zipEntry;
   }
 
   // ---------------------------------------------------------------------------------//
@@ -81,6 +81,7 @@ public class FileZip extends AbstractAppleFile implements AppleFilePath
     String comment = zipEntry.getComment ();
     if (comment == null)
       comment = "";
+
     FileTime fileTime = zipEntry.getCreationTime ();
     String creationTime = fileTime == null ? "" : fileTime.toString ();
     byte[] bytes = zipEntry.getExtra ();
