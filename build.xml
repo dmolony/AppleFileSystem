@@ -4,8 +4,8 @@
 
   <property name="srcDir" location="src" />
   <property name="binDir" location="bin" />
-  <property name="jarFolder" location="${user.home}/Dropbox/Java" />
-  <property name="jarFile" location="${jarFolder}/AppleFileSystem.jar" />
+  <property name="jarDir" location="${user.home}/Dropbox/Java" />
+  <property name="jarFile" location="${jarDir}/AppleFileSystem.jar" />
 
   <target name="version">
     <echo>FileSystem.jar</echo>
