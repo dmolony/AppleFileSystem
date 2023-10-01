@@ -51,11 +51,7 @@ public class BlockReader
 
     diskBuffer = buffer;
     diskOffset = 0;
-
-    if (buffer.length == 143_488)
-      diskLength = 143_360;
-    else
-      diskLength = buffer.length;
+    diskLength = buffer.length == 143_488 ? 143_360 : buffer.length;
 
     name = path.toFile ().getName ();
   }
@@ -66,12 +62,9 @@ public class BlockReader
   {
     Objects.checkFromIndexSize (diskOffset, diskLength, diskBuffer.length);
 
-    if (diskLength == 143_488)
-      diskLength = 143_360;
-
     this.diskBuffer = diskBuffer;
     this.diskOffset = diskOffset;
-    this.diskLength = diskLength;
+    this.diskLength = diskLength == 143_488 ? 143_360 : diskLength;
 
     this.name = name;
   }
@@ -253,7 +246,6 @@ public class BlockReader
           int start = diskOffset + block.getBlockNo () * bytesPerBlock;
           int xfrBytes = Math.min (bytesPerBlock, diskBuffer.length - start);
 
-          //          if (start + bytesPerBlock <= diskBuffer.length)
           if (xfrBytes > 0)
             System.arraycopy (diskBuffer, start, blockBuffer, bufferOffset, xfrBytes);
           else
@@ -363,8 +355,7 @@ public class BlockReader
   boolean isEmpty (AppleBlock block)
   // ---------------------------------------------------------------------------------//
   {
-    byte[] buffer = block.read ();
-    for (byte b : buffer)
+    for (byte b : block.read ())
       if (b != 0)               // won't work for CPM disks
         return false;
 
