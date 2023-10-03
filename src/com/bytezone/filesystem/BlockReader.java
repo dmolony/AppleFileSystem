@@ -384,13 +384,13 @@ public class BlockReader
   {
     StringBuilder text = new StringBuilder ();
 
-    text.append (String.format ("File system offset .... %,d%n", diskOffset));
-    text.append (String.format ("File system length .... %,d%n", diskLength));
-    text.append (String.format ("Address type .......... %s%n", addressType));
-    text.append (String.format ("Total blocks .......... %,d%n", totalBlocks));
-    text.append (String.format ("Bytes per block ....... %d%n", bytesPerBlock));
-    text.append (String.format ("Blocks per track ...... %d%n", blocksPerTrack));
-    text.append (String.format ("Interleave ............ %d", interleave));
+    text.append ("File system offset .... %,d%n".formatted (diskOffset));
+    text.append ("File system length .... %,d%n".formatted (diskLength));
+    text.append ("Address type .......... %s%n".formatted (addressType));
+    text.append ("Total blocks .......... %,d%n".formatted (totalBlocks));
+    text.append ("Bytes per block ....... %d%n".formatted (bytesPerBlock));
+    text.append ("Blocks per track ...... %d%n".formatted (blocksPerTrack));
+    text.append ("Interleave ............ %d".formatted (interleave));
 
     return text.toString ();
   }
