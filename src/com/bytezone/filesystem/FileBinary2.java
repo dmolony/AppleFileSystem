@@ -90,7 +90,7 @@ public class FileBinary2 extends AbstractAppleFile
     gStorage = buffer[113] & 0xFF;
     gFileSize = Utility.unsignedShort (buffer, 114);
     gEof = buffer[116] & 0xFF;
-    diskSpace = Utility.unsignedLong (buffer, 117);     // total for all files
+    diskSpace = Utility.unsignedInt (buffer, 117);     // total for all files
 
     osType = buffer[121] & 0xFF;
     nativeFileType = Utility.unsignedShort (buffer, 122);

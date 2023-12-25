@@ -67,15 +67,15 @@ public class FileNuFX extends AbstractAppleFile implements AppleFilePath, AppleF
     crc = Utility.unsignedShort (buffer, offset + 4);
     attributeSectionLength = Utility.unsignedShort (buffer, offset + 6);
     version = Utility.unsignedShort (buffer, offset + 8);
-    totThreads = Utility.unsignedLong (buffer, offset + 10);
+    totThreads = Utility.unsignedInt (buffer, offset + 10);
     fileSystemID = Utility.unsignedShort (buffer, offset + 14);
     separator = (char) (buffer[offset + 16] & 0x00FF);
-    access = Utility.unsignedLong (buffer, offset + 18);
+    access = Utility.unsignedInt (buffer, offset + 18);
 
-    fileType = Utility.unsignedLong (buffer, offset + 22);
+    fileType = Utility.unsignedInt (buffer, offset + 22);
     fileTypeText = fileTypes[fileType];
 
-    auxType = Utility.unsignedLong (buffer, offset + 26);
+    auxType = Utility.unsignedInt (buffer, offset + 26);
     storType = Utility.unsignedShort (buffer, offset + 30);
 
     created = new DateTime (buffer, offset + 32);

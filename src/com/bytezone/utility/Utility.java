@@ -91,7 +91,7 @@ public class Utility
   }
 
   // ---------------------------------------------------------------------------------//
-  public static int unsignedLong (byte[] buffer, int ptr)
+  public static int unsignedInt (byte[] buffer, int ptr)
   // ---------------------------------------------------------------------------------//
   {
     try
@@ -110,7 +110,7 @@ public class Utility
   }
 
   // ---------------------------------------------------------------------------------//
-  public static int unsignedLongBigEndian (byte[] buffer, int ptr)
+  public static int unsignedIntBigEndian (byte[] buffer, int ptr)
   // ---------------------------------------------------------------------------------//
   {
     return (buffer[ptr] & 0xFF) * 16777216 + (buffer[ptr + 1] & 0xFF) * 65536
@@ -330,7 +330,7 @@ public class Utility
     if (buffer[offset] == 0 && buffer[offset + 1] == 00)
       return Optional.empty ();
 
-    int date = unsignedLong (buffer, offset);     // reverses bytes
+    int date = unsignedInt (buffer, offset);     // reverses bytes
     int year = (date & 0xFE00) >>> 9;             // 7 bits (no sign extension)
     int month = (date & 0x01E0) >> 5;             // 4 bits
     int day = date & 0x001F;                      // 5 bits

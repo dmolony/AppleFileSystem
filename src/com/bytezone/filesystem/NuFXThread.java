@@ -49,8 +49,8 @@ public class NuFXThread
     threadKind = Utility.unsignedShort (buffer, offset + 4);
 
     threadCrc = Utility.unsignedShort (buffer, offset + 6);
-    uncompressedEOF = Utility.unsignedLong (buffer, offset + 8);
-    compressedEOF = Utility.unsignedLong (buffer, offset + 12);
+    uncompressedEOF = Utility.unsignedInt (buffer, offset + 8);
+    compressedEOF = Utility.unsignedInt (buffer, offset + 12);
 
     compressedData = new byte[compressedEOF];
 

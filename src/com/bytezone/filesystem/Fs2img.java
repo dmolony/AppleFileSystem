@@ -50,19 +50,19 @@ public class Fs2img extends AbstractFileSystem
     creator = new String (buffer, diskOffset + 4, 4);
     headerSize = Utility.unsignedShort (buffer, diskOffset + 8);
     version = Utility.unsignedShort (buffer, diskOffset + 10);
-    format = Utility.unsignedLong (buffer, diskOffset + 12);
-    flags = Utility.unsignedLong (buffer, diskOffset + 16);
-    prodosBlocks = Utility.unsignedLong (buffer, diskOffset + 20);
+    format = Utility.unsignedInt (buffer, diskOffset + 12);
+    flags = Utility.unsignedInt (buffer, diskOffset + 16);
+    prodosBlocks = Utility.unsignedInt (buffer, diskOffset + 20);
 
-    offset = Utility.unsignedLong (buffer, diskOffset + 24);
-    originalLength = Utility.unsignedLong (buffer, diskOffset + 28);
+    offset = Utility.unsignedInt (buffer, diskOffset + 24);
+    originalLength = Utility.unsignedInt (buffer, diskOffset + 28);
 
     length = originalLength == 0 ? prodosBlocks * 512 : originalLength; // see Fantavision.2mg
 
-    commentOffset = Utility.unsignedLong (buffer, diskOffset + 32);
-    commentLength = Utility.unsignedLong (buffer, diskOffset + 36);
-    creatorDataOffset = Utility.unsignedLong (buffer, diskOffset + 40);
-    creatorDataLength = Utility.unsignedLong (buffer, diskOffset + 44);
+    commentOffset = Utility.unsignedInt (buffer, diskOffset + 32);
+    commentLength = Utility.unsignedInt (buffer, diskOffset + 36);
+    creatorDataOffset = Utility.unsignedInt (buffer, diskOffset + 40);
+    creatorDataLength = Utility.unsignedInt (buffer, diskOffset + 44);
     comment = commentOffset == 0 ? ""
         : new String (buffer, diskOffset + commentOffset, commentLength);
 

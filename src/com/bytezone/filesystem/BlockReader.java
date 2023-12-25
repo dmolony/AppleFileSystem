@@ -150,6 +150,10 @@ public class BlockReader
   public AppleBlock getBlock (AppleFileSystem fs, int blockNo, BlockType blockType)
   // ---------------------------------------------------------------------------------//
   {
+    if (!isValidBlockNo (blockNo))
+      return null;
+    // throw?
+
     if (appleBlocks[blockNo] == null)           // first time here
       if (blockType != null)                    // we know what it should be
         appleBlocks[blockNo] = new BlockProdos (fs, blockNo, blockType);
@@ -177,6 +181,10 @@ public class BlockReader
 
     int blockNo = track * blocksPerTrack + sector;
 
+    if (!isValidSector (track, sector) || !isValidBlockNo (blockNo))
+      return null;
+    // throw?
+
     if (appleBlocks[blockNo] == null)
       appleBlocks[blockNo] = new BlockDos (fs, track, sector, blockType);
 
@@ -193,6 +201,10 @@ public class BlockReader
     int track = buffer[offset] & 0xFF;
     int sector = buffer[++offset] & 0xFF;
     int blockNo = track * blocksPerTrack + sector;
+
+    if (!isValidSector (track, sector) || !isValidBlockNo (blockNo))
+      return null;
+    // throw?
 
     if (appleBlocks[blockNo] == null)
       appleBlocks[blockNo] = new BlockDos (fs, track, sector, blockType);
@@ -349,6 +361,13 @@ public class BlockReader
   // ---------------------------------------------------------------------------------//
   {
     return blockNo >= 0 && blockNo < totalBlocks;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  boolean isValidSector (int trackNo, int sectorNo)
+  // ---------------------------------------------------------------------------------//
+  {
+    return sectorNo >= 0 && sectorNo < blocksPerTrack;
   }
 
   // ---------------------------------------------------------------------------------//

@@ -33,7 +33,7 @@ public class FsDos extends AbstractFileSystem
     //    int catalogBlocks = 0;
 
     AppleBlock vtoc = getSector (17, 0, BlockType.OS_DATA);
-    if (!vtoc.isValid ())
+    if (vtoc == null)
       throw new FileFormatException ("Dos: Invalid VTOC");
 
     byte[] buffer = vtoc.read ();
@@ -62,7 +62,7 @@ public class FsDos extends AbstractFileSystem
         break;
 
       AppleBlock catalogSector = getSector (track, sector, BlockType.OS_DATA);
-      if (!catalogSector.isValid ())
+      if (catalogSector == null)
         throw new FileFormatException ("Dos: Invalid catalog sector");
 
       if (checkDuplicate (catalogSectors, catalogSector))
@@ -106,6 +106,15 @@ public class FsDos extends AbstractFileSystem
   }
 
   // ---------------------------------------------------------------------------------//
+  boolean isValidBlockNo (int track, int sector)
+  // ---------------------------------------------------------------------------------//
+  {
+    System.out.printf ("%3d  %3d  %s%n", track, sector,
+        super.isValidBlockNo (track * sectorsPerTrack + sector));
+    return super.isValidBlockNo (track * sectorsPerTrack + sector);
+  }
+
+  // ---------------------------------------------------------------------------------//
   private boolean checkDuplicate (List<AppleBlock> catalogSectors, AppleBlock testSector)
   // ---------------------------------------------------------------------------------//
   {
@@ -129,7 +138,7 @@ public class FsDos extends AbstractFileSystem
     int ptr = 0x38;
     for (int track = 0; track < totalTracks; track++)
     {
-      int bits = Utility.unsignedLongBigEndian (buffer, ptr);
+      int bits = Utility.unsignedIntBigEndian (buffer, ptr);
       for (int sector = blocksPerTrack - 1; sector >= 0; sector--)
       {
         if ((bits & 0x80000000) != 0)

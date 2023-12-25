@@ -78,6 +78,9 @@ public class FsProdos extends AbstractFileSystem
   // ---------------------------------------------------------------------------------//
   {
     AppleBlock catalogBlock = getBlock (blockNo, BlockType.OS_DATA);
+    if (catalogBlock == null)
+      throw new FileFormatException ("FsProdos: Invalid catalog");
+
     FileProdos file = null;
 
     while (catalogBlock.getBlockNo () != 0)
@@ -140,7 +143,7 @@ public class FsProdos extends AbstractFileSystem
 
       catalogBlock = getBlock (Utility.unsignedShort (buffer, 2), BlockType.OS_DATA);
 
-      if (!catalogBlock.isValid ())
+      if (catalogBlock == null)
         throw new FileFormatException ("FsProdos: Invalid catalog");
     }
   }
