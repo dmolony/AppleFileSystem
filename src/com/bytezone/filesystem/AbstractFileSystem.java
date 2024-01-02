@@ -91,7 +91,7 @@ public abstract class AbstractFileSystem implements AppleFileSystem
 
   // ---------------------------------------------------------------------------------//
   @Override
-  public AddressType getType ()
+  public AddressType getAddressType ()
   // ---------------------------------------------------------------------------------//
   {
     return blockReader.addressType;

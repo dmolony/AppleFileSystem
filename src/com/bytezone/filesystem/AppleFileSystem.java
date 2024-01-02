@@ -27,7 +27,7 @@ public interface AppleFileSystem extends AppleContainer
 
   // passed through to BlockReader
 
-  AddressType getType ();             // BLOCK, SECTOR
+  AddressType getAddressType ();             // BLOCK, SECTOR
 
   int getBlocksPerTrack ();
 
@@ -53,7 +53,7 @@ public interface AppleFileSystem extends AppleContainer
 
   public void setErrorMessage (String errorMessage);    // if file can't be read
 
-  public String getErrorMessage ();                 // if file can't be read
+  public String getErrorMessage ();                     // if file can't be read
 
   enum FileSystemType
   {

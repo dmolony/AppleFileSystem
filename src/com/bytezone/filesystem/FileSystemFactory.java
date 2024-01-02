@@ -231,7 +231,7 @@ public class FileSystemFactory
       try
       {
         BlockReader unidosReader = new BlockReader (blockReader);
-        blockReader.setParameters (256, AddressType.SECTOR, 0, 32);
+        unidosReader.setParameters (256, AddressType.SECTOR, 0, 32);
 
         FsUnidos fs = new FsUnidos (unidosReader);
 

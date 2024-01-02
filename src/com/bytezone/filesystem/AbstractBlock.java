@@ -55,7 +55,7 @@ public abstract class AbstractBlock implements AppleBlock
     valid = sectorNo >= 0 && sectorNo < fileSystem.getBlocksPerTrack () && blockNo >= 0
         && blockNo < fileSystem.getTotalBlocks ();
 
-    assert fileSystem.getType () == AddressType.SECTOR;
+    assert fileSystem.getAddressType () == AddressType.SECTOR;
   }
 
   // ---------------------------------------------------------------------------------//
@@ -111,7 +111,7 @@ public abstract class AbstractBlock implements AppleBlock
   public String toString ()
   // ---------------------------------------------------------------------------------//
   {
-    return String.format ("%-6s  B:%4d,  T:%3d,  S:%3d,  %s", fileSystem.getType (),
+    return String.format ("%-6s  B:%4d,  T:%3d,  S:%3d,  %s", fileSystem.getAddressType (),
         blockNo, trackNo, sectorNo, blockType);
   }
 }
