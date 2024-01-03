@@ -58,24 +58,17 @@ public class FsPascal extends AbstractFileSystem
 
     setTotalCatalogBlocks (firstFileBlock - 2);
 
-    int max = Math.min (firstFileBlock, getTotalBlocks ());
-
     List<AppleBlock> catalogBlocks = new ArrayList<> ();
     for (int i = 2; i < firstFileBlock; i++)
       catalogBlocks.add (getBlock (i, BlockType.OS_DATA));
 
     buffer = readBlocks (catalogBlocks);
-
-    List<AppleBlock> fileBlocks = new ArrayList<> ();
-    for (int i = firstFileBlock; i < max; i++)
-      fileBlocks.add (getBlock (i, BlockType.FILE_DATA));
-
     freeBlocks = totalBlocks - firstFileBlock;
 
-    for (int i = 1; i <= totalFiles; i++)      // skip first entry
+    for (int i = 1; i <= totalFiles; i++)                   // skip volume entry
     {
       FilePascal file = new FilePascal (this, buffer, i * CATALOG_ENTRY_SIZE);
-      this.addFile (file);
+      addFile (file);
       freeBlocks -= file.getTotalBlocks ();
     }
   }
