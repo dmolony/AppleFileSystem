@@ -19,11 +19,11 @@ public class FsPascal extends AbstractFileSystem
   private static final int CATALOG_ENTRY_SIZE = 26;
 
   private String volumeName;
-  private int blockFrom;
-  private int blockTo;
+  private int firstCatalogBlock;
+  private int firstFileBlock;
   private int entryType;
-  private int blocks;         // size of disk
-  private int files;          // no of files on disk
+  private int totalBlocks;         // size of disk
+  private int totalFiles;          // no of files on disk
   private int firstBlock;
   private LocalDate date;
 
@@ -36,11 +36,11 @@ public class FsPascal extends AbstractFileSystem
     AppleBlock vtoc = getBlock (2, BlockType.OS_DATA);
     byte[] buffer = vtoc.read ();
 
-    blockFrom = Utility.unsignedShort (buffer, 0);
-    blockTo = Utility.unsignedShort (buffer, 2);
-    if (blockFrom != 0 || blockTo != 6)
+    firstCatalogBlock = Utility.unsignedShort (buffer, 0);
+    firstFileBlock = Utility.unsignedShort (buffer, 2);
+    if (firstCatalogBlock != 0 || firstFileBlock != 6)
       throw new FileFormatException (
-          String.format ("Pascal: from: %d, to: %d", blockFrom, blockTo));
+          String.format ("Pascal: from: %d, to: %d", firstCatalogBlock, firstFileBlock));
 
     entryType = Utility.unsignedShort (buffer, 4);
     if (entryType != 0)
@@ -51,24 +51,28 @@ public class FsPascal extends AbstractFileSystem
       throw new FileFormatException ("bad name length : " + nameLength);
 
     volumeName = Utility.string (buffer, 7, nameLength);
-    blocks = Utility.unsignedShort (buffer, 14);      // 280, 1600, 2048
-    files = Utility.unsignedShort (buffer, 16);
+    totalBlocks = Utility.unsignedShort (buffer, 14);       // 280, 1600, 2048
+    totalFiles = Utility.unsignedShort (buffer, 16);
     firstBlock = Utility.unsignedShort (buffer, 18);
-    date = Utility.getPascalLocalDate (buffer, 20);      // 2 bytes
+    date = Utility.getPascalLocalDate (buffer, 20);         // 2 bytes
 
-    setTotalCatalogBlocks (blockTo - 2);
+    setTotalCatalogBlocks (firstFileBlock - 2);
 
-    int max = Math.min (blockTo, getTotalBlocks ());
+    int max = Math.min (firstFileBlock, getTotalBlocks ());
 
-    List<AppleBlock> addresses = new ArrayList<> ();
-    for (int i = 2; i < max; i++)
-      addresses.add (getBlock (i, BlockType.FILE_DATA));
+    List<AppleBlock> catalogBlocks = new ArrayList<> ();
+    for (int i = 2; i < firstFileBlock; i++)
+      catalogBlocks.add (getBlock (i, BlockType.OS_DATA));
 
-    buffer = readBlocks (addresses);
+    buffer = readBlocks (catalogBlocks);
 
-    freeBlocks = blocks - blockTo;
+    List<AppleBlock> fileBlocks = new ArrayList<> ();
+    for (int i = firstFileBlock; i < max; i++)
+      fileBlocks.add (getBlock (i, BlockType.FILE_DATA));
 
-    for (int i = 1; i <= files; i++)      // skip first entry
+    freeBlocks = totalBlocks - firstFileBlock;
+
+    for (int i = 1; i <= totalFiles; i++)      // skip first entry
     {
       FilePascal file = new FilePascal (this, buffer, i * CATALOG_ENTRY_SIZE);
       this.addFile (file);
@@ -80,7 +84,7 @@ public class FsPascal extends AbstractFileSystem
   public int getVolumeTotalBlocks ()
   // ---------------------------------------------------------------------------------//
   {
-    return blocks;
+    return totalBlocks;
   }
 
   // ---------------------------------------------------------------------------------//
@@ -136,10 +140,11 @@ public class FsPascal extends AbstractFileSystem
     StringBuilder text = new StringBuilder (super.toString ());
 
     text.append (String.format ("Volume name ........... %s%n", volumeName));
-    text.append (String.format ("Directory ............. %d : %d%n", blockFrom, blockTo));
+    text.append (String.format ("Directory ............. %d : %d%n", firstCatalogBlock,
+        firstFileBlock - 1));
     text.append (String.format ("Entry type ............ %,d%n", entryType));
-    text.append (String.format ("Total blocks .......... %,d%n", blocks));
-    text.append (String.format ("Total files ........... %,d%n", files));
+    text.append (String.format ("Total blocks .......... %,d%n", totalBlocks));
+    text.append (String.format ("Total files ........... %,d%n", totalFiles));
     text.append (String.format ("First block ........... %,d%n", firstBlock));
     text.append (String.format ("Date .................. %s", date));
 
