@@ -129,7 +129,7 @@ public class FsZip extends AbstractFileSystem
       text.append ("\n");
     }
 
-    return text.toString ();
+    return Utility.rtrim (text);
   }
 }
 

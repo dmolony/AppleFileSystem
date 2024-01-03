@@ -85,9 +85,8 @@ public class FileZip extends AbstractAppleFile implements AppleFilePath
     FileTime fileTime = zipEntry.getCreationTime ();
     String creationTime = fileTime == null ? "" : fileTime.toString ();
     byte[] bytes = zipEntry.getExtra ();
-    String extra = bytes == null ? "" : Utility.format (bytes);
+    String extra = bytes == null ? "" : "\n" + Utility.format (bytes);
 
-    text.append ("\n");
     text.append (
         String.format ("Compressed size ....... %,d%n", zipEntry.getCompressedSize ()));
     text.append (String.format ("Size .................. %,d%n", zipEntry.getSize ()));
