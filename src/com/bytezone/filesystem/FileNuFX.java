@@ -358,14 +358,6 @@ public class FileNuFX extends AbstractAppleFile implements AppleFilePath, AppleF
   public int getFileLength ()
   // ---------------------------------------------------------------------------------//
   {
-    //    int size = 0;
-    //
-    //    for (NuFXThread thread : threads)
-    //      if (thread.hasData () || thread.hasResource () || thread.hasDisk ())
-    //        //        return thread.uncompressedEOF;
-    //        size += thread.getUncompressedEOF ();
-    //
-    //    return size;
     return getUncompressedSize ();
   }
 
