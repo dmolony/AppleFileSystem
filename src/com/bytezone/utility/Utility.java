@@ -368,6 +368,7 @@ public class Utility
       System.out.printf ("Hour ..... %02X%n", hour);
       System.out.printf ("Minute ... %02X%n", minute);
     }
+
     return Optional.empty ();
   }
 
@@ -463,10 +464,7 @@ public class Utility
   {
     for (int i = 0; i < buffer.length; i++)
       if (matches (buffer, i, key))
-      {
-        //        System.out.printf ("Matches at %04X%n", i);
         return i;
-      }
 
     return -1;
   }

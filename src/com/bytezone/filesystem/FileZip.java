@@ -41,20 +41,6 @@ public class FileZip extends AbstractAppleFile implements AppleFilePath
   }
 
   // ---------------------------------------------------------------------------------//
-  //  @Override
-  //  public String[] getPathFolders ()
-  //  // ---------------------------------------------------------------------------------//
-  //  {
-  //    String[] pathItems = fileName.split ("\\" + separator);
-  //    String[] pathFolders = new String[pathItems.length - 1];
-  //
-  //    for (int i = 0; i < pathFolders.length; i++)
-  //      pathFolders[i] = pathItems[i];
-  //
-  //    return pathFolders;
-  //  }
-
-  // ---------------------------------------------------------------------------------//
   @Override
   public String getFileName ()
   // ---------------------------------------------------------------------------------//
@@ -98,6 +84,6 @@ public class FileZip extends AbstractAppleFile implements AppleFilePath
     text.append (String.format ("Method ................ %,d%n", zipEntry.getMethod ()));
     text.append (String.format ("Is directory .......... %s%n", zipEntry.isDirectory ()));
 
-    return text.toString ();
+    return Utility.rtrim (text);
   }
 }
