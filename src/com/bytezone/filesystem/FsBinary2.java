@@ -1,5 +1,7 @@
 package com.bytezone.filesystem;
 
+import com.bytezone.utility.Utility;
+
 // -----------------------------------------------------------------------------------//
 public class FsBinary2 extends AbstractFileSystem
 // -----------------------------------------------------------------------------------//
@@ -63,5 +65,13 @@ public class FsBinary2 extends AbstractFileSystem
     }
 
     return text.toString ();
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
+  public String toString ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return Utility.rtrim (new StringBuilder (super.toString ()));
   }
 }
