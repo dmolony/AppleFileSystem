@@ -30,7 +30,7 @@ public class FsProdos extends AbstractFileSystem
 
     while (nextBlockNo != 0)
     {
-      AppleBlock vtoc = getBlock (nextBlockNo, BlockType.OS_DATA);
+      AppleBlock vtoc = getBlock (nextBlockNo, BlockType.FS_DATA);
       byte[] buffer = vtoc.read ();
 
       if (catalogBlocks == 0)
@@ -77,7 +77,7 @@ public class FsProdos extends AbstractFileSystem
   private void processFolder (AppleContainer parent, int blockNo)
   // ---------------------------------------------------------------------------------//
   {
-    AppleBlock catalogBlock = getBlock (blockNo, BlockType.OS_DATA);
+    AppleBlock catalogBlock = getBlock (blockNo, BlockType.FS_DATA);
     if (catalogBlock == null)
       throw new FileFormatException ("FsProdos: Invalid catalog");
 
@@ -141,7 +141,7 @@ public class FsProdos extends AbstractFileSystem
         ptr += ProdosConstants.ENTRY_SIZE;
       }
 
-      catalogBlock = getBlock (Utility.unsignedShort (buffer, 2), BlockType.OS_DATA);
+      catalogBlock = getBlock (Utility.unsignedShort (buffer, 2), BlockType.FS_DATA);
 
       if (catalogBlock == null)
         throw new FileFormatException ("FsProdos: Invalid catalog");
@@ -163,7 +163,7 @@ public class FsProdos extends AbstractFileSystem
     {
       if (bitPtr % 0x1000 == 0)
       {
-        buffer = getBlock (blockNo++, BlockType.OS_DATA).read ();
+        buffer = getBlock (blockNo++, BlockType.FS_DATA).read ();
         bfrPtr = 0;
       }
 

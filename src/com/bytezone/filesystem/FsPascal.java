@@ -33,7 +33,7 @@ public class FsPascal extends AbstractFileSystem
   {
     super (blockReader, FileSystemType.PASCAL);
 
-    AppleBlock vtoc = getBlock (2, BlockType.OS_DATA);
+    AppleBlock vtoc = getBlock (2, BlockType.FS_DATA);
     byte[] buffer = vtoc.read ();
 
     firstCatalogBlock = Utility.unsignedShort (buffer, 0);
@@ -60,7 +60,7 @@ public class FsPascal extends AbstractFileSystem
 
     List<AppleBlock> catalogBlocks = new ArrayList<> ();
     for (int i = 2; i < firstFileBlock; i++)
-      catalogBlocks.add (getBlock (i, BlockType.OS_DATA));
+      catalogBlocks.add (getBlock (i, BlockType.FS_DATA));
 
     buffer = readBlocks (catalogBlocks);
     freeBlocks = totalBlocks - firstFileBlock;

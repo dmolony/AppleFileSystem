@@ -36,7 +36,7 @@ public class FsCpm extends AbstractFileSystem
 
     OUT: for (int i = 0; i < maxBlocks; i++)
     {
-      byte[] buffer = getBlock (firstBlock + i, BlockType.OS_DATA).read ();
+      byte[] buffer = getBlock (firstBlock + i, BlockType.FS_DATA).read ();
 
       for (int j = 0; j < buffer.length; j += 32)
       {

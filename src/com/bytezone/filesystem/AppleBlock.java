@@ -18,6 +18,6 @@ public interface AppleBlock         // this could be renamed to Address
 
   public enum BlockType
   {
-    EMPTY, OS_DATA, FILE_DATA, ORPHAN
+    EMPTY, FS_DATA, FILE_DATA, ORPHAN
   }
 }

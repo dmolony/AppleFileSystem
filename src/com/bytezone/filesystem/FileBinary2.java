@@ -64,7 +64,7 @@ public class FileBinary2 extends AbstractAppleFile
     //    isFile = true;
     this.headerBlockNo = headerBlockNo;
 
-    byte[] buffer = fs.getBlock (headerBlockNo, BlockType.OS_DATA).read ();
+    byte[] buffer = fs.getBlock (headerBlockNo, BlockType.FS_DATA).read ();
 
     accessCode = buffer[3] & 0xFF;
     fileType = buffer[4] & 0xFF;

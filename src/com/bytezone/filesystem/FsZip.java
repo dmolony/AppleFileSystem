@@ -123,11 +123,11 @@ public class FsZip extends AbstractFileSystem
   {
     StringBuilder text = new StringBuilder (super.toString ());
 
-    for (AppleFile file : files)
-    {
-      text.append (file);
-      text.append ("\n");
-    }
+    //    for (AppleFile file : files)
+    //    {
+    //      text.append (file);
+    //      text.append ("\n\n");
+    //    }
 
     return Utility.rtrim (text);
   }

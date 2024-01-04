@@ -52,7 +52,7 @@ public class FileDos4 extends AbstractAppleFile
       nextTrack &= 0x3F;
       nextSector &= 0x1F;
 
-      AppleBlock tsSector = fs.getSector (nextTrack, nextSector, BlockType.OS_DATA);
+      AppleBlock tsSector = fs.getSector (nextTrack, nextSector, BlockType.FS_DATA);
       if (!tsSector.isValid ())
         throw new FileFormatException ("Invalid TS sector");
 

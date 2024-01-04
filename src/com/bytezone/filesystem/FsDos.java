@@ -32,7 +32,7 @@ public class FsDos extends AbstractFileSystem
 
     //    int catalogBlocks = 0;
 
-    AppleBlock vtoc = getSector (17, 0, BlockType.OS_DATA);
+    AppleBlock vtoc = getSector (17, 0, BlockType.FS_DATA);
     if (vtoc == null)
       throw new FileFormatException ("Dos: Invalid VTOC");
 
@@ -61,7 +61,7 @@ public class FsDos extends AbstractFileSystem
       if (track == 0)
         break;
 
-      AppleBlock catalogSector = getSector (track, sector, BlockType.OS_DATA);
+      AppleBlock catalogSector = getSector (track, sector, BlockType.FS_DATA);
       if (catalogSector == null)
         throw new FileFormatException ("Dos: Invalid catalog sector");
 
