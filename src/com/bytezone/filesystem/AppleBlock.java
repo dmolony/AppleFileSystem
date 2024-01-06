@@ -14,6 +14,8 @@ public interface AppleBlock         // this could be renamed to Address
 
   byte[] read ();
 
+  void setBlockType (BlockType blockType);
+
   BlockType getBlockType ();
 
   public enum BlockType

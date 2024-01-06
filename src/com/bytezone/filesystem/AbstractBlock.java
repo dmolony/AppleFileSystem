@@ -16,12 +16,11 @@ public abstract class AbstractBlock implements AppleBlock
   protected final boolean valid;
 
   // ---------------------------------------------------------------------------------//
-  AbstractBlock (AppleFileSystem fileSystem, int blockNo, BlockType blockType)
+  AbstractBlock (AppleFileSystem fileSystem, int blockNo)
   // ---------------------------------------------------------------------------------//
   {
     this.fileSystem = fileSystem;
     this.blockNo = blockNo;
-    this.blockType = blockType;
 
     int blocksPerTrack = fileSystem.getBlocksPerTrack ();
     if (blocksPerTrack > 0)
@@ -41,13 +40,11 @@ public abstract class AbstractBlock implements AppleBlock
   }
 
   // ---------------------------------------------------------------------------------//
-  AbstractBlock (AppleFileSystem fileSystem, int trackNo, int sectorNo,
-      BlockType blockType)
+  AbstractBlock (AppleFileSystem fileSystem, int trackNo, int sectorNo)
   // ---------------------------------------------------------------------------------//
   {
     this.fileSystem = fileSystem;
     this.blockNo = fileSystem.getBlocksPerTrack () * trackNo + sectorNo;
-    this.blockType = blockType;
 
     this.trackNo = trackNo;
     this.sectorNo = sectorNo;
@@ -56,6 +53,16 @@ public abstract class AbstractBlock implements AppleBlock
         && blockNo < fileSystem.getTotalBlocks ();
 
     assert fileSystem.getAddressType () == AddressType.SECTOR;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
+  public void setBlockType (BlockType blockType)
+  // ---------------------------------------------------------------------------------//
+  {
+    //    if (this.blockType != null && this.blockType != blockType)
+    //      System.out.printf ("%4d changing %s to %s%n", blockNo, this.blockType, blockType);
+    this.blockType = blockType;
   }
 
   // ---------------------------------------------------------------------------------//
@@ -111,7 +118,7 @@ public abstract class AbstractBlock implements AppleBlock
   public String toString ()
   // ---------------------------------------------------------------------------------//
   {
-    return String.format ("%-6s  B:%4d,  T:%3d,  S:%3d,  %s", fileSystem.getAddressType (),
+    return String.format ("%-6s  B:%,6d  T:%3d  S:%3d  %s", fileSystem.getAddressType (),
         blockNo, trackNo, sectorNo, blockType);
   }
 }

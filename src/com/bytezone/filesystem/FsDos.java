@@ -32,9 +32,10 @@ public class FsDos extends AbstractFileSystem
 
     //    int catalogBlocks = 0;
 
-    AppleBlock vtoc = getSector (17, 0, BlockType.FS_DATA);
+    AppleBlock vtoc = getSector (17, 0);
     if (vtoc == null)
       throw new FileFormatException ("Dos: Invalid VTOC");
+    vtoc.setBlockType (BlockType.FS_DATA);
 
     byte[] buffer = vtoc.read ();
     buildFreeSectorList (buffer);
@@ -61,9 +62,10 @@ public class FsDos extends AbstractFileSystem
       if (track == 0)
         break;
 
-      AppleBlock catalogSector = getSector (track, sector, BlockType.FS_DATA);
+      AppleBlock catalogSector = getSector (track, sector);
       if (catalogSector == null)
         throw new FileFormatException ("Dos: Invalid catalog sector");
+      catalogSector.setBlockType (BlockType.FS_DATA);
 
       if (checkDuplicate (catalogSectors, catalogSector))
         throw new FileFormatException ("Dos: Duplicate catalog sector (looping)");

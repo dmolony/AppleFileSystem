@@ -68,7 +68,9 @@ public class FileCpm extends AbstractAppleFile
           System.out.printf ("%s CPM hi bit set%n", getFileName ());
 
       int blockNumber = ((b & 0x80) == 0) ? (b + 12) : (b & 0x7F);
-      dataBlocks.add (getParentFileSystem ().getBlock (blockNumber, BlockType.FILE_DATA));
+      AppleBlock block = getParentFileSystem ().getBlock (blockNumber);
+      block.setBlockType (BlockType.FILE_DATA);
+      dataBlocks.add (block);
     }
   }
 

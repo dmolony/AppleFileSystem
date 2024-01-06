@@ -147,34 +147,29 @@ public class BlockReader
   }
 
   // ---------------------------------------------------------------------------------//
-  public AppleBlock getBlock (AppleFileSystem fs, int blockNo, BlockType blockType)
+  public AppleBlock getBlock (AppleFileSystem fs, int blockNo)
   // ---------------------------------------------------------------------------------//
   {
     if (!isValidBlockNo (blockNo))
       return null;
-    // throw?
+    //    // throw?
 
     if (appleBlocks[blockNo] == null)           // first time here
-      if (blockType != null)                    // we know what it should be
-        appleBlocks[blockNo] = new BlockProdos (fs, blockNo, blockType);
+    {
+      AppleBlock block = new BlockProdos (fs, blockNo);
+      if (isEmpty (block))
+        block.setBlockType (BlockType.EMPTY);
       else
-      {
-        AppleBlock block = new BlockProdos (fs, blockNo, BlockType.EMPTY);
-        if (isEmpty (block))
-          appleBlocks[blockNo] = block;
-        else
-          appleBlocks[blockNo] = new BlockProdos (fs, blockNo, BlockType.ORPHAN);
-      }
-    else                                        // has already been set
-    if (blockType != null)                      // but we want to change it
-      appleBlocks[blockNo] = new BlockProdos (fs, blockNo, blockType);
+        block.setBlockType (BlockType.ORPHAN);
+
+      appleBlocks[blockNo] = block;
+    }
 
     return appleBlocks[blockNo];
   }
 
   // ---------------------------------------------------------------------------------//
-  public AppleBlock getSector (AppleFileSystem fs, int track, int sector,
-      BlockType blockType)
+  public AppleBlock getSector (AppleFileSystem fs, int track, int sector)
   // ---------------------------------------------------------------------------------//
   {
     assert addressType == AddressType.SECTOR;
@@ -186,14 +181,13 @@ public class BlockReader
     // throw?
 
     if (appleBlocks[blockNo] == null)
-      appleBlocks[blockNo] = new BlockDos (fs, track, sector, blockType);
+      appleBlocks[blockNo] = new BlockDos (fs, track, sector);
 
     return appleBlocks[blockNo];
   }
 
   // ---------------------------------------------------------------------------------//
-  public AppleBlock getSector (AppleFileSystem fs, byte[] buffer, int offset,
-      BlockType blockType)
+  public AppleBlock getSector (AppleFileSystem fs, byte[] buffer, int offset)
   // ---------------------------------------------------------------------------------//
   {
     assert addressType == AddressType.SECTOR;
@@ -207,7 +201,7 @@ public class BlockReader
     // throw?
 
     if (appleBlocks[blockNo] == null)
-      appleBlocks[blockNo] = new BlockDos (fs, track, sector, blockType);
+      appleBlocks[blockNo] = new BlockDos (fs, track, sector);
 
     return appleBlocks[blockNo];
   }

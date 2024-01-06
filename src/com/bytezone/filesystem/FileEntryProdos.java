@@ -10,7 +10,7 @@ import com.bytezone.utility.Utility;
 public class FileEntryProdos
 // -----------------------------------------------------------------------------------//
 {
-  private static Locale US = Locale.US;          // to force 3 character months
+  private static Locale US = Locale.US;                 // to force 3 character months
   private static final DateTimeFormatter df =
       DateTimeFormatter.ofPattern ("d-LLL-yy", US);
   private static final DateTimeFormatter tf = DateTimeFormatter.ofPattern ("H:mm");

@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
-import com.bytezone.filesystem.AppleBlock.BlockType;
 import com.bytezone.filesystem.BlockReader.AddressType;
 
 // -----------------------------------------------------------------------------------//
@@ -114,27 +113,51 @@ public abstract class AbstractFileSystem implements AppleFileSystem
   }
 
   // ---------------------------------------------------------------------------------//
+  //  @Override
+  //  public AppleBlock getBlock (int blockNo, BlockType blockType)
+  //  // ---------------------------------------------------------------------------------//
+  //  {
+  //    return blockReader.getBlock (this, blockNo, blockType);
+  //  }
+
+  // ---------------------------------------------------------------------------------//
+  //  @Override
+  //  public AppleBlock getSector (int track, int sector, BlockType blockType)
+  //  // ---------------------------------------------------------------------------------//
+  //  {
+  //    return blockReader.getSector (this, track, sector, blockType);
+  //  }
+
+  // ---------------------------------------------------------------------------------//
+  //  @Override
+  //  public AppleBlock getSector (byte[] buffer, int offset, BlockType blockType)
+  //  // ---------------------------------------------------------------------------------//
+  //  {
+  //    return blockReader.getSector (this, buffer, offset, blockType);
+  //  }
+
+  // ---------------------------------------------------------------------------------//
   @Override
-  public AppleBlock getBlock (int blockNo, BlockType blockType)
+  public AppleBlock getBlock (int blockNo)
   // ---------------------------------------------------------------------------------//
   {
-    return blockReader.getBlock (this, blockNo, blockType);
+    return blockReader.getBlock (this, blockNo);
   }
 
   // ---------------------------------------------------------------------------------//
   @Override
-  public AppleBlock getSector (int track, int sector, BlockType blockType)
+  public AppleBlock getSector (int track, int sector)
   // ---------------------------------------------------------------------------------//
   {
-    return blockReader.getSector (this, track, sector, blockType);
+    return blockReader.getSector (this, track, sector);
   }
 
   // ---------------------------------------------------------------------------------//
   @Override
-  public AppleBlock getSector (byte[] buffer, int offset, BlockType blockType)
+  public AppleBlock getSector (byte[] buffer, int offset)
   // ---------------------------------------------------------------------------------//
   {
-    return blockReader.getSector (this, buffer, offset, blockType);
+    return blockReader.getSector (this, buffer, offset);
   }
 
   // ---------------------------------------------------------------------------------//

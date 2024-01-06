@@ -50,9 +50,10 @@ public class FileDos extends AbstractAppleFile
     int sectorsLeft = sectorCount;
     loop: while (nextTrack != 0)
     {
-      AppleBlock tsSector = fs.getSector (nextTrack, nextSector, BlockType.FS_DATA);
+      AppleBlock tsSector = fs.getSector (nextTrack, nextSector);
       if (tsSector == null)
         throw new FileFormatException ("Invalid TS sector");
+      tsSector.setBlockType (BlockType.FS_DATA);
 
       indexBlocks.add (tsSector);
 
@@ -63,7 +64,8 @@ public class FileDos extends AbstractAppleFile
 
       for (int i = 12; i < 256; i += 2)
       {
-        AppleBlock dataSector = fs.getSector (sectorBuffer, i, BlockType.FILE_DATA);
+        AppleBlock dataSector = fs.getSector (sectorBuffer, i);
+        dataSector.setBlockType (BlockType.FILE_DATA);
 
         if (dataSector == null)
           throw new FileFormatException ("Invalid data sector - " + dataSector);

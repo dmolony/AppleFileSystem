@@ -64,7 +64,9 @@ public class FileBinary2 extends AbstractAppleFile
     //    isFile = true;
     this.headerBlockNo = headerBlockNo;
 
-    byte[] buffer = fs.getBlock (headerBlockNo, BlockType.FS_DATA).read ();
+    AppleBlock headerBlock = fs.getBlock (headerBlockNo);
+    headerBlock.setBlockType (BlockType.FS_DATA);
+    byte[] buffer = headerBlock.read ();
 
     accessCode = buffer[3] & 0xFF;
     fileType = buffer[4] & 0xFF;
@@ -114,12 +116,16 @@ public class FileBinary2 extends AbstractAppleFile
         break;
       }
 
-      dataBlocks.add (fs.getBlock (block, BlockType.FILE_DATA));
+      AppleBlock dataBlock = fs.getBlock (block);
+      dataBlock.setBlockType (BlockType.FILE_DATA);
+      dataBlocks.add (dataBlock);
     }
 
     if (validBlocks && (isCompressed () || fileName.endsWith (".QQ")))
     {
-      buffer = fs.getBlock (headerBlockNo + 1, BlockType.FILE_DATA).read ();
+      AppleBlock dataBlock = fs.getBlock (headerBlockNo + 1);
+      dataBlock.setBlockType (BlockType.FILE_DATA);
+      buffer = dataBlock.read ();
       if (buffer[0] == 0x76 && buffer[1] == (byte) 0xFF)      // squeeze
         squeezeName = Utility.getCString (buffer, 4);
     }

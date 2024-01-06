@@ -47,7 +47,11 @@ public class FilePascal extends AbstractAppleFile
     date = Utility.getPascalLocalDate (buffer, ptr + 24);           // could return null
 
     for (int i = firstBlock; i < lastBlock; i++)
-      dataBlocks.add (fs.getBlock (i, BlockType.FILE_DATA));
+    {
+      AppleBlock block = fs.getBlock (i);
+      block.setBlockType (BlockType.FILE_DATA);
+      dataBlocks.add (block);
+    }
   }
 
   // ---------------------------------------------------------------------------------//

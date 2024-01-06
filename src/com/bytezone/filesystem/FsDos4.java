@@ -18,7 +18,8 @@ public class FsDos4 extends AbstractFileSystem
     assert getTotalCatalogBlocks () == 0;
     int catalogBlocks = 0;
 
-    AppleBlock vtoc = getSector (17, 0, BlockType.FS_DATA);
+    AppleBlock vtoc = getSector (17, 0);
+    vtoc.setBlockType (BlockType.FS_DATA);
     byte[] buffer = vtoc.read ();
 
     if (buffer[3] != 0x41 && buffer[3] != 0x42)
@@ -37,7 +38,8 @@ public class FsDos4 extends AbstractFileSystem
       track &= 0x3F;
       sector &= 0x1F;
 
-      AppleBlock catalogSector = getSector (track, sector, BlockType.FS_DATA);
+      AppleBlock catalogSector = getSector (track, sector);
+      catalogSector.setBlockType (BlockType.FS_DATA);
       if (!catalogSector.isValid ())
         return;
 

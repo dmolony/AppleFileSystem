@@ -5,9 +5,9 @@ public class BlockProdos extends AbstractBlock
 // -----------------------------------------------------------------------------------//
 {
   // ---------------------------------------------------------------------------------//
-  BlockProdos (AppleFileSystem fs, int blockNo, BlockType blockType)
+  BlockProdos (AppleFileSystem fs, int blockNo)     //, BlockType blockType)
   // ---------------------------------------------------------------------------------//
   {
-    super (fs, blockNo, blockType);
+    super (fs, blockNo);  //, blockType);
   }
 }

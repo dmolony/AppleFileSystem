@@ -13,7 +13,7 @@ import com.bytezone.utility.Utility;
 public class FileProdos extends AbstractAppleFile implements AppleForkedFile
 // -----------------------------------------------------------------------------------//
 {
-  private static Locale US = Locale.US;          // to force 3 character months
+  private static Locale US = Locale.US;                 // to force 3 character months
   protected static final DateTimeFormatter sdf =
       DateTimeFormatter.ofPattern ("d-LLL-yy", US);
   protected static final DateTimeFormatter stf = DateTimeFormatter.ofPattern ("H:mm");
@@ -57,8 +57,9 @@ public class FileProdos extends AbstractAppleFile implements AppleForkedFile
   private void createForks ()
   // ---------------------------------------------------------------------------------//
   {
-    byte[] buffer =
-        getParentFileSystem ().getBlock (fileEntry.keyPtr, BlockType.FS_DATA).read ();
+    AppleBlock block = getParentFileSystem ().getBlock (fileEntry.keyPtr);
+    block.setBlockType (BlockType.FS_DATA);
+    byte[] buffer = block.read ();
 
     for (int ptr = 0; ptr < 512; ptr += 256)
     {

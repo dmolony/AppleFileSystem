@@ -68,7 +68,8 @@ public class ForkProdos extends AbstractAppleFile
     storageTypeText = ProdosConstants.storageTypes[storageType];
 
     List<Integer> blockNos = new ArrayList<> ();
-    AppleBlock dataBlock = fileSystem.getBlock (keyPtr, BlockType.FS_DATA);
+    AppleBlock dataBlock = fileSystem.getBlock (keyPtr);
+    dataBlock.setBlockType (BlockType.FS_DATA);
 
     if (dataBlock.isValid ())
       switch (storageType)
@@ -84,8 +85,14 @@ public class ForkProdos extends AbstractAppleFile
 
         case ProdosConstants.TREE:
           for (Integer indexBlock : readMasterIndex (keyPtr))
-            if (fileSystem.getBlock (indexBlock, BlockType.FS_DATA).isValid ())
+          {
+            AppleBlock block = fileSystem.getBlock (indexBlock);
+            if (block.isValid ())
+            {
+              block.setBlockType (BlockType.FS_DATA);
               blockNos.addAll (readIndex (indexBlock));
+            }
+          }
           break;
 
         case ProdosConstants.PASCAL_ON_PROFILE:
@@ -107,7 +114,11 @@ public class ForkProdos extends AbstractAppleFile
       if (blockNo == 0)
         dataBlocks.add (null);
       else
-        dataBlocks.add (fileSystem.getBlock (blockNo, BlockType.FILE_DATA));
+      {
+        AppleBlock block = fileSystem.getBlock (blockNo);
+        block.setBlockType (BlockType.FILE_DATA);
+        dataBlocks.add (block);
+      }
     }
   }
 
@@ -129,14 +140,16 @@ public class ForkProdos extends AbstractAppleFile
         blocks.add (0);
     else
     {
-      AppleBlock indexBlock = fileSystem.getBlock (blockPtr, BlockType.FS_DATA);
+      AppleBlock indexBlock = fileSystem.getBlock (blockPtr);
+      indexBlock.setBlockType (BlockType.FS_DATA);
       indexBlocks.add (indexBlock);
 
       byte[] buffer = indexBlock.read ();
       for (int i = 0; i < 256; i++)
       {
         int blockNo = (buffer[i] & 0xFF) | ((buffer[i + 0x100] & 0xFF) << 8);
-        AppleBlock dataBlock = fileSystem.getBlock (blockNo, BlockType.FILE_DATA);
+        AppleBlock dataBlock = fileSystem.getBlock (blockNo);
+        //        dataBlock.setBlockType (BlockType.FILE_DATA);
         blocks.add (dataBlock.isValid () ? blockNo : 0);      // should throw error
       }
     }
@@ -148,7 +161,8 @@ public class ForkProdos extends AbstractAppleFile
   private List<Integer> readMasterIndex (int keyPtr)
   // ---------------------------------------------------------------------------------//
   {
-    AppleBlock indexBlock = fileSystem.getBlock (keyPtr, BlockType.FS_DATA);
+    AppleBlock indexBlock = fileSystem.getBlock (keyPtr);
+    indexBlock.setBlockType (BlockType.FS_DATA);
     masterIndexBlock = indexBlock;
     indexBlocks.add (indexBlock);
 
@@ -163,7 +177,8 @@ public class ForkProdos extends AbstractAppleFile
     for (int i = 0; i <= highest; i++)
     {
       int blockNo = (buffer[i] & 0xFF) | ((buffer[i + 256] & 0xFF) << 8);
-      AppleBlock dataBlock = fileSystem.getBlock (blockNo, BlockType.FS_DATA);
+      AppleBlock dataBlock = fileSystem.getBlock (blockNo);
+      dataBlock.setBlockType (BlockType.FS_DATA);
       blocks.add (dataBlock.isValid () ? blockNo : 0);
     }
 

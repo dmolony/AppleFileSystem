@@ -17,7 +17,9 @@ public class FsLbr extends AbstractFileSystem
 
     for (int i = 0; i < max; i++)
     {
-      byte[] buffer = getBlock (i, BlockType.FILE_DATA).read ();
+      AppleBlock block = getBlock (i);
+      block.setBlockType (BlockType.FILE_DATA);
+      byte[] buffer = block.read ();
 
       for (int j = 0; j < 4; j++)
       {
