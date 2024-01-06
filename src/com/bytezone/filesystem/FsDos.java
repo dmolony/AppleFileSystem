@@ -8,7 +8,7 @@ import com.bytezone.filesystem.AppleBlock.BlockType;
 import com.bytezone.utility.Utility;
 
 // -----------------------------------------------------------------------------------//
-public class FsDos extends AbstractFileSystem
+class FsDos extends AbstractFileSystem
 // -----------------------------------------------------------------------------------//
 {
   private static final int ENTRY_SIZE = 35;
@@ -25,7 +25,7 @@ public class FsDos extends AbstractFileSystem
   private int failedFiles;
 
   // ---------------------------------------------------------------------------------//
-  public FsDos (BlockReader blockReader)
+  FsDos (BlockReader blockReader)
   // ---------------------------------------------------------------------------------//
   {
     super (blockReader, FileSystemType.DOS);

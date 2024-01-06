@@ -4,7 +4,7 @@ import com.bytezone.woz.DiskNibbleException;
 import com.bytezone.woz.WozFile;
 
 // -----------------------------------------------------------------------------------//
-public class FsWoz extends AbstractFileSystem
+class FsWoz extends AbstractFileSystem
 // -----------------------------------------------------------------------------------//
 {
   static final byte[] WOZ_1 = { 0x57, 0x4F, 0x5A, 0x31, (byte) 0xFF, 0x0A, 0x0D, 0x0A };
@@ -13,7 +13,7 @@ public class FsWoz extends AbstractFileSystem
   boolean debug = false;
 
   // ---------------------------------------------------------------------------------//
-  public FsWoz (BlockReader blockReader, FileSystemType fileSystemType)
+  FsWoz (BlockReader blockReader, FileSystemType fileSystemType)
       throws DiskNibbleException
   // ---------------------------------------------------------------------------------//
   {

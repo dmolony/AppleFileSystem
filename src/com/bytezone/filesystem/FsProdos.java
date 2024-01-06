@@ -9,7 +9,7 @@ import com.bytezone.utility.Utility;
 // see https://prodos8.com/docs/techref/file-organization/
 // see https://prodos8.com/docs/technote/25/
 // -----------------------------------------------------------------------------------//
-public class FsProdos extends AbstractFileSystem
+class FsProdos extends AbstractFileSystem
 // -----------------------------------------------------------------------------------//
 {
   private final BitSet volumeBitMap;

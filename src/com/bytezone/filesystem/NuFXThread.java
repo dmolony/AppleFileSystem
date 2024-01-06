@@ -6,7 +6,7 @@ import com.bytezone.utility.Squeeze;
 import com.bytezone.utility.Utility;
 
 // -----------------------------------------------------------------------------------//
-public class NuFXThread
+class NuFXThread
 // -----------------------------------------------------------------------------------//
 {
   private static String[] threadClassText = { "Message", "Control", "Data", "Filename" };
@@ -41,7 +41,7 @@ public class NuFXThread
   private final byte[] compressedData;
 
   // ---------------------------------------------------------------------------------//
-  public NuFXThread (byte[] buffer, int offset, int dataOffset)
+  NuFXThread (byte[] buffer, int offset, int dataOffset)
   // ---------------------------------------------------------------------------------//
   {
     threadClass = Utility.unsignedShort (buffer, offset);

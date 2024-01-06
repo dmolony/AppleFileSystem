@@ -3,14 +3,14 @@ package com.bytezone.filesystem;
 import com.bytezone.filesystem.AppleBlock.BlockType;
 
 // -----------------------------------------------------------------------------------//
-public class FsDos4 extends AbstractFileSystem
+class FsDos4 extends AbstractFileSystem
 // -----------------------------------------------------------------------------------//
 {
   static final int ENTRY_SIZE = 35;
   int dosVersion;
 
   // ---------------------------------------------------------------------------------//
-  public FsDos4 (BlockReader blockReader)
+  FsDos4 (BlockReader blockReader)
   // ---------------------------------------------------------------------------------//
   {
     super (blockReader, FileSystemType.DOS4);

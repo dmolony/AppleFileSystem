@@ -3,7 +3,7 @@ package com.bytezone.filesystem;
 import java.util.List;
 
 // -----------------------------------------------------------------------------------//
-public class FsHybrid extends AbstractFileSystem
+class FsHybrid extends AbstractFileSystem
 // -----------------------------------------------------------------------------------//
 {
   // ---------------------------------------------------------------------------------//
@@ -21,14 +21,14 @@ public class FsHybrid extends AbstractFileSystem
   }
 
   // ---------------------------------------------------------------------------------//
-  public FsHybrid (AppleFileSystem fs)
+  FsHybrid (AppleFileSystem fs)
   // ---------------------------------------------------------------------------------//
   {
     this (fs.getBlockReader ());
   }
 
   // ---------------------------------------------------------------------------------//
-  public FsHybrid (BlockReader blockReader)
+  FsHybrid (BlockReader blockReader)
   // ---------------------------------------------------------------------------------//
   {
     super (blockReader, FileSystemType.HYBRID);

@@ -12,7 +12,7 @@ import com.bytezone.utility.Utility;
 
 // https://docs.fileformat.com/compression/zip/
 // -----------------------------------------------------------------------------------//
-public class FsZip extends AbstractFileSystem
+class FsZip extends AbstractFileSystem
 // -----------------------------------------------------------------------------------//
 {
   static final byte[] ZIP = { 0x50, 0x4B, 0x03, 0x04 };
@@ -22,7 +22,7 @@ public class FsZip extends AbstractFileSystem
   private List<ZipEntry> zipEntries = new ArrayList<> ();
 
   // ---------------------------------------------------------------------------------//
-  public FsZip (BlockReader blockReader)
+  FsZip (BlockReader blockReader)
   // ---------------------------------------------------------------------------------//
   {
     super (blockReader, FileSystemType.ZIP);

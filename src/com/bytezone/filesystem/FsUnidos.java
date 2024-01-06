@@ -3,7 +3,7 @@ package com.bytezone.filesystem;
 import com.bytezone.filesystem.BlockReader.AddressType;
 
 // -----------------------------------------------------------------------------------//
-public class FsUnidos extends AbstractFileSystem
+class FsUnidos extends AbstractFileSystem
 // -----------------------------------------------------------------------------------//
 {
   private static final int UNIDOS_SIZE = 409_600;
@@ -11,7 +11,7 @@ public class FsUnidos extends AbstractFileSystem
   private boolean debug = true;
 
   // ---------------------------------------------------------------------------------//
-  public FsUnidos (BlockReader blockReader)
+  FsUnidos (BlockReader blockReader)
   // ---------------------------------------------------------------------------------//
   {
     super (blockReader, FileSystemType.UNIDOS);

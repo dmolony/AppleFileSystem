@@ -3,10 +3,10 @@ package com.bytezone.filesystem;
 import com.bytezone.filesystem.BlockReader.AddressType;
 import com.bytezone.utility.Utility;
 
-public class FsDosMaster extends AbstractFileSystem
+class FsDosMaster extends AbstractFileSystem
 {
   // ---------------------------------------------------------------------------------//
-  public FsDosMaster (BlockReader diskReader, BlockReader fileReader)
+  FsDosMaster (BlockReader diskReader, BlockReader fileReader)
   // ---------------------------------------------------------------------------------//
   {
     super (diskReader, FileSystemType.HYBRID);

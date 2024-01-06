@@ -5,7 +5,7 @@ import com.bytezone.utility.Utility;
 
 // Shrinkit archive
 // -----------------------------------------------------------------------------------//
-public class FsNuFX extends AbstractFileSystem
+class FsNuFX extends AbstractFileSystem
 // -----------------------------------------------------------------------------------//
 {
   static final byte[] NuFile =
@@ -28,7 +28,7 @@ public class FsNuFX extends AbstractFileSystem
   private boolean crcPassed;
 
   // ---------------------------------------------------------------------------------//
-  public FsNuFX (BlockReader blockReader)
+  FsNuFX (BlockReader blockReader)
   // ---------------------------------------------------------------------------------//
   {
     super (blockReader, FileSystemType.NUFX);           // reader not used
@@ -69,15 +69,6 @@ public class FsNuFX extends AbstractFileSystem
       ptr += file.rawLength;
     }
   }
-
-  // ---------------------------------------------------------------------------------//
-  //  @Override
-  //  public void addFileSystem (AppleFileSystem fileSystem)
-  //  // ---------------------------------------------------------------------------------//
-  //  {
-  //    // all disk images are stored as embedded file systems
-  //    throw new UnsupportedOperationException ("addFileSystem() not permitted for FsNuFX");
-  //  }
 
   // ---------------------------------------------------------------------------------//
   public DateTime getCreated ()

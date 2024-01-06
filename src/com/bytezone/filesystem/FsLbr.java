@@ -3,11 +3,11 @@ package com.bytezone.filesystem;
 import com.bytezone.filesystem.AppleBlock.BlockType;
 
 // -----------------------------------------------------------------------------------//
-public class FsLbr extends AbstractFileSystem
+class FsLbr extends AbstractFileSystem
 // -----------------------------------------------------------------------------------//
 {
   // ---------------------------------------------------------------------------------//
-  public FsLbr (BlockReader blockReader)
+  FsLbr (BlockReader blockReader)
   // ---------------------------------------------------------------------------------//
   {
     super (blockReader, FileSystemType.LBR);
