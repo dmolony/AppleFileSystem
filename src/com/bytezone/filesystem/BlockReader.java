@@ -10,7 +10,7 @@ import com.bytezone.filesystem.AppleBlock.BlockType;
 import com.bytezone.utility.Utility;
 
 // -----------------------------------------------------------------------------------//
-public class BlockReader
+class BlockReader
 // -----------------------------------------------------------------------------------//
 {
   private static final int SECTOR_SIZE = 256;
@@ -35,6 +35,7 @@ public class BlockReader
   int blocksPerTrack;           // 4, 8, 13, 16, 32
   int bytesPerTrack;            // 3328, 4096, 8192
   int totalBlocks;
+
   AppleBlock[] appleBlocks;
 
   public enum AddressType
@@ -43,7 +44,7 @@ public class BlockReader
   }
 
   // ---------------------------------------------------------------------------------//
-  public BlockReader (Path path)
+  BlockReader (Path path)
   // ---------------------------------------------------------------------------------//
   {
     this.path = path;
@@ -57,7 +58,7 @@ public class BlockReader
   }
 
   // ---------------------------------------------------------------------------------//
-  public BlockReader (String name, byte[] diskBuffer, int diskOffset, int diskLength)
+  BlockReader (String name, byte[] diskBuffer, int diskOffset, int diskLength)
   // ---------------------------------------------------------------------------------//
   {
     Objects.checkFromIndexSize (diskOffset, diskLength, diskBuffer.length);
@@ -70,7 +71,7 @@ public class BlockReader
   }
 
   // ---------------------------------------------------------------------------------//
-  public BlockReader (BlockReader original)
+  BlockReader (BlockReader original)
   // ---------------------------------------------------------------------------------//
   {
     this.diskBuffer = original.diskBuffer;
@@ -82,7 +83,7 @@ public class BlockReader
   }
 
   // ---------------------------------------------------------------------------------//
-  public void setParameters (int bytesPerBlock, AddressType addressType, int interleave,
+  void setParameters (int bytesPerBlock, AddressType addressType, int interleave,
       int blocksPerTrack)
   // ---------------------------------------------------------------------------------//
   {
@@ -93,6 +94,7 @@ public class BlockReader
 
     bytesPerTrack = bytesPerBlock * blocksPerTrack;
     totalBlocks = (diskLength - 1) / bytesPerBlock + 1;   // includes partial blocks
+
     appleBlocks = new AppleBlock[totalBlocks];
   }
 

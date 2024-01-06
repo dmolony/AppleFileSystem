@@ -7,7 +7,7 @@ import java.util.Locale;
 import com.bytezone.utility.Utility;
 
 // -----------------------------------------------------------------------------------//
-public class DirectoryEntryProdos
+class DirectoryEntryProdos
 // -----------------------------------------------------------------------------------//
 {
   private static Locale US = Locale.US;          // to force 3 character months
@@ -37,7 +37,7 @@ public class DirectoryEntryProdos
   final String storageTypeText;
 
   // ---------------------------------------------------------------------------------//
-  public DirectoryEntryProdos (byte[] buffer, int ptr)
+  DirectoryEntryProdos (byte[] buffer, int ptr)
   // ---------------------------------------------------------------------------------//
   {
     storageType = (buffer[ptr] & 0xF0) >>> 4;

@@ -1,20 +1,20 @@
 package com.bytezone.filesystem;
 
 // -----------------------------------------------------------------------------------//
-public class BlockDos extends AbstractBlock
+class BlockDos extends AbstractBlock
 // -----------------------------------------------------------------------------------//
 {
   // ---------------------------------------------------------------------------------//
-  public BlockDos (AppleFileSystem fs, int track, int sector) //, BlockType blockType)
+  BlockDos (AppleFileSystem fs, int track, int sector)
   // ---------------------------------------------------------------------------------//
   {
-    super (fs, track, sector);  //, blockType);
+    super (fs, track, sector);
   }
 
   // ---------------------------------------------------------------------------------//
-  public BlockDos (AppleFileSystem fs, byte[] buffer, int offset) //, BlockType blockType)
+  BlockDos (AppleFileSystem fs, byte[] buffer, int offset)
   // ---------------------------------------------------------------------------------//
   {
-    this (fs, buffer[offset] & 0xFF, buffer[offset + 1] & 0xFF);    //, blockType);
+    this (fs, buffer[offset] & 0xFF, buffer[offset + 1] & 0xFF);
   }
 }

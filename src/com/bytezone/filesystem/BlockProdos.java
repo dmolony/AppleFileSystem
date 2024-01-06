@@ -1,13 +1,13 @@
 package com.bytezone.filesystem;
 
 // -----------------------------------------------------------------------------------//
-public class BlockProdos extends AbstractBlock
+class BlockProdos extends AbstractBlock
 // -----------------------------------------------------------------------------------//
 {
   // ---------------------------------------------------------------------------------//
-  BlockProdos (AppleFileSystem fs, int blockNo)     //, BlockType blockType)
+  BlockProdos (AppleFileSystem fs, int blockNo)
   // ---------------------------------------------------------------------------------//
   {
-    super (fs, blockNo);  //, blockType);
+    super (fs, blockNo);
   }
 }

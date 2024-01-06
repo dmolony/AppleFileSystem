@@ -8,7 +8,7 @@ import java.util.Optional;
 import com.bytezone.filesystem.BlockReader.AddressType;
 
 // -----------------------------------------------------------------------------------//
-public abstract class AbstractFileSystem implements AppleFileSystem
+abstract class AbstractFileSystem implements AppleFileSystem
 // -----------------------------------------------------------------------------------//
 {
   protected FileSystemFactory factory;          // never static!!
@@ -28,7 +28,7 @@ public abstract class AbstractFileSystem implements AppleFileSystem
   protected boolean partOfHybrid;     // this FS is one of two file systems on the disk
 
   // ---------------------------------------------------------------------------------//
-  public AbstractFileSystem (BlockReader blockReader, FileSystemType fileSystemType)
+  AbstractFileSystem (BlockReader blockReader, FileSystemType fileSystemType)
   // ---------------------------------------------------------------------------------//
   {
     this.blockReader = Objects.requireNonNull (blockReader);

@@ -17,7 +17,7 @@ public class FsProdos extends AbstractFileSystem
   private boolean isDosMaster;
 
   // ---------------------------------------------------------------------------------//
-  public FsProdos (BlockReader blockReader)
+  FsProdos (BlockReader blockReader)
   // ---------------------------------------------------------------------------------//
   {
     super (blockReader, FileSystemType.PRODOS);

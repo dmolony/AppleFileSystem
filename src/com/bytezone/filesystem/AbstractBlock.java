@@ -3,7 +3,7 @@ package com.bytezone.filesystem;
 import com.bytezone.filesystem.BlockReader.AddressType;
 
 // -----------------------------------------------------------------------------------//
-public abstract class AbstractBlock implements AppleBlock
+abstract class AbstractBlock implements AppleBlock
 // -----------------------------------------------------------------------------------//
 {
   protected final AppleFileSystem fileSystem;

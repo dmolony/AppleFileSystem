@@ -10,7 +10,7 @@ import java.util.Optional;
 import com.bytezone.utility.Utility;
 
 // -----------------------------------------------------------------------------------//
-public class FolderProdos extends AbstractAppleFile implements AppleContainer
+class FolderProdos extends AbstractAppleFile implements AppleContainer
 // -----------------------------------------------------------------------------------//
 {
   private static Locale US = Locale.US;          // to force 3 character months
