@@ -60,8 +60,6 @@ abstract class AbstractBlock implements AppleBlock
   public void setBlockType (BlockType blockType)
   // ---------------------------------------------------------------------------------//
   {
-    //    if (this.blockType != null && this.blockType != blockType)
-    //      System.out.printf ("%4d changing %s to %s%n", blockNo, this.blockType, blockType);
     this.blockType = blockType;
   }
 
@@ -118,7 +116,8 @@ abstract class AbstractBlock implements AppleBlock
   public String toString ()
   // ---------------------------------------------------------------------------------//
   {
-    return String.format ("%-6s  B:%,6d  T:%3d  S:%3d  %s", fileSystem.getAddressType (),
-        blockNo, trackNo, sectorNo, blockType);
+    return String.format ("%s  %-6s  B:%,6d  T:%3d  S:%3d  %s",
+        (this instanceof BlockDos) ? "DOS" : "PRD", fileSystem.getAddressType (), blockNo,
+        trackNo, sectorNo, blockType);
   }
 }

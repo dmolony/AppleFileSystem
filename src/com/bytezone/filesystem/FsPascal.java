@@ -10,7 +10,7 @@ import com.bytezone.filesystem.AppleBlock.BlockType;
 import com.bytezone.utility.Utility;
 
 // -----------------------------------------------------------------------------------//
-class FsPascal extends AbstractFileSystem
+public class FsPascal extends AbstractFileSystem
 // -----------------------------------------------------------------------------------//
 {
   private static final DateTimeFormatter dtf =
@@ -28,7 +28,7 @@ class FsPascal extends AbstractFileSystem
   private LocalDate date;
 
   // ---------------------------------------------------------------------------------//
-  FsPascal (BlockReader blockReader)
+  public FsPascal (BlockReader blockReader)
   // ---------------------------------------------------------------------------------//
   {
     super (blockReader, FileSystemType.PASCAL);

@@ -3,7 +3,7 @@ package com.bytezone.filesystem;
 import com.bytezone.utility.Utility;
 
 // -----------------------------------------------------------------------------------//
-public class FileData extends AbstractAppleFile
+class FileData extends AbstractAppleFile
 // -----------------------------------------------------------------------------------//
 {
   byte[] buffer;

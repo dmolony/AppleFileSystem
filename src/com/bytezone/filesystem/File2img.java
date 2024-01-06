@@ -3,7 +3,7 @@ package com.bytezone.filesystem;
 import java.util.ArrayList;
 import java.util.List;
 
-public class File2img extends AbstractAppleFile
+class File2img extends AbstractAppleFile
 {
   List<AppleBlock> dataBlocks = new ArrayList<> ();
 

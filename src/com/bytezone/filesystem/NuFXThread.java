@@ -82,6 +82,21 @@ class NuFXThread
   byte[] getData ()
   // ---------------------------------------------------------------------------------//
   {
+    return switch (threadFormat)
+    {
+      case 0 -> compressedData;
+      case 1 -> new Squeeze ().unSqueeze (compressedData);
+      case 2 -> new LZW1 (compressedData).getData ();
+      case 3 -> new LZW2 (compressedData, threadCrc,
+          threadKind == 1 ? 0 : uncompressedEOF).getData ();
+      default -> null;
+    };
+  }
+
+  // ---------------------------------------------------------------------------------//
+  byte[] getDataOld ()
+  // ---------------------------------------------------------------------------------//
+  {
     switch (threadFormat)
     {
       case 0:             // uncompressed

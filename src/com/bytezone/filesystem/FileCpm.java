@@ -7,7 +7,7 @@ import com.bytezone.filesystem.AppleBlock.BlockType;
 import com.bytezone.utility.Utility;
 
 // -----------------------------------------------------------------------------------//
-public class FileCpm extends AbstractAppleFile
+class FileCpm extends AbstractAppleFile
 // -----------------------------------------------------------------------------------//
 {
   private final int userNumber;
