@@ -145,12 +145,16 @@ public class ForkProdos extends AbstractAppleFile
       indexBlocks.add (indexBlock);
 
       byte[] buffer = indexBlock.read ();
+
       for (int i = 0; i < 256; i++)
       {
         int blockNo = (buffer[i] & 0xFF) | ((buffer[i + 0x100] & 0xFF) << 8);
-        AppleBlock dataBlock = fileSystem.getBlock (blockNo);
-        //        dataBlock.setBlockType (BlockType.FILE_DATA);
-        blocks.add (dataBlock.isValid () ? blockNo : 0);      // should throw error
+        if (blockNo > 0)
+        {
+          AppleBlock dataBlock = fileSystem.getBlock (blockNo);
+          dataBlock.setBlockType (BlockType.FILE_DATA);
+          blocks.add (dataBlock.isValid () ? blockNo : 0);      // should throw error
+        }
       }
     }
 
@@ -177,9 +181,12 @@ public class ForkProdos extends AbstractAppleFile
     for (int i = 0; i <= highest; i++)
     {
       int blockNo = (buffer[i] & 0xFF) | ((buffer[i + 256] & 0xFF) << 8);
-      AppleBlock dataBlock = fileSystem.getBlock (blockNo);
-      dataBlock.setBlockType (BlockType.FS_DATA);
-      blocks.add (dataBlock.isValid () ? blockNo : 0);
+      if (blockNo > 0)
+      {
+        AppleBlock dataBlock = fileSystem.getBlock (blockNo);
+        dataBlock.setBlockType (BlockType.FS_DATA);
+        blocks.add (dataBlock.isValid () ? blockNo : 0);
+      }
     }
 
     return blocks;
