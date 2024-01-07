@@ -288,9 +288,10 @@ public class ForkProdos extends AbstractAppleFile
       case ProdosConstants.FILE_TYPE_PIC:
       case ProdosConstants.FILE_TYPE_FOT:
         return String.format ("A=$%4X", parentFile.getAuxType ());
-    }
 
-    return "";
+      default:
+        return "";
+    }
   }
 
   // ---------------------------------------------------------------------------------//
