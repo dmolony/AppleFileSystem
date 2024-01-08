@@ -38,6 +38,7 @@ public class FsCpm extends AbstractFileSystem
     {
       AppleBlock block = getBlock (firstBlock + i);
       block.setBlockType (BlockType.FS_DATA);
+      block.setBlockSubType ("CATALOG");
       byte[] buffer = block.read ();
 
       for (int j = 0; j < buffer.length; j += 32)

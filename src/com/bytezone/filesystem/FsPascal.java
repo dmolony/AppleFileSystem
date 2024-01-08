@@ -33,8 +33,8 @@ public class FsPascal extends AbstractFileSystem
   {
     super (blockReader, FileSystemType.PASCAL);
 
-    AppleBlock vtoc = getBlock (2);
-    vtoc.setBlockType (BlockType.FS_DATA);
+    AppleBlock vtoc = getBlock (2, BlockType.FS_DATA);
+    //    vtoc.setBlockSubType ("CATALOG");
     byte[] buffer = vtoc.read ();
 
     firstCatalogBlock = Utility.unsignedShort (buffer, 0);
@@ -62,8 +62,8 @@ public class FsPascal extends AbstractFileSystem
     List<AppleBlock> catalogBlocks = new ArrayList<> ();
     for (int i = 2; i < firstFileBlock; i++)
     {
-      AppleBlock block = getBlock (i);
-      block.setBlockType (BlockType.FS_DATA);
+      AppleBlock block = getBlock (i, BlockType.FS_DATA);
+      block.setBlockSubType ("CATALOG");
       catalogBlocks.add (block);
     }
 

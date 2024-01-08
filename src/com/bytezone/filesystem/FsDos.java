@@ -30,7 +30,7 @@ class FsDos extends AbstractFileSystem
   {
     super (blockReader, FileSystemType.DOS);
 
-    //    int catalogBlocks = 0;
+    assert totalCatalogBlocks == 0;
 
     AppleBlock vtoc = getSector (17, 0);
     if (vtoc == null)
@@ -104,11 +104,37 @@ class FsDos extends AbstractFileSystem
 
         ptr += ENTRY_SIZE;
       }
-
-      //      ++catalogBlocks;
     }
 
     setTotalCatalogBlocks (catalogSectors.size ());
+
+    // set DOS sectors
+    //    if (sectorsPerTrack == 16)
+    {
+      int unused = 0;
+      int free = 0;
+
+      for (int blockNo = 0; blockNo < 48; blockNo++)
+      {
+        AppleBlock block = getBlock (blockNo);
+        BlockType blockType = block.getBlockType ();
+        if (blockType == BlockType.EMPTY || blockType == BlockType.ORPHAN)
+          unused++;
+        if (volumeBitMap.get (blockNo))
+          free++;
+      }
+
+      if (unused == 48 && free == 0)
+        for (int blockNo = 0; blockNo < 48; blockNo++)
+        {
+          AppleBlock block = getBlock (blockNo);
+          if (block.getBlockType () == BlockType.ORPHAN)
+          {
+            block.setBlockType (BlockType.FS_DATA);
+            block.setBlockSubType ("DOS");
+          }
+        }
+    }
   }
 
   // ---------------------------------------------------------------------------------//
