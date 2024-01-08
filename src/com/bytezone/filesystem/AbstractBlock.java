@@ -36,8 +36,6 @@ abstract class AbstractBlock implements AppleBlock
     }
 
     valid = blockNo >= 0 && blockNo < fileSystem.getTotalBlocks ();
-
-    //    assert fileSystem.getType () == AddressType.BLOCK;
   }
 
   // ---------------------------------------------------------------------------------//

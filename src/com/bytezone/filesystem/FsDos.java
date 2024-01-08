@@ -14,14 +14,17 @@ class FsDos extends AbstractFileSystem
   private static final int ENTRY_SIZE = 35;
 
   private int dosVersion;
-  private BitSet volumeBitMap;
   private int volumeNumber;
   private int maxTSpairs;
   private int lastTrackAllocated;
+
   private byte direction;
   private int tracksPerDisk;
   private int sectorsPerTrack;
   private int bytesPerSector;
+
+  private BitSet volumeBitMap;
+
   private int deletedFiles;
   private int failedFiles;
 
@@ -50,6 +53,7 @@ class FsDos extends AbstractFileSystem
     volumeNumber = buffer[0x06] & 0xFF;
     maxTSpairs = buffer[0x27] & 0xFF;
     lastTrackAllocated = buffer[0x30] & 0xFF;
+
     direction = buffer[0x31];
     tracksPerDisk = buffer[0x34] & 0xFF;
     sectorsPerTrack = buffer[0x35] & 0xFF;
@@ -117,10 +121,11 @@ class FsDos extends AbstractFileSystem
 
       for (int blockNo = 0; blockNo < 48; blockNo++)
       {
-        AppleBlock block = getBlock (blockNo);
-        BlockType blockType = block.getBlockType ();
+        BlockType blockType = getBlock (blockNo).getBlockType ();
+
         if (blockType == BlockType.EMPTY || blockType == BlockType.ORPHAN)
           unused++;
+
         if (volumeBitMap.get (blockNo))
           free++;
       }

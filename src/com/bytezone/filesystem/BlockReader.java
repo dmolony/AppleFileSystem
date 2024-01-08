@@ -25,7 +25,7 @@ class BlockReader
   private final int diskOffset;
   private final int diskLength;
 
-  private Path path;
+  private final Path path;
   private String name;
 
   AddressType addressType;      // BLOCK, SECTOR
@@ -68,6 +68,7 @@ class BlockReader
     this.diskLength = diskLength == 143_488 ? 143_360 : diskLength;
 
     this.name = name;
+    this.path = null;
   }
 
   // ---------------------------------------------------------------------------------//
