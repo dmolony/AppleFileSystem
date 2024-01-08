@@ -12,6 +12,7 @@ class FsDos extends AbstractFileSystem
 // -----------------------------------------------------------------------------------//
 {
   private static final int ENTRY_SIZE = 35;
+
   private int dosVersion;
   private BitSet volumeBitMap;
   private int volumeNumber;
@@ -108,7 +109,7 @@ class FsDos extends AbstractFileSystem
 
     setTotalCatalogBlocks (catalogSectors.size ());
 
-    // set DOS sectors
+    // flag DOS sectors
     //    if (sectorsPerTrack == 16)
     {
       int unused = 0;
@@ -135,15 +136,6 @@ class FsDos extends AbstractFileSystem
           }
         }
     }
-  }
-
-  // ---------------------------------------------------------------------------------//
-  boolean isValidBlockNo (int track, int sector)
-  // ---------------------------------------------------------------------------------//
-  {
-    System.out.printf ("%3d  %3d  %s%n", track, sector,
-        super.isValidBlockNo (track * sectorsPerTrack + sector));
-    return super.isValidBlockNo (track * sectorsPerTrack + sector);
   }
 
   // ---------------------------------------------------------------------------------//
