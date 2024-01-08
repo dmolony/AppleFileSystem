@@ -171,6 +171,22 @@ class BlockReader
   }
 
   // ---------------------------------------------------------------------------------//
+  AppleBlock getBlock (AppleFileSystem fs, int blockNo, BlockType blockType)
+  // ---------------------------------------------------------------------------------//
+  {
+    if (!isValidBlockNo (blockNo))
+      return null;
+    //    // throw?
+
+    if (appleBlocks[blockNo] == null)           // first time here
+      appleBlocks[blockNo] = new BlockProdos (fs, blockNo);
+
+    appleBlocks[blockNo].setBlockType (blockType);
+
+    return appleBlocks[blockNo];
+  }
+
+  // ---------------------------------------------------------------------------------//
   public AppleBlock getSector (AppleFileSystem fs, int track, int sector)
   // ---------------------------------------------------------------------------------//
   {

@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
+import com.bytezone.filesystem.AppleBlock.BlockType;
 import com.bytezone.filesystem.BlockReader.AddressType;
 
 // -----------------------------------------------------------------------------------//
@@ -113,12 +114,12 @@ abstract class AbstractFileSystem implements AppleFileSystem
   }
 
   // ---------------------------------------------------------------------------------//
-  //  @Override
-  //  public AppleBlock getBlock (int blockNo, BlockType blockType)
-  //  // ---------------------------------------------------------------------------------//
-  //  {
-  //    return blockReader.getBlock (this, blockNo, blockType);
-  //  }
+  @Override
+  public AppleBlock getBlock (int blockNo, BlockType blockType)
+  // ---------------------------------------------------------------------------------//
+  {
+    return blockReader.getBlock (this, blockNo, blockType);
+  }
 
   // ---------------------------------------------------------------------------------//
   //  @Override

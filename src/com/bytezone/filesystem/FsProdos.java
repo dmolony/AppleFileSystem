@@ -30,8 +30,8 @@ class FsProdos extends AbstractFileSystem
 
     while (nextBlockNo != 0)
     {
-      AppleBlock vtoc = getBlock (nextBlockNo);
-      vtoc.setBlockType (BlockType.FS_DATA);
+      AppleBlock vtoc = getBlock (nextBlockNo, BlockType.FS_DATA);
+      vtoc.setBlockSubType ("CATALOG");
       byte[] buffer = vtoc.read ();
 
       if (catalogBlocks == 0)
@@ -78,17 +78,20 @@ class FsProdos extends AbstractFileSystem
   private void processFolder (AppleContainer parent, int blockNo)
   // ---------------------------------------------------------------------------------//
   {
-    AppleBlock catalogBlock = getBlock (blockNo);
+    AppleBlock catalogBlock = getBlock (blockNo, BlockType.FS_DATA);
     if (catalogBlock == null)
       throw new FileFormatException ("FsProdos: Invalid catalog");
-    catalogBlock.setBlockType (BlockType.FS_DATA);
+
+    byte[] buffer = catalogBlock.read ();
+    boolean isFolder = (buffer[4] & 0xF0) == 0xE0;
+
+    if (isFolder)
+      catalogBlock.setBlockSubType ("FOLDER");
 
     FileProdos file = null;
 
-    while (catalogBlock.getBlockNo () != 0)
+    while (true)
     {
-      byte[] buffer = catalogBlock.read ();
-
       int ptr = 4;
       for (int i = 0; i < ProdosConstants.ENTRIES_PER_BLOCK; i++)
       {
@@ -146,11 +149,16 @@ class FsProdos extends AbstractFileSystem
       int nextBlockNo = Utility.unsignedShort (buffer, 2);
       if (nextBlockNo == 0)
         break;
-      catalogBlock = getBlock (Utility.unsignedShort (buffer, 2));
+
+      catalogBlock = getBlock (nextBlockNo, BlockType.FS_DATA);
 
       if (catalogBlock == null)
         throw new FileFormatException ("FsProdos: Invalid catalog");
-      catalogBlock.setBlockType (BlockType.FS_DATA);
+
+      if (isFolder)
+        catalogBlock.setBlockSubType ("FOLDER");
+
+      buffer = catalogBlock.read ();
     }
   }
 
@@ -160,7 +168,7 @@ class FsProdos extends AbstractFileSystem
   {
     int bitPtr = 0;
     int bfrPtr = 0;
-    int blockNo = directoryEntry.keyPtr;
+    int blockNo = directoryEntry.keyPtr;        // bitmap block
     byte[] buffer = null;
 
     BitSet bitMap = new BitSet (directoryEntry.totalBlocks);
@@ -169,8 +177,9 @@ class FsProdos extends AbstractFileSystem
     {
       if (bitPtr % 0x1000 == 0)
       {
-        AppleBlock block = getBlock (blockNo++);
-        block.setBlockType (BlockType.FS_DATA);
+        AppleBlock block = getBlock (blockNo++, BlockType.FS_DATA);
+        //        block.setBlockType (BlockType.FS_DATA);
+        block.setBlockSubType ("VOLUME BITMAP");
         buffer = block.read ();
         bfrPtr = 0;
       }

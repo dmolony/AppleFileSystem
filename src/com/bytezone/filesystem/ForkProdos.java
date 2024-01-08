@@ -68,14 +68,13 @@ public class ForkProdos extends AbstractAppleFile
     storageTypeText = ProdosConstants.storageTypes[storageType];
 
     List<Integer> blockNos = new ArrayList<> ();
-    AppleBlock dataBlock = fileSystem.getBlock (keyPtr);
-    dataBlock.setBlockType (BlockType.FS_DATA);
+    AppleBlock dataBlock = fileSystem.getBlock (keyPtr, BlockType.FS_DATA);
 
     if (dataBlock.isValid ())
       switch (storageType)
       {
         case ProdosConstants.SEEDLING:
-          //          dataBlock.setBlockType (BlockType.FILE_DATA);
+          dataBlock.setBlockType (BlockType.FILE_DATA);
           blockNos.add (keyPtr);
           break;
 
@@ -86,11 +85,16 @@ public class ForkProdos extends AbstractAppleFile
         case ProdosConstants.TREE:
           for (Integer indexBlock : readMasterIndex (keyPtr))
           {
-            AppleBlock block = fileSystem.getBlock (indexBlock);
-            if (block.isValid ())
+            if (indexBlock > 0)
             {
-              block.setBlockType (BlockType.FS_DATA);
-              blockNos.addAll (readIndex (indexBlock));
+              AppleBlock block = fileSystem.getBlock (indexBlock, BlockType.FS_DATA);
+              if (block.isValid ())
+                blockNos.addAll (readIndex (indexBlock));
+            }
+            else
+            {
+              for (int i = 0; i < 256; i++)
+                blockNos.add (0);
             }
           }
           break;
@@ -133,30 +137,34 @@ public class ForkProdos extends AbstractAppleFile
   private List<Integer> readIndex (int blockPtr)
   // ---------------------------------------------------------------------------------//
   {
+    assert blockPtr > 0;
+
+    //    if (blockPtr == 0)                    // master index contains a zero
+    //      for (int i = 0; i < 256; i++)
+    //        blocks.add (0);
+    //    else
+    //    {
     List<Integer> blocks = new ArrayList<> (256);
+    AppleBlock indexBlock = fileSystem.getBlock (blockPtr, BlockType.FS_DATA);
+    indexBlock.setBlockSubType ("INDEX");
+    indexBlocks.add (indexBlock);
 
-    if (blockPtr == 0)                    // master index contains a zero
-      for (int i = 0; i < 256; i++)
-        blocks.add (0);
-    else
+    byte[] buffer = indexBlock.read ();
+
+    for (int i = 0; i < 256; i++)
     {
-      AppleBlock indexBlock = fileSystem.getBlock (blockPtr);
-      indexBlock.setBlockType (BlockType.FS_DATA);
-      indexBlocks.add (indexBlock);
-
-      byte[] buffer = indexBlock.read ();
-
-      for (int i = 0; i < 256; i++)
+      int blockNo = (buffer[i] & 0xFF) | ((buffer[i + 0x100] & 0xFF) << 8);
+      //      System.out.printf ("%,6d %3d  %d%n", blockPtr, i, blockNo);
+      if (blockNo > 0)
       {
-        int blockNo = (buffer[i] & 0xFF) | ((buffer[i + 0x100] & 0xFF) << 8);
-        if (blockNo > 0)
-        {
-          AppleBlock dataBlock = fileSystem.getBlock (blockNo);
-          dataBlock.setBlockType (BlockType.FILE_DATA);
-          blocks.add (dataBlock.isValid () ? blockNo : 0);      // should throw error
-        }
+        AppleBlock dataBlock = fileSystem.getBlock (blockNo, BlockType.FILE_DATA);
+        blocks.add (dataBlock != null && dataBlock.isValid () ? blockNo : 0);
+        // should throw error
       }
+      else
+        blocks.add (0);
     }
+    //    }
 
     return blocks;
   }
@@ -165,8 +173,9 @@ public class ForkProdos extends AbstractAppleFile
   private List<Integer> readMasterIndex (int keyPtr)
   // ---------------------------------------------------------------------------------//
   {
-    AppleBlock indexBlock = fileSystem.getBlock (keyPtr);
-    indexBlock.setBlockType (BlockType.FS_DATA);
+    AppleBlock indexBlock = fileSystem.getBlock (keyPtr, BlockType.FS_DATA);
+    indexBlock.setBlockSubType ("MASTER INDEX");
+
     masterIndexBlock = indexBlock;
     indexBlocks.add (indexBlock);
 
@@ -183,10 +192,11 @@ public class ForkProdos extends AbstractAppleFile
       int blockNo = (buffer[i] & 0xFF) | ((buffer[i + 256] & 0xFF) << 8);
       if (blockNo > 0)
       {
-        AppleBlock dataBlock = fileSystem.getBlock (blockNo);
-        dataBlock.setBlockType (BlockType.FS_DATA);
-        blocks.add (dataBlock.isValid () ? blockNo : 0);
+        AppleBlock dataBlock = fileSystem.getBlock (blockNo, BlockType.FS_DATA);
+        blocks.add (dataBlock != null && dataBlock.isValid () ? blockNo : 0);
       }
+      else
+        blocks.add (0);
     }
 
     return blocks;

@@ -18,6 +18,10 @@ public interface AppleBlock         // this could be renamed to Address
 
   BlockType getBlockType ();
 
+  void setBlockSubType (String blockSubType);
+
+  String getBlockSubType ();
+
   public enum BlockType
   {
     EMPTY, FS_DATA, FILE_DATA, ORPHAN

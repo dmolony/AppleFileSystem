@@ -8,6 +8,7 @@ abstract class AbstractBlock implements AppleBlock
 {
   protected final AppleFileSystem fileSystem;
   protected BlockType blockType;
+  protected String blockSubType = "";
 
   protected final int blockNo;
   protected final int trackNo;
@@ -65,18 +66,34 @@ abstract class AbstractBlock implements AppleBlock
 
   // ---------------------------------------------------------------------------------//
   @Override
-  public int getBlockNo ()
-  // ---------------------------------------------------------------------------------//
-  {
-    return blockNo;
-  }
-
-  // ---------------------------------------------------------------------------------//
-  @Override
   public BlockType getBlockType ()
   // ---------------------------------------------------------------------------------//
   {
     return blockType;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
+  public void setBlockSubType (String blockSubType)
+  // ---------------------------------------------------------------------------------//
+  {
+    this.blockSubType = blockSubType;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
+  public String getBlockSubType ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return blockSubType;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
+  public int getBlockNo ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return blockNo;
   }
 
   // ---------------------------------------------------------------------------------//
@@ -116,8 +133,8 @@ abstract class AbstractBlock implements AppleBlock
   public String toString ()
   // ---------------------------------------------------------------------------------//
   {
-    return String.format ("%s  %-6s  B:%,6d  T:%3d  S:%3d  %s",
+    return String.format ("%s  %-6s  B:%,6d  T:%3d  S:%3d  %-10s %s",
         (this instanceof BlockDos) ? "DOS" : "PRD", fileSystem.getAddressType (), blockNo,
-        trackNo, sectorNo, blockType);
+        trackNo, sectorNo, blockType, blockSubType);
   }
 }

@@ -53,7 +53,9 @@ class FileDos extends AbstractAppleFile
       AppleBlock tsSector = fs.getSector (nextTrack, nextSector);
       if (tsSector == null)
         throw new FileFormatException ("Invalid TS sector");
+
       tsSector.setBlockType (BlockType.FS_DATA);
+      tsSector.setBlockSubType ("TSLIST");
 
       indexBlocks.add (tsSector);
 
