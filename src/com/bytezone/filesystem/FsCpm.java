@@ -69,6 +69,17 @@ public class FsCpm extends AbstractFileSystem
     }
 
     setTotalCatalogBlocks (catalogBlocks);
+
+    // flag DOS sectors
+    for (int blockNo = 0; blockNo < 12; blockNo++)
+    {
+      AppleBlock block = getBlock (blockNo);
+      if (block.getBlockType () == BlockType.ORPHAN)
+      {
+        block.setBlockType (BlockType.FS_DATA);
+        block.setBlockSubType ("DOS");
+      }
+    }
   }
 
   // ---------------------------------------------------------------------------------//

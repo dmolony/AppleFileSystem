@@ -61,11 +61,11 @@ class FileBinary2 extends AbstractAppleFile
   {
     super (fs);
 
-    //    isFile = true;
     this.headerBlockNo = headerBlockNo;
 
     AppleBlock headerBlock = fs.getBlock (headerBlockNo);
     headerBlock.setBlockType (BlockType.FS_DATA);
+    headerBlock.setBlockSubType ("BIN2 HDR");
     byte[] buffer = headerBlock.read ();
 
     accessCode = buffer[3] & 0xFF;
