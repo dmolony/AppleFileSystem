@@ -7,6 +7,7 @@ abstract class AbstractBlock implements AppleBlock
 // -----------------------------------------------------------------------------------//
 {
   protected final AppleFileSystem fileSystem;
+  protected AppleFile fileOwner;
   protected BlockType blockType;
   protected String blockSubType = "";
 
@@ -88,6 +89,22 @@ abstract class AbstractBlock implements AppleBlock
 
   // ---------------------------------------------------------------------------------//
   @Override
+  public void setFileOwner (AppleFile appleFile)
+  // ---------------------------------------------------------------------------------//
+  {
+    this.fileOwner = appleFile;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
+  public AppleFile getFileOwner ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return this.fileOwner;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
   public int getBlockNo ()
   // ---------------------------------------------------------------------------------//
   {
@@ -131,8 +148,9 @@ abstract class AbstractBlock implements AppleBlock
   public String toString ()
   // ---------------------------------------------------------------------------------//
   {
-    return String.format ("%s  %-6s  B:%,6d  T:%3d  S:%3d  %-10s %s",
+    return String.format ("%s  %-6s  B:%,6d  T:%3d  S:%3d  %-10s %-10s %s",
         (this instanceof BlockDos) ? "DOS" : "PRD", fileSystem.getAddressType (), blockNo,
-        trackNo, sectorNo, blockType, blockSubType);
+        trackNo, sectorNo, blockType, blockSubType,
+        fileOwner == null ? "" : fileOwner.getFileName ());
   }
 }

@@ -10,7 +10,7 @@ import com.bytezone.utility.Squeeze;
 import com.bytezone.utility.Utility;
 
 // -----------------------------------------------------------------------------------//
-class FileBinary2 extends AbstractAppleFile
+public class FileBinary2 extends AbstractAppleFile
 // -----------------------------------------------------------------------------------//
 {
   private static String[] bin2Formats =
@@ -63,9 +63,9 @@ class FileBinary2 extends AbstractAppleFile
 
     this.headerBlockNo = headerBlockNo;
 
-    AppleBlock headerBlock = fs.getBlock (headerBlockNo);
-    headerBlock.setBlockType (BlockType.FS_DATA);
+    AppleBlock headerBlock = fs.getBlock (headerBlockNo, BlockType.FS_DATA);
     headerBlock.setBlockSubType ("BIN2 HDR");
+    headerBlock.setFileOwner (this);
     byte[] buffer = headerBlock.read ();
 
     accessCode = buffer[3] & 0xFF;
@@ -116,9 +116,9 @@ class FileBinary2 extends AbstractAppleFile
         break;
       }
 
-      AppleBlock dataBlock = fs.getBlock (block);
-      dataBlock.setBlockType (BlockType.FILE_DATA);
+      AppleBlock dataBlock = fs.getBlock (block, BlockType.FILE_DATA);
       dataBlocks.add (dataBlock);
+      dataBlock.setFileOwner (this);
     }
 
     if (validBlocks && (isCompressed () || fileName.endsWith (".QQ")))
@@ -269,7 +269,7 @@ class FileBinary2 extends AbstractAppleFile
     {
       Squeeze squeeze = new Squeeze ();
       byte[] buffer = getParentFileSystem ().readBlocks (dataBlocks);
-      //      System.out.println (Utility.format (buffer));
+
       return squeeze.unSqueeze (buffer);
     }
 

@@ -70,7 +70,6 @@ public class ForkNuFX extends AbstractAppleFile
   {
     StringBuilder text = new StringBuilder ();
 
-    //    text.append (String.format ("File system type ...... %s%n", getFileSystemType ()));
     text.append (String.format ("File name ............. %s%n", fileName));
     text.append (String.format ("Fork type ............. %s%n", forkType));
     text.append (

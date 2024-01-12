@@ -22,6 +22,10 @@ public interface AppleBlock         // this could be renamed to Address
 
   String getBlockSubType ();
 
+  void setFileOwner (AppleFile appleFile);
+
+  AppleFile getFileOwner ();
+
   public enum BlockType
   {
     EMPTY, FS_DATA, FILE_DATA, ORPHAN

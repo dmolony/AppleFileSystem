@@ -7,7 +7,7 @@ import com.bytezone.filesystem.AppleBlock.BlockType;
 import com.bytezone.utility.Utility;
 
 // -----------------------------------------------------------------------------------//
-class FileCpm extends AbstractAppleFile
+public class FileCpm extends AbstractAppleFile
 // -----------------------------------------------------------------------------------//
 {
   private final int userNumber;
@@ -70,6 +70,7 @@ class FileCpm extends AbstractAppleFile
       int blockNumber = ((b & 0x80) == 0) ? (b + 12) : (b & 0x7F);
       AppleBlock block = getParentFileSystem ().getBlock (blockNumber);
       block.setBlockType (BlockType.FILE_DATA);
+      block.setFileOwner (this);
       dataBlocks.add (block);
     }
   }

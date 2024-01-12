@@ -50,6 +50,7 @@ public class FilePascal extends AbstractAppleFile
     {
       AppleBlock block = fs.getBlock (i);
       block.setBlockType (BlockType.FILE_DATA);
+      block.setFileOwner (this);
       dataBlocks.add (block);
     }
   }

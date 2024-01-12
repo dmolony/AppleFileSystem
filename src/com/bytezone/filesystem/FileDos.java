@@ -7,7 +7,7 @@ import com.bytezone.filesystem.AppleBlock.BlockType;
 import com.bytezone.utility.Utility;
 
 // -----------------------------------------------------------------------------------//
-class FileDos extends AbstractAppleFile
+public class FileDos extends AbstractAppleFile
 // -----------------------------------------------------------------------------------//
 {
   private List<AppleBlock> indexBlocks = new ArrayList<> ();
@@ -56,6 +56,7 @@ class FileDos extends AbstractAppleFile
 
       tsSector.setBlockType (BlockType.FS_DATA);
       tsSector.setBlockSubType ("TSLIST");
+      tsSector.setFileOwner (this);
 
       indexBlocks.add (tsSector);
 
@@ -70,9 +71,23 @@ class FileDos extends AbstractAppleFile
         if (dataSector == null)
           throw new FileFormatException ("Invalid data sector - " + dataSector);
         dataSector.setBlockType (BlockType.FILE_DATA);
+        dataSector.setFileOwner (this);
 
         if (dataSector.getBlockNo () > 0)
         {
+          dataSector.setBlockSubType (switch (fileType)
+          {
+            case 0x00 -> "TEXT";
+            case 0x01 -> "INT BASIC";
+            case 0x02 -> "APPLESOFT";
+            case 0x04 -> "BINARY";
+            case 0x08 -> "S";
+            case 0x10 -> "R";
+            case 0x20 -> "B";
+            case 0x40 -> "B";
+            default -> "B";                   // should never happen
+          });
+
           dataBlocks.add (dataSector);
           if (--sectorsLeft <= 0)
             break loop;
