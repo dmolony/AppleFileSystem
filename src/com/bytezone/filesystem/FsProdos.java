@@ -173,7 +173,7 @@ class FsProdos extends AbstractFileSystem
       if (bitPtr % 0x1000 == 0)
       {
         AppleBlock block = getBlock (blockNo++, BlockType.FS_DATA);
-        block.setBlockSubType ("VOLUME BITMAP");
+        block.setBlockSubType ("V-BITMAP");
         buffer = block.read ();
         bfrPtr = 0;
       }

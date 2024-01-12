@@ -176,7 +176,7 @@ public class ForkProdos extends AbstractAppleFile
   // ---------------------------------------------------------------------------------//
   {
     AppleBlock indexBlock = fileSystem.getBlock (keyPtr, BlockType.FS_DATA);
-    indexBlock.setBlockSubType ("MASTER INDEX");
+    indexBlock.setBlockSubType ("M-INDEX");
     indexBlock.setFileOwner (parentFile);
 
     masterIndexBlock = indexBlock;

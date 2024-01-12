@@ -148,9 +148,9 @@ abstract class AbstractBlock implements AppleBlock
   public String toString ()
   // ---------------------------------------------------------------------------------//
   {
-    return String.format ("%s  %-6s  B:%,6d  T:%3d  S:%3d  %-10s %-10s %s",
+    String dos = trackNo >= 0 ? String.format ("(%d/%d)", trackNo, sectorNo) : "";
+    return String.format ("%s  %-6s  %,6d %-7s %-10s %-10s %s",
         (this instanceof BlockDos) ? "DOS" : "PRD", fileSystem.getAddressType (), blockNo,
-        trackNo, sectorNo, blockType, blockSubType,
-        fileOwner == null ? "" : fileOwner.getFileName ());
+        dos, blockType, blockSubType, fileOwner == null ? "" : fileOwner.getFileName ());
   }
 }
