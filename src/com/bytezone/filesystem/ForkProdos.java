@@ -230,6 +230,19 @@ public class ForkProdos extends AbstractAppleFile
   }
 
   // ---------------------------------------------------------------------------------//
+  @Override
+  public List<AppleBlock> getBlocks ()
+  // ---------------------------------------------------------------------------------//
+  {
+    List<AppleBlock> blocks = new ArrayList<AppleBlock> (dataBlocks);
+    blocks.addAll (indexBlocks);
+    if (masterIndexBlock != null)
+      blocks.add (masterIndexBlock);
+
+    return blocks;
+  }
+
+  // ---------------------------------------------------------------------------------//
   public int getAuxType ()
   // ---------------------------------------------------------------------------------//
   {
@@ -314,7 +327,7 @@ public class ForkProdos extends AbstractAppleFile
   {
     StringBuilder text = new StringBuilder ();
 
-    if (isFork)         // an actual fork, not the default data for a FileProdos
+    if (isFork)             // an actual fork, not the default data for a FileProdos
     {
       text.append (String.format ("File name ............. %s%n", parentFile.fileName));
       text.append (

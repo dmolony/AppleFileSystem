@@ -160,11 +160,7 @@ class BlockReader
     if (appleBlocks[blockNo] == null)           // first time here
     {
       AppleBlock block = new BlockProdos (fs, blockNo);
-      if (isEmpty (block))
-        block.setBlockType (BlockType.EMPTY);
-      else
-        block.setBlockType (BlockType.ORPHAN);
-
+      block.setBlockType (isEmpty (block) ? BlockType.EMPTY : BlockType.ORPHAN);
       appleBlocks[blockNo] = block;
     }
 
@@ -200,7 +196,11 @@ class BlockReader
     // throw?
 
     if (appleBlocks[blockNo] == null)
-      appleBlocks[blockNo] = new BlockDos (fs, track, sector);
+    {
+      AppleBlock block = new BlockDos (fs, track, sector);
+      block.setBlockType (isEmpty (block) ? BlockType.EMPTY : BlockType.ORPHAN);
+      appleBlocks[blockNo] = block;
+    }
 
     return appleBlocks[blockNo];
   }
@@ -220,7 +220,11 @@ class BlockReader
     // throw?
 
     if (appleBlocks[blockNo] == null)
-      appleBlocks[blockNo] = new BlockDos (fs, track, sector);
+    {
+      AppleBlock block = new BlockDos (fs, track, sector);
+      block.setBlockType (isEmpty (block) ? BlockType.EMPTY : BlockType.ORPHAN);
+      appleBlocks[blockNo] = block;
+    }
 
     return appleBlocks[blockNo];
   }

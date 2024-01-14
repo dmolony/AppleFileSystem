@@ -165,8 +165,9 @@ public abstract class AbstractAppleFile implements AppleFile
   public List<AppleBlock> getBlocks ()
   // ---------------------------------------------------------------------------------//
   {
-    throw new UnsupportedOperationException (
-        "getBlocks() not implemented in " + fileName);
+    //    throw new UnsupportedOperationException (
+    //        "getBlocks() not implemented in " + fileName);
+    return null;
   }
 
   // ---------------------------------------------------------------------------------//

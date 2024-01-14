@@ -114,33 +114,32 @@ class FsDos extends AbstractFileSystem
     setTotalCatalogBlocks (catalogSectors.size ());
 
     // flag DOS sectors
-    //    if (sectorsPerTrack == 16)
-    {
-      int unused = 0;
-      int free = 0;
+    int unused = 0;
+    int free = 0;
 
+    for (int blockNo = 0; blockNo < 48; blockNo++)
+    {
+      BlockType blockType = getBlock (blockNo).getBlockType ();
+
+      if (blockType == BlockType.EMPTY || blockType == BlockType.ORPHAN)
+        unused++;
+      else
+        System.out.printf ("%d %s%n", blockNo, blockType);
+
+      if (volumeBitMap.get (blockNo))
+        free++;
+    }
+
+    if (unused == 48 && free == 0)
       for (int blockNo = 0; blockNo < 48; blockNo++)
       {
-        BlockType blockType = getBlock (blockNo).getBlockType ();
-
-        if (blockType == BlockType.EMPTY || blockType == BlockType.ORPHAN)
-          unused++;
-
-        if (volumeBitMap.get (blockNo))
-          free++;
-      }
-
-      if (unused == 48 && free == 0)
-        for (int blockNo = 0; blockNo < 48; blockNo++)
+        AppleBlock block = getBlock (blockNo);
+        if (block.getBlockType () == BlockType.ORPHAN)
         {
-          AppleBlock block = getBlock (blockNo);
-          if (block.getBlockType () == BlockType.ORPHAN)
-          {
-            block.setBlockType (BlockType.FS_DATA);
-            block.setBlockSubType ("DOS");
-          }
+          block.setBlockType (BlockType.FS_DATA);
+          block.setBlockSubType ("DOS");
         }
-    }
+      }
   }
 
   // ---------------------------------------------------------------------------------//

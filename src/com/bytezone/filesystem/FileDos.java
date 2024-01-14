@@ -67,14 +67,18 @@ public class FileDos extends AbstractAppleFile
 
       for (int i = 12; i < 256; i += 2)
       {
-        AppleBlock dataSector = fs.getSector (sectorBuffer, i);
-        if (dataSector == null)
-          throw new FileFormatException ("Invalid data sector - " + dataSector);
-        dataSector.setBlockType (BlockType.FILE_DATA);
-        dataSector.setFileOwner (this);
+        int track = sectorBuffer[i] & 0xFF;
+        int sector = sectorBuffer[i + 1] & 0xFF;
 
-        if (dataSector.getBlockNo () > 0)
+        if (track > 0 && sector > 0)
         {
+          AppleBlock dataSector = fs.getSector (track, sector);
+          if (dataSector == null)
+            throw new FileFormatException ("Invalid data sector - " + dataSector);
+
+          dataSector.setBlockType (BlockType.FILE_DATA);
+          dataSector.setFileOwner (this);
+
           dataSector.setBlockSubType (switch (fileType)
           {
             case 0x00 -> "TEXT";
@@ -85,7 +89,7 @@ public class FileDos extends AbstractAppleFile
             case 0x10 -> "R";
             case 0x20 -> "B";
             case 0x40 -> "B";
-            default -> "B";                   // should never happen
+            default -> "B";                       // should never happen
           });
 
           dataBlocks.add (dataSector);
@@ -133,6 +137,18 @@ public class FileDos extends AbstractAppleFile
   // ---------------------------------------------------------------------------------//
   {
     return parentFileSystem.readBlocks (dataBlocks);
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
+  public List<AppleBlock> getBlocks ()
+  // ---------------------------------------------------------------------------------//
+  {
+    List<AppleBlock> blocks = new ArrayList<AppleBlock> (dataBlocks);
+    blocks.addAll (indexBlocks);
+    blocks.addAll (indexBlocks);
+
+    return blocks;
   }
 
   // ---------------------------------------------------------------------------------//

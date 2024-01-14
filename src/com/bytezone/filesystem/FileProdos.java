@@ -22,7 +22,7 @@ public class FileProdos extends AbstractAppleFile implements AppleForkedFile
   private FileEntryProdos fileEntry;
   private AppleContainer container;                             // parent
 
-  private ForkProdos data;                                      // for non-forked files
+  private ForkProdos dataFork;                                  // for non-forked files
   private List<AppleFile> forks = new ArrayList<> ();           // for forked files
 
   public enum ForkType
@@ -49,7 +49,7 @@ public class FileProdos extends AbstractAppleFile implements AppleForkedFile
     if (isForkedFile)
       createForks ();
     else
-      data = new ForkProdos (this, null, fileEntry.keyPtr, fileEntry.storageType,
+      dataFork = new ForkProdos (this, null, fileEntry.keyPtr, fileEntry.storageType,
           fileEntry.blocksUsed, fileEntry.eof);
   }
 
@@ -74,6 +74,20 @@ public class FileProdos extends AbstractAppleFile implements AppleForkedFile
         forks.add (new ForkProdos (this, ptr == 0 ? ForkType.DATA : ForkType.RESOURCE,
             keyPtr, storageType, size, eof));
     }
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
+  public List<AppleBlock> getBlocks ()
+  // ---------------------------------------------------------------------------------//
+  {
+    if (isForkedFile)
+    {
+      System.out.println ("FileProdos - which fork?");
+      return null;
+    }
+
+    return dataFork.getBlocks ();
   }
 
   // ---------------------------------------------------------------------------------//
@@ -105,7 +119,7 @@ public class FileProdos extends AbstractAppleFile implements AppleForkedFile
     if (isForkedFile ())
       throw new FileFormatException ("Cannot read() a forked file");
 
-    return data.read ();
+    return dataFork.read ();
   }
 
   // ---------------------------------------------------------------------------------//
@@ -116,7 +130,7 @@ public class FileProdos extends AbstractAppleFile implements AppleForkedFile
     if (isForkedFile ())
       throw new FileFormatException ("Cannot getLength() on a forked file");
 
-    return data.getFileLength ();
+    return dataFork.getFileLength ();
   }
 
   // ---------------------------------------------------------------------------------//
@@ -220,8 +234,8 @@ public class FileProdos extends AbstractAppleFile implements AppleForkedFile
     text.append (fileEntry);
     text.append ("\n\n");
 
-    if (data != null)
-      text.append (data);
+    if (dataFork != null)
+      text.append (dataFork);
 
     return Utility.rtrim (text);
   }
