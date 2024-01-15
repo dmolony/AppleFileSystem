@@ -206,13 +206,11 @@ class BlockReader
   }
 
   // ---------------------------------------------------------------------------------//
-  public AppleBlock getSector (AppleFileSystem fs, byte[] buffer, int offset)
+  AppleBlock getSector (AppleFileSystem fs, int track, int sector, BlockType blockType)
   // ---------------------------------------------------------------------------------//
   {
     assert addressType == AddressType.SECTOR;
 
-    int track = buffer[offset] & 0xFF;
-    int sector = buffer[++offset] & 0xFF;
     int blockNo = track * blocksPerTrack + sector;
 
     if (!isValidSector (track, sector) || !isValidBlockNo (blockNo))
@@ -222,11 +220,36 @@ class BlockReader
     if (appleBlocks[blockNo] == null)
     {
       AppleBlock block = new BlockDos (fs, track, sector);
-      block.setBlockType (isEmpty (block) ? BlockType.EMPTY : BlockType.ORPHAN);
+      block.setBlockType (blockType);
       appleBlocks[blockNo] = block;
     }
 
     return appleBlocks[blockNo];
+  }
+
+  // ---------------------------------------------------------------------------------//
+  AppleBlock getSector (AppleFileSystem fs, byte[] buffer, int offset)
+  // ---------------------------------------------------------------------------------//
+  {
+    assert addressType == AddressType.SECTOR;
+
+    int track = buffer[offset] & 0xFF;
+    int sector = buffer[offset + 1] & 0xFF;
+
+    return getSector (fs, track, sector);
+  }
+
+  // ---------------------------------------------------------------------------------//
+  AppleBlock getSector (AppleFileSystem fs, byte[] buffer, int offset,
+      BlockType blockType)
+  // ---------------------------------------------------------------------------------//
+  {
+    assert addressType == AddressType.SECTOR;
+
+    int track = buffer[offset] & 0xFF;
+    int sector = buffer[offset + 1] & 0xFF;
+
+    return getSector (fs, track, sector, blockType);
   }
 
   // ---------------------------------------------------------------------------------//

@@ -122,20 +122,20 @@ abstract class AbstractFileSystem implements AppleFileSystem
   }
 
   // ---------------------------------------------------------------------------------//
-  //  @Override
-  //  public AppleBlock getSector (int track, int sector, BlockType blockType)
-  //  // ---------------------------------------------------------------------------------//
-  //  {
-  //    return blockReader.getSector (this, track, sector, blockType);
-  //  }
+  @Override
+  public AppleBlock getSector (int track, int sector, BlockType blockType)
+  // ---------------------------------------------------------------------------------//
+  {
+    return blockReader.getSector (this, track, sector, blockType);
+  }
 
   // ---------------------------------------------------------------------------------//
-  //  @Override
-  //  public AppleBlock getSector (byte[] buffer, int offset, BlockType blockType)
-  //  // ---------------------------------------------------------------------------------//
-  //  {
-  //    return blockReader.getSector (this, buffer, offset, blockType);
-  //  }
+  @Override
+  public AppleBlock getSector (byte[] buffer, int offset, BlockType blockType)
+  // ---------------------------------------------------------------------------------//
+  {
+    return blockReader.getSector (this, buffer, offset, blockType);
+  }
 
   // ---------------------------------------------------------------------------------//
   @Override

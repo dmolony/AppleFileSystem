@@ -31,9 +31,9 @@ public interface AppleFileSystem extends AppleContainer
 
   int getBlocksPerTrack ();
 
-  public int getTotalBlocks ();
+  int getTotalBlocks ();
 
-  public int getBlockSize ();
+  int getBlockSize ();
 
   int getFreeBlocks ();
 
@@ -45,6 +45,10 @@ public interface AppleFileSystem extends AppleContainer
 
   AppleBlock getSector (byte[] buffer, int offset);
 
+  AppleBlock getSector (int track, int sector, BlockType blockType);
+
+  AppleBlock getSector (byte[] buffer, int offset, BlockType blockType);
+
   byte[] readBlock (AppleBlock block);
 
   byte[] readBlocks (List<AppleBlock> blocks);
@@ -53,9 +57,9 @@ public interface AppleFileSystem extends AppleContainer
 
   void writeBlocks (List<AppleBlock> blocks, byte[] buffer);
 
-  public void setErrorMessage (String errorMessage);    // if file can't be read
+  void setErrorMessage (String errorMessage);    // if file can't be read
 
-  public String getErrorMessage ();                     // if file can't be read
+  String getErrorMessage ();                     // if file can't be read
 
   enum FileSystemType
   {
