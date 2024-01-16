@@ -16,6 +16,7 @@ abstract class AbstractBlock implements AppleBlock
   protected final int sectorNo;
 
   protected final boolean valid;
+  protected Object userData;
 
   // ---------------------------------------------------------------------------------//
   AbstractBlock (AppleFileSystem fileSystem, int blockNo)
@@ -149,6 +150,22 @@ abstract class AbstractBlock implements AppleBlock
   // ---------------------------------------------------------------------------------//
   {
     return fileSystem.readBlock (this);
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
+  public void setUserData (Object userData)
+  // ---------------------------------------------------------------------------------//
+  {
+    this.userData = userData;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
+  public Object getUserData ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return userData;
   }
 
   // ---------------------------------------------------------------------------------//

@@ -23,6 +23,7 @@ public abstract class AbstractAppleFile implements AppleFile
   protected boolean isLocked;
 
   protected String errorMessage = "";
+  protected Object userData;
 
   // ---------------------------------------------------------------------------------//
   AbstractAppleFile (AppleFileSystem appleFileSystem)
@@ -209,6 +210,22 @@ public abstract class AbstractAppleFile implements AppleFile
   // ---------------------------------------------------------------------------------//
   {
     return fileName;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
+  public void setUserData (Object userData)
+  // ---------------------------------------------------------------------------------//
+  {
+    this.userData = userData;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
+  public Object getUserData ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return userData;
   }
 
   // ---------------------------------------------------------------------------------//

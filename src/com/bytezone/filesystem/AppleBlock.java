@@ -28,6 +28,10 @@ public interface AppleBlock         // this could be renamed to Address
 
   AppleFile getFileOwner ();
 
+  public void setUserData (Object userData);
+
+  public Object getUserData ();
+
   public enum BlockType
   {
     EMPTY, FS_DATA, FILE_DATA, ORPHAN
