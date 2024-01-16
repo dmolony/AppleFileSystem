@@ -10,7 +10,7 @@ import com.bytezone.filesystem.AppleBlock.BlockType;
 import com.bytezone.utility.Utility;
 
 // -----------------------------------------------------------------------------------//
-class BlockReader
+public class BlockReader
 // -----------------------------------------------------------------------------------//
 {
   private static final int SECTOR_SIZE = 256;

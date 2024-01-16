@@ -4,6 +4,8 @@ package com.bytezone.filesystem;
 public interface AppleBlock         // this could be renamed to Address
 // -----------------------------------------------------------------------------------//
 {
+  AppleFileSystem getFileSystem ();
+
   int getBlockNo ();
 
   int getTrackNo ();

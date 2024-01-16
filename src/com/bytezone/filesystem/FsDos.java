@@ -8,7 +8,7 @@ import com.bytezone.filesystem.AppleBlock.BlockType;
 import com.bytezone.utility.Utility;
 
 // -----------------------------------------------------------------------------------//
-class FsDos extends AbstractFileSystem
+public class FsDos extends AbstractFileSystem
 // -----------------------------------------------------------------------------------//
 {
   private static final int ENTRY_SIZE = 35;
@@ -176,6 +176,20 @@ class FsDos extends AbstractFileSystem
     }
 
     freeBlocks = volumeBitMap.cardinality ();
+  }
+
+  // ---------------------------------------------------------------------------------//
+  public int getTracksPerDisk ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return tracksPerDisk;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  public int getSectorsPerTrack ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return sectorsPerTrack;
   }
 
   // ---------------------------------------------------------------------------------//
