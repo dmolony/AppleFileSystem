@@ -90,6 +90,13 @@ public class FsProdos extends AbstractFileSystem
     while (true)
     {
       catalogBlock.setBlockSubType (isFolder ? "FOLDER" : "CATALOG");
+      if (isFolder)
+      {
+        catalogBlock.setBlockSubType ("FOLDER");
+        ((FolderProdos) parent).dataBlocks.add (catalogBlock);
+      }
+      else
+        catalogBlock.setBlockSubType ("CATALOG");
 
       int ptr = 4;
       for (int i = 0; i < ProdosConstants.ENTRIES_PER_BLOCK; i++)

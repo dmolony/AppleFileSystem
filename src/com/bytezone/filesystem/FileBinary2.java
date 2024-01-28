@@ -1,8 +1,6 @@
 package com.bytezone.filesystem;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 
 import com.bytezone.filesystem.AppleBlock.BlockType;
@@ -49,7 +47,7 @@ public class FileBinary2 extends AbstractAppleFile
   private Optional<LocalDateTime> created = Optional.empty ();
   private Optional<LocalDateTime> modified = Optional.empty ();
 
-  private List<AppleBlock> dataBlocks = new ArrayList<> ();
+  //  private List<AppleBlock> dataBlocks = new ArrayList<> ();
   private String squeezeName;
 
   private boolean debug = false;

@@ -50,8 +50,4 @@ public interface AppleFile
   public void write (byte[] buffer);
 
   public String getErrorMessage ();                 // if file can't be read
-
-  public void setUserData (Object userData);
-
-  public Object getUserData ();
 }

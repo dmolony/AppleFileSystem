@@ -26,6 +26,7 @@ public class FsPascal extends AbstractFileSystem
   private int totalFiles;          // no of files on disk
   private int firstBlock;
   private LocalDate date;
+  private List<AppleBlock> catalogBlocks = new ArrayList<> ();
 
   // ---------------------------------------------------------------------------------//
   public FsPascal (BlockReader blockReader)
@@ -59,7 +60,6 @@ public class FsPascal extends AbstractFileSystem
 
     setTotalCatalogBlocks (firstFileBlock - 2);
 
-    List<AppleBlock> catalogBlocks = new ArrayList<> ();
     for (int i = 2; i < firstFileBlock; i++)
     {
       AppleBlock block = getBlock (i, BlockType.FS_DATA);
@@ -76,6 +76,13 @@ public class FsPascal extends AbstractFileSystem
       addFile (file);
       freeBlocks -= file.getTotalBlocks ();
     }
+  }
+
+  // ---------------------------------------------------------------------------------//
+  public List<AppleBlock> getCatalogBlocks ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return catalogBlocks;
   }
 
   // ---------------------------------------------------------------------------------//

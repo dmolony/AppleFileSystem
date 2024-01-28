@@ -1,5 +1,6 @@
 package com.bytezone.filesystem;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.bytezone.filesystem.AppleFileSystem.FileSystemType;
@@ -23,7 +24,7 @@ public abstract class AbstractAppleFile implements AppleFile
   protected boolean isLocked;
 
   protected String errorMessage = "";
-  protected Object userData;
+  protected List<AppleBlock> dataBlocks = new ArrayList<> ();
 
   // ---------------------------------------------------------------------------------//
   AbstractAppleFile (AppleFileSystem appleFileSystem)
@@ -132,8 +133,16 @@ public abstract class AbstractAppleFile implements AppleFile
   public byte[] read ()
   // ---------------------------------------------------------------------------------//
   {
-    throw new UnsupportedOperationException ("read() not implemented in " + fileName);
+    return parentFileSystem.readBlocks (dataBlocks);
   }
+
+  // ---------------------------------------------------------------------------------//
+  //  @Override
+  //  public byte[] read ()
+  //  // ---------------------------------------------------------------------------------//
+  //  {
+  //    throw new UnsupportedOperationException ("read() not implemented in " + fileName);
+  //  }
 
   // ---------------------------------------------------------------------------------//
   @Override
@@ -157,8 +166,9 @@ public abstract class AbstractAppleFile implements AppleFile
   public int getTotalBlocks ()                        // in blocks
   // ---------------------------------------------------------------------------------//
   {
-    throw new UnsupportedOperationException (String
-        .format ("getTotalBlocks() not implemented %s in %s%n", fileTypeText, fileName));
+    return dataBlocks.size ();
+    //    throw new UnsupportedOperationException (String
+    //        .format ("getTotalBlocks() not implemented %s in %s%n", fileTypeText, fileName));
   }
 
   // ---------------------------------------------------------------------------------//
@@ -168,7 +178,7 @@ public abstract class AbstractAppleFile implements AppleFile
   {
     //    throw new UnsupportedOperationException (
     //        "getBlocks() not implemented in " + fileName);
-    return null;
+    return dataBlocks;
   }
 
   // ---------------------------------------------------------------------------------//
@@ -210,22 +220,6 @@ public abstract class AbstractAppleFile implements AppleFile
   // ---------------------------------------------------------------------------------//
   {
     return fileName;
-  }
-
-  // ---------------------------------------------------------------------------------//
-  @Override
-  public void setUserData (Object userData)
-  // ---------------------------------------------------------------------------------//
-  {
-    this.userData = userData;
-  }
-
-  // ---------------------------------------------------------------------------------//
-  @Override
-  public Object getUserData ()
-  // ---------------------------------------------------------------------------------//
-  {
-    return userData;
   }
 
   // ---------------------------------------------------------------------------------//

@@ -1,8 +1,5 @@
 package com.bytezone.filesystem;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.bytezone.filesystem.AppleBlock.BlockType;
 import com.bytezone.utility.Utility;
 
@@ -20,7 +17,7 @@ public class FileCpm extends AbstractAppleFile
   private final int reserved;
   private int recordCount;                      // records used in this extent
 
-  List<AppleBlock> dataBlocks = new ArrayList<> ();
+  //  List<AppleBlock> dataBlocks = new ArrayList<> ();
 
   // ---------------------------------------------------------------------------------//
   FileCpm (FsCpm parent, byte[] buffer, int ptr)
@@ -125,12 +122,12 @@ public class FileCpm extends AbstractAppleFile
   }
 
   // ---------------------------------------------------------------------------------//
-  @Override
-  public byte[] read ()
-  // ---------------------------------------------------------------------------------//
-  {
-    return parentFileSystem.readBlocks (dataBlocks);
-  }
+  //  @Override
+  //  public byte[] read ()
+  //  // ---------------------------------------------------------------------------------//
+  //  {
+  //    return parentFileSystem.readBlocks (dataBlocks);
+  //  }
 
   // ---------------------------------------------------------------------------------//
   @Override
@@ -141,20 +138,20 @@ public class FileCpm extends AbstractAppleFile
   }
 
   // ---------------------------------------------------------------------------------//
-  @Override
-  public List<AppleBlock> getBlocks ()
-  // ---------------------------------------------------------------------------------//
-  {
-    return dataBlocks;
-  }
+  //  @Override
+  //  public List<AppleBlock> getBlocks ()
+  //  // ---------------------------------------------------------------------------------//
+  //  {
+  //    return dataBlocks;
+  //  }
 
   // ---------------------------------------------------------------------------------//
-  @Override
-  public int getTotalBlocks ()                   // in blocks
-  // ---------------------------------------------------------------------------------//
-  {
-    return dataBlocks.size ();
-  }
+  //  @Override
+  //  public int getTotalBlocks ()                   // in blocks
+  //  // ---------------------------------------------------------------------------------//
+  //  {
+  //    return dataBlocks.size ();
+  //  }
 
   // ---------------------------------------------------------------------------------//
   @Override

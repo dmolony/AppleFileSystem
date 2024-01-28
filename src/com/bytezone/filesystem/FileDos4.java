@@ -14,7 +14,7 @@ public class FileDos4 extends AbstractAppleFile
   boolean locked;
 
   List<AppleBlock> indexBlocks = new ArrayList<> ();
-  List<AppleBlock> dataBlocks = new ArrayList<> ();
+  //  List<AppleBlock> dataBlocks = new ArrayList<> ();
 
   int length;
   int address;
@@ -90,12 +90,12 @@ public class FileDos4 extends AbstractAppleFile
   }
 
   // ---------------------------------------------------------------------------------//
-  @Override
-  public byte[] read ()
-  // ---------------------------------------------------------------------------------//
-  {
-    return parentFileSystem.readBlocks (dataBlocks);
-  }
+  //  @Override
+  //  public byte[] read ()
+  //  // ---------------------------------------------------------------------------------//
+  //  {
+  //    return parentFileSystem.readBlocks (dataBlocks);
+  //  }
 
   // ---------------------------------------------------------------------------------//
   @Override

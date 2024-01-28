@@ -28,9 +28,9 @@ public interface AppleBlock         // this could be renamed to Address
 
   AppleFile getFileOwner ();
 
-  public void setUserData (Object userData);
+  void setUserData (Object userData);
 
-  public Object getUserData ();
+  Object getUserData ();
 
   public enum BlockType
   {
