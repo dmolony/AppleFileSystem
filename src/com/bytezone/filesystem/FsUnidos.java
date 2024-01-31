@@ -54,14 +54,14 @@ class FsUnidos extends AbstractFileSystem
 
   // ---------------------------------------------------------------------------------//
   @Override
-  public String getCatalog ()
+  public String getCatalogText ()
   // ---------------------------------------------------------------------------------//
   {
     StringBuilder text = new StringBuilder ();
 
     for (AppleFileSystem fileSystem : getFileSystems ())
     {
-      text.append (fileSystem.getCatalog ());
+      text.append (fileSystem.getCatalogText ());
       text.append ("\n\n");
     }
 

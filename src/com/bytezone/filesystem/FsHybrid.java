@@ -36,14 +36,14 @@ class FsHybrid extends AbstractFileSystem
 
   // ---------------------------------------------------------------------------------//
   @Override
-  public String getCatalog ()
+  public String getCatalogText ()
   // ---------------------------------------------------------------------------------//
   {
     StringBuilder text = new StringBuilder ();
 
     for (AppleFileSystem fs : getFileSystems ())
     {
-      text.append (fs.getCatalog ());
+      text.append (fs.getCatalogText ());
       text.append ("\n\n");
     }
 

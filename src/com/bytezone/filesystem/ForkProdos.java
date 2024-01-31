@@ -29,6 +29,7 @@ public class ForkProdos extends AbstractAppleFile
   final int size;
   final int eof;
   final int keyPtr;
+  private int nullBlocks;
 
   private AppleBlock masterIndexBlock;
   private final List<AppleBlock> indexBlocks = new ArrayList<> ();
@@ -116,7 +117,10 @@ public class ForkProdos extends AbstractAppleFile
     for (Integer blockNo : blockNos)
     {
       if (blockNo == 0)
+      {
         dataBlocks.add (null);
+        nullBlocks++;
+      }
       else
       {
         AppleBlock block = fileSystem.getBlock (blockNo);
@@ -340,11 +344,12 @@ public class ForkProdos extends AbstractAppleFile
 
     String message =
         dataBlocks.size () * 512 < eof ? message = "<-- past data blocks" : "";
+    String nulls = nullBlocks == 0 ? "" : String.format (" (%d nulls)", nullBlocks);
 
     text.append (
         String.format ("Index blocks .......... %04X    %<,7d%n", indexBlocks.size ()));
-    text.append (
-        String.format ("Data blocks ........... %04X    %<,7d%n", dataBlocks.size ()));
+    text.append (String.format ("Data blocks ........... %04X    %<,7d %s%n",
+        dataBlocks.size (), nulls));
     text.append (
         String.format ("Eof ................... %06X  %<,7d  %s%n", eof, message));
 

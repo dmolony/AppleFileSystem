@@ -67,7 +67,7 @@ public class FsProdos extends AbstractFileSystem
     assert directoryEntry.fileCount == getFiles ().size ();
     setTotalCatalogBlocks (catalogBlocks);
 
-    volumeBitMap = createVolumeBitMap (directoryEntry.keyPtr);
+    volumeBitMap = createVolumeBitMap (directoryEntry);
     freeBlocks = volumeBitMap.cardinality ();
 
     if (isDosMaster)
@@ -166,7 +166,7 @@ public class FsProdos extends AbstractFileSystem
   }
 
   // ---------------------------------------------------------------------------------//
-  private BitSet createVolumeBitMap (int blockNo)
+  private BitSet createVolumeBitMap (DirectoryEntryProdos directoryEntry)
   // ---------------------------------------------------------------------------------//
   {
     int bitPtr = 0;
@@ -174,6 +174,7 @@ public class FsProdos extends AbstractFileSystem
     byte[] buffer = null;
 
     BitSet bitMap = new BitSet (directoryEntry.totalBlocks);
+    int blockNo = directoryEntry.keyPtr;
 
     while (bitPtr < directoryEntry.totalBlocks)
     {
@@ -198,6 +199,13 @@ public class FsProdos extends AbstractFileSystem
     }
 
     return bitMap;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  public int getBitmapBlockNo ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return directoryEntry.keyPtr;
   }
 
   // ---------------------------------------------------------------------------------//
@@ -244,7 +252,7 @@ public class FsProdos extends AbstractFileSystem
 
   // ---------------------------------------------------------------------------------//
   @Override
-  public String getCatalog ()
+  public String getCatalogText ()
   // ---------------------------------------------------------------------------------//
   {
     StringBuilder text = new StringBuilder ();

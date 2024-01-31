@@ -17,7 +17,7 @@ public interface AppleContainer
 
   public List<AppleFileSystem> getFileSystems ();
 
-  public String getCatalog ();
+  public String getCatalogText ();
 
   public String getPath ();
 }
