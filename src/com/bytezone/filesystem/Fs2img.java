@@ -103,7 +103,8 @@ public class Fs2img extends AbstractFileSystem
   public int getTotalBlocks ()
   // ---------------------------------------------------------------------------------//
   {
-    return prodosBlocks;
+    //    return prodosBlocks;
+    return blockReader.getTotalBlocks ();
   }
 
   // ---------------------------------------------------------------------------------//

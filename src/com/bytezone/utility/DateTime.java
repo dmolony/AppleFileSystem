@@ -9,14 +9,9 @@ import java.util.Locale;
 public class DateTime
 // -----------------------------------------------------------------------------------//
 {
-  private static String[] months = { "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul",
-      "Aug", "Sep", "Oct", "Nov", "Dec" };
-  private static String[] days = { "", "Sunday", "Monday", "Tuesday", "Wednesday",
-      "Thursday", "Friday", "Saturday" };
-
-  private static Locale US = Locale.US;          // to force 3 character months
+  // use Locale.US to force 3 character months
   private static final DateTimeFormatter dtf =
-      DateTimeFormatter.ofPattern ("dd-MMM-yy HH:mm", US);
+      DateTimeFormatter.ofPattern ("dd-MMM-yy HH:mm", Locale.US);
 
   private final int second;
   private final int minute;
@@ -30,26 +25,18 @@ public class DateTime
   public DateTime (byte[] buffer, int ptr)
   // ---------------------------------------------------------------------------------//
   {
-    second = buffer[ptr] & 0xFF;
-    minute = buffer[++ptr] & 0xFF;
-    hour = buffer[++ptr] & 0xFF;
-    year = buffer[++ptr] & 0xFF;
-    day = buffer[++ptr] & 0xFF;
-    month = buffer[++ptr] & 0xFF;
-    ++ptr;     // empty
-    weekDay = buffer[++ptr] & 0xFF;
+    second = buffer[ptr++] & 0xFF;
+    minute = buffer[ptr++] & 0xFF;
+    hour = buffer[ptr++] & 0xFF;
+    year = buffer[ptr++] & 0xFF;
+    day = buffer[ptr++] & 0xFF;
+    month = buffer[ptr++] & 0xFF;
+    ptr++;                              // empty
+    weekDay = buffer[ptr] & 0xFF;
   }
 
   // ---------------------------------------------------------------------------------//
   public String format ()
-  // ---------------------------------------------------------------------------------//
-  {
-    return String.format ("%02d:%02d:%02d %s %d %s %d", hour, minute, second,
-        days[weekDay], day, months[month], year);
-  }
-
-  // ---------------------------------------------------------------------------------//
-  public String format2 ()
   // ---------------------------------------------------------------------------------//
   {
     LocalDateTime dateTime = getLocalDateTime ();

@@ -189,12 +189,8 @@ public class Utility
         hexLine.append (String.format ("%02X ", c));
 
         if (c > 127)
-        {
-          if (c < 160)
-            c -= 64;
-          else
-            c -= 128;
-        }
+          c -= c < 160 ? 64 : 128;
+
         if (c < 32 || c == 127)         // non-printable
           trans.append (".");
         else                            // standard ascii

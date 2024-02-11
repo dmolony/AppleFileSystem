@@ -83,6 +83,7 @@ class DirectoryEntryProdos
   {
     StringBuilder text = new StringBuilder ();
 
+    text.append ("---- Prodos Header ----\n");
     text.append (String.format ("Storage type .......... %02X  %s%n", storageType,
         storageTypeText));
     text.append (String.format ("File name ............. %s%n", fileName));

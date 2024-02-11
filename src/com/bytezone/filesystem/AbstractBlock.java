@@ -1,5 +1,7 @@
 package com.bytezone.filesystem;
 
+import java.util.Objects;
+
 import com.bytezone.filesystem.BlockReader.AddressType;
 
 // -----------------------------------------------------------------------------------//
@@ -22,7 +24,7 @@ abstract class AbstractBlock implements AppleBlock
   AbstractBlock (AppleFileSystem fileSystem, int blockNo)
   // ---------------------------------------------------------------------------------//
   {
-    this.fileSystem = fileSystem;
+    this.fileSystem = Objects.requireNonNull (fileSystem, "File System is null");
     this.blockNo = blockNo;
 
     int blocksPerTrack = fileSystem.getBlocksPerTrack ();
@@ -44,7 +46,7 @@ abstract class AbstractBlock implements AppleBlock
   AbstractBlock (AppleFileSystem fileSystem, int trackNo, int sectorNo)
   // ---------------------------------------------------------------------------------//
   {
-    this.fileSystem = fileSystem;
+    this.fileSystem = Objects.requireNonNull (fileSystem, "File System is null");
     this.blockNo = fileSystem.getBlocksPerTrack () * trackNo + sectorNo;
 
     this.trackNo = trackNo;

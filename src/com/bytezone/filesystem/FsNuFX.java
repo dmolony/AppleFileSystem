@@ -107,7 +107,7 @@ class FsNuFX extends AbstractFileSystem
 
     text.append (
         String.format (" %-15.15s Created:%-17s Mod:%-17s   Recs:%5d%n%n", getFileName (),
-            getCreated ().format2 (), getModified ().format2 (), getFiles ().size ()));
+            getCreated ().format (), getModified ().format (), getFiles ().size ()));
 
     text.append (" Name                        Type Auxtyp Archived"
         + "         Fmat Size Un-Length\n");
@@ -145,6 +145,7 @@ class FsNuFX extends AbstractFileSystem
   {
     StringBuilder text = new StringBuilder (super.toString ());
 
+    text.append ("----- NuFX Header -----\n");
     text.append (String.format ("Master CRC ............ %04X   %s%n", crc,
         crcPassed ? "Passed" : "** Failed **"));
     text.append (String.format ("Records ............... %,d%n", totalRecords));

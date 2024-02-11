@@ -99,7 +99,15 @@ public class FileBinary2 extends AbstractAppleFile
     version = buffer[126] & 0xFF;
     filesFollowing = buffer[127] & 0xFF;
 
-    setFileTypeText ();
+    //    setFileTypeText ();
+
+    fileTypeText = switch (osType)
+    {
+      case 0 -> FsProdos.getFileTypeText (fileType);
+      case 1, 2 -> "Dos type " + fileType;
+      case 3 -> "Pascal type " + fileType;
+      default -> throw new IllegalArgumentException ("Unexpected value: " + osType);
+    };
 
     int firstBlock = headerBlockNo + 1;
     int lastBlock = firstBlock + (eof - 1) / 128;
@@ -137,27 +145,6 @@ public class FileBinary2 extends AbstractAppleFile
   // ---------------------------------------------------------------------------------//
   {
     return validBlocks;
-  }
-
-  // ---------------------------------------------------------------------------------//
-  private void setFileTypeText ()
-  // ---------------------------------------------------------------------------------//
-  {
-    switch (osType)
-    {
-      case 0:         // Prodos/Sos
-        fileTypeText = FsProdos.getFileTypeText (fileType);
-        break;
-
-      case 1:         // Dos 3.3
-      case 2:         // Dos 3.1
-        fileTypeText = "Dos type " + fileType;
-        break;
-
-      case 3:         // Pascal
-        fileTypeText = "Pascal type " + fileType;
-        break;
-    }
   }
 
   // ---------------------------------------------------------------------------------//

@@ -18,12 +18,10 @@ abstract class AbstractFileSystem implements AppleFileSystem
   protected int totalCatalogBlocks;
   protected int freeBlocks;
 
-  // If this file is a container (FS, folder, forked file, hybrid) then the children are
-  // stored here
-  protected List<AppleFile> files = new ArrayList<> ();
-  protected List<AppleFileSystem> fileSystems = new ArrayList<> ();
+  protected final List<AppleFile> files = new ArrayList<> ();
+  protected final List<AppleFileSystem> fileSystems = new ArrayList<> ();
 
-  protected FileSystemType fileSystemType;
+  protected final FileSystemType fileSystemType;
   protected String errorMessage = "";
 
   protected boolean partOfHybrid;     // this FS is one of two file systems on the disk
@@ -94,7 +92,7 @@ abstract class AbstractFileSystem implements AppleFileSystem
   public AddressType getAddressType ()
   // ---------------------------------------------------------------------------------//
   {
-    return blockReader.addressType;
+    return blockReader.getAddressType ();
   }
 
   // ---------------------------------------------------------------------------------//
@@ -102,7 +100,7 @@ abstract class AbstractFileSystem implements AppleFileSystem
   public int getBlocksPerTrack ()
   // ---------------------------------------------------------------------------------//
   {
-    return blockReader.blocksPerTrack;
+    return blockReader.getBlocksPerTrack ();
   }
 
   // ---------------------------------------------------------------------------------//
@@ -110,7 +108,7 @@ abstract class AbstractFileSystem implements AppleFileSystem
   public int getBlockSize ()
   // ---------------------------------------------------------------------------------//
   {
-    return blockReader.bytesPerBlock;
+    return blockReader.getBlockSize ();
   }
 
   // ---------------------------------------------------------------------------------//
@@ -274,7 +272,7 @@ abstract class AbstractFileSystem implements AppleFileSystem
   public int getTotalBlocks ()              // in blocks
   // ---------------------------------------------------------------------------------//
   {
-    return blockReader.totalBlocks;
+    return blockReader.getTotalBlocks ();
   }
 
   // ---------------------------------------------------------------------------------//
@@ -392,20 +390,21 @@ abstract class AbstractFileSystem implements AppleFileSystem
   public String toString ()
   // ---------------------------------------------------------------------------------//
   {
+    String msg = files.size () == 1 && files.get (0).hasEmbeddedFileSystem ()
+        ? msg = " (embedded file system)" : "";
+
     StringBuilder text = new StringBuilder ();
 
     text.append (String.format ("File name ............. %s%n", getFileName ()));
     text.append (String.format ("File system type ...... %s%n%n", fileSystemType));
 
-    text.append (blockReader.toString ());
-    text.append ("\n\n");
-
     text.append (String.format ("Catalog blocks ........ %d%n", totalCatalogBlocks));
     text.append (String.format ("Total file systems .... %d%n", fileSystems.size ()));
-
-    String msg = files.size () == 1 && files.get (0).hasEmbeddedFileSystem ()
-        ? msg = " (embedded file system)" : "";
     text.append (String.format ("Total files ........... %d%s%n%n", files.size (), msg));
+
+    text.append ("---- Block Reader -----\n");
+    text.append (blockReader.toString ());
+    text.append ("\n\n");
 
     return text.toString ();
   }

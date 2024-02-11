@@ -1,5 +1,8 @@
 package com.bytezone.filesystem;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.bytezone.filesystem.AppleBlock.BlockType;
 import com.bytezone.utility.Utility;
 
@@ -8,6 +11,7 @@ public class FsCpm extends AbstractFileSystem
 // -----------------------------------------------------------------------------------//
 {
   private static final int EMPTY_BYTE_VALUE = 0xE5;
+  private List<FileEntryCpm> fileEntries = new ArrayList<> ();
 
   // ---------------------------------------------------------------------------------//
   public FsCpm (BlockReader blockReader)
@@ -18,26 +22,27 @@ public class FsCpm extends AbstractFileSystem
     assert getTotalCatalogBlocks () == 0;
 
     int catalogBlocks = 0;
-    FileCpm currentFile = null;
 
     int firstBlock = 0;
     int maxBlocks = 0;
+    int size = 0;
 
     if (getDiskBuffer ().length == 143_360)
     {
       firstBlock = 12;        // track 3 x (4 blocks per track)
       maxBlocks = 2;          // 2 blocks (half a track)
+      size = 8;
     }
     else if (getDiskBuffer ().length == 819_200)
     {
-      firstBlock = 16;        // track 2 x (8 blocks per track)
-      maxBlocks = 8;          // 8 blocks (full track)
+      firstBlock = 16;        // track 4 x (4 blocks per track)
+      maxBlocks = 8;          // 8 blocks (2 full tracks)
+      size = 16;
     }
 
     OUT: for (int i = 0; i < maxBlocks; i++)
     {
-      AppleBlock block = getBlock (firstBlock + i);
-      block.setBlockType (BlockType.FS_DATA);
+      AppleBlock block = getBlock (firstBlock + i, BlockType.FS_DATA);
       block.setBlockSubType ("CATALOG");
       byte[] buffer = block.read ();
 
@@ -56,19 +61,34 @@ public class FsCpm extends AbstractFileSystem
           //          throw new FileFormatException ("CPM: bad name value");
           break OUT;
 
-        if (currentFile == null || currentFile.isComplete ())
-        {
-          currentFile = new FileCpm (this, buffer, j);
-          this.addFile (currentFile);
-        }
-        else
-          currentFile.append (buffer, j);
+        fileEntries.add (new FileEntryCpm (buffer, j, size));
       }
 
       ++catalogBlocks;
     }
 
     setTotalCatalogBlocks (catalogBlocks);
+    if (catalogBlocks == 0)
+      return;
+
+    // create files
+
+    List<FileEntryCpm> shortList = new ArrayList<> ();
+
+    for (FileEntryCpm fileEntryCpm : fileEntries)
+    {
+      //      System.out.println (fileEntryCpm);
+      //      System.out.println ();
+
+      if (fileEntryCpm.getExtentNo () == 0 && shortList.size () > 0)
+      {
+        files.add (new FileCpm (this, shortList));
+        shortList = new ArrayList<> ();
+      }
+      shortList.add (fileEntryCpm);
+    }
+
+    files.add (new FileCpm (this, shortList));
 
     // flag DOS sectors
     for (int blockNo = 0; blockNo < 12; blockNo++)
@@ -89,9 +109,10 @@ public class FsCpm extends AbstractFileSystem
   {
     StringBuilder text = new StringBuilder ();
 
-    String line = "----  ---------  ---  - -  ----\n";
+    String line = "----  ---------  ---  - - -  --  --  --  --   "
+        + "-----------------------------------------------\n";
 
-    text.append ("User  Name       Typ  R S  Size\n");
+    text.append ("User  Name       Typ  R S A  Eh  El  RC  BC   Blocks\n");
     text.append (line);
 
     for (AppleFile file : getFiles ())
@@ -110,6 +131,7 @@ public class FsCpm extends AbstractFileSystem
   {
     StringBuilder text = new StringBuilder (super.toString ());
 
+    text.append ("----- CPM Header ------\n");
     text.append (String.format ("Entry length .......... %d%n", 32));
     text.append (String.format ("Entries per block ..... %d%n", getBlockSize () / 32));
     text.append (String.format ("File count ............ %d", getFiles ().size ()));

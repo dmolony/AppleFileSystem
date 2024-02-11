@@ -18,8 +18,7 @@ class FsDos4 extends AbstractFileSystem
     assert getTotalCatalogBlocks () == 0;
     int catalogBlocks = 0;
 
-    AppleBlock vtoc = getSector (17, 0);
-    vtoc.setBlockType (BlockType.FS_DATA);
+    AppleBlock vtoc = getSector (17, 0, BlockType.FS_DATA);
     byte[] buffer = vtoc.read ();
 
     if (buffer[3] != 0x41 && buffer[3] != 0x42)
@@ -38,9 +37,8 @@ class FsDos4 extends AbstractFileSystem
       track &= 0x3F;
       sector &= 0x1F;
 
-      AppleBlock catalogSector = getSector (track, sector);
-      catalogSector.setBlockType (BlockType.FS_DATA);
-      if (!catalogSector.isValid ())
+      AppleBlock catalogSector = getSector (track, sector, BlockType.FS_DATA);
+      if (catalogSector == null)
         return;
 
       buffer = catalogSector.read ();
@@ -92,9 +90,9 @@ class FsDos4 extends AbstractFileSystem
   public String toString ()
   // ---------------------------------------------------------------------------------//
   {
-    StringBuilder text = new StringBuilder (super.toString () + "\n\n");
+    StringBuilder text = new StringBuilder (super.toString ());
 
-    text.append ("\n");
+    text.append ("----- DOS4 Header -----\n");
     text.append (String.format ("Dos version ........... %02X", dosVersion));
 
     return text.toString ();

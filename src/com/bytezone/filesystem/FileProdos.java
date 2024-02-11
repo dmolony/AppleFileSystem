@@ -57,10 +57,12 @@ public class FileProdos extends AbstractAppleFile implements AppleForkedFile
   private void createForks ()
   // ---------------------------------------------------------------------------------//
   {
-    AppleBlock block = getParentFileSystem ().getBlock (fileEntry.keyPtr);
-    block.setBlockType (BlockType.FS_DATA);
+    AppleBlock block =
+        getParentFileSystem ().getBlock (fileEntry.keyPtr, BlockType.FS_DATA);
     block.setBlockSubType ("FORK");
     block.setFileOwner (this);
+
+    dataBlocks.add (block);
     byte[] buffer = block.read ();
 
     for (int ptr = 0; ptr < 512; ptr += 256)
@@ -81,13 +83,7 @@ public class FileProdos extends AbstractAppleFile implements AppleForkedFile
   public List<AppleBlock> getBlocks ()
   // ---------------------------------------------------------------------------------//
   {
-    if (isForkedFile)
-    {
-      System.out.println ("FileProdos - which fork?");
-      return null;
-    }
-
-    return dataFork.getBlocks ();
+    return isForkedFile ? dataBlocks : dataFork.getBlocks ();
   }
 
   // ---------------------------------------------------------------------------------//

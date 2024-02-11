@@ -51,20 +51,10 @@ class FsHybrid extends AbstractFileSystem
   }
 
   // ---------------------------------------------------------------------------------//
-  @Override
-  public String toString ()
-  // ---------------------------------------------------------------------------------//
-  {
-    StringBuilder text = new StringBuilder (super.toString ());
-
-    text.append (String.format ("File name ............. %s%n", getFileName ()));
-    text.append (String.format ("File system type ...... %s%n", fileSystemType));
-    text.append ("\n");
-
-    //    for (AppleFile appleFile : files)
-    //      text.append (
-    //          String.format ("File system type ...... %s%n", appleFile.getFileSystemType ()));
-
-    return text.toString ();
-  }
+  //  @Override
+  //  public String toString ()
+  //  // ---------------------------------------------------------------------------------//
+  //  {
+  //    return super.toString ();
+  //  }
 }

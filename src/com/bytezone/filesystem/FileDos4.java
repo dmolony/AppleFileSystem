@@ -52,10 +52,9 @@ public class FileDos4 extends AbstractAppleFile
       nextTrack &= 0x3F;
       nextSector &= 0x1F;
 
-      AppleBlock tsSector = fs.getSector (nextTrack, nextSector);
-      if (!tsSector.isValid ())
+      AppleBlock tsSector = fs.getSector (nextTrack, nextSector, BlockType.FS_DATA);
+      if (tsSector == null)
         throw new FileFormatException ("Invalid TS sector");
-      tsSector.setBlockType (BlockType.FS_DATA);
 
       indexBlocks.add (tsSector);
       --sectorsLeft;
@@ -67,10 +66,9 @@ public class FileDos4 extends AbstractAppleFile
         int fileTrack = sectorBuffer[i] & 0xFF;
         int fileSector = sectorBuffer[i + 1] & 0xFF;
 
-        AppleBlock dataSector = fs.getSector (fileTrack, fileSector);
-        if (!dataSector.isValid ())
+        AppleBlock dataSector = fs.getSector (fileTrack, fileSector, BlockType.FILE_DATA);
+        if (dataSector == null)
           throw new FileFormatException ("Invalid data sector");
-        dataSector.setBlockType (BlockType.FILE_DATA);
 
         if (dataSector.getBlockNo () != 0)
         {

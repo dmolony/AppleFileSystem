@@ -74,8 +74,6 @@ public class FileSystemFactory
       getUnidos (blockReader);
     if (fileSystems.size () == 0)
       getWoz (blockReader);
-    //    if (fileSystems.size () == 0)
-    //      getDosMaster (blockReader);
 
     switch (fileSystems.size ())
     {
@@ -333,7 +331,7 @@ public class FileSystemFactory
       try
       {
         BlockReader cpamReader = new BlockReader (blockReader);
-        cpamReader.setParameters (1024, AddressType.BLOCK, 0, 8);
+        cpamReader.setParameters (1024, AddressType.BLOCK, 0, 4);
 
         FsCpm fs = new FsCpm (cpamReader);
 
@@ -521,28 +519,4 @@ public class FileSystemFactory
       errorMessages.add (e.toString ());
     }
   }
-
-  // ---------------------------------------------------------------------------------//
-  //  private void getDosMaster (BlockReader blockReader)
-  //  // ---------------------------------------------------------------------------------//
-  //  {
-  //    try
-  //    {
-  //      if (debug)
-  //        System.out.println ("Checking DosMaster");
-  //
-  //      BlockReader lbrReader = new BlockReader (blockReader);
-  //      lbrReader.setParameters (128, AddressType.BLOCK, 0, 0);
-  //
-  //      FsDosMaster fs = new FsDosMaster (lbrReader);
-  //
-  //      if (fs.getFileSystems ().size () > 0)
-  //        fileSystems.add (fs);
-  //    }
-  //    catch (FileFormatException e)
-  //    {
-  //      if (debug)
-  //        System.out.println (e);
-  //    }
-  //  }
 }

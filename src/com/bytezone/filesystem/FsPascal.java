@@ -144,6 +144,7 @@ public class FsPascal extends AbstractFileSystem
   {
     StringBuilder text = new StringBuilder (super.toString ());
 
+    text.append ("---- Pascal Header ----\n");
     text.append (String.format ("Volume name ........... %s%n", volumeName));
     text.append (String.format ("Directory ............. %d : %d%n", firstCatalogBlock,
         firstFileBlock - 1));

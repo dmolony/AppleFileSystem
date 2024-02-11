@@ -156,8 +156,8 @@ public class FsDos extends AbstractFileSystem
   private void buildFreeSectorList (byte[] buffer)
   // ---------------------------------------------------------------------------------//
   {
-    int blocksPerTrack = blockReader.blocksPerTrack;
-    int totalBlocks = blockReader.totalBlocks;
+    int blocksPerTrack = blockReader.getBlocksPerTrack ();
+    int totalBlocks = blockReader.getTotalBlocks ();
     int totalTracks = totalBlocks / blocksPerTrack;
 
     volumeBitMap = new BitSet (totalBlocks);
@@ -240,6 +240,7 @@ public class FsDos extends AbstractFileSystem
   {
     StringBuilder text = new StringBuilder (super.toString ());
 
+    text.append ("----- DOS Header ------\n");
     text.append (String.format ("Dos version ........... %02X%n", dosVersion));
     text.append (String.format ("Volume number ......... %02X  %<,7d%n", volumeNumber));
     text.append (String.format ("Max TS pairs .......... %02X  %<,7d%n", maxTSpairs));

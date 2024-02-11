@@ -450,12 +450,12 @@ public class FileNuFX extends AbstractAppleFile implements AppleFilePath, AppleF
     if (hasEmbeddedFileSystem ())
       return String.format ("%s%-27.27s %-4s %-6s %-15s  %s  %3.0f%%   %7d", lockedFlag,
           getFileName (), "Disk", (getUncompressedSize () / 1024) + "k",
-          getArchived ().format2 (), threadFormats[getThreadFormat ()],
+          getArchived ().format (), threadFormats[getThreadFormat ()],
           getCompressedPct (), getUncompressedSize ());
 
     return String.format ("%s%-27.27s %s%s $%04X  %-15s  %s  %3.0f%%   %7d", lockedFlag,
         getFullFileName (), getFileTypeText (), forkedFlag, getAuxType (),
-        getArchived ().format2 (), threadFormats[getThreadFormat ()], getCompressedPct (),
+        getArchived ().format (), threadFormats[getThreadFormat ()], getCompressedPct (),
         getUncompressedSize ());
   }
 

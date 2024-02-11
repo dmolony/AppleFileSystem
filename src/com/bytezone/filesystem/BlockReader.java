@@ -19,7 +19,9 @@ public class BlockReader
       0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16,       //
       17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31 },   // no interleave
       { 0, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 15 },       // pascal
-      { 0, 6, 12, 3, 9, 15, 14, 5, 11, 2, 8, 7, 13, 4, 10, 1 } };     // CPM
+      { 0, 6, 12, 3, 9, 15, 14, 5, 11, 2, 8, 7, 13, 4, 10, 1 },       // CPM Dos
+      { 0, 9, 3, 12, 6, 15, 1, 10, 4, 13, 7, 8, 2, 11, 5, 14 },       // CPM Prodos
+      { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15 } };     // test
 
   private final byte[] diskBuffer;
   private final int diskOffset;
@@ -28,15 +30,15 @@ public class BlockReader
   private final Path path;
   private String name;
 
-  AddressType addressType;      // BLOCK, SECTOR
+  private AddressType addressType;      // BLOCK, SECTOR
 
-  int bytesPerBlock;            // 256, 512, 1024
-  int interleave;               // 0, 1, 2
-  int blocksPerTrack;           // 4, 8, 13, 16, 32
-  int bytesPerTrack;            // 3328, 4096, 8192
-  int totalBlocks;
+  private int bytesPerBlock;            // 128, 256, 512, 1024
+  private int interleave;               // 0, 1, 2
+  private int blocksPerTrack;           // 4, 8, 13, 16, 32
+  private int bytesPerTrack;            // 3328, 4096, 8192
+  private int totalBlocks;
 
-  AppleBlock[] appleBlocks;
+  private AppleBlock[] appleBlocks;
 
   public enum AddressType
   {
@@ -111,28 +113,7 @@ public class BlockReader
   void fixIncorrectName (String correctName)
   // ---------------------------------------------------------------------------------//
   {
-    this.name = correctName;
-  }
-
-  // ---------------------------------------------------------------------------------//
-  byte[] getDiskBuffer ()
-  // ---------------------------------------------------------------------------------//
-  {
-    return diskBuffer;
-  }
-
-  // ---------------------------------------------------------------------------------//
-  int getDiskOffset ()
-  // ---------------------------------------------------------------------------------//
-  {
-    return diskOffset;
-  }
-
-  // ---------------------------------------------------------------------------------//
-  int getDiskLength ()
-  // ---------------------------------------------------------------------------------//
-  {
-    return diskLength;
+    this.name = Objects.requireNonNull (correctName, "Name is null");
   }
 
   // ---------------------------------------------------------------------------------//
@@ -157,7 +138,7 @@ public class BlockReader
       return null;
     //    // throw?
 
-    if (appleBlocks[blockNo] == null)           // first time here
+    if (appleBlocks[blockNo] == null)                             // first time here
     {
       AppleBlock block = new BlockProdos (fs, blockNo);
       block.setBlockType (isEmpty (block) ? BlockType.EMPTY : BlockType.ORPHAN);
@@ -175,7 +156,7 @@ public class BlockReader
       return null;
     //    // throw?
 
-    if (appleBlocks[blockNo] == null)           // first time here
+    if (appleBlocks[blockNo] == null)                             // first time here
       appleBlocks[blockNo] = new BlockProdos (fs, blockNo);
 
     appleBlocks[blockNo].setBlockType (blockType);
@@ -191,7 +172,7 @@ public class BlockReader
 
     int blockNo = track * blocksPerTrack + sector;
 
-    if (!isValidSector (track, sector) || !isValidBlockNo (blockNo))
+    if (!isValidSectorAddress (track, sector) || !isValidBlockNo (blockNo))
       return null;
     // throw?
 
@@ -213,16 +194,14 @@ public class BlockReader
 
     int blockNo = track * blocksPerTrack + sector;
 
-    if (!isValidSector (track, sector) || !isValidBlockNo (blockNo))
+    if (!isValidSectorAddress (track, sector) || !isValidBlockNo (blockNo))
       return null;
     // throw?
 
-    if (appleBlocks[blockNo] == null)
-    {
-      AppleBlock block = new BlockDos (fs, track, sector);
-      block.setBlockType (blockType);
-      appleBlocks[blockNo] = block;
-    }
+    if (appleBlocks[blockNo] == null)                             // first time here
+      appleBlocks[blockNo] = new BlockDos (fs, track, sector);
+
+    appleBlocks[blockNo].setBlockType (blockType);
 
     return appleBlocks[blockNo];
   }
@@ -390,10 +369,59 @@ public class BlockReader
   }
 
   // ---------------------------------------------------------------------------------//
+  byte[] getDiskBuffer ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return diskBuffer;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  int getDiskOffset ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return diskOffset;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  int getDiskLength ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return diskLength;
+  }
+
+  // ---------------------------------------------------------------------------------//
   Path getPath ()
   // ---------------------------------------------------------------------------------//
   {
     return path;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  int getBlockSize ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return bytesPerBlock;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  int getBlocksPerTrack ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return blocksPerTrack;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  int getTotalBlocks ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return totalBlocks;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  AddressType getAddressType ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return addressType;
   }
 
   // ---------------------------------------------------------------------------------//
@@ -404,7 +432,7 @@ public class BlockReader
   }
 
   // ---------------------------------------------------------------------------------//
-  boolean isValidSector (int trackNo, int sectorNo)
+  boolean isValidSectorAddress (int trackNo, int sectorNo)
   // ---------------------------------------------------------------------------------//
   {
     return sectorNo >= 0 && sectorNo < blocksPerTrack;
@@ -446,7 +474,7 @@ public class BlockReader
     text.append ("File system offset .... %,d%n".formatted (diskOffset));
     text.append ("File system length .... %,d%n".formatted (diskLength));
     text.append ("Address type .......... %s%n".formatted (addressType));
-    text.append ("Total blocks .......... %,d%n".formatted (totalBlocks));
+    text.append ("Total blocks .......... %,d  (%<04X)%n".formatted (totalBlocks));
     text.append ("Bytes per block ....... %d%n".formatted (bytesPerBlock));
     text.append ("Blocks per track ...... %d%n".formatted (blocksPerTrack));
     text.append ("Interleave ............ %d".formatted (interleave));
