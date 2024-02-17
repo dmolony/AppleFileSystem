@@ -96,9 +96,8 @@ public class FileNuFX extends AbstractAppleFile implements AppleFilePath, AppleF
       throw new FileFormatException ("Record CRC failed");
     }
 
-    int ptr = offset + attributeSectionLength + fileNameLength;
-    int threadsPtr = ptr;
-    ptr += totThreads * 16;           // beginning of data
+    int threadsPtr = offset + attributeSectionLength + fileNameLength;
+    int ptr = threadsPtr + totThreads * 16;           // beginning of data
 
     for (int i = 0; i < totThreads; i++)
     {
@@ -130,8 +129,8 @@ public class FileNuFX extends AbstractAppleFile implements AppleFilePath, AppleF
             case NuFXThread.KIND_DATA_FORK:
               if (dataThreads == 2)
               {
-                forks.add (new ForkNuFX (this, FileProdos.ForkType.DATA, thread));
                 isForkedFile = true;
+                forks.add (new ForkNuFX (this, FileProdos.ForkType.DATA, thread));
               }
               else
                 dataFork = new ForkNuFX (this, FileProdos.ForkType.DATA, thread);

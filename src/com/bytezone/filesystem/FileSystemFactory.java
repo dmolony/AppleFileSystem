@@ -323,6 +323,7 @@ public class FileSystemFactory
       }
   }
 
+  // this is not fully working yet
   // ---------------------------------------------------------------------------------//
   private void getCpm2 (BlockReader blockReader)
   // ---------------------------------------------------------------------------------//
@@ -403,7 +404,8 @@ public class FileSystemFactory
       try
       {
         BlockReader lbrReader = new BlockReader (blockReader);
-        lbrReader.setParameters (128, AddressType.BLOCK, 0, 0);
+        //        lbrReader.setParameters (128, AddressType.BLOCK, 0, 0);
+        lbrReader.setParameters (256, AddressType.BLOCK, 0, 0);
 
         FsNuFX fs = new FsNuFX (lbrReader);
 
@@ -454,7 +456,7 @@ public class FileSystemFactory
       try
       {
         BlockReader lbrReader = new BlockReader (blockReader);
-        lbrReader.setParameters (128, AddressType.BLOCK, 0, 0);
+        lbrReader.setParameters (256, AddressType.BLOCK, 0, 0);
 
         FsZip fs = new FsZip (lbrReader);
 
@@ -476,7 +478,7 @@ public class FileSystemFactory
       try
       {
         BlockReader lbrReader = new BlockReader (blockReader);
-        lbrReader.setParameters (128, AddressType.BLOCK, 0, 0);
+        lbrReader.setParameters (256, AddressType.BLOCK, 0, 0);
 
         FsGzip fs = new FsGzip (lbrReader);
 
@@ -504,7 +506,7 @@ public class FileSystemFactory
     try
     {
       BlockReader lbrReader = new BlockReader (blockReader);
-      lbrReader.setParameters (128, AddressType.BLOCK, 0, 0);
+      lbrReader.setParameters (256, AddressType.BLOCK, 0, 0);
 
       FsWoz fs = new FsWoz (lbrReader, fileSystemType);
 

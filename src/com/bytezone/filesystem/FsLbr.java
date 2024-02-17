@@ -17,8 +17,8 @@ class FsLbr extends AbstractFileSystem
 
     for (int i = 0; i < max; i++)
     {
-      AppleBlock block = getBlock (i);
-      block.setBlockType (BlockType.FILE_DATA);
+      AppleBlock block = getBlock (i, BlockType.FS_DATA);
+      block.setBlockSubType ("CATALOG");
       byte[] buffer = block.read ();
 
       for (int j = 0; j < 4; j++)
@@ -30,12 +30,12 @@ class FsLbr extends AbstractFileSystem
           if (file.status != 0 || !file.fileName.isBlank () || !file.extension.isBlank ())
             throw new FileFormatException ("LBR: Invalid header");
 
-          max = file.totalBlocks;                   // change outer loop
-          setTotalCatalogBlocks (file.totalBlocks);
+          max = file.length;                   // change outer loop
+          setTotalCatalogBlocks (file.length);
           continue;
         }
 
-        if (file.status == 0 && file.totalBlocks > 0)
+        if (file.status == 0 && file.length > 0)
           addFile (file);
       }
     }

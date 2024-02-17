@@ -1,7 +1,5 @@
 package com.bytezone.filesystem;
 
-import com.bytezone.utility.Utility;
-
 // -----------------------------------------------------------------------------------//
 public class FsBinary2 extends AbstractFileSystem
 // -----------------------------------------------------------------------------------//
@@ -16,19 +14,20 @@ public class FsBinary2 extends AbstractFileSystem
 
     assert blockReader.isMagic (0, BIN2) && blockReader.byteAt (18, (byte) 0x02);
 
-    int nextBlock = 0;
+    int nextBlockNo = 0;
     FileBinary2 file = null;
     int filesRemaining = 0;
 
     do
     {
-      if (!isValidBlockNo (nextBlock))
+      if (!isValidBlockNo (nextBlockNo))
       {
-        System.out.printf ("Invalid block number %d in %s%n", nextBlock, getFileName ());
+        System.out.printf ("Invalid block number %d in %s%n", nextBlockNo,
+            getFileName ());
         break;
       }
 
-      file = new FileBinary2 (this, nextBlock);
+      file = new FileBinary2 (this, nextBlockNo);
 
       if (!file.isValid ())         // not all the blocks are available
         break;
@@ -42,7 +41,7 @@ public class FsBinary2 extends AbstractFileSystem
         addFile (file);
       }
 
-      nextBlock += ((file.getEof () - 1) / 128 + 2);
+      nextBlockNo += ((file.getEof () - 1) / 128 + 2);
 
     } while (filesRemaining > 0);
 
@@ -68,10 +67,10 @@ public class FsBinary2 extends AbstractFileSystem
   }
 
   // ---------------------------------------------------------------------------------//
-  @Override
-  public String toString ()
-  // ---------------------------------------------------------------------------------//
-  {
-    return Utility.rtrim (new StringBuilder (super.toString ()));
-  }
+  //  @Override
+  //  public String toString ()
+  //  // ---------------------------------------------------------------------------------//
+  //  {
+  //    return Utility.rtrim (new StringBuilder (super.toString ()));
+  //  }
 }

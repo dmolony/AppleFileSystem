@@ -137,14 +137,6 @@ public abstract class AbstractAppleFile implements AppleFile
   }
 
   // ---------------------------------------------------------------------------------//
-  //  @Override
-  //  public byte[] read ()
-  //  // ---------------------------------------------------------------------------------//
-  //  {
-  //    throw new UnsupportedOperationException ("read() not implemented in " + fileName);
-  //  }
-
-  // ---------------------------------------------------------------------------------//
   @Override
   public void write (byte[] buffer)
   // ---------------------------------------------------------------------------------//

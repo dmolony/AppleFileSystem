@@ -17,7 +17,7 @@ public class Utility
       { "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "A", "B", "C", "D", "E", "F" };
   private static final int MAX_SHORT = 0xFFFF;
   private static final List<String> suffixes = List.of ("po", "dsk", "do", "hdv", "2mg",
-      "d13", "sdk", "shk", "bxy", "bny", "bqy", "woz", "img", "dimg", "zip", "gz");
+      "d13", "sdk", "shk", "bxy", "bny", "bqy", "lbr", "woz", "img", "dimg", "zip", "gz");
 
   // ---------------------------------------------------------------------------------//
   public static List<String> getSuffixes ()

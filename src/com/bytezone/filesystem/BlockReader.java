@@ -136,7 +136,6 @@ public class BlockReader
   {
     if (!isValidBlockNo (blockNo))
       return null;
-    //    // throw?
 
     if (appleBlocks[blockNo] == null)                             // first time here
     {
@@ -154,7 +153,6 @@ public class BlockReader
   {
     if (!isValidBlockNo (blockNo))
       return null;
-    //    // throw?
 
     if (appleBlocks[blockNo] == null)                             // first time here
       appleBlocks[blockNo] = new BlockProdos (fs, blockNo);
@@ -172,9 +170,8 @@ public class BlockReader
 
     int blockNo = track * blocksPerTrack + sector;
 
-    if (!isValidSectorAddress (track, sector) || !isValidBlockNo (blockNo))
+    if (!isValidSectorAddress (track, sector))
       return null;
-    // throw?
 
     if (appleBlocks[blockNo] == null)
     {
@@ -194,9 +191,8 @@ public class BlockReader
 
     int blockNo = track * blocksPerTrack + sector;
 
-    if (!isValidSectorAddress (track, sector) || !isValidBlockNo (blockNo))
+    if (!isValidSectorAddress (track, sector))
       return null;
-    // throw?
 
     if (appleBlocks[blockNo] == null)                             // first time here
       appleBlocks[blockNo] = new BlockDos (fs, track, sector);
@@ -435,7 +431,8 @@ public class BlockReader
   boolean isValidSectorAddress (int trackNo, int sectorNo)
   // ---------------------------------------------------------------------------------//
   {
-    return sectorNo >= 0 && sectorNo < blocksPerTrack;
+    return sectorNo >= 0 && sectorNo < blocksPerTrack
+        && isValidBlockNo (trackNo * blocksPerTrack + sectorNo);
   }
 
   // ---------------------------------------------------------------------------------//

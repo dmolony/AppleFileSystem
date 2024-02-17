@@ -87,7 +87,7 @@ public class Tester
   {
     FileSystemFactory factory = new FileSystemFactory ();
 
-    int index = 44;
+    int index = 28;
     for (int fileNo = index; fileNo <= index; fileNo++)
     //    for (int fileNo = 0; fileNo < fileNames.length; fileNo++)
     {
@@ -111,6 +111,8 @@ public class Tester
       //      }
 
       //      System.out.println ();
+      System.out.println (fs.getBlockReader ());
+      System.out.println ();
       listFiles (fs, 0);
     }
   }

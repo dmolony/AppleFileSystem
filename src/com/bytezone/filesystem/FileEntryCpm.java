@@ -44,7 +44,9 @@ public class FileEntryCpm implements Iterable<Integer>
     typeBuffer[0] = (byte) (buffer[ptr + 9] & 0x7F);
     typeBuffer[1] = (byte) (buffer[ptr + 10] & 0x7F);
     typeBuffer[2] = (byte) (buffer[ptr + 11] & 0x7F);
-    fileTypeText = new String (typeBuffer).trim ();
+
+    String type = new String (typeBuffer);
+    fileTypeText = type.isBlank () ? "   " : type;
 
     extentCounterLo = buffer[ptr + 12] & 0xFF;
     byteCount = buffer[ptr + 13] & 0xFF;

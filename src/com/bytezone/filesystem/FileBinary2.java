@@ -1,22 +1,26 @@
 package com.bytezone.filesystem;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import com.bytezone.filesystem.AppleBlock.BlockType;
 import com.bytezone.utility.Squeeze;
 import com.bytezone.utility.Utility;
 
+// see file compressed/BQY/ACOS.TECH.BQY/BINARY.II.DOCS
 // -----------------------------------------------------------------------------------//
 public class FileBinary2 extends AbstractAppleFile
 // -----------------------------------------------------------------------------------//
 {
   private static String[] bin2Formats =
-      { "Prodos or SOS", "Dos 3.3", "", "Dos 3.1 or 3.2", "Apple II Pascal" };
+      { "Prodos or SOS", "Dos 3.3", "Pascal", "CPM", "MS Dos" };
   private static String[] flags =
-      { "compressed", "encrypted", "", "", "", "", "", "sparse" };
+      { "compressed", "encrypted", "", "", "", "", "", "sparse (packed)" };
 
   private int headerBlockNo;
+  private AppleBlock headerBlock;
 
   private int accessCode;
   private int auxType;
@@ -47,8 +51,7 @@ public class FileBinary2 extends AbstractAppleFile
   private Optional<LocalDateTime> created = Optional.empty ();
   private Optional<LocalDateTime> modified = Optional.empty ();
 
-  //  private List<AppleBlock> dataBlocks = new ArrayList<> ();
-  private String squeezeName;
+  private String squeezeName = "";
 
   private boolean debug = false;
   private boolean validBlocks = true;
@@ -61,7 +64,7 @@ public class FileBinary2 extends AbstractAppleFile
 
     this.headerBlockNo = headerBlockNo;
 
-    AppleBlock headerBlock = fs.getBlock (headerBlockNo, BlockType.FS_DATA);
+    headerBlock = fs.getBlock (headerBlockNo, BlockType.FS_DATA);
     headerBlock.setBlockSubType ("BIN2 HDR");
     headerBlock.setFileOwner (this);
     byte[] buffer = headerBlock.read ();
@@ -90,22 +93,22 @@ public class FileBinary2 extends AbstractAppleFile
     gStorage = buffer[113] & 0xFF;
     gFileSize = Utility.unsignedShort (buffer, 114);
     gEof = buffer[116] & 0xFF;
-    diskSpace = Utility.unsignedInt (buffer, 117);     // total for all files
+    diskSpace = Utility.unsignedInt (buffer, 117);        // total for all files
 
     osType = buffer[121] & 0xFF;
     nativeFileType = Utility.unsignedShort (buffer, 122);
-    phantomFile = buffer[124] & 0xFF;                   // ignore file if != 0
+    phantomFile = buffer[124] & 0xFF;                     // ignore file if != 0
     dataFlags = buffer[125] & 0xFF;
     version = buffer[126] & 0xFF;
     filesFollowing = buffer[127] & 0xFF;
 
-    //    setFileTypeText ();
-
     fileTypeText = switch (osType)
     {
       case 0 -> FsProdos.getFileTypeText (fileType);
-      case 1, 2 -> "Dos type " + fileType;
-      case 3 -> "Pascal type " + fileType;
+      case 1 -> "Dos type " + nativeFileType;
+      case 2 -> "Pascal type " + nativeFileType;
+      case 3 -> "CPM type " + nativeFileType;
+      case 4 -> "MS-DOS type " + nativeFileType;
       default -> throw new IllegalArgumentException ("Unexpected value: " + osType);
     };
 
@@ -129,11 +132,13 @@ public class FileBinary2 extends AbstractAppleFile
 
     if (validBlocks && (isCompressed () || fileName.endsWith (".QQ")))
     {
-      AppleBlock dataBlock = fs.getBlock (headerBlockNo + 1);
-      dataBlock.setBlockType (BlockType.FILE_DATA);
-      buffer = dataBlock.read ();
+      buffer = dataBlocks.get (0).read ();
       if (buffer[0] == 0x76 && buffer[1] == (byte) 0xFF)      // squeeze
-        squeezeName = Utility.getCString (buffer, 4);
+      {
+        String name = Utility.getCString (buffer, 4);
+        if (!name.isBlank ())
+          squeezeName = name;
+      }
     }
 
     if (debug)
@@ -152,7 +157,7 @@ public class FileBinary2 extends AbstractAppleFile
   public String getFileName ()
   // ---------------------------------------------------------------------------------//
   {
-    return squeezeName == null ? super.getFileName () : squeezeName;
+    return !squeezeName.isEmpty () ? squeezeName : fileName;
   }
 
   // ---------------------------------------------------------------------------------//
@@ -182,6 +187,17 @@ public class FileBinary2 extends AbstractAppleFile
   // ---------------------------------------------------------------------------------//
   {
     return eof;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
+  public List<AppleBlock> getBlocks ()
+  // ---------------------------------------------------------------------------------//
+  {
+    List<AppleBlock> blocks = new ArrayList<AppleBlock> (dataBlocks);
+    blocks.add (headerBlock);
+
+    return blocks;
   }
 
   // ---------------------------------------------------------------------------------//
@@ -241,7 +257,13 @@ public class FileBinary2 extends AbstractAppleFile
       mask >>>= 1;
     }
 
-    return Utility.rtrim (text);
+    if (text.length () > 1)
+    {
+      text.deleteCharAt (text.length () - 1);     // space
+      text.deleteCharAt (text.length () - 1);     // comma
+    }
+
+    return text.toString ();
   }
 
   // ---------------------------------------------------------------------------------//
@@ -277,12 +299,14 @@ public class FileBinary2 extends AbstractAppleFile
   {
     StringBuilder text = new StringBuilder (super.toString ());
 
+    text.append ("--- Binary II Header --\n");
     text.append (String.format ("Header block .......... %02X%n", headerBlockNo));
     text.append (String.format ("Access code ........... %02X%n", accessCode));
     text.append (String.format ("File type ............. %02X        %s%n", fileType,
         fileTypeText));
     text.append (String.format ("Aux type .............. %04X%n", auxType));
-    text.append (String.format ("Storage type .......... %02X%n", storageType));
+    text.append (String.format ("Storage type .......... %02X  %s%n", storageType,
+        ProdosConstants.storageTypes[storageType]));
     text.append (String.format ("File size x 512 ....... %02X      %<,7d%n", blocks));
     text.append (String.format ("Mod date .............. %04X    %s%n", modDate,
         modified.isPresent () ? modified.get () : ""));
@@ -291,7 +315,8 @@ public class FileBinary2 extends AbstractAppleFile
         created.isPresent () ? created.get () : ""));
     text.append (String.format ("Create time ........... %04X%n", createTime));
     text.append (String.format ("EOF ................... %06X  %<,7d%n", eof));
-    text.append (String.format ("File name ............. %s%n", getFileName ()));
+    text.append (String.format ("File name ............. %s%n", fileName));
+    text.append (String.format ("Squeeze name .......... %s%n", squeezeName));
     text.append (String.format ("Native name ........... %s%n", nativeName));
 
     text.append (String.format ("G Aux type ............ %04X  %<d%n", gAuxType));
@@ -307,15 +332,17 @@ public class FileBinary2 extends AbstractAppleFile
         (osType >= 0 && osType < bin2Formats.length) ? bin2Formats[osType] : ""));
     text.append (String.format ("Native file type ...... %04X%n", nativeFileType));
     text.append (String.format ("Phantom file .......... %02X%n", phantomFile));
+
+    String message =
+        !squeezeName.isEmpty () && !isCompressed () ? "  <-- should be true" : "";
     text.append (String.format ("Data flags ............ %02X %s%n", dataFlags,
         getFlagsText (dataFlags)));
-    text.append (String.format ("  compressed? ......... %s%n", isCompressed ()));
+    text.append (
+        String.format ("  compressed? ......... %s%s%n", isCompressed (), message));
     text.append (String.format ("  encrypted? .......... %s%n", isEncrypted ()));
     text.append (String.format ("  sparse? ............. %s%n", isSparse ()));
     text.append (String.format ("Bin2 version .......... %02X%n", version));
     text.append (String.format ("Files following ....... %02X%n", filesFollowing));
-    text.append (String.format ("Squeeze name .......... %s",
-        squeezeName == null ? "" : squeezeName));
 
     return Utility.rtrim (text);
   }

@@ -11,7 +11,6 @@ public class FileDos extends AbstractAppleFile
 // -----------------------------------------------------------------------------------//
 {
   private List<AppleBlock> indexBlocks = new ArrayList<> ();
-  //  private List<AppleBlock> dataBlocks = new ArrayList<> ();
 
   private int sectorCount;
   private int length;
@@ -143,7 +142,6 @@ public class FileDos extends AbstractAppleFile
   // ---------------------------------------------------------------------------------//
   {
     List<AppleBlock> blocks = new ArrayList<AppleBlock> (dataBlocks);
-    blocks.addAll (indexBlocks);
     blocks.addAll (indexBlocks);
 
     return blocks;
