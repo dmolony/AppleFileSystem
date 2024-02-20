@@ -10,6 +10,7 @@ import com.bytezone.utility.Squeeze;
 import com.bytezone.utility.Utility;
 
 // see file compressed/BQY/ACOS.TECH.BQY/BINARY.II.DOCS
+// see FTN $E0 / $0001
 // -----------------------------------------------------------------------------------//
 public class FileBinary2 extends AbstractAppleFile
 // -----------------------------------------------------------------------------------//

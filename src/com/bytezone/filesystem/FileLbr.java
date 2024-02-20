@@ -17,8 +17,10 @@ public class FileLbr extends AbstractAppleFile
   int creationTime;
   int modifiedDate;
   int modifiedTime;
-  String squeezeName;
-  String squeezeRest;
+
+  String alternateName;
+  String alternateExtension;
+  String extraText;
 
   // ---------------------------------------------------------------------------------//
   FileLbr (FsLbr fs, byte[] buffer, int ptr)
@@ -27,8 +29,8 @@ public class FileLbr extends AbstractAppleFile
     super (fs);
 
     status = buffer[ptr] & 0xFF;
-    fileName = new String (buffer, ptr + 1, 8);
-    extension = new String (buffer, ptr + 9, 3);
+    fileName = Utility.string (buffer, ptr + 1, 8);
+    extension = Utility.string (buffer, ptr + 9, 3);
     index = Utility.unsignedShort (buffer, ptr + 12);
     length = Utility.unsignedShort (buffer, ptr + 14);
     crc = Utility.unsignedShort (buffer, ptr + 16);
@@ -46,56 +48,65 @@ public class FileLbr extends AbstractAppleFile
     for (int blockNo = index; blockNo < index + length; blockNo++)
     {
       AppleBlock block = fs.getBlock (blockNo, BlockType.FILE_DATA);
+      if (block == null)
+      {
+        System.out.println ("null block in " + fileName);
+        break;
+      }
       dataBlocks.add (block);
+      block.setFileOwner (this);
     }
 
     if (extension.charAt (1) == 'Z')
-      check (buffer, 'Z', (byte) 0xFE, 2);
-
-    if (extension.charAt (1) == 'Y')
-      check (buffer, 'Y', (byte) 0xFD, 2);
+      check (buffer, 'Z', (byte) 0xFE, 2);          // crunch
 
     if (extension.charAt (1) == 'Z')
       check (buffer, 'Z', (byte) 0xDF, 2);
+
+    if (extension.charAt (1) == 'Y')
+      check (buffer, 'Y', (byte) 0xFD, 2);
 
     if (extension.charAt (1) == 'Q')
       check (buffer, 'Q', (byte) 0xD8, 4);
 
     if (extension.charAt (1) == 'Q')
-      check (buffer, 'Q', (byte) 0xFF, 4);
+      check (buffer, 'Q', (byte) 0xFF, 4);          // squeeze
   }
 
   // ---------------------------------------------------------------------------------//
   private void check (byte[] buffer, char c, byte b, int nameStart)
   // ---------------------------------------------------------------------------------//
   {
-    if (dataBlocks.size () > 0 && extension.charAt (1) == c)
+    if (dataBlocks.size () == 0 || extension.charAt (1) != c)
+      return;
+
+    buffer = dataBlocks.get (0).read ();
+
+    if (buffer[0] != 0x76 || buffer[1] != b)
+      return;
+
+    String name = Utility.getCString (buffer, nameStart);
+    if (name.isBlank ())
+      return;
+
+    int pos1 = name.indexOf ('.');
+    int pos2 = name.indexOf ('[', pos1);
+
+    if (pos1 > 0)
     {
-      buffer = dataBlocks.get (0).read ();
-      if (buffer[0] == 0x76 && buffer[1] == b)
+      alternateName = name.substring (0, pos1);
+      if (pos2 > 0)
       {
-        String name = Utility.getCString (buffer, nameStart);
-        if (!name.isBlank ())
-        {
-          int pos = name.indexOf ('.');
-          int pos2 = name.indexOf ('[', pos);
-          if (pos > 0)
-          {
-            squeezeName = name.substring (0, pos);
-            if (pos2 > 0)
-            {
-              extension = name.substring (pos + 1, pos2);
-              squeezeRest = name.substring (pos2);
-            }
-            else
-            {
-              extension = name.substring (pos + 1);
-              squeezeRest = "";
-            }
-            fileTypeText = extension;
-          }
-        }
+        alternateExtension = name.substring (pos1 + 1, pos2);
+        extraText = name.substring (pos2);
       }
+      else
+      {
+        alternateExtension = name.substring (pos1 + 1);
+        extraText = "";
+      }
+
+      fileTypeText = alternateExtension;
     }
   }
 
@@ -109,22 +120,37 @@ public class FileLbr extends AbstractAppleFile
 
   // ---------------------------------------------------------------------------------//
   @Override
+  public String getCatalogLine ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return String.format ("%-8s %3s  %3d  %3d  %-8s %-3s", fileName, extension, index,
+        length, alternateName, extraText);
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
   public String toString ()
   // ---------------------------------------------------------------------------------//
   {
     StringBuilder text = new StringBuilder (super.toString ());
 
-    text.append (String.format ("Status ................ %d%n", status));
+    text.append (String.format ("Status ................ %d  %s%n", status,
+        status == 0 ? "Active" : status == 0xFF ? "Unused" : "Deleted"));
     text.append (String.format ("Extension ............. %s%n", extension));
-    text.append (String.format ("Squeeze name .......... %s%n", squeezeName));
-    text.append (String.format ("Squeeze rest .......... %s%n", squeezeRest));
+    text.append (String.format ("Aternate name ......... %s%n",
+        alternateName == null ? "" : alternateName));
+    text.append (String.format ("Aternate extension .... %s%n",
+        alternateExtension == null ? "" : alternateExtension));
+    text.append (String.format ("Extra text ............ %s%n",
+        extraText == null ? "" : extraText));
     text.append (String.format ("Index ................. %,d%n", index));
     text.append (String.format ("Length ................ %,d%n", length));
+    text.append (String.format ("Pad ................... %,d%n", pad));
     text.append (String.format ("Creation date ......... %,d%n", creationDate));
     text.append (String.format ("Creation time ......... %,d%n", creationTime));
     text.append (String.format ("Modified date ......... %,d%n", modifiedDate));
     text.append (String.format ("Modified time ......... %,d%n", modifiedTime));
-    text.append (String.format ("CRC ................... %,d%n", crc));
+    text.append (String.format ("CRC ................... %04X  %<,d%n", crc));
 
     return Utility.rtrim (text);
   }

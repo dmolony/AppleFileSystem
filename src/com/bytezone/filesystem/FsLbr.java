@@ -3,7 +3,7 @@ package com.bytezone.filesystem;
 import com.bytezone.filesystem.AppleBlock.BlockType;
 
 // -----------------------------------------------------------------------------------//
-class FsLbr extends AbstractFileSystem
+public class FsLbr extends AbstractFileSystem
 // -----------------------------------------------------------------------------------//
 {
   // ---------------------------------------------------------------------------------//
@@ -49,8 +49,12 @@ class FsLbr extends AbstractFileSystem
     StringBuilder text = new StringBuilder ();
 
     for (AppleFile file : getFiles ())
-      text.append (
-          String.format ("%-15s %s%n", file.getFileName (), file.getFileSystemType ()));
+    {
+      text.append (file.getCatalogLine ());
+      text.append ("\n");
+      //      text.append (
+      //          String.format ("%-15s %s%n", file.getFileName (), file.getFileSystemType ()));
+    }
 
     return text.toString ();
   }
