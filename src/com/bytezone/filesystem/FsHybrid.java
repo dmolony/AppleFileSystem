@@ -15,7 +15,6 @@ class FsHybrid extends AbstractFileSystem
     for (AppleFileSystem fs : fileSystems)
     {
       addFileSystem (fs);
-      //      ((AbstractFileSystem) fs).appleFileSystem = this;
       ((AbstractFileSystem) fs).partOfHybrid = true;
     }
   }
@@ -49,12 +48,4 @@ class FsHybrid extends AbstractFileSystem
 
     return text.toString ();
   }
-
-  // ---------------------------------------------------------------------------------//
-  //  @Override
-  //  public String toString ()
-  //  // ---------------------------------------------------------------------------------//
-  //  {
-  //    return super.toString ();
-  //  }
 }

@@ -72,7 +72,6 @@ public class FsDos extends AbstractFileSystem
       if (catalogSector == null)
         throw new FileFormatException ("Dos: Invalid catalog sector");
 
-      //      catalogSector.setBlockType (BlockType.FS_DATA);
       catalogSector.setBlockSubType ("CATALOG");
 
       if (checkDuplicate (catalogSectors, catalogSector))
@@ -111,34 +110,31 @@ public class FsDos extends AbstractFileSystem
     }
 
     setTotalCatalogBlocks (catalogSectors.size ());
+    flagDosSectors ();
+  }
 
-    // flag DOS sectors
-    int unused = 0;
-    int free = 0;
-
+  // ---------------------------------------------------------------------------------//
+  private void flagDosSectors ()
+  // ---------------------------------------------------------------------------------//
+  {
     for (int blockNo = 0; blockNo < 48; blockNo++)
     {
       BlockType blockType = getBlock (blockNo).getBlockType ();
-
-      if (blockType == BlockType.EMPTY || blockType == BlockType.ORPHAN)
-        unused++;
-      else
-        System.out.printf ("%d %s%n", blockNo, blockType);
-
+      if (blockType != BlockType.EMPTY && blockType != BlockType.ORPHAN)
+        return;
       if (volumeBitMap.get (blockNo))
-        free++;
+        return;
     }
 
-    if (unused == 48 && free == 0)
-      for (int blockNo = 0; blockNo < 48; blockNo++)
+    for (int blockNo = 0; blockNo < 48; blockNo++)
+    {
+      AppleBlock block = getBlock (blockNo);
+      if (block.getBlockType () == BlockType.ORPHAN)
       {
-        AppleBlock block = getBlock (blockNo);
-        if (block.getBlockType () == BlockType.ORPHAN)
-        {
-          block.setBlockType (BlockType.FS_DATA);
-          block.setBlockSubType ("DOS");
-        }
+        block.setBlockType (BlockType.FS_DATA);
+        block.setBlockSubType ("DOS");
       }
+    }
   }
 
   // ---------------------------------------------------------------------------------//
