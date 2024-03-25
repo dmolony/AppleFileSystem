@@ -15,7 +15,7 @@ public abstract class AbstractAppleFile implements AppleFile
 
   protected boolean isFile = true;
   protected boolean isFolder;
-  protected boolean isForkedFile;             // FileProdos only (or FileNuFX?)
+  protected boolean isForkedFile;             // FileProdos or FileNuFX
   protected boolean isFork;
 
   protected String fileName;
@@ -159,8 +159,6 @@ public abstract class AbstractAppleFile implements AppleFile
   // ---------------------------------------------------------------------------------//
   {
     return dataBlocks.size ();
-    //    throw new UnsupportedOperationException (String
-    //        .format ("getTotalBlocks() not implemented %s in %s%n", fileTypeText, fileName));
   }
 
   // ---------------------------------------------------------------------------------//
@@ -168,8 +166,6 @@ public abstract class AbstractAppleFile implements AppleFile
   public List<AppleBlock> getBlocks ()
   // ---------------------------------------------------------------------------------//
   {
-    //    throw new UnsupportedOperationException (
-    //        "getBlocks() not implemented in " + fileName);
     return dataBlocks;
   }
 

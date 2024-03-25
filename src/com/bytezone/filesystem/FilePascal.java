@@ -27,13 +27,13 @@ public class FilePascal extends AbstractAppleFile
 
   private List<AppleBlock> dataBlocks = new ArrayList<> ();
 
+  private boolean debug = false;
+
   // ---------------------------------------------------------------------------------//
   FilePascal (FsPascal fs, byte[] buffer, int ptr)
   // ---------------------------------------------------------------------------------//
   {
     super (fs);
-
-    //    isFile = true;
 
     firstBlock = Utility.unsignedShort (buffer, ptr);
     lastBlock = Utility.unsignedShort (buffer, ptr + 2);
@@ -46,10 +46,15 @@ public class FilePascal extends AbstractAppleFile
     bytesUsedInLastBlock = Utility.unsignedShort (buffer, ptr + 22);
     date = Utility.getPascalLocalDate (buffer, ptr + 24);           // could return null
 
+    if (debug)
+      System.out.printf ("First block: %d, last block: %d%n", firstBlock, lastBlock);
+
     for (int i = firstBlock; i < lastBlock; i++)
     {
-      AppleBlock block = fs.getBlock (i);
-      block.setBlockType (BlockType.FILE_DATA);
+      AppleBlock block = fs.getBlock (i, BlockType.FILE_DATA);
+      if (block == null)
+        break;                // allow wiz4/5 boot disks
+
       block.setFileOwner (this);
       dataBlocks.add (block);
     }
@@ -68,7 +73,7 @@ public class FilePascal extends AbstractAppleFile
   public int getFileLength ()                 // in bytes (eof)
   // ---------------------------------------------------------------------------------//
   {
-    return (dataBlocks.size () - 1) * getParentFileSystem ().getBlockSize ()
+    return (getTotalBlocks () - 1) * getParentFileSystem ().getBlockSize ()
         + bytesUsedInLastBlock;
   }
 
@@ -77,7 +82,7 @@ public class FilePascal extends AbstractAppleFile
   public int getTotalBlocks ()                   // in blocks
   // ---------------------------------------------------------------------------------//
   {
-    return dataBlocks.size ();
+    return lastBlock - firstBlock;
   }
 
   // ---------------------------------------------------------------------------------//

@@ -57,10 +57,14 @@ public class ForkProdos extends AbstractAppleFile
 
     this.parentFile = parentFile;
     this.forkType = forkType;
-    this.fileName = forkType == ForkType.DATA ? "Data fork"
-        : forkType == ForkType.RESOURCE ? "Resource fork" : "Not forked";
-    this.fileSystem = (FsProdos) parentFile.getParentFileSystem ();
+    this.fileName = switch (forkType)
+    {
+      case DATA -> "Data fork";
+      case RESOURCE -> "Resource fork";
+      default -> "Not forked";
+    };
 
+    this.fileSystem = (FsProdos) parentFile.getParentFileSystem ();
     this.storageType = storageType;
     this.keyPtr = keyPtr;
     this.size = size;
@@ -93,10 +97,8 @@ public class ForkProdos extends AbstractAppleFile
                 blockNos.addAll (readIndex (indexBlock));
             }
             else
-            {
               for (int i = 0; i < 256; i++)
                 blockNos.add (0);
-            }
           }
           break;
 
@@ -144,11 +146,6 @@ public class ForkProdos extends AbstractAppleFile
   {
     assert blockPtr > 0;
 
-    //    if (blockPtr == 0)                    // master index contains a zero
-    //      for (int i = 0; i < 256; i++)
-    //        blocks.add (0);
-    //    else
-    //    {
     List<Integer> blocks = new ArrayList<> (256);
     AppleBlock indexBlock = fileSystem.getBlock (blockPtr, BlockType.FS_DATA);
     indexBlock.setBlockSubType ("INDEX");
@@ -160,7 +157,6 @@ public class ForkProdos extends AbstractAppleFile
     for (int i = 0; i < 256; i++)
     {
       int blockNo = (buffer[i] & 0xFF) | ((buffer[i + 0x100] & 0xFF) << 8);
-      //      System.out.printf ("%,6d %3d  %d%n", blockPtr, i, blockNo);
       if (blockNo > 0)
       {
         AppleBlock dataBlock = fileSystem.getBlock (blockNo, BlockType.FILE_DATA);
@@ -170,7 +166,6 @@ public class ForkProdos extends AbstractAppleFile
       else
         blocks.add (0);
     }
-    //    }
 
     return blocks;
   }

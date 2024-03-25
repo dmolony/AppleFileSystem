@@ -32,6 +32,7 @@ public class Tester
   String gz = cmp + "GZ/";
   String fva = base + "FVA/Fantavision/";
   String dosm = base + "DosMaster/";
+  String wiz4 = base + "Wizardry/wizardry_IV/";
 
   String[] fileNames = {                             //
       base + "dos/Assembler.dsk",                    // 0: 3.3 intl 0
@@ -79,6 +80,7 @@ public class Tester
       bxy + "GBBS_df2.41.bxy",                       // 42: bin2 / nufx / prodos
       dosm + "Testing/Vol010.dsk",                   // 43: looping dos
       base + "Nibble89disks.zip",                    // 44: zip error
+      wiz4 + "Version A/wiz4_d1.dsk",                // 45: wiz4
   };
 
   // ---------------------------------------------------------------------------------//
@@ -87,7 +89,7 @@ public class Tester
   {
     FileSystemFactory factory = new FileSystemFactory ();
 
-    int index = 28;
+    int index = 45;
     for (int fileNo = index; fileNo <= index; fileNo++)
     //    for (int fileNo = 0; fileNo < fileNames.length; fileNo++)
     {

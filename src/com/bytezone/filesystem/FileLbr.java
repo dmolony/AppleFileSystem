@@ -50,8 +50,9 @@ public class FileLbr extends AbstractAppleFile
       AppleBlock block = fs.getBlock (blockNo, BlockType.FILE_DATA);
       if (block == null)
       {
-        System.out.println ("null block in " + fileName);
-        break;
+        throw new FileFormatException ("Invalid FileLbr data block");
+        //        System.out.println ("null block in FileLBR " + fileName);
+        //        break;
       }
       dataBlocks.add (block);
       block.setFileOwner (this);

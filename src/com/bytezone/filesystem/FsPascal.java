@@ -28,6 +28,8 @@ public class FsPascal extends AbstractFileSystem
   private LocalDate date;
   private List<AppleBlock> catalogBlocks = new ArrayList<> ();
 
+  private boolean debug = false;
+
   // ---------------------------------------------------------------------------------//
   public FsPascal (BlockReader blockReader)
   // ---------------------------------------------------------------------------------//
@@ -59,6 +61,16 @@ public class FsPascal extends AbstractFileSystem
     date = Utility.getPascalLocalDate (buffer, 20);         // 2 bytes
 
     setTotalCatalogBlocks (firstFileBlock - 2);
+
+    if (debug)
+      System.out.println (this);
+
+    // check for wizardry 4/5 boot disk
+    //    if (volumeName.equals ("WIZBOOT") && blockReader.getTotalBlocks () == 280)
+    //      if (totalBlocks == 2048)
+    //        System.out.println ("*** Wizardry 4 boot disk ***");
+    //      else if (totalBlocks == 1600)
+    //        System.out.println ("*** Wizardry 5 boot disk ***");
 
     for (int i = 2; i < firstFileBlock; i++)
     {

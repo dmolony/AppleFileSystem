@@ -281,6 +281,8 @@ public class FileSystemFactory
       for (int i = 0; i < 2; i++)
         try
         {
+          if (debug)
+            System.out.printf ("Pascal attempt %d%n", i);
           BlockReader pascalReader = new BlockReader (blockReader);
           pascalReader.setParameters (512, AddressType.BLOCK, i, i * 8);
 

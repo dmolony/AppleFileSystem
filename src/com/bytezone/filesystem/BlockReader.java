@@ -46,7 +46,7 @@ public class BlockReader
   }
 
   // ---------------------------------------------------------------------------------//
-  BlockReader (Path path)
+  public BlockReader (Path path)
   // ---------------------------------------------------------------------------------//
   {
     this.path = path;
@@ -60,7 +60,14 @@ public class BlockReader
   }
 
   // ---------------------------------------------------------------------------------//
-  BlockReader (String name, byte[] diskBuffer, int diskOffset, int diskLength)
+  public BlockReader (String name, byte[] diskBuffer)
+  // ---------------------------------------------------------------------------------//
+  {
+    this (name, diskBuffer, 0, diskBuffer.length);
+  }
+
+  // ---------------------------------------------------------------------------------//
+  public BlockReader (String name, byte[] diskBuffer, int diskOffset, int diskLength)
   // ---------------------------------------------------------------------------------//
   {
     Objects.checkFromIndexSize (diskOffset, diskLength, diskBuffer.length);
@@ -86,7 +93,7 @@ public class BlockReader
   }
 
   // ---------------------------------------------------------------------------------//
-  void setParameters (int bytesPerBlock, AddressType addressType, int interleave,
+  public void setParameters (int bytesPerBlock, AddressType addressType, int interleave,
       int blocksPerTrack)
   // ---------------------------------------------------------------------------------//
   {
