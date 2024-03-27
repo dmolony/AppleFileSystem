@@ -175,10 +175,10 @@ public class BlockReader
   {
     assert addressType == AddressType.SECTOR;
 
-    int blockNo = track * blocksPerTrack + sector;
-
     if (!isValidSectorAddress (track, sector))
       return null;
+
+    int blockNo = track * blocksPerTrack + sector;
 
     if (appleBlocks[blockNo] == null)
     {
@@ -196,10 +196,10 @@ public class BlockReader
   {
     assert addressType == AddressType.SECTOR;
 
-    int blockNo = track * blocksPerTrack + sector;
-
     if (!isValidSectorAddress (track, sector))
       return null;
+
+    int blockNo = track * blocksPerTrack + sector;
 
     if (appleBlocks[blockNo] == null)                             // first time here
       appleBlocks[blockNo] = new BlockDos (fs, track, sector);

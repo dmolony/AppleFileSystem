@@ -57,11 +57,12 @@ public class ForkProdos extends AbstractAppleFile
 
     this.parentFile = parentFile;
     this.forkType = forkType;
+
     this.fileName = switch (forkType)
     {
       case DATA -> "Data fork";
       case RESOURCE -> "Resource fork";
-      default -> "Not forked";
+      case null -> "Not forked";
     };
 
     this.fileSystem = (FsProdos) parentFile.getParentFileSystem ();
@@ -75,7 +76,7 @@ public class ForkProdos extends AbstractAppleFile
     List<Integer> blockNos = new ArrayList<> ();
     AppleBlock dataBlock = fileSystem.getBlock (keyPtr, BlockType.FS_DATA);
 
-    if (dataBlock.isValid ())
+    if (dataBlock != null)
       switch (storageType)
       {
         case ProdosConstants.SEEDLING:
@@ -93,7 +94,7 @@ public class ForkProdos extends AbstractAppleFile
             if (indexBlock > 0)
             {
               AppleBlock block = fileSystem.getBlock (indexBlock, BlockType.FS_DATA);
-              if (block.isValid ())
+              if (block != null)
                 blockNos.addAll (readIndex (indexBlock));
             }
             else
@@ -160,7 +161,8 @@ public class ForkProdos extends AbstractAppleFile
       if (blockNo > 0)
       {
         AppleBlock dataBlock = fileSystem.getBlock (blockNo, BlockType.FILE_DATA);
-        blocks.add (dataBlock != null && dataBlock.isValid () ? blockNo : 0);
+        //        blocks.add (dataBlock != null && dataBlock.isValid () ? blockNo : 0);
+        blocks.add (dataBlock != null ? blockNo : 0);
         // should throw error
       }
       else
@@ -195,7 +197,8 @@ public class ForkProdos extends AbstractAppleFile
       if (blockNo > 0)
       {
         AppleBlock dataBlock = fileSystem.getBlock (blockNo, BlockType.FS_DATA);
-        blocks.add (dataBlock != null && dataBlock.isValid () ? blockNo : 0);
+        //        blocks.add (dataBlock != null && dataBlock.isValid () ? blockNo : 0);
+        blocks.add (dataBlock != null ? blockNo : 0);
       }
       else
         blocks.add (0);

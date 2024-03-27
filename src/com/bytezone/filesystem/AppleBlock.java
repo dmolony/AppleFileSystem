@@ -12,8 +12,6 @@ public interface AppleBlock         // this could be renamed to Address
 
   int getSectorNo ();
 
-  boolean isValid ();
-
   byte[] read ();
 
   void setBlockType (BlockType blockType);

@@ -17,7 +17,6 @@ abstract class AbstractBlock implements AppleBlock
   protected final int trackNo;
   protected final int sectorNo;
 
-  protected final boolean valid;
   protected Object userData;
 
   // ---------------------------------------------------------------------------------//
@@ -38,8 +37,6 @@ abstract class AbstractBlock implements AppleBlock
       trackNo = -1;
       sectorNo = -1;
     }
-
-    valid = blockNo >= 0 && blockNo < fileSystem.getTotalBlocks ();
   }
 
   // ---------------------------------------------------------------------------------//
@@ -51,9 +48,6 @@ abstract class AbstractBlock implements AppleBlock
 
     this.trackNo = trackNo;
     this.sectorNo = sectorNo;
-
-    valid = sectorNo >= 0 && sectorNo < fileSystem.getBlocksPerTrack () && blockNo >= 0
-        && blockNo < fileSystem.getTotalBlocks ();
 
     assert fileSystem.getAddressType () == AddressType.SECTOR;
   }
@@ -136,14 +130,6 @@ abstract class AbstractBlock implements AppleBlock
   // ---------------------------------------------------------------------------------//
   {
     return sectorNo;
-  }
-
-  // ---------------------------------------------------------------------------------//
-  @Override
-  public boolean isValid ()
-  // ---------------------------------------------------------------------------------//
-  {
-    return valid;
   }
 
   // ---------------------------------------------------------------------------------//
