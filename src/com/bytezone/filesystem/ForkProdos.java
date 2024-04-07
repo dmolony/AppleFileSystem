@@ -126,8 +126,7 @@ public class ForkProdos extends AbstractAppleFile
       }
       else
       {
-        AppleBlock block = fileSystem.getBlock (blockNo);
-        block.setBlockType (BlockType.FILE_DATA);
+        AppleBlock block = fileSystem.getBlock (blockNo, BlockType.FILE_DATA);
         block.setFileOwner (parentFile);
         dataBlocks.add (block);
       }

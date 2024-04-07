@@ -144,14 +144,15 @@ public class BlockReader
     if (!isValidBlockNo (blockNo))
       return null;
 
-    if (appleBlocks[blockNo] == null)                             // first time here
+    AppleBlock block = appleBlocks[blockNo];
+    if (block == null)                             // first time here
     {
-      AppleBlock block = new BlockProdos (fs, blockNo);
+      block = new BlockProdos (fs, blockNo);
       block.setBlockType (isEmpty (block) ? BlockType.EMPTY : BlockType.ORPHAN);
       appleBlocks[blockNo] = block;
     }
 
-    return appleBlocks[blockNo];
+    return block;
   }
 
   // ---------------------------------------------------------------------------------//
@@ -161,12 +162,16 @@ public class BlockReader
     if (!isValidBlockNo (blockNo))
       return null;
 
-    if (appleBlocks[blockNo] == null)                             // first time here
-      appleBlocks[blockNo] = new BlockProdos (fs, blockNo);
+    AppleBlock block = appleBlocks[blockNo];
+    if (block == null)                             // first time here
+    {
+      block = new BlockProdos (fs, blockNo);
+      appleBlocks[blockNo] = block;
+    }
 
-    appleBlocks[blockNo].setBlockType (blockType);
+    block.setBlockType (blockType);
 
-    return appleBlocks[blockNo];
+    return block;
   }
 
   // ---------------------------------------------------------------------------------//
@@ -179,15 +184,16 @@ public class BlockReader
       return null;
 
     int blockNo = track * blocksPerTrack + sector;
+    AppleBlock block = appleBlocks[blockNo];
 
-    if (appleBlocks[blockNo] == null)
+    if (block == null)
     {
-      AppleBlock block = new BlockDos (fs, track, sector);
+      block = new BlockDos (fs, track, sector);
       block.setBlockType (isEmpty (block) ? BlockType.EMPTY : BlockType.ORPHAN);
       appleBlocks[blockNo] = block;
     }
 
-    return appleBlocks[blockNo];
+    return block;
   }
 
   // ---------------------------------------------------------------------------------//
@@ -200,13 +206,17 @@ public class BlockReader
       return null;
 
     int blockNo = track * blocksPerTrack + sector;
+    AppleBlock block = appleBlocks[blockNo];
 
-    if (appleBlocks[blockNo] == null)                             // first time here
-      appleBlocks[blockNo] = new BlockDos (fs, track, sector);
+    if (block == null)                             // first time here
+    {
+      block = new BlockDos (fs, track, sector);
+      appleBlocks[blockNo] = block;
+    }
 
-    appleBlocks[blockNo].setBlockType (blockType);
+    block.setBlockType (blockType);
 
-    return appleBlocks[blockNo];
+    return block;
   }
 
   // ---------------------------------------------------------------------------------//
