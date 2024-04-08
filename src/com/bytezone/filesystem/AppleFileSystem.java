@@ -19,7 +19,7 @@ public interface AppleFileSystem extends AppleContainer
 
   int getDiskLength ();
 
-  boolean isHybrid ();
+  boolean isHybridComponent ();
 
   BlockReader getBlockReader ();
 

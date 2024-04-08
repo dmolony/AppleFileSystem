@@ -43,7 +43,7 @@ abstract class AbstractFileSystem implements AppleFileSystem
 
   // ---------------------------------------------------------------------------------//
   @Override
-  public boolean isHybrid ()
+  public boolean isHybridComponent ()
   // ---------------------------------------------------------------------------------//
   {
     return partOfHybrid;
