@@ -81,6 +81,7 @@ public class Tester
       dosm + "Testing/Vol010.dsk",                   // 43: looping dos
       base + "Nibble89disks.zip",                    // 44: zip error
       wiz4 + "Version A/wiz4_d1.dsk",                // 45: wiz4
+      base + "dos/BeagleBasic.dsk",                  // 46: missing files
   };
 
   // ---------------------------------------------------------------------------------//
@@ -89,7 +90,7 @@ public class Tester
   {
     FileSystemFactory factory = new FileSystemFactory ();
 
-    int index = 45;
+    int index = 46;
     for (int fileNo = index; fileNo <= index; fileNo++)
     //    for (int fileNo = 0; fileNo < fileNames.length; fileNo++)
     {

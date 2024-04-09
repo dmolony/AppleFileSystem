@@ -68,7 +68,7 @@ public class FileDos extends AbstractAppleFile
         int track = sectorBuffer[i] & 0xFF;
         int sector = sectorBuffer[i + 1] & 0xFF;
 
-        if (track > 0 && sector > 0)
+        if (track != 0 || sector != 0)
         {
           AppleBlock dataSector = fs.getSector (track, sector, BlockType.FILE_DATA);
           if (dataSector == null)
