@@ -68,7 +68,17 @@ public class FileDos extends AbstractAppleFile
         int track = sectorBuffer[i] & 0xFF;
         int sector = sectorBuffer[i + 1] & 0xFF;
 
-        if (track != 0 || sector != 0)
+        if (track == 0 && sector == 0)
+        {
+          if (fileType == 0x00)                     // text file
+          {
+            dataBlocks.add (null);                  // must be a sparse file
+            ++textFileGaps;
+          }
+          else
+            throw new FileFormatException ("Unexpected zero values in TsSector");
+        }
+        else
         {
           AppleBlock dataSector = fs.getSector (track, sector, BlockType.FILE_DATA);
           if (dataSector == null)
@@ -93,13 +103,6 @@ public class FileDos extends AbstractAppleFile
           if (--sectorsLeft <= 0)
             break loop;
         }
-        else if (fileType == 0x00)                // text file
-        {
-          dataBlocks.add (null);                  // must be a sparse file
-          ++textFileGaps;
-        }
-        else
-          throw new FileFormatException ("Unexpected zero index value in TsSector");
       }
 
       nextTrack = sectorBuffer[1] & 0xFF;
@@ -127,14 +130,6 @@ public class FileDos extends AbstractAppleFile
     else
       length = dataBlocks.size () * getParentFileSystem ().getBlockSize ();
   }
-
-  // ---------------------------------------------------------------------------------//
-  //  @Override
-  //  public byte[] read ()
-  //  // ---------------------------------------------------------------------------------//
-  //  {
-  //    return parentFileSystem.readBlocks (dataBlocks);
-  //  }
 
   // ---------------------------------------------------------------------------------//
   @Override
