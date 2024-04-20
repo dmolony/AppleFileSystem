@@ -25,8 +25,11 @@ public class FsDos extends AbstractFileSystem
 
   private BitSet volumeBitMap;
 
-  private int deletedFiles;
-  private int failedFiles;
+  //  private int deletedFiles;
+  //  private int failedFiles;
+
+  private List<String> deletedFiles = new ArrayList<> ();
+  private List<String> failedFiles = new ArrayList<> ();
 
   // ---------------------------------------------------------------------------------//
   FsDos (BlockReader blockReader)
@@ -86,11 +89,10 @@ public class FsDos extends AbstractFileSystem
       {
         if ((buffer[ptr] & 0x80) != 0)        // deleted file
         {
-          // could make a list for Extras' panel
-          ++deletedFiles;
+          String fileName = Utility.string (buffer, ptr + 3, 29).trim ();
+          deletedFiles.add (fileName);
         }
         else
-        {
           try
           {
             FileDos file = new FileDos (this, buffer, ptr);
@@ -98,12 +100,9 @@ public class FsDos extends AbstractFileSystem
           }
           catch (FileFormatException e)
           {
-            ++failedFiles;
-            // could prepare list of failures for Extras' panel
-            //            String fileName = Utility.string (buffer, ptr + 3, 30).trim ();
-            //            System.out.println (fileName + " failed");
+            String fileName = Utility.string (buffer, ptr + 3, 30).trim ();
+            failedFiles.add (fileName);
           }
-        }
 
         ptr += ENTRY_SIZE;
       }
@@ -225,6 +224,24 @@ public class FsDos extends AbstractFileSystem
           "%nActual:    Free sectors: %3d    "
               + "Used sectors: %3d    Total sectors: %3d",
           freeSectors, totalSectors - freeSectors, totalSectors));
+
+    if (deletedFiles.size () > 0)
+    {
+      text.append ("\n\nDeleted files\n");
+      text.append ("-------------\n");
+      int count = 0;
+      for (String name : deletedFiles)
+        text.append (String.format ("  %2d  %s%n", ++count, name));
+    }
+
+    if (failedFiles.size () > 0)
+    {
+      text.append ("\n\nFailed files\n");
+      text.append ("------------\n");
+      int count = 0;
+      for (String name : failedFiles)
+        text.append (String.format ("  %2d  %s%n", ++count, name));
+    }
 
     return Utility.rtrim (text);
   }
