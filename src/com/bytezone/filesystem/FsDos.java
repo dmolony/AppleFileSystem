@@ -101,7 +101,11 @@ public class FsDos extends AbstractFileSystem
           catch (FileFormatException e)
           {
             String fileName = Utility.string (buffer, ptr + 3, 30).trim ();
-            failedFiles.add (fileName);
+            int sectorCount = Utility.unsignedShort (buffer, ptr + 33);
+            int fileType = buffer[ptr + 2] & 0x7F;
+            boolean isLocked = (buffer[ptr + 2] & 0x80) != 0;
+            failedFiles.add (String.format ("%s  %s  %03d  %s", isLocked ? "*" : " ",
+                getFileTypeText (fileType), sectorCount, fileName));
           }
 
         ptr += ENTRY_SIZE;
@@ -229,21 +233,55 @@ public class FsDos extends AbstractFileSystem
     {
       text.append ("\n\nDeleted files\n");
       text.append ("-------------\n");
-      int count = 0;
       for (String name : deletedFiles)
-        text.append (String.format ("  %2d  %s%n", ++count, name));
+        text.append (String.format ("  %s%n", name));
     }
 
     if (failedFiles.size () > 0)
     {
       text.append ("\n\nFailed files\n");
       text.append ("------------\n");
-      int count = 0;
       for (String name : failedFiles)
-        text.append (String.format ("  %2d  %s%n", ++count, name));
+        text.append (String.format ("%s%n", name));
     }
 
     return Utility.rtrim (text);
+  }
+
+  // ---------------------------------------------------------------------------------//
+  String getFileTypeText (int fileType)
+  // ---------------------------------------------------------------------------------//
+  {
+    return switch (fileType)
+    {
+      case 0x00 -> "T";
+      case 0x01 -> "I";
+      case 0x02 -> "A";
+      case 0x04 -> "B";
+      case 0x08 -> "S";
+      case 0x10 -> "R";
+      case 0x20 -> "B";
+      case 0x40 -> "B";
+      default -> "B";                   // should never happen
+    };
+  }
+
+  // ---------------------------------------------------------------------------------//
+  String getBlockSubTypeText (int fileType)
+  // ---------------------------------------------------------------------------------//
+  {
+    return switch (fileType)
+    {
+      case 0x00 -> "TEXT";
+      case 0x01 -> "INT BASIC";
+      case 0x02 -> "APPLESOFT";
+      case 0x04 -> "BINARY";
+      case 0x08 -> "S";
+      case 0x10 -> "R";
+      case 0x20 -> "B";
+      case 0x40 -> "B";
+      default -> "?";                       // should never happen
+    };
   }
 
   // ---------------------------------------------------------------------------------//

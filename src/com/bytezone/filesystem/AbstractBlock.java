@@ -3,6 +3,7 @@ package com.bytezone.filesystem;
 import java.util.Objects;
 
 import com.bytezone.filesystem.BlockReader.AddressType;
+import com.bytezone.utility.Utility;
 
 // -----------------------------------------------------------------------------------//
 abstract class AbstractBlock implements AppleBlock
@@ -161,9 +162,24 @@ abstract class AbstractBlock implements AppleBlock
   public String toString ()
   // ---------------------------------------------------------------------------------//
   {
-    String dos = trackNo >= 0 ? String.format ("(%d/%d)", trackNo, sectorNo) : "";
-    return String.format ("%s  %-6s  %,6d %-7s %-10s %-10s %s",
-        (this instanceof BlockDos) ? "DOS" : "PRD", fileSystem.getAddressType (), blockNo,
-        dos, blockType, blockSubType, fileOwner == null ? "" : fileOwner.getFileName ());
+    StringBuilder text = new StringBuilder ();
+
+    String dos = trackNo >= 0 ? String.format ("(%02X/%02X)", trackNo, sectorNo) : "";
+
+    text.append (String.format ("Block type ............ %s%n",
+        (this instanceof BlockDos) ? "DOS" : "PRD"));
+    text.append (
+        String.format ("Address type .......... %s%n", fileSystem.getAddressType ()));
+    text.append (String.format ("Block no .............. %04X %s%n", blockNo, dos));
+    text.append (String.format ("Block subtype ......... %s%n", blockSubType));
+    text.append (String.format ("File name ............. %s%n",
+        fileOwner == null ? "" : fileOwner.getFileName ()));
+
+    return Utility.rtrim (text);
+
+    //    
+    //    return String.format ("%s  %-6s  %,6d %-7s %-10s %-10s %s",
+    //        (this instanceof BlockDos) ? "DOS" : "PRD", fileSystem.getAddressType (), blockNo,
+    //        dos, blockType, blockSubType, fileOwner == null ? "" : fileOwner.getFileName ());
   }
 }

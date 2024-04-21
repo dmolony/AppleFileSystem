@@ -32,19 +32,8 @@ public class FileDos extends AbstractAppleFile
     fileName = Utility.string (buffer, ptr + 3, 30);
     validName = checkName (buffer, ptr + 3, 30);          // check for invalid characters
     sectorCount = Utility.unsignedShort (buffer, ptr + 33);
-
-    fileTypeText = switch (fileType)
-    {
-      case 0x00 -> "T";
-      case 0x01 -> "I";
-      case 0x02 -> "A";
-      case 0x04 -> "B";
-      case 0x08 -> "S";
-      case 0x10 -> "R";
-      case 0x20 -> "B";
-      case 0x40 -> "B";
-      default -> "B";                   // should never happen
-    };
+    fileTypeText = fs.getFileTypeText (fileType);
+    String blockSubType = fs.getBlockSubTypeText (fileType);
 
     int sectorsLeft = sectorCount;
     loop: while (nextTrack != 0)
@@ -70,13 +59,11 @@ public class FileDos extends AbstractAppleFile
 
         if (track == 0 && sector == 0)
         {
-          if (fileType == 0x00)                     // text file
-          {
-            dataBlocks.add (null);                  // must be a sparse file
-            ++textFileGaps;
-          }
-          else
+          if (fileType != 0x00)                   // not a text file
             throw new FileFormatException ("Unexpected zero values in TsSector");
+
+          dataBlocks.add (null);                  // must be a sparse file
+          ++textFileGaps;
         }
         else
         {
@@ -85,19 +72,7 @@ public class FileDos extends AbstractAppleFile
             throw new FileFormatException ("Invalid data sector - " + dataSector);
 
           dataSector.setFileOwner (this);
-
-          dataSector.setBlockSubType (switch (fileType)
-          {
-            case 0x00 -> "TEXT";
-            case 0x01 -> "INT BASIC";
-            case 0x02 -> "APPLESOFT";
-            case 0x04 -> "BINARY";
-            case 0x08 -> "S";
-            case 0x10 -> "R";
-            case 0x20 -> "B";
-            case 0x40 -> "B";
-            default -> "B";                       // should never happen
-          });
+          dataSector.setBlockSubType (blockSubType);
 
           dataBlocks.add (dataSector);
           if (--sectorsLeft <= 0)
