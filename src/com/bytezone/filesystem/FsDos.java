@@ -25,9 +25,6 @@ public class FsDos extends AbstractFileSystem
 
   private BitSet volumeBitMap;
 
-  //  private int deletedFiles;
-  //  private int failedFiles;
-
   private List<String> deletedFiles = new ArrayList<> ();
   private List<String> failedFiles = new ArrayList<> ();
 
@@ -90,7 +87,11 @@ public class FsDos extends AbstractFileSystem
         if ((buffer[ptr] & 0x80) != 0)        // deleted file
         {
           String fileName = Utility.string (buffer, ptr + 3, 29).trim ();
-          deletedFiles.add (fileName);
+          int sectorCount = Utility.unsignedShort (buffer, ptr + 33);
+          int fileType = buffer[ptr + 2] & 0x7F;
+          boolean isLocked = (buffer[ptr + 2] & 0x80) != 0;
+          deletedFiles.add (String.format ("%s  %s  %03d  %s", isLocked ? "*" : " ",
+              getFileTypeText (fileType), sectorCount, fileName));
         }
         else
           try
@@ -98,8 +99,9 @@ public class FsDos extends AbstractFileSystem
             FileDos file = new FileDos (this, buffer, ptr);
             addFile (file);
           }
-          catch (FileFormatException e)
+          catch (FileFormatException e)     // not used
           {
+            System.out.println (e);
             String fileName = Utility.string (buffer, ptr + 3, 30).trim ();
             int sectorCount = Utility.unsignedShort (buffer, ptr + 33);
             int fileType = buffer[ptr + 2] & 0x7F;
@@ -123,9 +125,9 @@ public class FsDos extends AbstractFileSystem
     for (int blockNo = 0; blockNo < 48; blockNo++)
     {
       BlockType blockType = getBlock (blockNo).getBlockType ();
-      if (blockType != BlockType.EMPTY && blockType != BlockType.ORPHAN)
-        return;
-      if (volumeBitMap.get (blockNo))
+      if (blockType != BlockType.EMPTY            // has data AND
+          && (blockType != BlockType.ORPHAN       //   is owned by a data file OR
+              || volumeBitMap.get (blockNo)))     //   is allocated
         return;
     }
 
@@ -201,10 +203,10 @@ public class FsDos extends AbstractFileSystem
     text.append (String.format ("Volume : %03d%n%n", volumeNumber));
 
     String underline = "- --- ---  ------------------------------  -----  -------------"
-        + "  -- ----  -------------------\n";
+        + "  -- ---  -------------------\n";
 
     text.append ("L Typ Len  Name                            Addr"
-        + "   Length         TS Data  Comment\n");
+        + "   Length         TS DAT  Comment\n");
     text.append (underline);
 
     for (AppleFile file : getFiles ())
@@ -234,7 +236,7 @@ public class FsDos extends AbstractFileSystem
       text.append ("\n\nDeleted files\n");
       text.append ("-------------\n");
       for (String name : deletedFiles)
-        text.append (String.format ("  %s%n", name));
+        text.append (String.format ("%s%n", name));
     }
 
     if (failedFiles.size () > 0)
@@ -262,7 +264,7 @@ public class FsDos extends AbstractFileSystem
       case 0x10 -> "R";
       case 0x20 -> "B";
       case 0x40 -> "B";
-      default -> "B";                   // should never happen
+      default -> "?";                       // should never happen
     };
   }
 

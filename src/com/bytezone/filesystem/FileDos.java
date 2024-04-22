@@ -40,7 +40,7 @@ public class FileDos extends AbstractAppleFile
     {
       AppleBlock tsSector = fs.getSector (nextTrack, nextSector, BlockType.FS_DATA);
       if (tsSector == null)
-        throw new FileFormatException ("Invalid TS sector");
+        break;
 
       tsSector.setBlockSubType ("TSLIST");
       tsSector.setFileOwner (this);
@@ -60,7 +60,7 @@ public class FileDos extends AbstractAppleFile
         if (track == 0 && sector == 0)
         {
           if (fileType != 0x00)                   // not a text file
-            throw new FileFormatException ("Unexpected zero values in TsSector");
+            break loop;
 
           dataBlocks.add (null);                  // must be a sparse file
           ++textFileGaps;
@@ -177,10 +177,13 @@ public class FileDos extends AbstractAppleFile
     String lockedFlag = (isLocked ()) ? "*" : " ";
 
     if (getSectorCount () != actualSize)
-      message += "Actual size (" + actualSize + ") ";
+      message = "** Bad size **";
 
     if (getSectorCount () > 999)
       message += "Reported " + getSectorCount ();
+
+    if (textFileGaps > 0)
+      message += String.format ("gaps %,d", textFileGaps);
 
     String text =
         String.format ("%1s  %1s  %03d  %-30.30s  %-5s  %-13s %3d %3d   %s", lockedFlag,

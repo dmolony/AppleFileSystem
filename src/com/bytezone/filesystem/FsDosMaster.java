@@ -43,7 +43,7 @@ class FsDosMaster extends AbstractFileSystem
         dr = 1;
       }
 
-      System.out.printf ("Slot %d, drive %d has ", s / 16, dr + 1);
+      //      System.out.printf ("Slot %d, drive %d has ", s / 16, dr + 1);
 
       int ptr = v0 + 2 * d0 + 2 * dr;
       int st = Utility.unsignedShort (buffer, ptr);
@@ -56,7 +56,7 @@ class FsDosMaster extends AbstractFileSystem
         st -= 16 * 4096;
       }
       int num = (v - st) / sz - 1;
-      System.out.printf ("%3d volumes of %4d sectors%n", num, sz * 2);
+      //      System.out.printf ("%3d volumes of %4d sectors%n", num, sz * 2);
     }
 
     for (int slot = 0; slot < 15; slot++)

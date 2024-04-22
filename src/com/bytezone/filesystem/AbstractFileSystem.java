@@ -395,6 +395,7 @@ abstract class AbstractFileSystem implements AppleFileSystem
 
     StringBuilder text = new StringBuilder ();
 
+    text.append ("----- File System -----\n");
     text.append (String.format ("File name ............. %s%n", getFileName ()));
     text.append (String.format ("File system type ...... %s%n%n", fileSystemType));
 

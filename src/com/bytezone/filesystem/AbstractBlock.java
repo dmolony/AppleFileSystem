@@ -171,6 +171,7 @@ abstract class AbstractBlock implements AppleBlock
     text.append (
         String.format ("Address type .......... %s%n", fileSystem.getAddressType ()));
     text.append (String.format ("Block no .............. %04X %s%n", blockNo, dos));
+    text.append (String.format ("Block Type ............ %s%n", blockType));
     text.append (String.format ("Block subtype ......... %s%n", blockSubType));
     text.append (String.format ("File name ............. %s%n",
         fileOwner == null ? "" : fileOwner.getFileName ()));
