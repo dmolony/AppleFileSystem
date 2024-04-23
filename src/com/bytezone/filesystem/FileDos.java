@@ -193,10 +193,9 @@ public class FileDos extends AbstractAppleFile
     return text;
   }
 
-  // This is mainly used to keep the stupid Beagle Bros files out of the file tree
   // ---------------------------------------------------------------------------------//
   @Override
-  public boolean isActualFile ()
+  public boolean isValidFile ()
   // ---------------------------------------------------------------------------------//
   {
     return validName && dataBlocks.size () > 0;

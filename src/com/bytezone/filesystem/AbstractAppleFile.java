@@ -83,7 +83,7 @@ public abstract class AbstractAppleFile implements AppleFile
 
   // ---------------------------------------------------------------------------------//
   @Override
-  public boolean isActualFile ()
+  public boolean isValidFile ()
   // ---------------------------------------------------------------------------------//
   {
     return true;
