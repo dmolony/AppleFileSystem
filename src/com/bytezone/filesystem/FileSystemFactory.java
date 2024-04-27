@@ -131,7 +131,7 @@ public class FileSystemFactory
         BlockReader dos31Reader = new BlockReader (blockReader);
         dos31Reader.setParameters (256, AddressType.SECTOR, 0, 13);
 
-        FsDos fs = new FsDos (dos31Reader);
+        FsDos3 fs = new FsDos3 (dos31Reader);
 
         if (fs.getTotalCatalogBlocks () > 0)
           fileSystems.add (fs);
@@ -151,7 +151,7 @@ public class FileSystemFactory
     if (debug)
       System.out.println ("Checking Dos33");
 
-    List<FsDos> fsList = new ArrayList<> (2);
+    List<FsDos3> fsList = new ArrayList<> (2);
 
     if (blockReader.getDiskLength () == SECTOR_16_SIZE)
       for (int i = 0; i < 2; i++)
@@ -160,7 +160,7 @@ public class FileSystemFactory
           BlockReader dos33Reader = new BlockReader (blockReader);
           dos33Reader.setParameters (256, AddressType.SECTOR, i, 16);
 
-          FsDos fs = new FsDos (dos33Reader);
+          FsDos3 fs = new FsDos3 (dos33Reader);
 
           if (debug)
             System.out.printf ("Found %d catalog blocks%n", fs.getTotalCatalogBlocks ());
@@ -203,11 +203,16 @@ public class FileSystemFactory
   private void getDos4 (BlockReader blockReader)
   // ---------------------------------------------------------------------------------//
   {
-    if (blockReader.getDiskLength () == SECTOR_16_SIZE)
+    if (blockReader.getDiskLength () == SECTOR_16_SIZE
+        || blockReader.getDiskLength () == SECTOR_16_SIZE * 2)
       try
       {
         BlockReader dos4Reader = new BlockReader (blockReader);
-        dos4Reader.setParameters (256, AddressType.SECTOR, 0, 16);
+
+        if (blockReader.getDiskLength () == SECTOR_16_SIZE)
+          dos4Reader.setParameters (256, AddressType.SECTOR, 0, 16);
+        else
+          dos4Reader.setParameters (256, AddressType.SECTOR, 0, 32);
 
         FsDos4 fs = new FsDos4 (dos4Reader);
 

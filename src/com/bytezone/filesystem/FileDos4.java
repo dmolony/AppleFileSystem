@@ -1,5 +1,6 @@
 package com.bytezone.filesystem;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -11,7 +12,10 @@ public class FileDos4 extends AbstractAppleFile
 // -----------------------------------------------------------------------------------//
 {
   int sectorCount;
-  boolean locked;
+  boolean deleted;
+  boolean zero;
+  LocalDateTime modified;
+  int offset;
 
   List<AppleBlock> indexBlocks = new ArrayList<> ();
   //  List<AppleBlock> dataBlocks = new ArrayList<> ();
@@ -28,22 +32,17 @@ public class FileDos4 extends AbstractAppleFile
     int nextTrack = buffer[ptr] & 0xFF;
     int nextSector = buffer[ptr + 1] & 0xFF;
 
-    fileType = buffer[ptr + 2] & 0xFF;
+    deleted = (buffer[ptr] & 0x80) != 0;
+    zero = (buffer[ptr] & 0x40) != 0;
 
-    fileTypeText = switch (fileType)
-    {
-      case 0x00 -> "T";
-      case 0x01 -> "I";
-      case 0x02 -> "A";
-      case 0x04 -> "B";
-      case 0x08 -> "S";
-      case 0x10 -> "R";
-      case 0x20 -> "X";
-      case 0x40 -> "Y";
-      default -> "B";                   // should never happen
-    };
+    isLocked = (buffer[ptr + 2] & 0x80) != 0;
+    fileType = buffer[ptr + 2] & 0x7F;
+
+    fileTypeText = fs.getFileTypeText (fileType);
+    String blockSubType = fs.getBlockSubTypeText (fileType);
 
     fileName = Utility.string (buffer, ptr + 3, 24).trim ();
+    modified = Utility.getDos4LocalDateTime (buffer, 27);
     sectorCount = Utility.unsignedShort (buffer, ptr + 33);
     int sectorsLeft = sectorCount;
 
@@ -56,22 +55,32 @@ public class FileDos4 extends AbstractAppleFile
       if (tsSector == null)
         throw new FileFormatException ("Invalid TS sector");
 
+      tsSector.setBlockSubType ("TSLIST");
+      tsSector.setFileOwner (this);
+
       indexBlocks.add (tsSector);
       --sectorsLeft;
 
       byte[] sectorBuffer = tsSector.read ();
+      offset = Utility.unsignedShort (sectorBuffer, 5);
 
       for (int i = 12; i < 256; i += 2)
       {
         int fileTrack = sectorBuffer[i] & 0xFF;
         int fileSector = sectorBuffer[i + 1] & 0xFF;
+        boolean zero = (fileTrack & 0x40) != 0;
+        fileTrack &= 0x3F;
 
         AppleBlock dataSector = fs.getSector (fileTrack, fileSector, BlockType.FILE_DATA);
         if (dataSector == null)
-          throw new FileFormatException ("Invalid data sector");
+          throw new FileFormatException (
+              String.format ("Invalid data sector : %02X %02X%n", fileTrack, fileSector));
 
-        if (dataSector.getBlockNo () != 0)
+        if (dataSector.getBlockNo () != 0 || zero)
         {
+          dataSector.setBlockSubType (blockSubType);
+          dataSector.setFileOwner (this);
+
           dataBlocks.add (dataSector);
           --sectorsLeft;
 
@@ -79,7 +88,7 @@ public class FileDos4 extends AbstractAppleFile
             break;
         }
         else
-          dataBlocks.add (null);          // must be a sparse file
+          dataBlocks.add (null);                // must be a sparse file
       }
 
       nextTrack = sectorBuffer[1] & 0xFF;
@@ -88,16 +97,8 @@ public class FileDos4 extends AbstractAppleFile
   }
 
   // ---------------------------------------------------------------------------------//
-  //  @Override
-  //  public byte[] read ()
-  //  // ---------------------------------------------------------------------------------//
-  //  {
-  //    return parentFileSystem.readBlocks (dataBlocks);
-  //  }
-
-  // ---------------------------------------------------------------------------------//
   @Override
-  public int getFileLength ()                 // in bytes (eof)
+  public int getFileLength ()                   // in bytes (eof)
   // ---------------------------------------------------------------------------------//
   {
     return dataBlocks.size () * getParentFileSystem ().getBlockSize ();
@@ -105,7 +106,7 @@ public class FileDos4 extends AbstractAppleFile
 
   // ---------------------------------------------------------------------------------//
   @Override
-  public int getTotalBlocks ()                   // in blocks
+  public int getTotalBlocks ()                  // in blocks
   // ---------------------------------------------------------------------------------//
   {
     return indexBlocks.size () + dataBlocks.size ();

@@ -7,7 +7,7 @@ import com.bytezone.filesystem.AppleBlock.BlockType;
 import com.bytezone.utility.Utility;
 
 // -----------------------------------------------------------------------------------//
-public class FileDos extends AbstractAppleFile
+public class FileDos3 extends AbstractAppleFile
 // -----------------------------------------------------------------------------------//
 {
   private List<AppleBlock> indexBlocks = new ArrayList<> ();
@@ -19,7 +19,7 @@ public class FileDos extends AbstractAppleFile
   private boolean validName;
 
   // ---------------------------------------------------------------------------------//
-  FileDos (FsDos fs, byte[] buffer, int ptr)
+  FileDos3 (FsDos3 fs, byte[] buffer, int ptr)
   // ---------------------------------------------------------------------------------//
   {
     super (fs);
@@ -57,7 +57,7 @@ public class FileDos extends AbstractAppleFile
         int track = sectorBuffer[i] & 0xFF;
         int sector = sectorBuffer[i + 1] & 0xFF;
 
-        if (track == 0 && sector == 0)
+        if (track == 0 && sector == 0)            // invalid address
         {
           if (fileType != 0x00)                   // not a text file
             break loop;
@@ -69,7 +69,8 @@ public class FileDos extends AbstractAppleFile
         {
           AppleBlock dataSector = fs.getSector (track, sector, BlockType.FILE_DATA);
           if (dataSector == null)
-            throw new FileFormatException ("Invalid data sector - " + dataSector);
+            throw new FileFormatException (String
+                .format ("%s - Invalid data sector - %d, %d", fileName, track, sector));
 
           dataSector.setFileOwner (this);
           dataSector.setBlockSubType (blockSubType);

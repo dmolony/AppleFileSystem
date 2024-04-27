@@ -9,7 +9,7 @@ public class Fs2img extends AbstractFileSystem
   static final byte[] TWO_IMG = { 0x32, 0x49, 0x4D, 0x47 };
   private static String[] twoIMGFormats = { "Dos", "Prodos", "NIB" };
   private static FileSystemType[] fileSystemTypes =
-      { FileSystemType.DOS, FileSystemType.PRODOS, FileSystemType.NIB };
+      { FileSystemType.DOS3, FileSystemType.PRODOS, FileSystemType.NIB };
   private static String[] creatorCodes =
       { "!nfc", "B2TR", "CTKG", "ShIm", "WOOF", "XGS!", "CdrP" };
   private static String[] creatorNames = { "ASIMOV2", "Bernie ][ the Rescue", "Catakig",

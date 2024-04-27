@@ -67,7 +67,7 @@ class FsDosMaster extends AbstractFileSystem
 
       try
       {
-        FsDos fs = new FsDos (slotReader);
+        FsDos3 fs = new FsDos3 (slotReader);
         if (fs != null && fs.files.size () > 0)
           addFileSystem (fs);
       }

@@ -313,7 +313,8 @@ public class Utility
       }
       catch (DateTimeException e)
       {
-        //        System.out.printf ("Bad date/time: %d %d %d %d %d %n", year, month, day, hour,
+        //        System.out.printf ("Bad date/time:
+        //          %d %d %d %d %d %n", year, month, day, hour,
         //            minute);
       }
     }
@@ -417,6 +418,31 @@ public class Utility
       return LocalDate.of (year, month, day);
     }
     catch (DateTimeException e)
+    {
+      return null;
+    }
+  }
+
+  // ---------------------------------------------------------------------------------//
+  public static LocalDateTime getDos4LocalDateTime (byte[] buffer, int offset)
+  // ---------------------------------------------------------------------------------//
+  {
+    try
+    {
+      int[] val = new int[6];
+      for (int i = 0; i < 6; i++)
+      {
+        int tmp = buffer[offset++] & 0xFF;
+        val[i] = tmp / 16 * 10 + tmp % 16;
+      }
+
+      return LocalDateTime.of (val[3] + 2000, val[5], val[4], val[2], val[1], val[0]);
+    }
+    catch (DateTimeException e)
+    {
+      return null;
+    }
+    catch (NumberFormatException e2)
     {
       return null;
     }
