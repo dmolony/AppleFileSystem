@@ -1,6 +1,8 @@
 package com.bytezone.filesystem;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Locale;
 
 import com.bytezone.filesystem.AppleBlock.BlockType;
 import com.bytezone.utility.Utility;
@@ -9,6 +11,10 @@ import com.bytezone.utility.Utility;
 class FsDos4 extends FsDos
 // -----------------------------------------------------------------------------------//
 {
+  private static Locale US = Locale.US;                 // to force 3 character months
+  private static final DateTimeFormatter sdf =
+      DateTimeFormatter.ofPattern ("dd-LLL-yy HH:mm:ss", US);
+
   private int vtocStructureBlock;
   private int buildNumber;
   private char ramDos;
@@ -111,19 +117,33 @@ class FsDos4 extends FsDos
   {
     StringBuilder text = new StringBuilder ();
 
+    String ramTypeText = switch (ramDos)
+    {
+      case 'H' -> "High";
+      case 'L' -> "Low";
+      default -> "Unknown : " + ramDos;
+    };
+
+    String volumeTypeText = switch (volumeType)
+    {
+      case 'D' -> "Data disk";
+      case 'B' -> "Bootable disk";
+      default -> "Unknown : " + volumeType;
+    };
+
     text.append (String.format ("Volume         : %03d%n", volumeNumber));
     text.append (String.format ("Build          : %03d%n", buildNumber));
-    text.append (String.format ("RAM type       : %s%n", ramDos));
-    text.append (String.format ("Volume type    : %s%n", volumeType));
+    text.append (String.format ("RAM type       : %s%n", ramTypeText));
+    text.append (String.format ("Volume type    : %s%n", volumeTypeText));
     text.append (String.format ("Volume name    : %s%n", volumeName));
     text.append (String.format ("Volume library : %04X%n", volumeLibrary));
-    text.append (String.format ("Init date      : %s%n", initTime));
-    text.append (String.format ("VTOC date      : %s%n%n", vtocTime));
+    text.append (String.format ("Init date      : %s%n", initTime.format (sdf)));
+    text.append (String.format ("VTOC date      : %s%n%n", vtocTime.format (sdf)));
 
-    String underline = "- --- ---  ------------------------  -----  -------------"
-        + "  -- ---  -------------------\n";
+    String underline = "- --- ---  ------------------------  ---------------  -----"
+        + "  -------------  -- ---  -------------------\n";
 
-    text.append ("L Typ Len  Name                      Addr"
+    text.append ("L Typ Len  Name                      Modified         Addr"
         + "   Length         TS DAT  Comment\n");
     text.append (underline);
 

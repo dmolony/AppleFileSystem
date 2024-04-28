@@ -1,6 +1,8 @@
 package com.bytezone.filesystem;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Locale;
 
 import com.bytezone.filesystem.AppleBlock.BlockType;
 import com.bytezone.utility.Utility;
@@ -9,6 +11,11 @@ import com.bytezone.utility.Utility;
 public class FileDos4 extends FileDos
 // -----------------------------------------------------------------------------------//
 {
+  private static Locale US = Locale.US;                 // to force 3 character months
+  private static final DateTimeFormatter sdf =
+      DateTimeFormatter.ofPattern ("dd-LLL-yy HH:mm", US);
+  //  protected static final DateTimeFormatter stf = DateTimeFormatter.ofPattern ("H:mm");
+
   boolean zero;
   LocalDateTime modified;
 
@@ -31,7 +38,7 @@ public class FileDos4 extends FileDos
     String blockSubType = fs.getBlockSubTypeText (fileType);
 
     fileName = Utility.string (buffer, ptr + 3, 24).trim ();
-    modified = Utility.getDos4LocalDateTime (buffer, 27);
+    modified = Utility.getDos4LocalDateTime (buffer, ptr + 27);
     sectorCount = Utility.unsignedShort (buffer, ptr + 33);
     int sectorsLeft = sectorCount;
 
@@ -108,6 +115,7 @@ public class FileDos4 extends FileDos
 
     String message = "";
     String lockedFlag = (isLocked ()) ? "*" : " ";
+    String dateModified = modified == null ? "x" : modified.format (sdf);
 
     if (getSectorCount () != actualSize)
       message = "** Bad size **";
@@ -118,10 +126,10 @@ public class FileDos4 extends FileDos
     if (textFileGaps > 0)
       message += String.format ("gaps %,d", textFileGaps);
 
-    return String.format ("%1s  %1s  %03d  %-24.24s  %-5s  %-13s %3d %3d   %s",
+    return String.format ("%1s  %1s  %03d  %-24.24s  %-15.15s  %-5s  %-13s %3d %3d   %s",
         lockedFlag, getFileTypeText (), getSectorCount () % 1000, getFileName (),
-        addressText, lengthText, getTotalIndexSectors (), getTotalDataSectors (),
-        message.trim ());
+        dateModified, addressText, lengthText, getTotalIndexSectors (),
+        getTotalDataSectors (), message.trim ());
   }
 
   // ---------------------------------------------------------------------------------//
