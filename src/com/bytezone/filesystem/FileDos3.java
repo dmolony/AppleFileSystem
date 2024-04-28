@@ -1,21 +1,12 @@
 package com.bytezone.filesystem;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.bytezone.filesystem.AppleBlock.BlockType;
 import com.bytezone.utility.Utility;
 
 // -----------------------------------------------------------------------------------//
-public class FileDos3 extends AbstractAppleFile
+public class FileDos3 extends FileDos
 // -----------------------------------------------------------------------------------//
 {
-  private List<AppleBlock> indexBlocks = new ArrayList<> ();
-
-  private int sectorCount;
-  private int length;
-  private int address;
-  private int textFileGaps;
   private boolean validName;
 
   // ---------------------------------------------------------------------------------//
@@ -85,81 +76,7 @@ public class FileDos3 extends AbstractAppleFile
       nextSector = sectorBuffer[2] & 0xFF;
     }
 
-    if (fileType == 4)                            // binary
-    {
-      if (dataBlocks.size () > 0)
-      {
-        byte[] fileBuffer = fs.readBlock (dataBlocks.get (0));
-        address = Utility.unsignedShort (fileBuffer, 0);
-        length = Utility.unsignedShort (fileBuffer, 2);
-      }
-    }
-    else if (fileType == 1 || fileType == 2)      // integer basic or applesoft
-    {
-      if (dataBlocks.size () > 0)
-      {
-        byte[] fileBuffer = fs.readBlock (dataBlocks.get (0));
-        length = Utility.unsignedShort (fileBuffer, 0);
-        // could calculate the address from the line numbers
-      }
-    }
-    else
-      length = dataBlocks.size () * getParentFileSystem ().getBlockSize ();
-  }
-
-  // ---------------------------------------------------------------------------------//
-  @Override
-  public List<AppleBlock> getBlocks ()
-  // ---------------------------------------------------------------------------------//
-  {
-    List<AppleBlock> blocks = new ArrayList<AppleBlock> (dataBlocks);
-    blocks.addAll (indexBlocks);
-
-    return blocks;
-  }
-
-  // ---------------------------------------------------------------------------------//
-  @Override
-  public int getFileLength ()                       // in bytes (eof)
-  // ---------------------------------------------------------------------------------//
-  {
-    return length;
-  }
-
-  // ---------------------------------------------------------------------------------//
-  @Override
-  public int getTotalBlocks ()                      // in blocks
-  // ---------------------------------------------------------------------------------//
-  {
-    return indexBlocks.size () + dataBlocks.size () - textFileGaps;
-  }
-
-  // ---------------------------------------------------------------------------------//
-  public int getSectorCount ()
-  // ---------------------------------------------------------------------------------//
-  {
-    return sectorCount;
-  }
-
-  // ---------------------------------------------------------------------------------//
-  public int getAddress ()
-  // ---------------------------------------------------------------------------------//
-  {
-    return address;
-  }
-
-  // ---------------------------------------------------------------------------------//
-  public int getTotalDataSectors ()
-  // ---------------------------------------------------------------------------------//
-  {
-    return dataBlocks.size () - textFileGaps;
-  }
-
-  // ---------------------------------------------------------------------------------//
-  public int getTotalIndexSectors ()
-  // ---------------------------------------------------------------------------------//
-  {
-    return indexBlocks.size ();
+    setLength ();
   }
 
   // ---------------------------------------------------------------------------------//
@@ -186,12 +103,10 @@ public class FileDos3 extends AbstractAppleFile
     if (textFileGaps > 0)
       message += String.format ("gaps %,d", textFileGaps);
 
-    String text =
-        String.format ("%1s  %1s  %03d  %-30.30s  %-5s  %-13s %3d %3d   %s", lockedFlag,
-            getFileTypeText (), getSectorCount () % 1000, getFileName (), addressText,
-            lengthText, getTotalIndexSectors (), getTotalDataSectors (), message.trim ());
-
-    return text;
+    return String.format ("%1s  %1s  %03d  %-30.30s  %-5s  %-13s %3d %3d   %s",
+        lockedFlag, getFileTypeText (), getSectorCount () % 1000, getFileName (),
+        addressText, lengthText, getTotalIndexSectors (), getTotalDataSectors (),
+        message.trim ());
   }
 
   // ---------------------------------------------------------------------------------//

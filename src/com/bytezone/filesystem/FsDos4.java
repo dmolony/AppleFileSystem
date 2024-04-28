@@ -78,7 +78,7 @@ class FsDos4 extends FsDos
         if ((buffer[ptr] & 0x80) != 0)        // deleted file
         {
           String fileName = Utility.string (buffer, ptr + 3, 24).trim ();
-          System.out.printf ("deleted : %s%n", fileName);
+          deletedFiles.add (fileName);
         }
         else
         {
@@ -90,6 +90,8 @@ class FsDos4 extends FsDos
           catch (FileFormatException e)
           {
             System.out.println (e);
+            String fileName = Utility.string (buffer, ptr + 3, 24).trim ();
+            failedFiles.add (fileName);
             break;
           }
         }
@@ -109,11 +111,61 @@ class FsDos4 extends FsDos
   {
     StringBuilder text = new StringBuilder ();
 
-    for (AppleFile file : getFiles ())
-      text.append (
-          String.format ("%-15s %s%n", file.getFileName (), file.getFileSystemType ()));
+    text.append (String.format ("Volume         : %03d%n", volumeNumber));
+    text.append (String.format ("Build          : %03d%n", buildNumber));
+    text.append (String.format ("RAM type       : %s%n", ramDos));
+    text.append (String.format ("Volume type    : %s%n", volumeType));
+    text.append (String.format ("Volume name    : %s%n", volumeName));
+    text.append (String.format ("Volume library : %04X%n", volumeLibrary));
+    text.append (String.format ("Init date      : %s%n", initTime));
+    text.append (String.format ("VTOC date      : %s%n%n", vtocTime));
 
-    return text.toString ();
+    String underline = "- --- ---  ------------------------  -----  -------------"
+        + "  -- ---  -------------------\n";
+
+    text.append ("L Typ Len  Name                      Addr"
+        + "   Length         TS DAT  Comment\n");
+    text.append (underline);
+
+    for (AppleFile file : getFiles ())
+    {
+      //      if (countEntries (fileEntry) > 1)
+      //        entry += "** duplicate **";
+      text.append (file.getCatalogLine ());
+      text.append ("\n");
+    }
+
+    int totalSectors = getTotalBlocks ();
+    int freeSectors = getFreeBlocks ();
+
+    text.append (underline);
+    text.append (String.format (
+        "           Free sectors: %3d    " + "Used sectors: %3d    Total sectors: %3d",
+        freeSectors, totalSectors - freeSectors, totalSectors));
+
+    if (false)
+      text.append (String.format (
+          "%nActual:    Free sectors: %3d    "
+              + "Used sectors: %3d    Total sectors: %3d",
+          freeSectors, totalSectors - freeSectors, totalSectors));
+
+    if (deletedFiles.size () > 0)
+    {
+      text.append ("\n\nDeleted files\n");
+      text.append ("-------------\n");
+      for (String name : deletedFiles)
+        text.append (String.format ("%s%n", name));
+    }
+
+    if (failedFiles.size () > 0)
+    {
+      text.append ("\n\nFailed files\n");
+      text.append ("------------\n");
+      for (String name : failedFiles)
+        text.append (String.format ("%s%n", name));
+    }
+
+    return Utility.rtrim (text);
   }
 
   // ---------------------------------------------------------------------------------//

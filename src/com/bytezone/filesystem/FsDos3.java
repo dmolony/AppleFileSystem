@@ -10,9 +10,6 @@ import com.bytezone.utility.Utility;
 public class FsDos3 extends FsDos
 // -----------------------------------------------------------------------------------//
 {
-  private List<String> deletedFiles = new ArrayList<> ();
-  private List<String> failedFiles = new ArrayList<> ();
-
   // ---------------------------------------------------------------------------------//
   FsDos3 (BlockReader blockReader)
   // ---------------------------------------------------------------------------------//

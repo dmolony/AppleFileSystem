@@ -1,27 +1,16 @@
 package com.bytezone.filesystem;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 
 import com.bytezone.filesystem.AppleBlock.BlockType;
 import com.bytezone.utility.Utility;
 
 // -----------------------------------------------------------------------------------//
-public class FileDos4 extends AbstractAppleFile
+public class FileDos4 extends FileDos
 // -----------------------------------------------------------------------------------//
 {
-  int sectorCount;
-  boolean deleted;
   boolean zero;
   LocalDateTime modified;
-  int offset;
-
-  List<AppleBlock> indexBlocks = new ArrayList<> ();
-  //  List<AppleBlock> dataBlocks = new ArrayList<> ();
-
-  int length;
-  int address;
 
   // ---------------------------------------------------------------------------------//
   FileDos4 (FsDos4 fs, byte[] buffer, int ptr)
@@ -32,7 +21,7 @@ public class FileDos4 extends AbstractAppleFile
     int nextTrack = buffer[ptr] & 0xFF;
     int nextSector = buffer[ptr + 1] & 0xFF;
 
-    deleted = (buffer[ptr] & 0x80) != 0;
+    boolean deleted = (buffer[ptr] & 0x80) != 0;
     zero = (buffer[ptr] & 0x40) != 0;
 
     isLocked = (buffer[ptr + 2] & 0x80) != 0;
@@ -46,7 +35,7 @@ public class FileDos4 extends AbstractAppleFile
     sectorCount = Utility.unsignedShort (buffer, ptr + 33);
     int sectorsLeft = sectorCount;
 
-    while (nextTrack != 0)
+    loop: while (nextTrack != 0)
     {
       nextTrack &= 0x3F;
       nextSector &= 0x1F;
@@ -62,7 +51,7 @@ public class FileDos4 extends AbstractAppleFile
       --sectorsLeft;
 
       byte[] sectorBuffer = tsSector.read ();
-      offset = Utility.unsignedShort (sectorBuffer, 5);
+      int offset = Utility.unsignedShort (sectorBuffer, 5);
 
       for (int i = 12; i < 256; i += 2)
       {
@@ -71,13 +60,22 @@ public class FileDos4 extends AbstractAppleFile
         boolean zero = (fileTrack & 0x40) != 0;
         fileTrack &= 0x3F;
 
-        AppleBlock dataSector = fs.getSector (fileTrack, fileSector, BlockType.FILE_DATA);
-        if (dataSector == null)
-          throw new FileFormatException (
-              String.format ("Invalid data sector : %02X %02X%n", fileTrack, fileSector));
-
-        if (dataSector.getBlockNo () != 0 || zero)
+        if (fileTrack == 0 && !zero && fileSector == 0)
         {
+          if (fileType != 0x00)                   // not a text file
+            break loop;
+
+          dataBlocks.add (null);                  // must be a sparse file
+          ++textFileGaps;
+        }
+        else
+        {
+          AppleBlock dataSector =
+              fs.getSector (fileTrack, fileSector, BlockType.FILE_DATA);
+          if (dataSector == null)
+            throw new FileFormatException (String
+                .format ("Invalid data sector : %02X %02X%n", fileTrack, fileSector));
+
           dataSector.setBlockSubType (blockSubType);
           dataSector.setFileOwner (this);
 
@@ -87,29 +85,43 @@ public class FileDos4 extends AbstractAppleFile
           if (sectorsLeft == 0)
             break;
         }
-        else
-          dataBlocks.add (null);                // must be a sparse file
       }
 
       nextTrack = sectorBuffer[1] & 0xFF;
       nextSector = sectorBuffer[2] & 0xFF;
     }
+
+    setLength ();
   }
 
   // ---------------------------------------------------------------------------------//
   @Override
-  public int getFileLength ()                   // in bytes (eof)
+  public String getCatalogLine ()
   // ---------------------------------------------------------------------------------//
   {
-    return dataBlocks.size () * getParentFileSystem ().getBlockSize ();
-  }
+    int actualSize = getTotalIndexSectors () + getTotalDataSectors ();
 
-  // ---------------------------------------------------------------------------------//
-  @Override
-  public int getTotalBlocks ()                  // in blocks
-  // ---------------------------------------------------------------------------------//
-  {
-    return indexBlocks.size () + dataBlocks.size ();
+    String addressText = getAddress () == 0 ? "" : String.format ("$%4X", getAddress ());
+
+    String lengthText =
+        getFileLength () == 0 ? "" : String.format ("$%4X  %<,6d", getFileLength ());
+
+    String message = "";
+    String lockedFlag = (isLocked ()) ? "*" : " ";
+
+    if (getSectorCount () != actualSize)
+      message = "** Bad size **";
+
+    if (getSectorCount () > 999)
+      message += "Reported " + getSectorCount ();
+
+    if (textFileGaps > 0)
+      message += String.format ("gaps %,d", textFileGaps);
+
+    return String.format ("%1s  %1s  %03d  %-24.24s  %-5s  %-13s %3d %3d   %s",
+        lockedFlag, getFileTypeText (), getSectorCount () % 1000, getFileName (),
+        addressText, lengthText, getTotalIndexSectors (), getTotalDataSectors (),
+        message.trim ());
   }
 
   // ---------------------------------------------------------------------------------//

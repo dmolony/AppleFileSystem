@@ -1,6 +1,8 @@
 package com.bytezone.filesystem;
 
+import java.util.ArrayList;
 import java.util.BitSet;
+import java.util.List;
 
 import com.bytezone.utility.Utility;
 
@@ -19,6 +21,9 @@ public class FsDos extends AbstractFileSystem
   protected int tracksPerDisk;
   protected int sectorsPerTrack;
   protected int bytesPerSector;
+
+  protected List<String> deletedFiles = new ArrayList<> ();
+  protected List<String> failedFiles = new ArrayList<> ();
 
   // ---------------------------------------------------------------------------------//
   FsDos (BlockReader blockReader, FileSystemType fileSystemType)
