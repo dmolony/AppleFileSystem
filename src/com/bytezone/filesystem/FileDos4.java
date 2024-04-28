@@ -14,7 +14,6 @@ public class FileDos4 extends FileDos
   private static Locale US = Locale.US;                 // to force 3 character months
   private static final DateTimeFormatter sdf =
       DateTimeFormatter.ofPattern ("dd-LLL-yy HH:mm", US);
-  //  protected static final DateTimeFormatter stf = DateTimeFormatter.ofPattern ("H:mm");
 
   boolean zero;
   LocalDateTime modified;

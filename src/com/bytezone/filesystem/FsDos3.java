@@ -151,8 +151,6 @@ public class FsDos3 extends FsDos
 
     for (AppleFile file : getFiles ())
     {
-      //      if (countEntries (fileEntry) > 1)
-      //        entry += "** duplicate **";
       text.append (file.getCatalogLine ());
       text.append ("\n");
     }
@@ -164,12 +162,6 @@ public class FsDos3 extends FsDos
     text.append (String.format (
         "           Free sectors: %3d    " + "Used sectors: %3d    Total sectors: %3d",
         freeSectors, totalSectors - freeSectors, totalSectors));
-
-    if (false)
-      text.append (String.format (
-          "%nActual:    Free sectors: %3d    "
-              + "Used sectors: %3d    Total sectors: %3d",
-          freeSectors, totalSectors - freeSectors, totalSectors));
 
     if (deletedFiles.size () > 0)
     {
