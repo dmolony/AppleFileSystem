@@ -109,11 +109,16 @@ public class FileDos3 extends FileDos
         message.trim ());
   }
 
+  // attempt to weed out the catalog entries that are just labels
   // ---------------------------------------------------------------------------------//
   @Override
   public boolean isValidFile ()
   // ---------------------------------------------------------------------------------//
   {
+    // Beagle Brothers "applesoft program"
+    if (fileType == 2 && length <= 3 && fileName.startsWith ("  "))
+      return false;
+
     return validName && dataBlocks.size () > 0;
   }
 
