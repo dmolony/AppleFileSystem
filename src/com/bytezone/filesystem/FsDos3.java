@@ -99,30 +99,6 @@ public class FsDos3 extends FsDos
   }
 
   // ---------------------------------------------------------------------------------//
-  private void flagDosSectors ()
-  // ---------------------------------------------------------------------------------//
-  {
-    for (int blockNo = 0; blockNo < 48; blockNo++)
-    {
-      BlockType blockType = getBlock (blockNo).getBlockType ();
-      if (blockType != BlockType.EMPTY            // has data AND
-          && (blockType != BlockType.ORPHAN       //   is owned by a data file OR
-              || volumeBitMap.get (blockNo)))     //   is allocated
-        return;
-    }
-
-    for (int blockNo = 0; blockNo < 48; blockNo++)
-    {
-      AppleBlock block = getBlock (blockNo);
-      if (block.getBlockType () == BlockType.ORPHAN)
-      {
-        block.setBlockType (BlockType.FS_DATA);
-        block.setBlockSubType ("DOS");
-      }
-    }
-  }
-
-  // ---------------------------------------------------------------------------------//
   private boolean checkDuplicate (List<AppleBlock> catalogSectors, AppleBlock testSector)
   // ---------------------------------------------------------------------------------//
   {
@@ -178,28 +154,6 @@ public class FsDos3 extends FsDos
       for (String name : failedFiles)
         text.append (String.format ("%s%n", name));
     }
-
-    return Utility.rtrim (text);
-  }
-
-  // ---------------------------------------------------------------------------------//
-  @Override
-  public String toString ()
-  // ---------------------------------------------------------------------------------//
-  {
-    StringBuilder text = new StringBuilder (super.toString ());
-
-    text.append ("----- DOS Header ------\n");
-    text.append (String.format ("Dos version ........... %02X%n", dosVersion));
-    text.append (String.format ("Volume number ......... %02X  %<,7d%n", volumeNumber));
-    text.append (String.format ("Max TS pairs .......... %02X  %<,7d%n", maxTSpairs));
-    text.append (
-        String.format ("Last track allocated .. %02X  %<,7d%n", lastTrackAllocated));
-    text.append (String.format ("Direction ............. %02X  %<,7d%n", direction));
-    text.append (String.format ("Tracks per disk ....... %02X  %<,7d%n", tracksPerDisk));
-    text.append (
-        String.format ("Sectors per track ..... %02X  %<,7d%n", sectorsPerTrack));
-    text.append (String.format ("Bytes per sector ...... %03X  %<,6d%n", bytesPerSector));
 
     return Utility.rtrim (text);
   }

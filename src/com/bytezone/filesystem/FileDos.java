@@ -15,6 +15,7 @@ public abstract class FileDos extends AbstractAppleFile
   protected int textFileGaps;
 
   protected List<AppleBlock> indexBlocks = new ArrayList<> ();
+  protected boolean validName;
 
   // ---------------------------------------------------------------------------------//
   FileDos (FsDos fs)
@@ -102,5 +103,45 @@ public abstract class FileDos extends AbstractAppleFile
   // ---------------------------------------------------------------------------------//
   {
     return indexBlocks.size ();
+  }
+
+  // attempt to weed out the catalog entries that are just labels
+  // ---------------------------------------------------------------------------------//
+  @Override
+  public boolean isValidFile ()
+  // ---------------------------------------------------------------------------------//
+  {
+    // Beagle Brothers "applesoft program"
+    if (fileType == 2 && length <= 3 && fileName.startsWith ("  "))
+      return false;
+
+    return validName && dataBlocks.size () > 0;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  protected boolean checkName (byte[] buffer, int offset, int length)
+  // ---------------------------------------------------------------------------------//
+  {
+    while (length-- > 0)
+      if (buffer[offset++] == (byte) 0x88)      // backspace
+        return false;
+
+    return true;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
+  public String toString ()
+  // ---------------------------------------------------------------------------------//
+  {
+    StringBuilder text = new StringBuilder (super.toString ());
+
+    text.append (String.format ("Locked ................ %s%n", isLocked));
+    text.append (String.format ("Sectors ............... %04X  %<,5d%n", sectorCount));
+    text.append (String.format ("Length ................ %04X  %<,5d%n", length));
+    text.append (String.format ("Address ............... %04X  %<,5d%n", address));
+    text.append (String.format ("Text file gaps ........ %04X  %<,5d", textFileGaps));
+
+    return Utility.rtrim (text);
   }
 }

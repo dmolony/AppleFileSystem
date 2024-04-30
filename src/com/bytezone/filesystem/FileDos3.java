@@ -7,8 +7,6 @@ import com.bytezone.utility.Utility;
 public class FileDos3 extends FileDos
 // -----------------------------------------------------------------------------------//
 {
-  private boolean validName;
-
   // ---------------------------------------------------------------------------------//
   FileDos3 (FsDos3 fs, byte[] buffer, int ptr)
   // ---------------------------------------------------------------------------------//
@@ -107,45 +105,5 @@ public class FileDos3 extends FileDos
         lockedFlag, getFileTypeText (), getSectorCount () % 1000, getFileName (),
         addressText, lengthText, getTotalIndexSectors (), getTotalDataSectors (),
         message.trim ());
-  }
-
-  // attempt to weed out the catalog entries that are just labels
-  // ---------------------------------------------------------------------------------//
-  @Override
-  public boolean isValidFile ()
-  // ---------------------------------------------------------------------------------//
-  {
-    // Beagle Brothers "applesoft program"
-    if (fileType == 2 && length <= 3 && fileName.startsWith ("  "))
-      return false;
-
-    return validName && dataBlocks.size () > 0;
-  }
-
-  // ---------------------------------------------------------------------------------//
-  private boolean checkName (byte[] buffer, int offset, int length)
-  // ---------------------------------------------------------------------------------//
-  {
-    while (length-- > 0)
-      if (buffer[offset++] == (byte) 0x88)      // backspace
-        return false;
-
-    return true;
-  }
-
-  // ---------------------------------------------------------------------------------//
-  @Override
-  public String toString ()
-  // ---------------------------------------------------------------------------------//
-  {
-    StringBuilder text = new StringBuilder (super.toString ());
-
-    text.append (String.format ("Locked ................ %s%n", isLocked));
-    text.append (String.format ("Sectors ............... %04X  %<,5d%n", sectorCount));
-    text.append (String.format ("Length ................ %04X  %<,5d%n", length));
-    text.append (String.format ("Address ............... %04X  %<,5d%n", address));
-    text.append (String.format ("Text file gaps ........ %04X  %<,5d", textFileGaps));
-
-    return Utility.rtrim (text);
   }
 }

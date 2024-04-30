@@ -1,8 +1,6 @@
 package com.bytezone.filesystem;
 
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.Locale;
 
 import com.bytezone.filesystem.AppleBlock.BlockType;
 import com.bytezone.utility.Utility;
@@ -11,10 +9,9 @@ import com.bytezone.utility.Utility;
 class FsDos4 extends FsDos
 // -----------------------------------------------------------------------------------//
 {
-  private static Locale US = Locale.US;                 // to force 3 character months
-  private static final DateTimeFormatter sdf =
-      DateTimeFormatter.ofPattern ("dd-LLL-yy HH:mm:ss", US);
-
+  private static final String underline =
+      "- --- ---  ------------------------  ---------------  -----"
+          + "  -------------  -- ---  -------------------\n";
   private int vtocStructureBlock;
   private int buildNumber;
   private char ramDos;
@@ -108,6 +105,8 @@ class FsDos4 extends FsDos
     }
 
     setTotalCatalogBlocks (catalogBlocks);
+    if (volumeType == 'B')
+      flagDosSectors ();
   }
 
   // ---------------------------------------------------------------------------------//
@@ -117,31 +116,7 @@ class FsDos4 extends FsDos
   {
     StringBuilder text = new StringBuilder ();
 
-    String ramTypeText = switch (ramDos)
-    {
-      case 'H' -> "High";
-      case 'L' -> "Low";
-      default -> "Unknown : " + ramDos;
-    };
-
-    String volumeTypeText = switch (volumeType)
-    {
-      case 'D' -> "Data disk";
-      case 'B' -> "Bootable disk";
-      default -> "Unknown : " + volumeType;
-    };
-
-    text.append (String.format ("Volume         : %03d%n", volumeNumber));
-    text.append (String.format ("Build          : %03d%n", buildNumber));
-    text.append (String.format ("RAM type       : %s%n", ramTypeText));
-    text.append (String.format ("Volume type    : %s%n", volumeTypeText));
-    text.append (String.format ("Volume name    : %s%n", volumeName));
-    text.append (String.format ("Volume library : %04X%n", volumeLibrary));
-    text.append (String.format ("Init date      : %s%n", initTime.format (sdf)));
-    text.append (String.format ("VTOC date      : %s%n%n", vtocTime.format (sdf)));
-
-    String underline = "- --- ---  ------------------------  ---------------  -----"
-        + "  -------------  -- ---  -------------------\n";
+    text.append (String.format ("Volume : %03d  %s%n%n", volumeNumber, volumeName));
 
     text.append ("L Typ Len  Name                      Modified         Addr"
         + "   Length         TS DAT  Comment\n");
@@ -181,29 +156,47 @@ class FsDos4 extends FsDos
   }
 
   // ---------------------------------------------------------------------------------//
+  private String getVolumeTypeText ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return switch (volumeType)
+    {
+      case 'D' -> "Data disk";
+      case 'B' -> "Bootable disk";
+      default -> "Unknown : " + volumeType;
+    };
+  }
+
+  // ---------------------------------------------------------------------------------//
+  private String getRamTypeText ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return switch (ramDos)
+    {
+      case 'H' -> "High";
+      case 'L' -> "Low";
+      default -> "Unknown : " + ramDos;
+    };
+  }
+
+  // ---------------------------------------------------------------------------------//
   @Override
   public String toString ()
   // ---------------------------------------------------------------------------------//
   {
     StringBuilder text = new StringBuilder (super.toString ());
 
-    text.append ("----- DOS4 Header -----\n");
+    text.append ("\n\n----- DOS4 Header -----\n");
     text.append (String.format ("VTOC structure block .. %02X%n", vtocStructureBlock));
-    text.append (String.format ("Dos version ........... %02X%n", dosVersion));
     text.append (String.format ("Build number .......... %02X%n", buildNumber));
-    text.append (String.format ("RAM DOS ............... %s%n", ramDos));
-    text.append (String.format ("Volume number ......... %02X%n", volumeNumber));
-    text.append (String.format ("Volume type ........... %s%n", volumeType));
+    text.append (
+        String.format ("RAM DOS ............... %s  %s%n", ramDos, getRamTypeText ()));
+    text.append (String.format ("Volume type ........... %s  %s%n", volumeType,
+        getVolumeTypeText ()));
     text.append (String.format ("Volume name ........... %s%n", volumeName));
-    text.append (String.format ("Initialised ........... %s%n", initTime));
-    text.append (String.format ("Max TS ................ %02X%n", maxTSpairs));
     text.append (String.format ("Volume library ........ %04X%n", volumeLibrary));
-    text.append (String.format ("Modified .............. %s%n", vtocTime));
-    text.append (String.format ("Last allocated ........ %02X%n", lastTrackAllocated));
-    text.append (String.format ("Direction ............. %02X%n", direction));
-    text.append (String.format ("Total tracks .......... %02X%n", tracksPerDisk));
-    text.append (String.format ("Total sectors ......... %02X%n", sectorsPerTrack));
-    text.append (String.format ("Sector size ........... %02X%n", bytesPerSector));
+    text.append (String.format ("Initialised ........... %s%n", initTime.format (sdf)));
+    text.append (String.format ("Modified .............. %s%n", vtocTime.format (sdf)));
 
     return Utility.rtrim (text);
   }

@@ -12,10 +12,12 @@ public class FileDos4 extends FileDos
 // -----------------------------------------------------------------------------------//
 {
   private static Locale US = Locale.US;                 // to force 3 character months
-  private static final DateTimeFormatter sdf =
+  private static final DateTimeFormatter sdf1 =
       DateTimeFormatter.ofPattern ("dd-LLL-yy HH:mm", US);
+  private static final DateTimeFormatter sdf2 =
+      DateTimeFormatter.ofPattern ("dd-LLL-yy HH:mm:ss", US);
 
-  boolean zero;
+  boolean tsListZero;
   LocalDateTime modified;
 
   // ---------------------------------------------------------------------------------//
@@ -28,7 +30,7 @@ public class FileDos4 extends FileDos
     int nextSector = buffer[ptr + 1] & 0xFF;
 
     boolean deleted = (buffer[ptr] & 0x80) != 0;
-    zero = (buffer[ptr] & 0x40) != 0;
+    tsListZero = (buffer[ptr] & 0x40) != 0;
 
     isLocked = (buffer[ptr + 2] & 0x80) != 0;
     fileType = buffer[ptr + 2] & 0x7F;
@@ -37,6 +39,7 @@ public class FileDos4 extends FileDos
     String blockSubType = fs.getBlockSubTypeText (fileType);
 
     fileName = Utility.string (buffer, ptr + 3, 24).trim ();
+    validName = checkName (buffer, ptr + 3, 30);          // check for invalid characters
     modified = Utility.getDos4LocalDateTime (buffer, ptr + 27);
     sectorCount = Utility.unsignedShort (buffer, ptr + 33);
     int sectorsLeft = sectorCount;
@@ -57,7 +60,7 @@ public class FileDos4 extends FileDos
       --sectorsLeft;
 
       byte[] sectorBuffer = tsSector.read ();
-      int offset = Utility.unsignedShort (sectorBuffer, 5);
+      //      int offset = Utility.unsignedShort (sectorBuffer, 5);
 
       for (int i = 12; i < 256; i += 2)
       {
@@ -114,7 +117,7 @@ public class FileDos4 extends FileDos
 
     String message = "";
     String lockedFlag = (isLocked ()) ? "*" : " ";
-    String dateModified = modified == null ? "x" : modified.format (sdf);
+    String dateModified = modified == null ? "x" : modified.format (sdf1);
 
     if (getSectorCount () != actualSize)
       message = "** Bad size **";
@@ -138,7 +141,8 @@ public class FileDos4 extends FileDos
   {
     StringBuilder text = new StringBuilder (super.toString ());
 
-    text.append (String.format ("%-30s  %3d  %3d", fileName, fileType, sectorCount));
+    text.append (String.format ("%nZero flag ............. %s%n", tsListZero));
+    text.append (String.format ("Modified .............. %s%n", modified.format (sdf2)));
 
     return Utility.rtrim (text);
   }
