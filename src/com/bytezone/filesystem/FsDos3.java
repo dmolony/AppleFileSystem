@@ -81,7 +81,7 @@ public class FsDos3 extends FsDos
           }
           catch (FileFormatException e)
           {
-            System.out.println (e);
+            //            System.out.println (e);
             String fileName = Utility.string (buffer, ptr + 3, 30).trim ();
             int sectorCount = Utility.unsignedShort (buffer, ptr + 33);
             int fileType = buffer[ptr + 2] & 0x7F;
