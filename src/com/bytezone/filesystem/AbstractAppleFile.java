@@ -65,6 +65,7 @@ public abstract class AbstractAppleFile implements AppleFile
     return isFolder;
   }
 
+  // top-level file containing RESOURCE and/or DATA fork
   // ---------------------------------------------------------------------------------//
   @Override
   public boolean isForkedFile ()
@@ -73,6 +74,7 @@ public abstract class AbstractAppleFile implements AppleFile
     return isForkedFile;
   }
 
+  // either a RESOURCE or DATA fork
   // ---------------------------------------------------------------------------------//
   @Override
   public boolean isFork ()

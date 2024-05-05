@@ -19,9 +19,9 @@ public interface AppleFile
 
   public boolean isFolder ();
 
-  public boolean isForkedFile ();
+  public boolean isForkedFile ();             // top-level file containing fork(s)
 
-  public boolean isFork ();
+  public boolean isFork ();                   // either a RESOURCE or DATA fork
 
   public boolean isValidFile ();              // reject DOS catalog nonsense files
 

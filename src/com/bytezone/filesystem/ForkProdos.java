@@ -62,7 +62,7 @@ public class ForkProdos extends AbstractAppleFile
     {
       case DATA -> "Data fork";
       case RESOURCE -> "Resource fork";
-      case null -> "Not forked";
+      case null -> parentFile.getFileName ();
     };
 
     this.fileSystem = (FsProdos) parentFile.getParentFileSystem ();
@@ -127,7 +127,8 @@ public class ForkProdos extends AbstractAppleFile
       else
       {
         AppleBlock block = fileSystem.getBlock (blockNo, BlockType.FILE_DATA);
-        block.setFileOwner (parentFile);
+        //        block.setFileOwner (parentFile);
+        block.setFileOwner (this);
         dataBlocks.add (block);
       }
     }
@@ -149,7 +150,8 @@ public class ForkProdos extends AbstractAppleFile
     List<Integer> blocks = new ArrayList<> (256);
     AppleBlock indexBlock = fileSystem.getBlock (blockPtr, BlockType.FS_DATA);
     indexBlock.setBlockSubType ("INDEX");
-    indexBlock.setFileOwner (parentFile);
+    //    indexBlock.setFileOwner (parentFile);
+    indexBlock.setFileOwner (this);
     indexBlocks.add (indexBlock);
 
     byte[] buffer = indexBlock.read ();
@@ -177,7 +179,8 @@ public class ForkProdos extends AbstractAppleFile
   {
     AppleBlock indexBlock = fileSystem.getBlock (keyPtr, BlockType.FS_DATA);
     indexBlock.setBlockSubType ("M-INDEX");
-    indexBlock.setFileOwner (parentFile);
+    //    indexBlock.setFileOwner (parentFile);
+    indexBlock.setFileOwner (this);
 
     masterIndexBlock = indexBlock;
     indexBlocks.add (indexBlock);
