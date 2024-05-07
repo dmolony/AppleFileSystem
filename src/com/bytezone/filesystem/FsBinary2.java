@@ -20,7 +20,7 @@ public class FsBinary2 extends AbstractFileSystem
 
     do
     {
-      if (!isValidBlockNo (nextBlockNo))
+      if (!isValidAddress (nextBlockNo))
       {
         System.out.printf ("Invalid block number %d in %s%n", nextBlockNo,
             getFileName ());

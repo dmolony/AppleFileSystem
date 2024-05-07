@@ -65,10 +65,19 @@ abstract class AbstractFileSystem implements AppleFileSystem
   }
 
   // ---------------------------------------------------------------------------------//
-  boolean isValidBlockNo (int blockNo)
+  @Override
+  public boolean isValidAddress (int blockNo)
   // ---------------------------------------------------------------------------------//
   {
-    return blockReader.isValidBlockNo (blockNo);
+    return blockReader.isValidAddress (blockNo);
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
+  public boolean isValidAddress (int trackNo, int sectorNo)
+  // ---------------------------------------------------------------------------------//
+  {
+    return blockReader.isValidAddress (trackNo, sectorNo);
   }
 
   // ---------------------------------------------------------------------------------//

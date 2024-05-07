@@ -118,7 +118,7 @@ public class FileBinary2 extends AbstractAppleFile
 
     for (int block = firstBlock; block <= lastBlock; block++)
     {
-      if (!fs.isValidBlockNo (block))
+      if (!fs.isValidAddress (block))
       {
         if (debug)
           System.out.printf ("Invalid block %d in %s%n", block, getFileName ());

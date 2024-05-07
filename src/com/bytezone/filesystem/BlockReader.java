@@ -141,7 +141,7 @@ public class BlockReader
   public AppleBlock getBlock (AppleFileSystem fs, int blockNo)
   // ---------------------------------------------------------------------------------//
   {
-    if (!isValidBlockNo (blockNo))
+    if (!isValidAddress (blockNo))
       return null;
 
     AppleBlock block = appleBlocks[blockNo];
@@ -159,7 +159,7 @@ public class BlockReader
   AppleBlock getBlock (AppleFileSystem fs, int blockNo, BlockType blockType)
   // ---------------------------------------------------------------------------------//
   {
-    if (!isValidBlockNo (blockNo))
+    if (!isValidAddress (blockNo))
       return null;
 
     AppleBlock block = appleBlocks[blockNo];
@@ -180,7 +180,7 @@ public class BlockReader
   {
     assert addressType == AddressType.SECTOR;
 
-    if (!isValidSectorAddress (track, sector))
+    if (!isValidAddress (track, sector))
       return null;
 
     int blockNo = track * blocksPerTrack + sector;
@@ -202,7 +202,7 @@ public class BlockReader
   {
     assert addressType == AddressType.SECTOR;
 
-    if (!isValidSectorAddress (track, sector))
+    if (!isValidAddress (track, sector))
       return null;
 
     int blockNo = track * blocksPerTrack + sector;
@@ -438,18 +438,18 @@ public class BlockReader
   }
 
   // ---------------------------------------------------------------------------------//
-  boolean isValidBlockNo (int blockNo)
+  boolean isValidAddress (int blockNo)
   // ---------------------------------------------------------------------------------//
   {
     return blockNo >= 0 && blockNo < totalBlocks;
   }
 
   // ---------------------------------------------------------------------------------//
-  boolean isValidSectorAddress (int trackNo, int sectorNo)
+  boolean isValidAddress (int trackNo, int sectorNo)
   // ---------------------------------------------------------------------------------//
   {
     return sectorNo >= 0 && sectorNo < blocksPerTrack
-        && isValidBlockNo (trackNo * blocksPerTrack + sectorNo);
+        && isValidAddress (trackNo * blocksPerTrack + sectorNo);
   }
 
   // ---------------------------------------------------------------------------------//

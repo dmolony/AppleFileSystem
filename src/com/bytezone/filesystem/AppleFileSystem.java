@@ -37,6 +37,10 @@ public interface AppleFileSystem extends AppleContainer
 
   int getFreeBlocks ();
 
+  boolean isValidAddress (int blockNo);
+
+  boolean isValidAddress (int trackNo, int sectorNo);
+
   AppleBlock getBlock (int blockNo);
 
   AppleBlock getBlock (int blockNo, BlockType blockType);

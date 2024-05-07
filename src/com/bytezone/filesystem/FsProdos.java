@@ -51,11 +51,11 @@ public class FsProdos extends AbstractFileSystem
       prevBlockNo = Utility.unsignedShort (buffer, 0);
       nextBlockNo = Utility.unsignedShort (buffer, 2);
 
-      if (!isValidBlockNo (prevBlockNo))
+      if (!isValidAddress (prevBlockNo))
         throw new FileFormatException (
             "FsProdos: Invalid catalog previous block - " + prevBlockNo);
 
-      if (!isValidBlockNo (nextBlockNo))
+      if (!isValidAddress (nextBlockNo))
         throw new FileFormatException (
             "FsProdos: Invalid catalog next block - " + nextBlockNo);
 
