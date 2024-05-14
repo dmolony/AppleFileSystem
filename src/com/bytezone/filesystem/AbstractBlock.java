@@ -18,6 +18,8 @@ abstract class AbstractBlock implements AppleBlock
   protected final int trackNo;
   protected final int sectorNo;
 
+  protected byte[] buffer;
+
   protected Object userData;
 
   // ---------------------------------------------------------------------------------//
@@ -138,7 +140,10 @@ abstract class AbstractBlock implements AppleBlock
   public byte[] read ()
   // ---------------------------------------------------------------------------------//
   {
-    return fileSystem.readBlock (this);
+    if (buffer == null)
+      buffer = fileSystem.readBlock (this);
+
+    return buffer;
   }
 
   // ---------------------------------------------------------------------------------//
@@ -177,10 +182,5 @@ abstract class AbstractBlock implements AppleBlock
         fileOwner == null ? "" : fileOwner.getFileName ()));
 
     return Utility.rtrim (text);
-
-    //    
-    //    return String.format ("%s  %-6s  %,6d %-7s %-10s %-10s %s",
-    //        (this instanceof BlockDos) ? "DOS" : "PRD", fileSystem.getAddressType (), blockNo,
-    //        dos, blockType, blockSubType, fileOwner == null ? "" : fileOwner.getFileName ());
   }
 }

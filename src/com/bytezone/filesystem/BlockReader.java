@@ -19,15 +19,16 @@ public class BlockReader
       0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16,       //
       17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31 },   // no interleave
       { 0, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 15 },       // pascal
-      { 0, 6, 12, 3, 9, 15, 14, 5, 11, 2, 8, 7, 13, 4, 10, 1 },       // CPM Dos
-      { 0, 9, 3, 12, 6, 15, 1, 10, 4, 13, 7, 8, 2, 11, 5, 14 },       // CPM Prodos
-      { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15 } };     // test
+      { 0, 6, 12, 3, 9, 15, 14, 5, 11, 2, 8, 7, 13, 4, 10, 1 } };     // CPM Dos
+
+  //      { 0, 9, 3, 12, 6, 15, 1, 10, 4, 13, 7, 8, 2, 11, 5, 14 },       // CPM Prodos
+  //      { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15 } };     // test
 
   private final byte[] diskBuffer;
   private final int diskOffset;
   private final int diskLength;
 
-  private final Path path;
+  //  private final Path path;
   private String name;
 
   private AddressType addressType;      // BLOCK, SECTOR
@@ -49,14 +50,14 @@ public class BlockReader
   public BlockReader (Path path)
   // ---------------------------------------------------------------------------------//
   {
-    this.path = path;
+    //    this.path = path;
     byte[] buffer = readAllBytes (path);
 
     diskBuffer = buffer;
     diskOffset = 0;
     diskLength = buffer.length == 143_488 ? 143_360 : buffer.length;
 
-    name = path.toFile ().getName ();
+    //    name = path.toFile ().getName ();
   }
 
   // ---------------------------------------------------------------------------------//
@@ -77,7 +78,7 @@ public class BlockReader
     this.diskLength = diskLength == 143_488 ? 143_360 : diskLength;
 
     this.name = name;
-    this.path = null;
+    //    this.path = null;
   }
 
   // ---------------------------------------------------------------------------------//
@@ -88,7 +89,7 @@ public class BlockReader
     this.diskOffset = original.diskOffset;
     this.diskLength = original.diskLength;
 
-    this.path = original.path;
+    //    this.path = original.path;
     this.name = original.name;
   }
 
@@ -403,11 +404,11 @@ public class BlockReader
   }
 
   // ---------------------------------------------------------------------------------//
-  Path getPath ()
-  // ---------------------------------------------------------------------------------//
-  {
-    return path;
-  }
+  //  Path getPath ()
+  //  // ---------------------------------------------------------------------------------//
+  //  {
+  //    return path;
+  //  }
 
   // ---------------------------------------------------------------------------------//
   int getBlockSize ()

@@ -14,7 +14,8 @@ public class FileSystemFactory
 {
   private static final int SECTOR_13_SIZE = 116_480;
   private static final int SECTOR_16_SIZE = 143_360;
-  private static final int UNIDOS_SIZE = 409_600;
+  private static final int SECTOR_32_SIZE = 286_720;
+  private static final int UNIDOS_SIZE = 819_200;
   private static final int CPAM_SIZE = 819_200;
 
   private List<AppleFileSystem> fileSystems;
@@ -38,7 +39,7 @@ public class FileSystemFactory
     if (debug)
     {
       System.out.println ("-----------------------------------------------------");
-      System.out.printf ("Checking: %s%n", blockReader.getPath ());
+      //      System.out.printf ("Checking: %s%n", blockReader.getPath ());
       System.out.printf ("Length  : %,d%n", blockReader.getDiskLength ());
       System.out.println (Utility.format (blockReader.getDiskBuffer (),
           blockReader.getDiskOffset (), 100));
@@ -204,7 +205,7 @@ public class FileSystemFactory
   // ---------------------------------------------------------------------------------//
   {
     if (blockReader.getDiskLength () == SECTOR_16_SIZE
-        || blockReader.getDiskLength () == SECTOR_16_SIZE * 2)
+        || blockReader.getDiskLength () == SECTOR_32_SIZE)
       try
       {
         BlockReader dos4Reader = new BlockReader (blockReader);
@@ -230,7 +231,7 @@ public class FileSystemFactory
   private void getUnidos (BlockReader blockReader)
   // ---------------------------------------------------------------------------------//
   {
-    if (blockReader.getDiskLength () == UNIDOS_SIZE * 2)
+    if (blockReader.getDiskLength () == UNIDOS_SIZE)
       try
       {
         BlockReader unidosReader = new BlockReader (blockReader);
