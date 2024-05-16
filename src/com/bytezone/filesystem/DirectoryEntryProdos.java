@@ -68,7 +68,7 @@ class DirectoryEntryProdos
       parentEntry = -1;
       parentEntryLength = -1;
     }
-    else                            // subdirectory header
+    else                             // subdirectory header
     {
       totalBlocks = -1;
       parentEntry = buffer[ptr + 0x25] & 0xFF;
