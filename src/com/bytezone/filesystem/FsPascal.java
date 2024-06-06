@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.bytezone.filesystem.AppleBlock.BlockType;
+import com.bytezone.filesystem.BlockReader.AddressType;
 import com.bytezone.utility.Utility;
 
 // -----------------------------------------------------------------------------------//
@@ -37,7 +38,7 @@ public class FsPascal extends AbstractFileSystem
     super (blockReader, FileSystemType.PASCAL);
 
     AppleBlock vtoc = getBlock (2, BlockType.FS_DATA);
-    //    vtoc.setBlockSubType ("CATALOG");
+    vtoc.setBlockSubType ("CATALOG");
     byte[] buffer = vtoc.read ();
 
     firstCatalogBlock = Utility.unsignedShort (buffer, 0);
@@ -65,13 +66,6 @@ public class FsPascal extends AbstractFileSystem
     if (debug)
       System.out.println (this);
 
-    // check for wizardry 4/5 boot disk
-    //    if (volumeName.equals ("WIZBOOT") && blockReader.getTotalBlocks () == 280)
-    //      if (totalBlocks == 2048)
-    //        System.out.println ("*** Wizardry 4 boot disk ***");
-    //      else if (totalBlocks == 1600)
-    //        System.out.println ("*** Wizardry 5 boot disk ***");
-
     for (int i = 2; i < firstFileBlock; i++)
     {
       AppleBlock block = getBlock (i, BlockType.FS_DATA);
@@ -87,6 +81,15 @@ public class FsPascal extends AbstractFileSystem
       FilePascal file = new FilePascal (this, buffer, i * CATALOG_ENTRY_SIZE);
       addFile (file);
       freeBlocks -= file.getTotalBlocks ();
+
+      if (file.fileType == 2)                               // Code
+      {
+        BlockReader blockReader2 = new BlockReader ("fred", file.read ());
+        blockReader2.setParameters (512, AddressType.BLOCK, 0, 0);
+        FsPascalCode fs = new FsPascalCode (blockReader2);
+        //        System.out.println (fs);
+        ((AbstractAppleFile) file).embedFileSystem (fs);            // embedded FS
+      }
     }
   }
 

@@ -68,6 +68,6 @@ public interface AppleFileSystem extends AppleContainer
   enum FileSystemType
   {
     DOS3, PRODOS, PASCAL, CPM, NUFX, IMG2, NIB, DOS4, UNIDOS, ZIP, GZIP, HYBRID, DATA,
-    BIN2, WOZ1, WOZ2, LBR
+    BIN2, WOZ1, WOZ2, LBR, PASCAL_CODE
   }
 }
