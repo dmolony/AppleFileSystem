@@ -7,13 +7,14 @@ public class FilePascalCode extends AbstractAppleFile
 // -----------------------------------------------------------------------------------//
 {
   private final static int BLOCK_SIZE = 512;
-  static String[] segmentKind = { "Linked", "HostSeg", "SegProc", "UnitSeg", "SeprtSeg",
-      "UnlinkedIntrins", "LinkedIntrins", "DataSeg" };
+  private final static String[] segmentKind = { "Linked", "HostSeg", "SegProc", "UnitSeg",
+      "SeprtSeg", "UnlinkedIntrins", "LinkedIntrins", "DataSeg" };
 
   private int segmentNoBody;
   final int segmentNoHeader;
   public int blockNo;
-  public final int size;
+  public final int sizeInBytes;
+  public final int sizeInBlocks;
   private final int segKind;
   private final int textAddress;
   private final int machineType;
@@ -36,9 +37,12 @@ public class FilePascalCode extends AbstractAppleFile
 
     fileName = name;
     slot = seq;
+    fileTypeText = "SEG";
 
     blockNo = Utility.unsignedShort (buffer, seq * 4);
-    size = Utility.unsignedShort (buffer, seq * 4 + 2);
+    sizeInBytes = Utility.unsignedShort (buffer, seq * 4 + 2);
+    sizeInBlocks = (sizeInBytes - 1) / BLOCK_SIZE + 1;
+
     segKind = Utility.unsignedShort (buffer, 0xC0 + seq * 2);
     textAddress = Utility.unsignedShort (buffer, 0xE0 + seq * 2);
 
@@ -64,12 +68,12 @@ public class FilePascalCode extends AbstractAppleFile
     {
       segmentBuffer = new byte[0];
     }
-    else if ((offset + size) < buffer.length)
+    else if ((offset + sizeInBytes) < buffer.length)
     {
-      segmentBuffer = new byte[size];
-      System.arraycopy (buffer, offset, segmentBuffer, 0, size);
-      totalProcedures = segmentBuffer[size - 1] & 0xFF;
-      segmentNoBody = segmentBuffer[size - 2] & 0xFF;
+      segmentBuffer = new byte[sizeInBytes];
+      System.arraycopy (buffer, offset, segmentBuffer, 0, sizeInBytes);
+      totalProcedures = segmentBuffer[sizeInBytes - 1] & 0xFF;
+      segmentNoBody = segmentBuffer[sizeInBytes - 2] & 0xFF;
 
       if (debug)
         if (segmentNoHeader == 0)
@@ -85,38 +89,11 @@ public class FilePascalCode extends AbstractAppleFile
   }
 
   // ---------------------------------------------------------------------------------//
-  private String getMultiDiskAddresses ()
+  @Override
+  public int getTotalBlocks ()
   // ---------------------------------------------------------------------------------//
   {
-    String multiDiskAddressText = "";
-    //    int sizeInBlocks = (size - 1) / BLOCK_SIZE + 1;
-
-    //    if (segmentNoHeader == 1)           // main segment
-    //    {
-    //      multiDiskAddressText = String.format ("1:%03X", (blockNo + blockOffset));
-    //    }
-    //    else
-    //    if (relocator != null)
-    //    {
-    //      int targetBlock = blockNo + blockOffset;
-    //      List<MultiDiskAddress> addresses =
-    //          relocator.getMultiDiskAddress (name, targetBlock, sizeInBlocks);
-    //      if (addresses.isEmpty ())
-    //        multiDiskAddressText = ".";
-    //      else
-    //      {
-    //        StringBuilder locations = new StringBuilder ();
-    //        for (MultiDiskAddress multiDiskAddress : addresses)
-    //          locations.append (multiDiskAddress.toString () + ", ");
-    //        if (locations.length () > 2)
-    //        {
-    //          locations.deleteCharAt (locations.length () - 1);
-    //          locations.deleteCharAt (locations.length () - 1);
-    //        }
-    //        multiDiskAddressText = locations.toString ();
-    //      }
-    //    }
-    return multiDiskAddressText;
+    return sizeInBlocks;
   }
 
   // ---------------------------------------------------------------------------------//
@@ -124,12 +101,9 @@ public class FilePascalCode extends AbstractAppleFile
   public String toString ()
   // ---------------------------------------------------------------------------------//
   {
-    int sizeInBlocks = (size - 1) / BLOCK_SIZE + 1;
-
     return String.format (
-        " %2d   %02X   %02X  %04X  %-8s  %-15s%3d   " + "%02X  %d   %d   %d   %d  %s",
-        slot, blockNo, sizeInBlocks, size, getFileName (), segmentKind[segKind],
-        textAddress, segmentNoHeader, machineType, version, intrinsSegs1, intrinsSegs2,
-        getMultiDiskAddresses ());
+        " %2d  %3d  %3d  %04X  %-8s  %-15s%3d   %02X  %d   %d   %d   %d", slot, blockNo,
+        sizeInBlocks, sizeInBytes, getFileName (), segmentKind[segKind], textAddress,
+        segmentNoHeader, machineType, version, intrinsSegs1, intrinsSegs2);
   }
 }

@@ -27,7 +27,7 @@ public class FsPascalCode extends AbstractFileSystem
       if (size > 0)
       {
         if (codeName.length () == 0)
-          codeName = "<NULL" + ++nonameCounter + ">";
+          codeName = "NONAME-" + ++nonameCounter;
 
         // this could throw an exception
         FilePascalCode filePascalCode = new FilePascalCode (this, buffer, i, codeName);
@@ -46,11 +46,10 @@ public class FsPascalCode extends AbstractFileSystem
     StringBuilder text = new StringBuilder ();
 
     text.append ("Segment Dictionary\n==================\n\n");
-
-    text.append ("Slot Addr Blks Byte   Name     Kind"
-        + "            Txt Seg Mch Ver I/S I/S Disk:Block\n");
-    text.append ("---- ---- ---- ----  --------  ---------------"
-        + " --- --- --- --- --- --- ---------------------\n");
+    text.append (
+        "Slot Addr Size Eof    Name     Kind            Txt Seg Mch Ver I/S I/S\n");
+    text.append (
+        "---- ---- ---- ----  --------  --------------- --- --- --- --- --- ---\n");
 
     for (AppleFile segment : getFiles ())
       text.append (segment.toString () + "\n");
