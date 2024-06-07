@@ -278,13 +278,12 @@ public class BlockReader
     switch (addressType)
     {
       case SECTOR:
-        int start = block.getTrackNo () * bytesPerTrack
+        int start = diskOffset + block.getTrackNo () * bytesPerTrack
             + interleaves[interleave][block.getSectorNo ()] * bytesPerBlock;
         int xfrBytes = Math.min (bytesPerBlock, diskBuffer.length - start);
 
         if (xfrBytes > 0)
-          System.arraycopy (diskBuffer, diskOffset + start, blockBuffer, bufferOffset,
-              xfrBytes);
+          System.arraycopy (diskBuffer, start, blockBuffer, bufferOffset, xfrBytes);
         else
           System.out.printf ("Sector %d out of range%n", block.getBlockNo ());
 
@@ -306,17 +305,20 @@ public class BlockReader
 
         // non-zero interleave
         int sectorsPerBlock = bytesPerBlock / SECTOR_SIZE;
+        int destStart = bufferOffset;
 
         for (int i = 0; i < sectorsPerBlock; i++)
         {
           start = diskOffset + block.getTrackNo () * bytesPerTrack
               + interleaves[interleave][block.getSectorNo () * sectorsPerBlock + i]
                   * SECTOR_SIZE;
-          xfrBytes = Math.min (bytesPerBlock, diskBuffer.length - start);
+          xfrBytes = Math.min (SECTOR_SIZE, diskBuffer.length - start);
 
           if (xfrBytes > 0)
-            System.arraycopy (diskBuffer, start, blockBuffer,
-                bufferOffset + i * SECTOR_SIZE, SECTOR_SIZE);
+          {
+            System.arraycopy (diskBuffer, start, blockBuffer, destStart, xfrBytes);
+            destStart += SECTOR_SIZE;
+          }
           else
           {
             System.out.printf ("Block %d out of range%n", block.getBlockNo ());
