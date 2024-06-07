@@ -278,41 +278,48 @@ public class BlockReader
     switch (addressType)
     {
       case SECTOR:
-        assert bytesPerBlock == SECTOR_SIZE;
-        int offset = block.getTrackNo () * bytesPerTrack
+        int start = block.getTrackNo () * bytesPerTrack
             + interleaves[interleave][block.getSectorNo ()] * bytesPerBlock;
-        System.arraycopy (diskBuffer, diskOffset + offset, blockBuffer, bufferOffset,
-            bytesPerBlock);
+        int xfrBytes = Math.min (bytesPerBlock, diskBuffer.length - start);
+
+        if (xfrBytes > 0)
+          System.arraycopy (diskBuffer, diskOffset + start, blockBuffer, bufferOffset,
+              xfrBytes);
+        else
+          System.out.printf ("Sector %d out of range%n", block.getBlockNo ());
+
         break;
 
       case BLOCK:
         if (interleave == 0)
         {
-          int start = diskOffset + block.getBlockNo () * bytesPerBlock;
-          int xfrBytes = Math.min (bytesPerBlock, diskBuffer.length - start);
+          start = diskOffset + block.getBlockNo () * bytesPerBlock;
+          xfrBytes = Math.min (bytesPerBlock, diskBuffer.length - start);
 
           if (xfrBytes > 0)
             System.arraycopy (diskBuffer, start, blockBuffer, bufferOffset, xfrBytes);
           else
             System.out.printf ("Block %d out of range%n", block.getBlockNo ());
+
           break;
         }
 
+        // non-zero interleave
         int sectorsPerBlock = bytesPerBlock / SECTOR_SIZE;
 
         for (int i = 0; i < sectorsPerBlock; i++)
         {
-          offset = block.getTrackNo () * bytesPerTrack
+          start = diskOffset + block.getTrackNo () * bytesPerTrack
               + interleaves[interleave][block.getSectorNo () * sectorsPerBlock + i]
                   * SECTOR_SIZE;
+          xfrBytes = Math.min (bytesPerBlock, diskBuffer.length - start);
 
-          if (diskOffset + offset + SECTOR_SIZE <= diskBuffer.length)
-            System.arraycopy (diskBuffer, diskOffset + offset, blockBuffer,
+          if (xfrBytes > 0)
+            System.arraycopy (diskBuffer, start, blockBuffer,
                 bufferOffset + i * SECTOR_SIZE, SECTOR_SIZE);
           else
           {
-            System.out.printf ("Block %d out of range (%d in %d)%n", block.getBlockNo (),
-                diskOffset + offset + SECTOR_SIZE, diskBuffer.length);
+            System.out.printf ("Block %d out of range%n", block.getBlockNo ());
             break;
           }
         }
