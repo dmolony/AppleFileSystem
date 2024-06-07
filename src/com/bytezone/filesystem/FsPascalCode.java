@@ -1,5 +1,6 @@
 package com.bytezone.filesystem;
 
+import com.bytezone.filesystem.AppleBlock.BlockType;
 import com.bytezone.utility.Utility;
 
 // -----------------------------------------------------------------------------------//
@@ -15,6 +16,8 @@ public class FsPascalCode extends AbstractFileSystem
     super (blockReader, FileSystemType.PASCAL_CODE);
 
     byte[] buffer = blockReader.getDiskBuffer ();
+    AppleBlock block = getBlock (0, BlockType.FS_DATA);
+    block.setBlockSubType ("CATALOG");
 
     int nonameCounter = 0;
 
@@ -29,7 +32,6 @@ public class FsPascalCode extends AbstractFileSystem
         if (codeName.length () == 0)
           codeName = "NONAME-" + ++nonameCounter;
 
-        // this could throw an exception
         FilePascalCode filePascalCode = new FilePascalCode (this, buffer, i, codeName);
         addFile (filePascalCode);
       }

@@ -1,5 +1,6 @@
 package com.bytezone.filesystem;
 
+import com.bytezone.filesystem.AppleBlock.BlockType;
 import com.bytezone.utility.Utility;
 
 // -----------------------------------------------------------------------------------//
@@ -43,6 +44,8 @@ public class FilePascalCode extends AbstractAppleFile
     sizeInBytes = Utility.unsignedShort (buffer, seq * 4 + 2);
     sizeInBlocks = (sizeInBytes - 1) / BLOCK_SIZE + 1;
 
+    addDataBlocks ();
+
     segKind = Utility.unsignedShort (buffer, 0xC0 + seq * 2);
     textAddress = Utility.unsignedShort (buffer, 0xE0 + seq * 2);
 
@@ -65,13 +68,11 @@ public class FilePascalCode extends AbstractAppleFile
     int offset = blockNo * BLOCK_SIZE;
 
     if (offset < 0)
-    {
       segmentBuffer = new byte[0];
-    }
-    else if ((offset + sizeInBytes) < buffer.length)
+    else
     {
-      segmentBuffer = new byte[sizeInBytes];
-      System.arraycopy (buffer, offset, segmentBuffer, 0, sizeInBytes);
+      byte[] segmentBuffer = read ();
+
       totalProcedures = segmentBuffer[sizeInBytes - 1] & 0xFF;
       segmentNoBody = segmentBuffer[sizeInBytes - 2] & 0xFF;
 
@@ -82,18 +83,28 @@ public class FilePascalCode extends AbstractAppleFile
           System.out.println (
               "Segment number mismatch : " + segmentNoBody + " / " + segmentNoHeader);
     }
-    else
+  }
+
+  // ---------------------------------------------------------------------------------//
+  private void addDataBlocks ()
+  // ---------------------------------------------------------------------------------//
+  {
+    int max = blockNo + sizeInBlocks;
+
+    for (int i = blockNo; i < max; i++)
     {
-      throw new FileFormatException ("Error in PascalSegment");
+      AppleBlock block = getParentFileSystem ().getBlock (i, BlockType.FILE_DATA);
+      block.setFileOwner (this);
+      dataBlocks.add (block);
     }
   }
 
   // ---------------------------------------------------------------------------------//
   @Override
-  public int getTotalBlocks ()
+  public int getFileLength ()
   // ---------------------------------------------------------------------------------//
   {
-    return sizeInBlocks;
+    return sizeInBytes;
   }
 
   // ---------------------------------------------------------------------------------//
