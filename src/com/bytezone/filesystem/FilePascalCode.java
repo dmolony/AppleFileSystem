@@ -1,110 +1,129 @@
 package com.bytezone.filesystem;
 
-import com.bytezone.filesystem.AppleBlock.BlockType;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+
 import com.bytezone.utility.Utility;
 
 // -----------------------------------------------------------------------------------//
-public class FilePascalCode extends AbstractAppleFile
+public class FilePascalCode extends FilePascal implements AppleContainer
 // -----------------------------------------------------------------------------------//
 {
-  private final static int BLOCK_SIZE = 512;
-  private final static String[] segmentKind = { "Linked", "HostSeg", "SegProc", "UnitSeg",
-      "SeprtSeg", "UnlinkedIntrins", "LinkedIntrins", "DataSeg" };
+  private static final int SIZE_PTR = 0x02;
+  private static final int NAME_PTR = 0x40;
 
-  private int segmentNoBody;
-  final int segmentNoHeader;
-  public int blockNo;
-  public final int sizeInBytes;
-  public final int sizeInBlocks;
-  private final int segKind;
-  private final int textAddress;
-  private final int machineType;
-  private final int version;
-  private final int intrinsSegs1;
-  private final int intrinsSegs2;
-  private final int slot;
-  private int totalProcedures;
-  //  private List<PascalProcedure> procedures;
+  private final List<AppleFile> segments = new ArrayList<> ();
+  private final List<AppleFileSystem> notPossible = new ArrayList<> (0);
 
-  byte[] segmentBuffer;
-
-  boolean debug = false;
+  String comment;
 
   // ---------------------------------------------------------------------------------//
-  FilePascalCode (FsPascalCode fs, byte[] buffer, int seq, String name)
+  FilePascalCode (FsPascal fs, byte[] catalogBuffer, int ptr)
   // ---------------------------------------------------------------------------------//
   {
-    super (fs);
+    super (fs, catalogBuffer, ptr);
 
-    fileName = name;
-    slot = seq;
-    fileTypeText = "SEG";
+    AppleBlock block = fs.getBlock (getFirstBlock ());
+    byte[] buffer = block.read ();          // code catalog
 
-    blockNo = Utility.unsignedShort (buffer, seq * 4);
-    sizeInBytes = Utility.unsignedShort (buffer, seq * 4 + 2);
-    sizeInBlocks = (sizeInBytes - 1) / BLOCK_SIZE + 1;
+    int nonameCounter = 0;
+    int namePtr = NAME_PTR;
+    int sizePtr = SIZE_PTR;
 
-    addDataBlocks ();
-
-    segKind = Utility.unsignedShort (buffer, 0xC0 + seq * 2);
-    textAddress = Utility.unsignedShort (buffer, 0xE0 + seq * 2);
-
-    // segment 1 is the main segment, 2-6 are used by the system, and 7
-    // onwards is for the program
-    this.segmentNoHeader = buffer[0x100 + seq * 2] & 0xFF;
-    int flags = buffer[0x101 + seq * 2] & 0xFF;
-
-    // 0 unknown,
-    // 1 positive byte sex p-code
-    // 2 negative byte sex p-code (apple pascal)
-    // 3-9 6502 code (7 = apple 6502)
-    machineType = flags & 0x0F;
-
-    version = (flags & 0xD0) >> 5;
-
-    intrinsSegs1 = Utility.unsignedShort (buffer, 0x120 + seq * 4);
-    intrinsSegs2 = Utility.unsignedShort (buffer, 0x120 + seq * 4 + 2);
-
-    int offset = blockNo * BLOCK_SIZE;
-
-    if (offset < 0)
-      segmentBuffer = new byte[0];
-    else
+    // Create segment list (up to 16 segments)
+    for (int i = 0; i < 16; i++)
     {
-      byte[] segmentBuffer = read ();
+      String segmentName = Utility.string (buffer, namePtr, 8).trim ();
+      namePtr += 8;
 
-      totalProcedures = segmentBuffer[sizeInBytes - 1] & 0xFF;
-      segmentNoBody = segmentBuffer[sizeInBytes - 2] & 0xFF;
+      int size = Utility.unsignedShort (buffer, sizePtr);
+      sizePtr += 4;
 
-      if (debug)
-        if (segmentNoHeader == 0)
-          System.out.printf ("Zero segment header in %s seq %d%n", getFileName (), seq);
-        else if (segmentNoBody != segmentNoHeader)
-          System.out.println (
-              "Segment number mismatch : " + segmentNoBody + " / " + segmentNoHeader);
+      if (size > 0)
+      {
+        if (segmentName.length () == 0)
+          segmentName = "NONAME-" + ++nonameCounter;
+
+        FilePascalSegment segment = new FilePascalSegment (this, buffer, i, segmentName);
+        segments.add (segment);
+      }
     }
-  }
 
-  // ---------------------------------------------------------------------------------//
-  private void addDataBlocks ()
-  // ---------------------------------------------------------------------------------//
-  {
-    int max = blockNo + sizeInBlocks;
-
-    for (int i = blockNo; i < max; i++)
-    {
-      AppleBlock block = getParentFileSystem ().getBlock (i, BlockType.FILE_DATA);
-      block.setFileOwner (this);
-      dataBlocks.add (block);
-    }
+    comment = Utility.getPascalString (buffer, 0x1B0);
   }
 
   // ---------------------------------------------------------------------------------//
   @Override
-  public int getFileLength ()
+  public void addFile (AppleFile file)
   // ---------------------------------------------------------------------------------//
   {
-    return sizeInBytes;
+    throw new UnsupportedOperationException ("cannot add File to " + fileName);
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
+  public List<AppleFile> getFiles ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return segments;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
+  public Optional<AppleFile> getFile (String fileName)
+  // ---------------------------------------------------------------------------------//
+  {
+    for (AppleFile segment : segments)
+      if (segment.getFileName ().equals (fileName))
+        return Optional.of (segment);
+
+    return Optional.empty ();
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
+  public void addFileSystem (AppleFileSystem fileSystem)
+  // ---------------------------------------------------------------------------------//
+  {
+    throw new UnsupportedOperationException ("cannot add FileSystem to " + fileName);
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
+  public List<AppleFileSystem> getFileSystems ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return notPossible;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
+  public String getCatalogText ()
+  // ---------------------------------------------------------------------------------//
+  {
+    StringBuilder text = new StringBuilder ();
+
+    text.append ("Segment Dictionary\n==================\n\n");
+    text.append (
+        "Slot Addr Size Eof    Name     Kind            Txt Seg Mch Ver I/S I/S Proc\n");
+    text.append (
+        "---- ---- ---- ----  --------  --------------- --- --- --- --- --- --- ----\n");
+
+    for (AppleFile segment : segments)
+      text.append (segment.getCatalogLine () + "\n");
+
+    text.append ("\nComment : " + comment);
+
+    return text.toString ();
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
+  public String getPath ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return "NO PATH";
   }
 
   // ---------------------------------------------------------------------------------//
@@ -112,9 +131,11 @@ public class FilePascalCode extends AbstractAppleFile
   public String toString ()
   // ---------------------------------------------------------------------------------//
   {
-    return String.format (
-        " %2d  %3d  %3d  %04X  %-8s  %-15s%3d   %02X  %d   %d   %d   %d", slot, blockNo,
-        sizeInBlocks, sizeInBytes, getFileName (), segmentKind[segKind], textAddress,
-        segmentNoHeader, machineType, version, intrinsSegs1, intrinsSegs2);
+    StringBuilder text = new StringBuilder (super.toString ());
+
+    text.append (String.format ("Total segments ......... %d%n", segments.size ()));
+    text.append (String.format ("Comment ................ %s%n", comment));
+
+    return Utility.rtrim (text);
   }
 }

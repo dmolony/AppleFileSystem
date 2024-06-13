@@ -57,7 +57,7 @@ public class BlockReader
     diskOffset = 0;
     diskLength = buffer.length == 143_488 ? 143_360 : buffer.length;
 
-    //    name = path.toFile ().getName ();
+    name = path.toFile ().getName ();
   }
 
   // ---------------------------------------------------------------------------------//

@@ -78,19 +78,41 @@ public class FsPascal extends AbstractFileSystem
 
     for (int i = 1; i <= totalFiles; i++)                   // skip volume entry
     {
-      FilePascal file = new FilePascal (this, buffer, i * CATALOG_ENTRY_SIZE);
-      addFile (file);
-      freeBlocks -= file.getTotalBlocks ();
+      int ptr = i * CATALOG_ENTRY_SIZE;
+      int fileType = buffer[ptr + 4] & 0xFF;
 
-      if (file.fileType == 2)                               // Code
+      if (fileType == 2)                                    // Code
       {
-        BlockReader blockReader2 = new BlockReader ("fred", file.read ());
-        blockReader2.setParameters (512, AddressType.BLOCK, 0, 0);
-        FsPascalCode fs = new FsPascalCode (blockReader2);
-        //        System.out.println (fs);
-        ((AbstractAppleFile) file).embedFileSystem (fs);            // embedded FS
+        if (true)
+        {
+          FilePascalCode file = new FilePascalCode (this, buffer, ptr);
+          addFile2 (file);
+        }
+        else
+        {
+          FilePascal file = new FilePascal (this, buffer, ptr);
+          addFile2 (file);
+
+          BlockReader blockReader2 = new BlockReader (file.getFileName (), file.read ());
+          blockReader2.setParameters (512, AddressType.BLOCK, 0, 0);
+          FsPascalCode fs = new FsPascalCode (blockReader2);
+          file.embedFileSystem (fs);
+        }
+      }
+      else
+      {
+        FilePascal file = new FilePascal (this, buffer, ptr);
+        addFile2 (file);
       }
     }
+  }
+
+  // ---------------------------------------------------------------------------------//
+  private void addFile2 (AppleFile file)
+  // ---------------------------------------------------------------------------------//
+  {
+    addFile (file);
+    freeBlocks -= file.getTotalBlocks ();
   }
 
   // ---------------------------------------------------------------------------------//
