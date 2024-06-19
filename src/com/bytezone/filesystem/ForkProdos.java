@@ -34,8 +34,6 @@ public class ForkProdos extends AbstractAppleFile
   private AppleBlock masterIndexBlock;
   private final List<AppleBlock> indexBlocks = new ArrayList<> ();
 
-  //  private byte[] data;
-
   // All ForkProdos files have a single FileProdos parent. Forks are also AppleFiles,
   // but only the DATA and RESOURCE forks are treated as standalone files. Normal
   // prodos files simply use a ForkProdos for their data (as the code to read them 
@@ -72,7 +70,7 @@ public class ForkProdos extends AbstractAppleFile
 
     storageTypeText = ProdosConstants.storageTypes[storageType];
 
-    List<Integer> blockNos = new ArrayList<> ();
+    List<Integer> blockNumbers = new ArrayList<> ();
     AppleBlock dataBlock = fileSystem.getBlock (keyPtr, BlockType.FS_DATA);
 
     if (dataBlock != null)
@@ -80,31 +78,30 @@ public class ForkProdos extends AbstractAppleFile
       {
         case ProdosConstants.SEEDLING:
           dataBlock.setBlockType (BlockType.FILE_DATA);
-          blockNos.add (keyPtr);
+          blockNumbers.add (keyPtr);
           break;
 
         case ProdosConstants.SAPLING:
-          blockNos.addAll (readIndex (keyPtr));
+          blockNumbers.addAll (readIndex (keyPtr));
           break;
 
         case ProdosConstants.TREE:
           for (Integer indexBlock : readMasterIndex (keyPtr))
-          {
             if (indexBlock > 0)
             {
               AppleBlock block = fileSystem.getBlock (indexBlock, BlockType.FS_DATA);
               if (block != null)
-                blockNos.addAll (readIndex (indexBlock));
+                blockNumbers.addAll (readIndex (indexBlock));
             }
             else
               for (int i = 0; i < 256; i++)
-                blockNos.add (0);
-          }
+                blockNumbers.add (0);
+
           break;
 
         case ProdosConstants.PASCAL_ON_PROFILE:
           for (int i = keyPtr; i < fileSystem.getTotalBlocks (); i++)
-            blockNos.add (i);
+            blockNumbers.add (i);
           break;
 
         default:
@@ -113,10 +110,10 @@ public class ForkProdos extends AbstractAppleFile
       }
 
     // remove trailing empty blocks
-    while (blockNos.size () > 0 && blockNos.get (blockNos.size () - 1) == 0)
-      blockNos.remove (blockNos.size () - 1);
+    while (blockNumbers.size () > 0 && blockNumbers.get (blockNumbers.size () - 1) == 0)
+      blockNumbers.remove (blockNumbers.size () - 1);
 
-    for (Integer blockNo : blockNos)
+    for (Integer blockNo : blockNumbers)
     {
       if (blockNo == 0)
       {
@@ -126,7 +123,6 @@ public class ForkProdos extends AbstractAppleFile
       else
       {
         AppleBlock block = fileSystem.getBlock (blockNo, BlockType.FILE_DATA);
-        //        block.setFileOwner (parentFile);
         block.setFileOwner (this);
         dataBlocks.add (block);
       }
@@ -146,10 +142,9 @@ public class ForkProdos extends AbstractAppleFile
   {
     assert blockPtr > 0;
 
-    List<Integer> blocks = new ArrayList<> (256);
+    List<Integer> blockNumbers = new ArrayList<> (256);
     AppleBlock indexBlock = fileSystem.getBlock (blockPtr, BlockType.FS_DATA);
     indexBlock.setBlockSubType ("INDEX");
-    //    indexBlock.setFileOwner (parentFile);
     indexBlock.setFileOwner (this);
     indexBlocks.add (indexBlock);
 
@@ -161,15 +156,14 @@ public class ForkProdos extends AbstractAppleFile
       if (blockNo > 0)
       {
         AppleBlock dataBlock = fileSystem.getBlock (blockNo, BlockType.FILE_DATA);
-        //        blocks.add (dataBlock != null && dataBlock.isValid () ? blockNo : 0);
-        blocks.add (dataBlock != null ? blockNo : 0);
+        blockNumbers.add (dataBlock == null ? 0 : blockNo);
         // should throw error
       }
       else
-        blocks.add (0);
+        blockNumbers.add (0);
     }
 
-    return blocks;
+    return blockNumbers;
   }
 
   // ---------------------------------------------------------------------------------//
@@ -178,7 +172,6 @@ public class ForkProdos extends AbstractAppleFile
   {
     AppleBlock indexBlock = fileSystem.getBlock (keyPtr, BlockType.FS_DATA);
     indexBlock.setBlockSubType ("M-INDEX");
-    //    indexBlock.setFileOwner (parentFile);
     indexBlock.setFileOwner (this);
 
     masterIndexBlock = indexBlock;
@@ -191,46 +184,21 @@ public class ForkProdos extends AbstractAppleFile
       if (buffer[highest] != 0 || buffer[highest + 0x100] != 0)
         break;
 
-    List<Integer> blocks = new ArrayList<> (highest + 1);
+    List<Integer> blockNumbers = new ArrayList<> (highest + 1);
     for (int i = 0; i <= highest; i++)
     {
       int blockNo = (buffer[i] & 0xFF) | ((buffer[i + 256] & 0xFF) << 8);
       if (blockNo > 0)
       {
         AppleBlock dataBlock = fileSystem.getBlock (blockNo, BlockType.FS_DATA);
-        //        blocks.add (dataBlock != null && dataBlock.isValid () ? blockNo : 0);
-        blocks.add (dataBlock != null ? blockNo : 0);
+        blockNumbers.add (dataBlock == null ? 0 : blockNo);
       }
       else
-        blocks.add (0);
+        blockNumbers.add (0);
     }
 
-    return blocks;
+    return blockNumbers;
   }
-
-  // ---------------------------------------------------------------------------------//
-  //  @Override
-  //  public byte[] read ()
-  //  // ---------------------------------------------------------------------------------//
-  //  {
-  //    // maybe this routine should always declare the buffer and pass it to read()
-  //    if (data == null)
-  //    {
-  //      data = fileSystem.readBlocks (dataBlocks);
-  //
-  //      if (data.length < eof)
-  //      {
-  //        // see TOTAL.REPLAY/X/COLUMNS/COL2P/COLUMNS.MGEMS
-  //        System.out.printf ("Buffer not long enough in %s%n", parentFile.getPath ());
-  //        System.out.printf ("EOF: %06X, buffer length: %06X%n", eof, data.length);
-  //        byte[] temp = new byte[eof];
-  //        System.arraycopy (data, 0, temp, 0, data.length);
-  //        data = temp;
-  //      }
-  //    }
-  //
-  //    return data;
-  //  }
 
   // ---------------------------------------------------------------------------------//
   @Override
