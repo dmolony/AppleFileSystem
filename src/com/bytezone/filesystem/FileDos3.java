@@ -8,19 +8,19 @@ public class FileDos3 extends FileDos
 // -----------------------------------------------------------------------------------//
 {
   // ---------------------------------------------------------------------------------//
-  FileDos3 (FsDos3 fs, byte[] buffer, int ptr)
+  FileDos3 (FsDos3 fs, byte[] catalogBuffer, int ptr)
   // ---------------------------------------------------------------------------------//
   {
     super (fs);
 
-    int nextTrack = buffer[ptr] & 0xFF;
-    int nextSector = buffer[ptr + 1] & 0xFF;
+    int nextTrack = catalogBuffer[ptr] & 0xFF;
+    int nextSector = catalogBuffer[ptr + 1] & 0xFF;
 
-    fileType = buffer[ptr + 2] & 0x7F;
-    isLocked = (buffer[ptr + 2] & 0x80) != 0;
-    fileName = Utility.string (buffer, ptr + 3, 30);
-    validName = checkName (buffer, ptr + 3, 30);          // check for invalid characters
-    sectorCount = Utility.unsignedShort (buffer, ptr + 33);
+    fileType = catalogBuffer[ptr + 2] & 0x7F;
+    isLocked = (catalogBuffer[ptr + 2] & 0x80) != 0;
+    fileName = Utility.string (catalogBuffer, ptr + 3, 30);
+    validName = checkName (catalogBuffer, ptr + 3, 30);          // check for invalid characters
+    sectorCount = Utility.unsignedShort (catalogBuffer, ptr + 33);
     fileTypeText = fs.getFileTypeText (fileType);
     String blockSubType = fs.getBlockSubTypeText (fileType);
 

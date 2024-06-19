@@ -25,6 +25,7 @@ public abstract class AbstractAppleFile implements AppleFile
 
   protected String errorMessage = "";
   protected List<AppleBlock> dataBlocks = new ArrayList<> ();
+  protected DataRecord dataRecord;
 
   // ---------------------------------------------------------------------------------//
   AbstractAppleFile (AppleFileSystem appleFileSystem)
@@ -132,10 +133,34 @@ public abstract class AbstractAppleFile implements AppleFile
 
   // ---------------------------------------------------------------------------------//
   @Override
-  public byte[] read ()
+  public boolean hasData ()
   // ---------------------------------------------------------------------------------//
   {
-    return parentFileSystem.readBlocks (dataBlocks);
+    DataRecord dataRecord = getDataRecord ();
+
+    return dataRecord.data () != null && dataRecord.length () > 0;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  //  @Override
+  //  public byte[] read ()
+  //  // ---------------------------------------------------------------------------------//
+  //  {
+  //    return parentFileSystem.readBlocks (dataBlocks);
+  //  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
+  public DataRecord getDataRecord ()
+  // ---------------------------------------------------------------------------------//
+  {
+    if (dataRecord == null)
+    {
+      byte[] data = parentFileSystem.readBlocks (dataBlocks);
+      dataRecord = new DataRecord (data, 0, data.length);
+    }
+
+    return dataRecord;
   }
 
   // ---------------------------------------------------------------------------------//

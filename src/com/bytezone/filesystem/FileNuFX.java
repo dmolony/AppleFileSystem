@@ -264,19 +264,50 @@ public class FileNuFX extends AbstractAppleFile implements AppleFilePath, AppleF
   }
 
   // ---------------------------------------------------------------------------------//
+  //  @Override
+  //  public byte[] read ()
+  //  // ---------------------------------------------------------------------------------//
+  //  {
+  //    if (isForkedFile)
+  //      throw new FileFormatException ("Cannot read() a forked file");
+  //
+  //    try           // some nufx files are corrupt
+  //    {
+  //      if (isDiskImage)
+  //        return diskImageThread.getData ();
+  //
+  //      return dataFork.read ();
+  //    }
+  //    catch (Exception e)
+  //    {
+  //      errorMessage = String.format ("Reading file %s failed : %s%n", getFullFileName (),
+  //          e.getMessage ());
+  //      return null;
+  //    }
+  //  }
+
+  // ---------------------------------------------------------------------------------//
   @Override
-  public byte[] read ()
+  public DataRecord getDataRecord ()
   // ---------------------------------------------------------------------------------//
   {
     if (isForkedFile)
       throw new FileFormatException ("Cannot read() a forked file");
 
+    if (dataRecord != null)
+      return dataRecord;
+
     try           // some nufx files are corrupt
     {
       if (isDiskImage)
-        return diskImageThread.getData ();
+      {
+        byte[] buffer = diskImageThread.getData ();
+        dataRecord = new DataRecord (buffer, 0, buffer.length);
+        return dataRecord;
+      }
 
-      return dataFork.read ();
+      dataRecord = dataFork.getDataRecord ();
+      return dataRecord;
     }
     catch (Exception e)
     {

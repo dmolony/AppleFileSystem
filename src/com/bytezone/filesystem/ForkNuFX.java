@@ -56,11 +56,25 @@ public class ForkNuFX extends AbstractAppleFile
   }
 
   // ---------------------------------------------------------------------------------//
+  //  @Override
+  //  public byte[] read ()
+  //  // ---------------------------------------------------------------------------------//
+  //  {
+  //    return thread.getData ();
+  //  }
+
+  // ---------------------------------------------------------------------------------//
   @Override
-  public byte[] read ()
+  public DataRecord getDataRecord ()
   // ---------------------------------------------------------------------------------//
   {
-    return thread.getData ();
+    if (dataRecord == null)
+    {
+      byte[] buffer = thread.getData ();
+      dataRecord = new DataRecord (buffer, 0, buffer.length);
+    }
+
+    return dataRecord;
   }
 
   // ---------------------------------------------------------------------------------//

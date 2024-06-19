@@ -33,9 +33,8 @@ public class ForkProdos extends AbstractAppleFile
 
   private AppleBlock masterIndexBlock;
   private final List<AppleBlock> indexBlocks = new ArrayList<> ();
-  private final List<AppleBlock> dataBlocks = new ArrayList<> ();
 
-  private byte[] data;
+  //  private byte[] data;
 
   // All ForkProdos files have a single FileProdos parent. Forks are also AppleFiles,
   // but only the DATA and RESOURCE forks are treated as standalone files. Normal
@@ -210,14 +209,38 @@ public class ForkProdos extends AbstractAppleFile
   }
 
   // ---------------------------------------------------------------------------------//
+  //  @Override
+  //  public byte[] read ()
+  //  // ---------------------------------------------------------------------------------//
+  //  {
+  //    // maybe this routine should always declare the buffer and pass it to read()
+  //    if (data == null)
+  //    {
+  //      data = fileSystem.readBlocks (dataBlocks);
+  //
+  //      if (data.length < eof)
+  //      {
+  //        // see TOTAL.REPLAY/X/COLUMNS/COL2P/COLUMNS.MGEMS
+  //        System.out.printf ("Buffer not long enough in %s%n", parentFile.getPath ());
+  //        System.out.printf ("EOF: %06X, buffer length: %06X%n", eof, data.length);
+  //        byte[] temp = new byte[eof];
+  //        System.arraycopy (data, 0, temp, 0, data.length);
+  //        data = temp;
+  //      }
+  //    }
+  //
+  //    return data;
+  //  }
+
+  // ---------------------------------------------------------------------------------//
   @Override
-  public byte[] read ()
+  public DataRecord getDataRecord ()
   // ---------------------------------------------------------------------------------//
   {
     // maybe this routine should always declare the buffer and pass it to read()
-    if (data == null)
+    if (dataRecord == null)
     {
-      data = fileSystem.readBlocks (dataBlocks);
+      byte[] data = fileSystem.readBlocks (dataBlocks);
 
       if (data.length < eof)
       {
@@ -228,9 +251,10 @@ public class ForkProdos extends AbstractAppleFile
         System.arraycopy (data, 0, temp, 0, data.length);
         data = temp;
       }
+      dataRecord = new DataRecord (data, 0, data.length);
     }
 
-    return data;
+    return dataRecord;
   }
 
   // ---------------------------------------------------------------------------------//

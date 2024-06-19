@@ -108,14 +108,25 @@ public class FileProdos extends AbstractAppleFile implements AppleForkedFile
   }
 
   // ---------------------------------------------------------------------------------//
+  //  @Override
+  //  public byte[] read ()
+  //  // ---------------------------------------------------------------------------------//
+  //  {
+  //    if (isForkedFile ())
+  //      throw new FileFormatException ("Cannot read() a forked file");
+  //
+  //    return dataFork.read ();
+  //  }
+
+  // ---------------------------------------------------------------------------------//
   @Override
-  public byte[] read ()
+  public DataRecord getDataRecord ()
   // ---------------------------------------------------------------------------------//
   {
     if (isForkedFile ())
-      throw new FileFormatException ("Cannot read() a forked file");
+      throw new FileFormatException ("Cannot getDataRecord() on a forked file");
 
-    return dataFork.read ();
+    return dataFork.getDataRecord ();
   }
 
   // ---------------------------------------------------------------------------------//

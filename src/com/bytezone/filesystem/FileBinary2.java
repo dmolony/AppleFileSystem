@@ -268,20 +268,44 @@ public class FileBinary2 extends AbstractAppleFile
   }
 
   // ---------------------------------------------------------------------------------//
+  //  @Override
+  //  public byte[] read ()
+  //  // ---------------------------------------------------------------------------------//
+  //  {
+  //    String suffix = Utility.getSuffix (getParentFileSystem ().getFileName ());
+  //    if (suffix.equals ("bqy") && squeezeName != null)
+  //    {
+  //      Squeeze squeeze = new Squeeze ();
+  //      byte[] buffer = getParentFileSystem ().readBlocks (dataBlocks);
+  //
+  //      return squeeze.unSqueeze (buffer);
+  //    }
+  //
+  //    return parentFileSystem.readBlocks (dataBlocks);
+  //  }
+
+  // ---------------------------------------------------------------------------------//
   @Override
-  public byte[] read ()
+  public DataRecord getDataRecord ()
   // ---------------------------------------------------------------------------------//
   {
+    if (dataRecord != null)
+      return dataRecord;
+
     String suffix = Utility.getSuffix (getParentFileSystem ().getFileName ());
     if (suffix.equals ("bqy") && squeezeName != null)
     {
       Squeeze squeeze = new Squeeze ();
       byte[] buffer = getParentFileSystem ().readBlocks (dataBlocks);
 
-      return squeeze.unSqueeze (buffer);
+      byte[] unsqueeze = squeeze.unSqueeze (buffer);
+      dataRecord = new DataRecord (unsqueeze, 0, unsqueeze.length);
+      return dataRecord;
     }
 
-    return parentFileSystem.readBlocks (dataBlocks);
+    byte[] buffer = parentFileSystem.readBlocks (dataBlocks);
+    dataRecord = new DataRecord (buffer, 0, buffer.length);
+    return dataRecord;
   }
 
   // ---------------------------------------------------------------------------------//

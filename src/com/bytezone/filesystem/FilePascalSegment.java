@@ -69,15 +69,25 @@ public class FilePascalSegment extends AbstractAppleFile implements AppleContain
     intrinsSegs1 = Utility.unsignedShort (catalogBuffer, 0x120 + seq * 4);
     intrinsSegs2 = Utility.unsignedShort (catalogBuffer, 0x120 + seq * 4 + 2);
 
-    byte[] dataBuffer = read ();
+    DataRecord dataRecord = getDataRecord ();
+    //    byte[] dataBuffer = read ();
+    byte[] dataBuffer = dataRecord.data ();
 
     totalProcedures = dataBuffer[eof - 1] & 0xFF;
     segmentNoBody = dataBuffer[eof - 2] & 0xFF;
 
     procedures = new ArrayList<> (totalProcedures);
+    int totSize = 2 + totalProcedures * 2;
 
     for (int procNo = 1; procNo <= totalProcedures; procNo++)
-      procedures.add (new FilePascalProcedure (parent, dataBuffer, eof, procNo));
+    {
+      FilePascalProcedure fpp = new FilePascalProcedure (parent, dataBuffer, eof, procNo);
+      procedures.add (fpp);
+      totSize += fpp.getFileLength ();
+    }
+
+    if (eof != totSize)
+      System.out.printf ("%8.8s Eof: %,7d, Size: %,7d%n", name, eof, totSize);
   }
 
   // ---------------------------------------------------------------------------------//
@@ -179,8 +189,8 @@ public class FilePascalSegment extends AbstractAppleFile implements AppleContain
     text.append (String.format ("Total procs....     %2d%n%n", procedures.size ()));
 
     text.append ("Procedure Dictionary\n====================\n\n");
-    text.append ("Slot Offset  Hdr   Lvl  Entry   Exit   Parm   Data\n");
-    text.append ("---- ------  ----  ---  -----   ----   ----   ----\n");
+    text.append ("Slot Offset  Hdr   Lvl  Entry   Exit   Parm   Data   Size\n");
+    text.append ("---- ------  ----  ---  -----   ----   ----   ----   ----\n");
 
     for (AppleFile procedure : procedures)
       text.append (procedure.getCatalogLine () + "\n");

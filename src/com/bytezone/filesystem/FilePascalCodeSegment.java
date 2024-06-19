@@ -72,10 +72,11 @@ public class FilePascalCodeSegment extends AbstractAppleFile
     intrinsSegs1 = Utility.unsignedShort (catalogBuffer, 0x120 + seq * 4);
     intrinsSegs2 = Utility.unsignedShort (catalogBuffer, 0x120 + seq * 4 + 2);
 
-    byte[] dataBuffer = read ();
+    DataRecord dataRecord = getDataRecord ();
+    //    byte[] dataBuffer = read ();
 
-    totalProcedures = dataBuffer[eof - 1] & 0xFF;
-    segmentNoBody = dataBuffer[eof - 2] & 0xFF;
+    totalProcedures = dataRecord.data ()[eof - 1] & 0xFF;
+    segmentNoBody = dataRecord.data ()[eof - 2] & 0xFF;
 
     if (debug)
       if (segmentNoHeader == 0)
@@ -87,7 +88,7 @@ public class FilePascalCodeSegment extends AbstractAppleFile
     procedures = new ArrayList<> (totalProcedures);
 
     for (int procNo = 1; procNo <= totalProcedures; procNo++)
-      procedures.add (new PascalProcedure (dataBuffer, eof, procNo));
+      procedures.add (new PascalProcedure (dataRecord.data (), eof, procNo));
   }
 
   // ---------------------------------------------------------------------------------//

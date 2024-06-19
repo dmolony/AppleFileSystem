@@ -3,7 +3,6 @@ package com.bytezone.filesystem;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
-import java.util.ArrayList;
 import java.util.List;
 
 import com.bytezone.filesystem.AppleBlock.BlockType;
@@ -24,8 +23,6 @@ public class FilePascal extends AbstractAppleFile
   private int bytesUsedInLastBlock;
   private int wildCard;
   private LocalDate date;
-
-  private List<AppleBlock> dataBlocks = new ArrayList<> ();
 
   private boolean debug = false;
 
@@ -61,12 +58,12 @@ public class FilePascal extends AbstractAppleFile
   }
 
   // ---------------------------------------------------------------------------------//
-  @Override
-  public byte[] read ()
-  // ---------------------------------------------------------------------------------//
-  {
-    return parentFileSystem.readBlocks (dataBlocks);
-  }
+  //  @Override
+  //  public byte[] read ()
+  //  // ---------------------------------------------------------------------------------//
+  //  {
+  //    return parentFileSystem.readBlocks (dataBlocks);
+  //  }
 
   // ---------------------------------------------------------------------------------//
   @Override

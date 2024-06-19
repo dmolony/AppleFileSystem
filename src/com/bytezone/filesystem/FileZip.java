@@ -9,7 +9,7 @@ import com.bytezone.utility.Utility;
 public class FileZip extends AbstractAppleFile implements AppleFilePath
 // -----------------------------------------------------------------------------------//
 {
-  byte[] buffer;
+  //  byte[] buffer;
   private final char separator = '/';
   private final ZipEntry zipEntry;
 
@@ -19,18 +19,19 @@ public class FileZip extends AbstractAppleFile implements AppleFilePath
   {
     super (fs);
 
-    this.buffer = buffer;
+    //    this.buffer = buffer;
+    dataRecord = new DataRecord (buffer, 0, buffer.length);
     this.fileName = fileName;
     this.zipEntry = zipEntry;
   }
 
   // ---------------------------------------------------------------------------------//
-  @Override
-  public byte[] read ()
-  // ---------------------------------------------------------------------------------//
-  {
-    return buffer;
-  }
+  //  @Override
+  //  public byte[] read ()
+  //  // ---------------------------------------------------------------------------------//
+  //  {
+  //    return buffer;
+  //  }
 
   // ---------------------------------------------------------------------------------//
   @Override

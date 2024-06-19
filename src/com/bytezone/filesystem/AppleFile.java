@@ -45,7 +45,11 @@ public interface AppleFile
 
   public String getCatalogLine ();
 
-  public byte[] read ();
+  public boolean hasData ();
+
+  //  public byte[] read ();
+
+  public DataRecord getDataRecord ();
 
   public void write (byte[] buffer);
 

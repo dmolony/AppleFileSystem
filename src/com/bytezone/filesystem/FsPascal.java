@@ -93,7 +93,10 @@ public class FsPascal extends AbstractFileSystem
           FilePascal file = new FilePascal (this, buffer, ptr);
           addFile2 (file);
 
-          BlockReader blockReader2 = new BlockReader (file.getFileName (), file.read ());
+          DataRecord dataRecord = file.getDataRecord ();
+          //          BlockReader blockReader2 = new BlockReader (file.getFileName (), file.read ());
+          BlockReader blockReader2 =
+              new BlockReader (file.getFileName (), dataRecord.data ());
           blockReader2.setParameters (512, AddressType.BLOCK, 0, 0);
           FsPascalCode fs = new FsPascalCode (blockReader2);
           file.embedFileSystem (fs);
