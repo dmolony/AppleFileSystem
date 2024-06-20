@@ -81,7 +81,7 @@ public class FilePascalSegment extends AbstractAppleFile implements AppleContain
 
     for (int procNo = 1; procNo <= totalProcedures; procNo++)
     {
-      FilePascalProcedure fpp = new FilePascalProcedure (parent, dataBuffer, eof, procNo);
+      FilePascalProcedure fpp = new FilePascalProcedure (this, dataBuffer, eof, procNo);
       procedures.add (fpp);
       totSize += fpp.getFileLength ();
     }
@@ -213,10 +213,13 @@ public class FilePascalSegment extends AbstractAppleFile implements AppleContain
   {
     StringBuilder text = new StringBuilder (super.toString ());
 
+    text.append ("\n");
+    //    text.append ("\n\n");
+    text.append ("------- Segment -------\n");
     text.append (String.format ("Slot .................. %d%n", slot));
     text.append (String.format ("First block ........... %d%n", firstBlock));
     text.append (String.format ("Total blocks .......... %d%n", size));
-    text.append (String.format ("File length ........... %,d%n", eof));
+    text.append (String.format ("File length ........... %,d  %<04X%n", eof));
     text.append (String.format ("Text address .......... %d%n", textAddress));
     text.append (String.format ("Segment no header ..... %d%n", segmentNoHeader));
     text.append (String.format ("Segment no body ....... %d%n", segmentNoBody));

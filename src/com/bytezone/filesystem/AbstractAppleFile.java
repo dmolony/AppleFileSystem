@@ -142,14 +142,6 @@ public abstract class AbstractAppleFile implements AppleFile
   }
 
   // ---------------------------------------------------------------------------------//
-  //  @Override
-  //  public byte[] read ()
-  //  // ---------------------------------------------------------------------------------//
-  //  {
-  //    return parentFileSystem.readBlocks (dataBlocks);
-  //  }
-
-  // ---------------------------------------------------------------------------------//
   @Override
   public DataRecord getDataRecord ()
   // ---------------------------------------------------------------------------------//
@@ -251,7 +243,16 @@ public abstract class AbstractAppleFile implements AppleFile
       text.append (String.format ("Embedded FS type ...... %s%n",
           embeddedFileSystem.getFileSystemType ()));
     text.append (
-        String.format ("File type ............. %02X  %s%n%n", fileType, fileTypeText));
+        String.format ("File type ............. %02X  %s%n", fileType, fileTypeText));
+    if (dataRecord != null)
+    {
+      text.append (
+          String.format ("Offset ................ %,6d  %<04X%n", dataRecord.offset ()));
+      text.append (
+          String.format ("Length ................ %,6d  %<04X%n", dataRecord.length ()));
+    }
+    text.append (
+        String.format ("EOF ................... %,6d  %<04X%n", getFileLength ()));
 
     return text.toString ();
   }

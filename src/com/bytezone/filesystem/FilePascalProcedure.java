@@ -7,7 +7,6 @@ public class FilePascalProcedure extends AbstractAppleFile
 // -----------------------------------------------------------------------------------//
 {
   // all procedures have these fields
-  byte[] buffer;
   int procHeader;
   int offset;
   int procNo;
@@ -22,16 +21,16 @@ public class FilePascalProcedure extends AbstractAppleFile
   int parmSize;
   int dataSize;
 
-  byte[] data;
   DataRecord record;
+  FilePascalSegment parent;
 
   // ---------------------------------------------------------------------------------//
-  FilePascalProcedure (FilePascalCode parent, byte[] buffer, int eof, int procNo)
+  FilePascalProcedure (FilePascalSegment parent, byte[] buffer, int eof, int procNo)
   // ---------------------------------------------------------------------------------//
   {
     super (parent.getParentFileSystem ());
 
-    this.buffer = buffer;
+    this.parent = parent;
     this.procNo = procNo;               // 1-based
 
     fileName = String.format ("proc-%02d", procNo);
@@ -56,12 +55,8 @@ public class FilePascalProcedure extends AbstractAppleFile
       int start = procHeader - codeStart - 2;
       dataLength = codeStart + 4;
 
-      data = new byte[dataLength];
-      System.arraycopy (buffer, start, data, 0, dataLength);
       dataRecord = new DataRecord (buffer, start, dataLength);
     }
-    else
-      data = new byte[0];
   }
 
   // ---------------------------------------------------------------------------------//
@@ -87,14 +82,6 @@ public class FilePascalProcedure extends AbstractAppleFile
   }
 
   // ---------------------------------------------------------------------------------//
-  //  @Override
-  //  public byte[] read ()
-  //  // ---------------------------------------------------------------------------------//
-  //  {
-  //    return data;
-  //  }
-
-  // ---------------------------------------------------------------------------------//
   @Override
   public String getCatalogLine ()
   // ---------------------------------------------------------------------------------//
@@ -112,8 +99,10 @@ public class FilePascalProcedure extends AbstractAppleFile
   public String toString ()
   // ---------------------------------------------------------------------------------//
   {
-    StringBuilder text = new StringBuilder ();
+    StringBuilder text = new StringBuilder (parent.toString ());
 
+    text.append ("\n\n");
+    text.append ("------ Procedure ------\n");
     text.append (String.format ("Procedure # ........... %6d%n", procNo));
     text.append (String.format ("Proc offset ........... %6d  %<04X%n", offset));
 

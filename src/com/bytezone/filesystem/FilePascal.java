@@ -131,7 +131,7 @@ public class FilePascal extends AbstractAppleFile
     text.append (String.format ("First block ........... %d%n", firstBlock));
     text.append (String.format ("Last block ............ %d%n", lastBlock));
     text.append (String.format ("Bytes in last block ... %d%n", bytesUsedInLastBlock));
-    text.append (String.format ("Date .................. %s", getDate ().format (dtf)));
+    text.append (String.format ("Date .................. %s%n", getDate ().format (dtf)));
 
     return Utility.rtrim (text);
   }
