@@ -39,7 +39,7 @@ public class FileDos4 extends FileDos
     String blockSubType = fs.getBlockSubTypeText (fileType);
 
     fileName = Utility.string (buffer, ptr + 3, 24).trim ();
-    validName = checkName (buffer, ptr + 3, 30);          // check for invalid characters
+    isNameValid = checkName (fileName);                 // check for invalid characters
     modified = Utility.getDos4LocalDateTime (buffer, ptr + 27);
     sectorCount = Utility.unsignedShort (buffer, ptr + 33);
     int sectorsLeft = sectorCount;
@@ -110,7 +110,8 @@ public class FileDos4 extends FileDos
   {
     int actualSize = getTotalIndexSectors () + getTotalDataSectors ();
 
-    String addressText = getAddress () == 0 ? "" : String.format ("$%4X", getAddress ());
+    String addressText =
+        getLoadAddress () == 0 ? "" : String.format ("$%4X", getLoadAddress ());
 
     String lengthText =
         getFileLength () == 0 ? "" : String.format ("$%4X  %<,6d", getFileLength ());

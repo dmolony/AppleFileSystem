@@ -10,12 +10,12 @@ public abstract class FileDos extends AbstractAppleFile
 // -----------------------------------------------------------------------------------//
 {
   protected int sectorCount;
-  protected int length;
-  protected int address;
+  protected int eof;
+  protected int loadAddress;
   protected int textFileGaps;
 
   protected List<AppleBlock> indexBlocks = new ArrayList<> ();
-  protected boolean validName;
+  protected boolean isNameValid;
 
   // ---------------------------------------------------------------------------------//
   FileDos (FsDos fs)
@@ -28,26 +28,26 @@ public abstract class FileDos extends AbstractAppleFile
   protected void setLength ()
   // ---------------------------------------------------------------------------------//
   {
-    if (fileType == 4)                            // binary
+    if (fileType == 4)                              // binary
     {
       if (dataBlocks.size () > 0)
       {
         byte[] fileBuffer = getParentFileSystem ().readBlock (dataBlocks.get (0));
-        address = Utility.unsignedShort (fileBuffer, 0);
-        length = Utility.unsignedShort (fileBuffer, 2);
+        loadAddress = Utility.unsignedShort (fileBuffer, 0);
+        eof = Utility.unsignedShort (fileBuffer, 2);
       }
     }
-    else if (fileType == 1 || fileType == 2)      // integer basic or applesoft
+    else if (fileType == 1 || fileType == 2)        // integer basic or applesoft
     {
       if (dataBlocks.size () > 0)
       {
         byte[] fileBuffer = getParentFileSystem ().readBlock (dataBlocks.get (0));
-        length = Utility.unsignedShort (fileBuffer, 0);
+        eof = Utility.unsignedShort (fileBuffer, 0);
         // could calculate the address from the line numbers
       }
     }
     else
-      length = dataBlocks.size () * getParentFileSystem ().getBlockSize ();
+      eof = dataBlocks.size () * getParentFileSystem ().getBlockSize ();
   }
 
   // ---------------------------------------------------------------------------------//
@@ -55,7 +55,7 @@ public abstract class FileDos extends AbstractAppleFile
   public int getFileLength ()                       // in bytes (eof)
   // ---------------------------------------------------------------------------------//
   {
-    return length;
+    return eof;
   }
 
   // ---------------------------------------------------------------------------------//
@@ -78,10 +78,10 @@ public abstract class FileDos extends AbstractAppleFile
   }
 
   // ---------------------------------------------------------------------------------//
-  public int getAddress ()
+  public int getLoadAddress ()
   // ---------------------------------------------------------------------------------//
   {
-    return address;
+    return loadAddress;
   }
 
   // ---------------------------------------------------------------------------------//
@@ -112,18 +112,18 @@ public abstract class FileDos extends AbstractAppleFile
   // ---------------------------------------------------------------------------------//
   {
     // Beagle Brothers "applesoft program"
-    if (fileType == 2 && length <= 3 && fileName.startsWith ("  "))
+    if (fileType == 2 && eof <= 3 && fileName.startsWith ("  "))
       return false;
 
-    return validName && dataBlocks.size () > 0;
+    return isNameValid && dataBlocks.size () > 0;
   }
 
   // ---------------------------------------------------------------------------------//
-  protected boolean checkName (byte[] buffer, int offset, int length)
+  protected boolean checkName (String name)
   // ---------------------------------------------------------------------------------//
   {
-    while (length-- > 0)
-      if (buffer[offset++] == (byte) 0x88)      // backspace
+    for (byte b : name.getBytes ())
+      if (b == (byte) 0x88)
         return false;
 
     return true;
@@ -138,8 +138,8 @@ public abstract class FileDos extends AbstractAppleFile
 
     text.append (String.format ("Locked ................ %s%n", isLocked));
     text.append (String.format ("Sectors ............... %04X  %<,5d%n", sectorCount));
-    text.append (String.format ("Length ................ %04X  %<,5d%n", length));
-    text.append (String.format ("Address ............... %04X  %<,5d%n", address));
+    text.append (String.format ("File length ........... %04X  %<,5d%n", eof));
+    text.append (String.format ("Load address .......... %04X  %<,5d%n", loadAddress));
     text.append (String.format ("Text file gaps ........ %04X  %<,5d", textFileGaps));
 
     return Utility.rtrim (text);

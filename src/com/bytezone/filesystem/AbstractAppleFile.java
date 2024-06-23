@@ -16,7 +16,7 @@ public abstract class AbstractAppleFile implements AppleFile
   protected boolean isFile = true;
   protected boolean isFolder;
   protected boolean isForkedFile;             // FileProdos or FileNuFX
-  protected boolean isFork;
+  protected boolean isFork;                   // Data or Resource fork
 
   protected String fileName;
   protected int fileType;
@@ -244,13 +244,6 @@ public abstract class AbstractAppleFile implements AppleFile
           embeddedFileSystem.getFileSystemType ()));
     text.append (
         String.format ("File type ............. %02X  %s%n", fileType, fileTypeText));
-    if (dataRecord != null)
-    {
-      text.append (
-          String.format ("Offset ................ %,6d  %<04X%n", dataRecord.offset ()));
-      text.append (
-          String.format ("Length ................ %,6d  %<04X%n", dataRecord.length ()));
-    }
     text.append (
         String.format ("EOF ................... %,6d  %<04X%n", getFileLength ()));
 

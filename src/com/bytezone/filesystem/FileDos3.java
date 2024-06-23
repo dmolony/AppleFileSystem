@@ -19,7 +19,7 @@ public class FileDos3 extends FileDos
     fileType = catalogBuffer[ptr + 2] & 0x7F;
     isLocked = (catalogBuffer[ptr + 2] & 0x80) != 0;
     fileName = Utility.string (catalogBuffer, ptr + 3, 30);
-    validName = checkName (catalogBuffer, ptr + 3, 30);          // check for invalid characters
+    isNameValid = checkName (fileName);                   // check for invalid characters
     sectorCount = Utility.unsignedShort (catalogBuffer, ptr + 33);
     fileTypeText = fs.getFileTypeText (fileType);
     String blockSubType = fs.getBlockSubTypeText (fileType);
@@ -84,7 +84,8 @@ public class FileDos3 extends FileDos
   {
     int actualSize = getTotalIndexSectors () + getTotalDataSectors ();
 
-    String addressText = getAddress () == 0 ? "" : String.format ("$%4X", getAddress ());
+    String addressText =
+        getLoadAddress () == 0 ? "" : String.format ("$%4X", getLoadAddress ());
 
     String lengthText =
         getFileLength () == 0 ? "" : String.format ("$%4X  %<,6d", getFileLength ());
