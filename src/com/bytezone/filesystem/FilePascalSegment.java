@@ -216,18 +216,18 @@ public class FilePascalSegment extends AbstractAppleFile implements AppleContain
     text.append ("\n");
     //    text.append ("\n\n");
     text.append ("------- Segment -------\n");
-    text.append (String.format ("Slot .................. %d%n", slot));
-    text.append (String.format ("First block ........... %d%n", firstBlock));
-    text.append (String.format ("Total blocks .......... %d%n", size));
-    text.append (String.format ("File length ........... %,d  %<04X%n", eof));
-    text.append (String.format ("Text address .......... %d%n", textAddress));
-    text.append (String.format ("Segment no header ..... %d%n", segmentNoHeader));
-    text.append (String.format ("Segment no body ....... %d%n", segmentNoBody));
-    text.append (String.format ("Machine type .......... %d  %s%n", machineType,
+    text.append (String.format ("Slot .................. %,6d%n", slot));
+    text.append (String.format ("First block ........... %,6d%n", firstBlock));
+    text.append (String.format ("Total blocks .......... %,6d%n", size));
+    text.append (String.format ("File length ........... %,6d  %<04X%n", eof));
+    text.append (String.format ("Text address .......... %,6d%n", textAddress));
+    text.append (String.format ("Segment no header ..... %,6d%n", segmentNoHeader));
+    text.append (String.format ("Segment no body ....... %,6d%n", segmentNoBody));
+    text.append (String.format ("Machine type .......... %,6d  %s%n", machineType,
         machineTypes[machineType]));
-    text.append (String.format ("Version ............... %d%n", version));
+    text.append (String.format ("Version ............... %,6d%n", version));
     text.append (String.format ("Segment kind .......... %s%n", segmentKind[segKind]));
-    text.append (String.format ("Total procedures ...... %d%n", totalProcedures));
+    text.append (String.format ("Total procedures ...... %,6d%n", totalProcedures));
 
     return Utility.rtrim (text);
   }

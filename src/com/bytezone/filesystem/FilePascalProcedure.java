@@ -10,14 +10,13 @@ public class FilePascalProcedure extends AbstractAppleFile
   int procHeader;
   int offset;
   int procNo;
-  boolean valid;
   int dataLength;
 
   // only valid procedures have these fields
   int procedureNo;
-  int procLevel;
-  int codeStart;
-  int codeEnd;
+  int lexLevel;
+  int entryIC;
+  int exitIC;
   int parmSize;
   int dataSize;
 
@@ -40,20 +39,19 @@ public class FilePascalProcedure extends AbstractAppleFile
     int p = eof - 2 - procNo * 2;
     offset = Utility.unsignedShort (buffer, p);
     procHeader = p - offset;
-    valid = procHeader > 0;
 
-    if (valid)
+    if (procHeader > 0)
     {
       procedureNo = buffer[procHeader] & 0xFF;
-      procLevel = buffer[procHeader + 1] & 0xFF;
+      lexLevel = buffer[procHeader + 1] & 0xFF;
 
-      codeStart = Utility.unsignedShort (buffer, procHeader - 2);
-      codeEnd = Utility.unsignedShort (buffer, procHeader - 4);
+      entryIC = Utility.unsignedShort (buffer, procHeader - 2);
+      exitIC = Utility.unsignedShort (buffer, procHeader - 4);
       parmSize = Utility.unsignedShort (buffer, procHeader - 6);
       dataSize = Utility.unsignedShort (buffer, procHeader - 8);
 
-      int start = procHeader - codeStart - 2;
-      dataLength = codeStart + 4;
+      int start = procHeader - 2 - entryIC;
+      dataLength = entryIC + 4;
 
       dataRecord = new DataRecord (buffer, start, dataLength);
     }
@@ -63,14 +61,21 @@ public class FilePascalProcedure extends AbstractAppleFile
   public int getCodeStart ()
   // ---------------------------------------------------------------------------------//
   {
-    return procHeader - codeStart - 2;
+    return procHeader - 2 - entryIC;
   }
 
   // ---------------------------------------------------------------------------------//
   public int getCodeEnd ()
   // ---------------------------------------------------------------------------------//
   {
-    return procHeader - codeEnd - 4;
+    return procHeader - 4 - exitIC;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  public int getProcHeader ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return procHeader;
   }
 
   // ---------------------------------------------------------------------------------//
@@ -87,11 +92,11 @@ public class FilePascalProcedure extends AbstractAppleFile
   // ---------------------------------------------------------------------------------//
   {
     String firstHalf = String.format (" %2d   %04X", procNo, offset);
-    if (!valid)
+    if (procHeader <= 0)
       return firstHalf;
 
     return String.format ("%s   %04X  %3d   %04X   %04X   %04X   %04X   %04X", firstHalf,
-        procHeader, procLevel, codeStart, codeEnd, parmSize, dataSize, dataLength);
+        procHeader, lexLevel, entryIC, exitIC, parmSize, dataSize, dataLength);
   }
 
   // ---------------------------------------------------------------------------------//
@@ -103,20 +108,21 @@ public class FilePascalProcedure extends AbstractAppleFile
 
     text.append ("\n\n");
     text.append ("------ Procedure ------\n");
-    text.append (String.format ("Procedure # ........... %6d%n", procNo));
-    text.append (String.format ("Proc offset ........... %6d  %<04X%n", offset));
+    text.append (String.format ("Procedure # ........... %,6d%n", procNo));
+    text.append (String.format ("Proc offset ........... %,6d  %<04X%n", offset));
 
-    if (valid)
+    if (procHeader > 0)
     {
-      text.append (String.format ("Proc header ........... %6d  %<04X%n", procHeader));
+      text.append (String.format ("Proc header ........... %,6d  %<04X%n", procHeader));
       if (procNo != procedureNo)
-        text.append (String.format ("Proc no ...........**** %6d  %<04X%n", procedureNo));
-      text.append (String.format ("Proc level ............ %6d  %<04X%n", procLevel));
-      text.append (String.format ("Code start ............ %6d  %<04X%n", codeStart));
-      text.append (String.format ("Code end .............. %6d  %<04X%n", codeEnd));
-      text.append (String.format ("Parm size ............. %6d  %<04X%n", parmSize));
-      text.append (String.format ("Data size ............. %6d  %<04X%n", dataSize));
-      text.append (String.format ("Proc size ............. %6d  %<04X%n", dataLength));
+        text.append (
+            String.format ("Procedure no ......**** %,6d  %<04X%n", procedureNo));
+      text.append (String.format ("Lex level ............. %,6d  %<04X%n", lexLevel));
+      text.append (String.format ("Entry instruction ..... %,6d  %<04X%n", entryIC));
+      text.append (String.format ("Exit instruction ...... %,6d  %<04X%n", exitIC));
+      text.append (String.format ("Paramater size ........ %,6d  %<04X%n", parmSize));
+      text.append (String.format ("Data size ............. %,6d  %<04X%n", dataSize));
+      text.append (String.format ("Proc size ............. %,6d  %<04X%n", dataLength));
 
     }
 
