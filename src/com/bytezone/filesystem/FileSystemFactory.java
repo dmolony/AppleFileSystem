@@ -38,11 +38,11 @@ public class FileSystemFactory
 
     if (debug)
     {
+      DataRecord dataRecord = blockReader.getDataRecord ();
       System.out.println ("-----------------------------------------------------");
       //      System.out.printf ("Checking: %s%n", blockReader.getPath ());
-      System.out.printf ("Length  : %,d%n", blockReader.getDiskLength ());
-      System.out.println (Utility.format (blockReader.getDiskBuffer (),
-          blockReader.getDiskOffset (), 100));
+      System.out.printf ("Length  : %,d%n", dataRecord.length ());
+      System.out.println (Utility.format (dataRecord.data (), dataRecord.offset (), 100));
       System.out.println ("-----------------------------------------------------");
     }
 
@@ -125,7 +125,7 @@ public class FileSystemFactory
   private void getDos31 (BlockReader blockReader)
   // ---------------------------------------------------------------------------------//
   {
-    if (blockReader.getDiskLength () == SECTOR_13_SIZE)
+    if (blockReader.getDataRecord ().length () == SECTOR_13_SIZE)
     {
       try
       {
@@ -154,7 +154,7 @@ public class FileSystemFactory
 
     List<FsDos3> fsList = new ArrayList<> (2);
 
-    if (blockReader.getDiskLength () == SECTOR_16_SIZE)
+    if (blockReader.getDataRecord ().length () == SECTOR_16_SIZE)
       for (int i = 0; i < 2; i++)
         try
         {
@@ -204,13 +204,13 @@ public class FileSystemFactory
   private void getDos4 (BlockReader blockReader)
   // ---------------------------------------------------------------------------------//
   {
-    if (blockReader.getDiskLength () == SECTOR_16_SIZE
-        || blockReader.getDiskLength () == SECTOR_32_SIZE)
+    if (blockReader.getDataRecord ().length () == SECTOR_16_SIZE
+        || blockReader.getDataRecord ().length () == SECTOR_32_SIZE)
       try
       {
         BlockReader dos4Reader = new BlockReader (blockReader);
 
-        if (blockReader.getDiskLength () == SECTOR_16_SIZE)
+        if (blockReader.getDataRecord ().length () == SECTOR_16_SIZE)
           dos4Reader.setParameters (256, AddressType.SECTOR, 0, 16);
         else
           dos4Reader.setParameters (256, AddressType.SECTOR, 0, 32);
@@ -231,7 +231,7 @@ public class FileSystemFactory
   private void getUnidos (BlockReader blockReader)
   // ---------------------------------------------------------------------------------//
   {
-    if (blockReader.getDiskLength () == UNIDOS_SIZE)
+    if (blockReader.getDataRecord ().length () == UNIDOS_SIZE)
       try
       {
         BlockReader unidosReader = new BlockReader (blockReader);
@@ -254,7 +254,7 @@ public class FileSystemFactory
   // ---------------------------------------------------------------------------------//
   {
     // should check for common HD sizes
-    if (blockReader.getDiskLength () >= SECTOR_16_SIZE)
+    if (blockReader.getDataRecord ().length () >= SECTOR_16_SIZE)
       for (int i = 0; i < 2; i++)
         try
         {
@@ -283,7 +283,7 @@ public class FileSystemFactory
   // ---------------------------------------------------------------------------------//
   {
     // should check for common HD sizes
-    if (blockReader.getDiskLength () >= SECTOR_16_SIZE)
+    if (blockReader.getDataRecord ().length () >= SECTOR_16_SIZE)
       for (int i = 0; i < 2; i++)
         try
         {
@@ -313,7 +313,7 @@ public class FileSystemFactory
   private void getCpm (BlockReader blockReader)
   // ---------------------------------------------------------------------------------//
   {
-    if (blockReader.getDiskLength () == SECTOR_16_SIZE)
+    if (blockReader.getDataRecord ().length () == SECTOR_16_SIZE)
       try
       {
         BlockReader cpmReader = new BlockReader (blockReader);
@@ -336,7 +336,7 @@ public class FileSystemFactory
   private void getCpm2 (BlockReader blockReader)
   // ---------------------------------------------------------------------------------//
   {
-    if (blockReader.getDiskLength () == CPAM_SIZE)
+    if (blockReader.getDataRecord ().length () == CPAM_SIZE)
       try
       {
         BlockReader cpamReader = new BlockReader (blockReader);

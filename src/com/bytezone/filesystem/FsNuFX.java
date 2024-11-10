@@ -33,8 +33,8 @@ class FsNuFX extends AbstractFileSystem
   {
     super (blockReader, FileSystemType.NUFX);           // reader not used
 
-    byte[] buffer = blockReader.getDiskBuffer ();
-    int diskOffset = blockReader.getDiskOffset ();
+    byte[] buffer = blockReader.getDataRecord ().data ();
+    int diskOffset = blockReader.getDataRecord ().offset ();
 
     assert blockReader.isMagic (0, NuFile);
 

@@ -27,6 +27,7 @@ public class BlockReader
   private final byte[] diskBuffer;
   private final int diskOffset;
   private final int diskLength;
+  private final DataRecord dataRecord;
 
   private String name;
 
@@ -55,6 +56,8 @@ public class BlockReader
     diskOffset = 0;
     diskLength = buffer.length == 143_488 ? 143_360 : buffer.length;
 
+    dataRecord = new DataRecord (buffer, diskOffset, diskLength);
+
     name = path.toFile ().getName ();
   }
 
@@ -75,6 +78,8 @@ public class BlockReader
     this.diskOffset = diskOffset;
     this.diskLength = diskLength == 143_488 ? 143_360 : diskLength;
 
+    dataRecord = new DataRecord (diskBuffer, diskOffset, diskLength);
+
     this.name = name;
   }
 
@@ -85,6 +90,8 @@ public class BlockReader
     this.diskBuffer = original.diskBuffer;
     this.diskOffset = original.diskOffset;
     this.diskLength = original.diskLength;
+
+    dataRecord = original.dataRecord;
 
     this.name = original.name;
   }
@@ -388,25 +395,32 @@ public class BlockReader
   }
 
   // ---------------------------------------------------------------------------------//
-  byte[] getDiskBuffer ()
+  DataRecord getDataRecord ()
   // ---------------------------------------------------------------------------------//
   {
-    return diskBuffer;
+    return dataRecord;
   }
 
   // ---------------------------------------------------------------------------------//
-  int getDiskOffset ()
-  // ---------------------------------------------------------------------------------//
-  {
-    return diskOffset;
-  }
-
-  // ---------------------------------------------------------------------------------//
-  int getDiskLength ()
-  // ---------------------------------------------------------------------------------//
-  {
-    return diskLength;
-  }
+  //  byte[] getDiskBuffer ()
+  //  // ---------------------------------------------------------------------------------//
+  //  {
+  //    return diskBuffer;
+  //  }
+  //
+  //  // ---------------------------------------------------------------------------------//
+  //  int getDiskOffset ()
+  //  // ---------------------------------------------------------------------------------//
+  //  {
+  //    return diskOffset;
+  //  }
+  //
+  //  // ---------------------------------------------------------------------------------//
+  //  int getDiskLength ()
+  //  // ---------------------------------------------------------------------------------//
+  //  {
+  //    return diskLength;
+  //  }
 
   // ---------------------------------------------------------------------------------//
   //  Path getPath ()

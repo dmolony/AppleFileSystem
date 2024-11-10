@@ -12,7 +12,7 @@ public abstract class FileDos extends AbstractAppleFile
   protected int sectorCount;
   protected int eof;
   protected int loadAddress;
-  protected int textFileGaps;
+  protected int textFileGaps;       // total sparse file empty data sectors
 
   protected List<AppleBlock> indexBlocks = new ArrayList<> ();
   protected boolean isNameValid;
@@ -140,7 +140,7 @@ public abstract class FileDos extends AbstractAppleFile
     text.append (String.format ("Sectors ............... %04X  %<,5d%n", sectorCount));
     text.append (String.format ("File length ........... %04X  %<,5d%n", eof));
     text.append (String.format ("Load address .......... %04X  %<,5d%n", loadAddress));
-    text.append (String.format ("Text file gaps ........ %04X  %<,5d", textFileGaps));
+    text.append (String.format ("Text file gaps ........ %04X  %<,5d%n", textFileGaps));
 
     return Utility.rtrim (text);
   }

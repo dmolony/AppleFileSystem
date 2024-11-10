@@ -25,11 +25,6 @@ public class FileProdos extends AbstractAppleFile implements AppleForkedFile
   private ForkProdos dataFork;                                  // for non-forked files
   private List<AppleFile> forks = new ArrayList<> ();           // for forked files
 
-  public enum ForkType
-  {
-    DATA, RESOURCE;
-  }
-
   // ---------------------------------------------------------------------------------//
   FileProdos (FsProdos parent, AppleContainer container, byte[] buffer, int ptr)
   // ---------------------------------------------------------------------------------//

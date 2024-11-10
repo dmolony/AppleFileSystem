@@ -50,6 +50,21 @@ public class FilePascalCode extends FilePascal implements AppleContainer
       }
     }
 
+    if (false)
+    {
+      for (AppleFile appleFile : segments)
+      {
+        FilePascalSegment fps = (FilePascalSegment) appleFile;
+        if (fps.getFileLength () != fps.totSize)
+          System.out.printf ("%8.8s Eof: %,7d, Size: %,7d%n", fps.getFileName (),
+              fps.getFileLength (), fps.totSize);
+        else
+          System.out.printf ("%8.8s Eof: %,7d%n", fps.getFileName (),
+              fps.getFileLength ());
+      }
+      System.out.println ();
+    }
+
     comment = Utility.getPascalString (buffer, 0x1B0);
   }
 
@@ -106,9 +121,9 @@ public class FilePascalCode extends FilePascal implements AppleContainer
 
     text.append ("Segment Dictionary\n==================\n\n");
     text.append (
-        "Slot Addr Size Eof    Name     Kind            Txt Seg Mch Ver I/S I/S Proc\n");
+        "Slot Addr Size    Eof    Name     Kind            Txt Seg Mch Ver I/S I/S Proc\n");
     text.append (
-        "---- ---- ---- ----  --------  --------------- --- --- --- --- --- --- ----\n");
+        "---- ---- ---- -------  --------  --------------- --- --- --- --- --- --- ----\n");
 
     for (AppleFile segment : segments)
       text.append (segment.getCatalogLine () + "\n");

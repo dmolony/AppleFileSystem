@@ -34,6 +34,8 @@ public class FilePascalSegment extends AbstractAppleFile implements AppleContain
   private final List<AppleFile> procedures;
   private final List<AppleFileSystem> notPossible = new ArrayList<> (0);
 
+  int totSize;
+
   // ---------------------------------------------------------------------------------//
   FilePascalSegment (FilePascalCode parent, byte[] catalogBuffer, int seq, String name)
   // ---------------------------------------------------------------------------------//
@@ -77,7 +79,7 @@ public class FilePascalSegment extends AbstractAppleFile implements AppleContain
     segmentNoBody = dataBuffer[eof - 2] & 0xFF;
 
     procedures = new ArrayList<> (totalProcedures);
-    int totSize = 2 + totalProcedures * 2;
+    totSize = 2 + totalProcedures * 2;
 
     for (int procNo = 1; procNo <= totalProcedures; procNo++)
     {
@@ -85,9 +87,6 @@ public class FilePascalSegment extends AbstractAppleFile implements AppleContain
       procedures.add (fpp);
       totSize += fpp.getFileLength ();
     }
-
-    if (eof != totSize)
-      System.out.printf ("%8.8s Eof: %,7d, Size: %,7d%n", name, eof, totSize);
   }
 
   // ---------------------------------------------------------------------------------//
@@ -160,11 +159,12 @@ public class FilePascalSegment extends AbstractAppleFile implements AppleContain
   public String getCatalogLine ()
   // ---------------------------------------------------------------------------------//
   {
+    String extra = eof == totSize ? "" : "** Size = " + totSize + " **";
     return String.format (
-        " %2d  %3d  %3d  %04X  %-8s  %-15s%3d   %02X  %d   %d   %d   %d  %4d", slot,
+        " %2d  %3d  %3d  %,7d  %-8s  %-15s%3d   %02X  %d   %d   %d   %d  %4d  %s", slot,
         firstBlock, size, eof, getFileName (), segmentKind[segKind], textAddress,
         segmentNoHeader, machineType, version, intrinsSegs1, intrinsSegs2,
-        totalProcedures);
+        totalProcedures, extra);
   }
 
   // ---------------------------------------------------------------------------------//

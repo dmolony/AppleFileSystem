@@ -3,7 +3,6 @@ package com.bytezone.filesystem;
 import java.util.List;
 
 import com.bytezone.filesystem.AppleFileSystem.FileSystemType;
-import com.bytezone.filesystem.FileProdos.ForkType;
 
 // -----------------------------------------------------------------------------------//
 public interface AppleFile
@@ -47,11 +46,14 @@ public interface AppleFile
 
   public boolean hasData ();
 
-  //  public byte[] read ();
-
-  public DataRecord getDataRecord ();
+  public DataRecord getDataRecord ();               // reads file if required
 
   public void write (byte[] buffer);
 
   public String getErrorMessage ();                 // if file can't be read
+
+  public enum ForkType
+  {
+    DATA, RESOURCE;
+  }
 }

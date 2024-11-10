@@ -11,8 +11,8 @@ class FsDosMaster extends AbstractFileSystem
   {
     super (diskReader, FileSystemType.HYBRID);
 
-    byte[] buffer = fileReader.getDiskBuffer ();
-    byte[] diskBuffer = diskReader.getDiskBuffer ();
+    byte[] buffer = fileReader.getDataRecord ().data ();
+    byte[] diskBuffer = diskReader.getDataRecord ().data ();
 
     //    System.out.printf ("Disk length: %,d%n", diskBuffer.length);
     //    System.out.printf ("File length: %,d%n", buffer.length);

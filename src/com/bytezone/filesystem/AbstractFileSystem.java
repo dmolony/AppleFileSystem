@@ -257,7 +257,7 @@ abstract class AbstractFileSystem implements AppleFileSystem
   public byte[] getDiskBuffer ()
   // ---------------------------------------------------------------------------------//
   {
-    return blockReader.getDiskBuffer ();
+    return blockReader.getDataRecord ().data ();
   }
 
   // ---------------------------------------------------------------------------------//
@@ -265,7 +265,7 @@ abstract class AbstractFileSystem implements AppleFileSystem
   public int getDiskOffset ()
   // ---------------------------------------------------------------------------------//
   {
-    return blockReader.getDiskOffset ();
+    return blockReader.getDataRecord ().offset ();
   }
 
   // ---------------------------------------------------------------------------------//
@@ -273,7 +273,7 @@ abstract class AbstractFileSystem implements AppleFileSystem
   public int getDiskLength ()               // in bytes
   // ---------------------------------------------------------------------------------//
   {
-    return blockReader.getDiskLength ();
+    return blockReader.getDataRecord ().length ();
   }
 
   // ---------------------------------------------------------------------------------//
@@ -307,11 +307,8 @@ abstract class AbstractFileSystem implements AppleFileSystem
   protected AppleFileSystem addEmbeddedFileSystem (AppleFile file, int offset)
   // ---------------------------------------------------------------------------------//
   {
-    //    byte[] buffer = file.read ();
     DataRecord dataRecord = file.getDataRecord ();
 
-    //    BlockReader blockReader =
-    //     new BlockReader (file.getFileName (), buffer, offset, buffer.length - offset);
     BlockReader blockReader = new BlockReader (file.getFileName (), dataRecord.data (),
         dataRecord.offset () + offset, dataRecord.length () - offset);
 

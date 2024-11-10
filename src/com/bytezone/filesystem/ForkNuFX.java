@@ -1,6 +1,5 @@
 package com.bytezone.filesystem;
 
-import com.bytezone.filesystem.FileProdos.ForkType;
 import com.bytezone.utility.Utility;
 
 // -----------------------------------------------------------------------------------//

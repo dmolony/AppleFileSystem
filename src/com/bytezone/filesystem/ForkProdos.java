@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Locale;
 
 import com.bytezone.filesystem.AppleBlock.BlockType;
-import com.bytezone.filesystem.FileProdos.ForkType;
 import com.bytezone.utility.Utility;
 
 // -----------------------------------------------------------------------------------//
