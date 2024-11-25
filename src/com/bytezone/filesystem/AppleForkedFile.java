@@ -8,5 +8,5 @@ public interface AppleForkedFile
 {
   public List<AppleFile> getForks ();
 
-  public String getCatalog ();        // is this needed?
+  public String getCatalogText ();
 }

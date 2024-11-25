@@ -2,6 +2,8 @@ package com.bytezone.filesystem;
 
 import java.util.List;
 
+import com.bytezone.utility.Utility;
+
 // Hybrid file systems should either have no block reader, or a null block reader
 // -----------------------------------------------------------------------------------//
 class FsHybrid extends AbstractFileSystem
@@ -55,6 +57,6 @@ class FsHybrid extends AbstractFileSystem
       text.append ("\n\n");
     }
 
-    return text.toString ();
+    return Utility.rtrim (text);
   }
 }

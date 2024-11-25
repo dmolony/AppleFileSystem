@@ -79,7 +79,20 @@ public class BlockReader
     this.diskLength = diskLength == 143_488 ? 143_360 : diskLength;
 
     dataRecord = new DataRecord (diskBuffer, diskOffset, diskLength);
+    this.name = name;
+  }
 
+  // ---------------------------------------------------------------------------------//
+  public BlockReader (String name, DataRecord dataRecord)
+  // ---------------------------------------------------------------------------------//
+  {
+    this.diskBuffer = dataRecord.data ();
+    this.diskOffset = dataRecord.offset ();
+    this.diskLength = dataRecord.length ();
+
+    Objects.checkFromIndexSize (diskOffset, diskLength, diskBuffer.length);
+
+    this.dataRecord = dataRecord;
     this.name = name;
   }
 
@@ -190,7 +203,7 @@ public class BlockReader
     int blockNo = track * blocksPerTrack + sector;
     AppleBlock block = appleBlocks[blockNo];
 
-    if (block == null)
+    if (block == null)                             // first time here
     {
       block = new BlockDos (fs, track, sector);
       block.setBlockType (isEmpty (block) ? BlockType.EMPTY : BlockType.ORPHAN);

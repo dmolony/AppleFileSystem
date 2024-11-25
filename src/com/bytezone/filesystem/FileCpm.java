@@ -24,7 +24,6 @@ public class FileCpm extends AbstractAppleFile
     this.fileName = fileEntries.get (0).getFileName ();
 
     for (FileEntryCpm fileEntry : fileEntries)
-    {
       for (int blockNo : fileEntry)
       {
         AppleBlock block = getParentFileSystem ().getBlock (blockNo, BlockType.FILE_DATA);
@@ -38,7 +37,6 @@ public class FileCpm extends AbstractAppleFile
           dataBlocks.add (block);
         }
       }
-    }
   }
 
   // ---------------------------------------------------------------------------------//

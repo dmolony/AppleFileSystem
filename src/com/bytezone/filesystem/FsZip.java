@@ -27,8 +27,11 @@ class FsZip extends AbstractFileSystem
   {
     super (blockReader, FileSystemType.ZIP);
 
-    try (ZipInputStream zip = new ZipInputStream (
-        new ByteArrayInputStream (getDiskBuffer (), getDiskOffset (), getDiskLength ()));)
+    DataRecord dataRecord = getDataRecord ();
+
+    try (ZipInputStream zip =
+        new ZipInputStream (new ByteArrayInputStream (dataRecord.data (),
+            dataRecord.offset (), dataRecord.length ()));)
     {
       ZipEntry entry;
       while ((entry = zip.getNextEntry ()) != null)

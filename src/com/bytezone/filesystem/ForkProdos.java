@@ -218,7 +218,7 @@ public class ForkProdos extends AbstractAppleFile
         System.arraycopy (data, 0, temp, 0, data.length);
         data = temp;
       }
-      dataRecord = new DataRecord (data, 0, data.length);
+      dataRecord = new DataRecord (data, 0, eof);
     }
 
     return dataRecord;

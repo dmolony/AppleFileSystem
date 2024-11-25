@@ -27,13 +27,13 @@ public class FsCpm extends AbstractFileSystem
     int maxBlocks = 0;
     int size = 0;
 
-    if (getDiskBuffer ().length == 143_360)
+    if (getDataRecord ().length () == 143_360)
     {
       firstBlock = 12;        // track 3 x (4 blocks per track)
       maxBlocks = 2;          // 2 blocks (half a track)
       size = 8;               // 8 bits per block address
     }
-    else if (getDiskBuffer ().length == 819_200)
+    else if (getDataRecord ().length () == 819_200)
     {
       firstBlock = 16;        // track 4 x (4 blocks per track)
       maxBlocks = 8;          // 8 blocks (2 full tracks)

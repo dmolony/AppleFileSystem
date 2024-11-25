@@ -114,7 +114,7 @@ public class FsPascal extends AbstractFileSystem
   private void addFile2 (AppleFile file)
   // ---------------------------------------------------------------------------------//
   {
-    addFile (file);
+    super.addFile (file);
     freeBlocks -= file.getTotalBlocks ();
   }
 

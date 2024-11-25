@@ -103,17 +103,6 @@ public class FileProdos extends AbstractAppleFile implements AppleForkedFile
   }
 
   // ---------------------------------------------------------------------------------//
-  //  @Override
-  //  public byte[] read ()
-  //  // ---------------------------------------------------------------------------------//
-  //  {
-  //    if (isForkedFile ())
-  //      throw new FileFormatException ("Cannot read() a forked file");
-  //
-  //    return dataFork.read ();
-  //  }
-
-  // ---------------------------------------------------------------------------------//
   @Override
   public DataRecord getDataRecord ()
   // ---------------------------------------------------------------------------------//
@@ -126,7 +115,7 @@ public class FileProdos extends AbstractAppleFile implements AppleForkedFile
 
   // ---------------------------------------------------------------------------------//
   @Override
-  public int getFileLength ()                                         // in bytes (eof)
+  public int getFileLength ()                                       // in bytes (eof)
   // ---------------------------------------------------------------------------------//
   {
     if (isForkedFile ())
@@ -137,7 +126,7 @@ public class FileProdos extends AbstractAppleFile implements AppleForkedFile
 
   // ---------------------------------------------------------------------------------//
   @Override
-  public int getTotalBlocks ()                                    // in blocks
+  public int getTotalBlocks ()                                      // in blocks
   // ---------------------------------------------------------------------------------//
   {
     return fileEntry.blocksUsed;                // size of both forks if GSOS extended
@@ -160,7 +149,7 @@ public class FileProdos extends AbstractAppleFile implements AppleForkedFile
 
   // ---------------------------------------------------------------------------------//
   @Override
-  public String getCatalog ()
+  public String getCatalogText ()
   // ---------------------------------------------------------------------------------//
   {
     if (!isForkedFile)

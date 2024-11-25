@@ -59,7 +59,7 @@ class FsNuFX extends AbstractFileSystem
 
     for (int i = 0; i < totalRecords; i++)
     {
-      FileNuFX file = new FileNuFX (this, getDiskBuffer (), ptr);
+      FileNuFX file = new FileNuFX (this, getDataRecord ().data (), ptr);
 
       if (file.hasDisk () || file.isLibrary ())
         addEmbeddedFileSystem (file, 0);

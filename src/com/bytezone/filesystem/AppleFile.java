@@ -48,6 +48,8 @@ public interface AppleFile
 
   public DataRecord getDataRecord ();               // reads file if required
 
+  public DataRecord getDataRecord (int eof);        // reads file if required
+
   public void write (byte[] buffer);
 
   public String getErrorMessage ();                 // if file can't be read

@@ -13,11 +13,13 @@ public interface AppleFileSystem extends AppleContainer
 
   String getFileName ();
 
-  byte[] getDiskBuffer ();
+  //  byte[] getDiskBuffer ();
 
-  int getDiskOffset ();
+  //  int getDiskOffset ();
 
-  int getDiskLength ();
+  //  int getDiskLength ();
+
+  DataRecord getDataRecord ();
 
   boolean isHybridComponent ();
 

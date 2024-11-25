@@ -156,6 +156,20 @@ public abstract class AbstractAppleFile implements AppleFile
 
   // ---------------------------------------------------------------------------------//
   @Override
+  public DataRecord getDataRecord (int eof)
+  // ---------------------------------------------------------------------------------//
+  {
+    if (dataRecord == null)
+    {
+      byte[] data = parentFileSystem.readBlocks (dataBlocks);
+      dataRecord = new DataRecord (data, 0, eof);
+    }
+
+    return dataRecord;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
   public void write (byte[] buffer)
   // ---------------------------------------------------------------------------------//
   {

@@ -460,7 +460,7 @@ public class FileNuFX extends AbstractAppleFile implements AppleFilePath, AppleF
 
   // ---------------------------------------------------------------------------------//
   @Override
-  public String getCatalog ()
+  public String getCatalogText ()
   // ---------------------------------------------------------------------------------//
   {
     if (!isForkedFile)

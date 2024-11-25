@@ -6,34 +6,29 @@ import com.bytezone.utility.Utility;
 class FileData extends AbstractAppleFile
 // -----------------------------------------------------------------------------------//
 {
-  //  byte[] buffer;
-
   // ---------------------------------------------------------------------------------//
   FileData (FsData fs, byte[] buffer)
+  // ---------------------------------------------------------------------------------//
+  {
+    this (fs, new DataRecord (buffer, 0, buffer.length));
+  }
+
+  // ---------------------------------------------------------------------------------//
+  FileData (FsData fs, DataRecord dataRecord)
   // ---------------------------------------------------------------------------------//
   {
     super (fs);
 
     fileName = "Raw data";
     fileTypeText = "DATA";
-    //    this.buffer = buffer;
-    dataRecord = new DataRecord (buffer, 0, buffer.length);
+    this.dataRecord = dataRecord;
   }
-
-  // ---------------------------------------------------------------------------------//
-  //  @Override
-  //  public byte[] read ()
-  //  // ---------------------------------------------------------------------------------//
-  //  {
-  //    return buffer;
-  //  }
 
   // ---------------------------------------------------------------------------------//
   @Override
   public int getFileLength ()                                 // in bytes (eof)
   // ---------------------------------------------------------------------------------//
   {
-    //    return buffer.length;
     return dataRecord.length ();
   }
 
@@ -42,17 +37,8 @@ class FileData extends AbstractAppleFile
   public int getTotalBlocks ()                            // in blocks
   // ---------------------------------------------------------------------------------//
   {
-    //    return buffer.length / 512;
     return dataRecord.length () / 512;
   }
-
-  // ---------------------------------------------------------------------------------//
-  //  @Override
-  //  public String getCatalogLine ()
-  //  // ---------------------------------------------------------------------------------//
-  //  {
-  //    return fileName;
-  //  }
 
   // ---------------------------------------------------------------------------------//
   @Override

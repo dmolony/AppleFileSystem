@@ -254,27 +254,35 @@ abstract class AbstractFileSystem implements AppleFileSystem
 
   // ---------------------------------------------------------------------------------//
   @Override
-  public byte[] getDiskBuffer ()
+  public DataRecord getDataRecord ()
   // ---------------------------------------------------------------------------------//
   {
-    return blockReader.getDataRecord ().data ();
+    return blockReader.getDataRecord ();
   }
 
   // ---------------------------------------------------------------------------------//
-  @Override
-  public int getDiskOffset ()
-  // ---------------------------------------------------------------------------------//
-  {
-    return blockReader.getDataRecord ().offset ();
-  }
-
-  // ---------------------------------------------------------------------------------//
-  @Override
-  public int getDiskLength ()               // in bytes
-  // ---------------------------------------------------------------------------------//
-  {
-    return blockReader.getDataRecord ().length ();
-  }
+  //  @Override
+  //  public byte[] getDiskBuffer ()
+  //  // ---------------------------------------------------------------------------------//
+  //  {
+  //    return blockReader.getDataRecord ().data ();
+  //  }
+  //
+  //  // ---------------------------------------------------------------------------------//
+  //  @Override
+  //  public int getDiskOffset ()
+  //  // ---------------------------------------------------------------------------------//
+  //  {
+  //    return blockReader.getDataRecord ().offset ();
+  //  }
+  //
+  //  // ---------------------------------------------------------------------------------//
+  //  @Override
+  //  public int getDiskLength ()               // in bytes
+  //  // ---------------------------------------------------------------------------------//
+  //  {
+  //    return blockReader.getDataRecord ().length ();
+  //  }
 
   // ---------------------------------------------------------------------------------//
   @Override
