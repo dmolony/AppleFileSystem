@@ -242,7 +242,11 @@ public class Utility
   // ---------------------------------------------------------------------------------//
   {
     int length = buffer[offset] & 0xFF;
-    return new String (buffer, offset + 1, length);
+    if (offset + 1 + length < buffer.length)
+      return new String (buffer, offset + 1, length);
+
+    System.out.printf ("Error in string parameters");
+    return "";
   }
 
   // ---------------------------------------------------------------------------------//

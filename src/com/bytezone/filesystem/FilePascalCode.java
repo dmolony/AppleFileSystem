@@ -10,8 +10,9 @@ import com.bytezone.utility.Utility;
 public class FilePascalCode extends FilePascal implements AppleContainer
 // -----------------------------------------------------------------------------------//
 {
-  private static final int SIZE_PTR = 0x02;
+  private static final int SIZE_PTR = 0x00;
   private static final int NAME_PTR = 0x40;
+  private static final int KIND_PTR = 0xC0;
 
   private final List<AppleFile> segments = new ArrayList<> ();
   private final List<AppleFileSystem> notPossible = new ArrayList<> (0);
@@ -27,6 +28,9 @@ public class FilePascalCode extends FilePascal implements AppleContainer
     AppleBlock block = fs.getBlock (getFirstBlock ());
     byte[] buffer = block.read ();          // code catalog
 
+    if (!validSegmentDictionary (buffer))
+      return;
+
     int nonameCounter = 0;
     int namePtr = NAME_PTR;
     int sizePtr = SIZE_PTR;
@@ -37,7 +41,8 @@ public class FilePascalCode extends FilePascal implements AppleContainer
       String segmentName = Utility.string (buffer, namePtr, 8).trim ();
       namePtr += 8;
 
-      int size = Utility.unsignedShort (buffer, sizePtr);
+      //      int start = Utility.unsignedShort (buffer, sizePtr);
+      int size = Utility.unsignedShort (buffer, sizePtr + 2);
       sizePtr += 4;
 
       if (size > 0)
@@ -139,6 +144,24 @@ public class FilePascalCode extends FilePascal implements AppleContainer
   // ---------------------------------------------------------------------------------//
   {
     return "NO PATH";
+  }
+
+  // ---------------------------------------------------------------------------------//
+  private boolean validSegmentDictionary (byte[] buffer)
+  // ---------------------------------------------------------------------------------//
+  {
+    int kindPtr = KIND_PTR;
+
+    for (int i = 0; i < 16; i++)
+    {
+      int kind = Utility.unsignedShort (buffer, kindPtr);
+      kindPtr += 2;
+
+      if (kind > 7)                 // entire file is probably just 6502 code
+        return false;
+    }
+
+    return true;
   }
 
   // ---------------------------------------------------------------------------------//
