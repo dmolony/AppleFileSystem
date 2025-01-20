@@ -72,7 +72,7 @@ public class FilePascalCodeSegment extends AbstractAppleFile
     intrinsSegs1 = Utility.unsignedShort (catalogBuffer, 0x120 + seq * 4);
     intrinsSegs2 = Utility.unsignedShort (catalogBuffer, 0x120 + seq * 4 + 2);
 
-    DataRecord dataRecord = getDataRecord ();
+    Buffer dataRecord = getFileBuffer ();
     //    byte[] dataBuffer = read ();
 
     totalProcedures = dataRecord.data ()[eof - 1] & 0xFF;

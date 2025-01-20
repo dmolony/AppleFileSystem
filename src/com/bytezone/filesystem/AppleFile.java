@@ -46,9 +46,9 @@ public interface AppleFile
 
   public boolean hasData ();
 
-  public DataRecord getDataRecord ();               // reads file if required
+  public Buffer getFileBuffer ();                   // reads file if required
 
-  public DataRecord getDataRecord (int eof);        // reads file if required
+  public Buffer getFileBuffer (int eof);            // reads file if required
 
   public void write (byte[] buffer);
 

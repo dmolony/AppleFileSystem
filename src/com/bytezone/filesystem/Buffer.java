@@ -3,7 +3,7 @@ package com.bytezone.filesystem;
 import com.bytezone.utility.Utility;
 
 // -----------------------------------------------------------------------------------//
-public record DataRecord (byte[] data, int offset, int length)
+public record Buffer (byte[] data, int offset, int length)
 // -----------------------------------------------------------------------------------//
 {
   // ---------------------------------------------------------------------------------//
@@ -14,7 +14,7 @@ public record DataRecord (byte[] data, int offset, int length)
   }
 
   // ---------------------------------------------------------------------------------//
-  public boolean equals (DataRecord other)
+  public boolean equals (Buffer other)
   // ---------------------------------------------------------------------------------//
   {
     return data == other.data && offset == other.offset && length == other.length;

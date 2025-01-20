@@ -20,7 +20,7 @@ public class FilePascalProcedure extends AbstractAppleFile
   int parmSize;
   int dataSize;
 
-  DataRecord record;
+  Buffer record;
   FilePascalSegment parent;
 
   // ---------------------------------------------------------------------------------//
@@ -53,7 +53,7 @@ public class FilePascalProcedure extends AbstractAppleFile
       int start = procHeader - 2 - entryIC;
       dataLength = entryIC + 4;
 
-      dataRecord = new DataRecord (buffer, start, dataLength);
+      dataRecord = new Buffer (buffer, start, dataLength);
     }
   }
 

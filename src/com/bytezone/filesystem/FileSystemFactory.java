@@ -38,7 +38,7 @@ public class FileSystemFactory
 
     if (debug)
     {
-      DataRecord dataRecord = blockReader.getDataRecord ();
+      Buffer dataRecord = blockReader.getDataRecord ();
       System.out.println ("-----------------------------------------------------");
       //      System.out.printf ("Checking: %s%n", blockReader.getPath ());
       System.out.printf ("Length  : %,d%n", dataRecord.length ());

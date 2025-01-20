@@ -71,7 +71,7 @@ public class FilePascalSegment extends AbstractAppleFile implements AppleContain
     intrinsSegs1 = Utility.unsignedShort (catalogBuffer, 0x120 + seq * 4);
     intrinsSegs2 = Utility.unsignedShort (catalogBuffer, 0x120 + seq * 4 + 2);
 
-    DataRecord dataRecord = getDataRecord (eof);
+    Buffer dataRecord = getFileBuffer (eof);
     byte[] dataBuffer = dataRecord.data ();
 
     totalProcedures = dataBuffer[eof - 1] & 0xFF;

@@ -254,7 +254,7 @@ abstract class AbstractFileSystem implements AppleFileSystem
 
   // ---------------------------------------------------------------------------------//
   @Override
-  public DataRecord getDataRecord ()
+  public Buffer getDiskBuffer ()
   // ---------------------------------------------------------------------------------//
   {
     return blockReader.getDataRecord ();
@@ -315,7 +315,7 @@ abstract class AbstractFileSystem implements AppleFileSystem
   protected AppleFileSystem addEmbeddedFileSystem (AppleFile file, int offset)
   // ---------------------------------------------------------------------------------//
   {
-    DataRecord dataRecord = file.getDataRecord ();
+    Buffer dataRecord = file.getFileBuffer ();
 
     BlockReader blockReader = new BlockReader (file.getFileName (), dataRecord.data (),
         dataRecord.offset () + offset, dataRecord.length () - offset);

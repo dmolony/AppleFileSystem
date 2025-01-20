@@ -104,13 +104,13 @@ public class FileProdos extends AbstractAppleFile implements AppleForkedFile
 
   // ---------------------------------------------------------------------------------//
   @Override
-  public DataRecord getDataRecord ()
+  public Buffer getFileBuffer ()
   // ---------------------------------------------------------------------------------//
   {
     if (isForkedFile ())
       throw new FileFormatException ("Cannot getDataRecord() on a forked file");
 
-    return dataFork.getDataRecord ();
+    return dataFork.getFileBuffer ();
   }
 
   // ---------------------------------------------------------------------------------//

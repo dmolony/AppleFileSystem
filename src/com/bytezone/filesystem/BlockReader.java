@@ -27,7 +27,7 @@ public class BlockReader
   private final byte[] diskBuffer;
   private final int diskOffset;
   private final int diskLength;
-  private final DataRecord dataRecord;
+  private final Buffer dataRecord;
 
   private String name;
 
@@ -56,7 +56,7 @@ public class BlockReader
     diskOffset = 0;
     diskLength = buffer.length == 143_488 ? 143_360 : buffer.length;
 
-    dataRecord = new DataRecord (buffer, diskOffset, diskLength);
+    dataRecord = new Buffer (buffer, diskOffset, diskLength);
 
     name = path.toFile ().getName ();
   }
@@ -78,12 +78,12 @@ public class BlockReader
     this.diskOffset = diskOffset;
     this.diskLength = diskLength == 143_488 ? 143_360 : diskLength;
 
-    dataRecord = new DataRecord (diskBuffer, diskOffset, diskLength);
+    dataRecord = new Buffer (diskBuffer, diskOffset, diskLength);
     this.name = name;
   }
 
   // ---------------------------------------------------------------------------------//
-  public BlockReader (String name, DataRecord dataRecord)
+  public BlockReader (String name, Buffer dataRecord)
   // ---------------------------------------------------------------------------------//
   {
     this.diskBuffer = dataRecord.data ();
@@ -408,7 +408,7 @@ public class BlockReader
   }
 
   // ---------------------------------------------------------------------------------//
-  DataRecord getDataRecord ()
+  Buffer getDataRecord ()
   // ---------------------------------------------------------------------------------//
   {
     return dataRecord;

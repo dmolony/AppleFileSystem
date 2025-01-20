@@ -288,7 +288,7 @@ public class FileNuFX extends AbstractAppleFile implements AppleFilePath, AppleF
 
   // ---------------------------------------------------------------------------------//
   @Override
-  public DataRecord getDataRecord ()
+  public Buffer getFileBuffer ()
   // ---------------------------------------------------------------------------------//
   {
     if (isForkedFile)
@@ -302,11 +302,11 @@ public class FileNuFX extends AbstractAppleFile implements AppleFilePath, AppleF
       if (isDiskImage)
       {
         byte[] buffer = diskImageThread.getData ();
-        dataRecord = new DataRecord (buffer, 0, buffer.length);
+        dataRecord = new Buffer (buffer, 0, buffer.length);
         return dataRecord;
       }
 
-      dataRecord = dataFork.getDataRecord ();
+      dataRecord = dataFork.getFileBuffer ();
       return dataRecord;
     }
     catch (Exception e)

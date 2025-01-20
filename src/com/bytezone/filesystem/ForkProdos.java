@@ -201,7 +201,7 @@ public class ForkProdos extends AbstractAppleFile
 
   // ---------------------------------------------------------------------------------//
   @Override
-  public DataRecord getDataRecord ()
+  public Buffer getFileBuffer ()
   // ---------------------------------------------------------------------------------//
   {
     // maybe this routine should always declare the buffer and pass it to read()
@@ -218,7 +218,7 @@ public class ForkProdos extends AbstractAppleFile
         System.arraycopy (data, 0, temp, 0, data.length);
         data = temp;
       }
-      dataRecord = new DataRecord (data, 0, eof);
+      dataRecord = new Buffer (data, 0, eof);
     }
 
     return dataRecord;

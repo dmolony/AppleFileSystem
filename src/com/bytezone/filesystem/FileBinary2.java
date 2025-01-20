@@ -286,7 +286,7 @@ public class FileBinary2 extends AbstractAppleFile
 
   // ---------------------------------------------------------------------------------//
   @Override
-  public DataRecord getDataRecord ()
+  public Buffer getFileBuffer ()
   // ---------------------------------------------------------------------------------//
   {
     if (dataRecord != null)
@@ -299,12 +299,12 @@ public class FileBinary2 extends AbstractAppleFile
       byte[] buffer = getParentFileSystem ().readBlocks (dataBlocks);
 
       byte[] unsqueeze = squeeze.unSqueeze (buffer);
-      dataRecord = new DataRecord (unsqueeze, 0, unsqueeze.length);
+      dataRecord = new Buffer (unsqueeze, 0, unsqueeze.length);
       return dataRecord;
     }
 
     byte[] buffer = parentFileSystem.readBlocks (dataBlocks);
-    dataRecord = new DataRecord (buffer, 0, buffer.length);
+    dataRecord = new Buffer (buffer, 0, buffer.length);
     return dataRecord;
   }
 

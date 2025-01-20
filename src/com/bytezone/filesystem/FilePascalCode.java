@@ -41,7 +41,6 @@ public class FilePascalCode extends FilePascal implements AppleContainer
       String segmentName = Utility.string (buffer, namePtr, 8).trim ();
       namePtr += 8;
 
-      //      int start = Utility.unsignedShort (buffer, sizePtr);
       int size = Utility.unsignedShort (buffer, sizePtr + 2);
       sizePtr += 4;
 
@@ -50,7 +49,8 @@ public class FilePascalCode extends FilePascal implements AppleContainer
         if (segmentName.length () == 0)
           segmentName = "NONAME-" + ++nonameCounter;
 
-        FilePascalSegment segment = new FilePascalSegment (this, buffer, i, segmentName);
+        FilePascalSegment segment =
+            new FilePascalSegment (this, buffer, i, segmentName);
         segments.add (segment);
       }
     }
@@ -151,9 +151,17 @@ public class FilePascalCode extends FilePascal implements AppleContainer
   // ---------------------------------------------------------------------------------//
   {
     int kindPtr = KIND_PTR;
+    int sizePtr = SIZE_PTR;
 
     for (int i = 0; i < 16; i++)
     {
+      int start = Utility.unsignedShort (buffer, sizePtr);
+      int size = Utility.unsignedShort (buffer, sizePtr + 2);
+      sizePtr += 4;
+
+      if (start == 0 && size == 0)
+        break;
+
       int kind = Utility.unsignedShort (buffer, kindPtr);
       kindPtr += 2;
 

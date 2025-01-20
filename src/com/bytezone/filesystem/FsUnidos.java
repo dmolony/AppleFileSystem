@@ -16,8 +16,8 @@ class FsUnidos extends AbstractFileSystem
   {
     super (blockReader, FileSystemType.UNIDOS);
 
-    byte[] buffer = getDataRecord ().data ();
-    int offset = getDataRecord ().offset ();
+    byte[] buffer = getDiskBuffer ().data ();
+    int offset = getDiskBuffer ().offset ();
 
     //    addFile (new FileUnidos (this, "DISK 1", buffer, offset, UNIDOS_SIZE));
     //    addFile (new FileUnidos (this, "DISK 2", buffer, offset + UNIDOS_SIZE, UNIDOS_SIZE));

@@ -22,7 +22,7 @@ class FsGzip extends AbstractFileSystem
   {
     super (blockReader, FileSystemType.GZIP);
 
-    DataRecord dataRecord = getDataRecord ();
+    Buffer dataRecord = getDiskBuffer ();
 
     try (GZIPInputStream zip = new GZIPInputStream (  //
         new ByteArrayInputStream (                    //

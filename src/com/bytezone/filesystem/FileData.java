@@ -10,11 +10,11 @@ class FileData extends AbstractAppleFile
   FileData (FsData fs, byte[] buffer)
   // ---------------------------------------------------------------------------------//
   {
-    this (fs, new DataRecord (buffer, 0, buffer.length));
+    this (fs, new Buffer (buffer, 0, buffer.length));
   }
 
   // ---------------------------------------------------------------------------------//
-  FileData (FsData fs, DataRecord dataRecord)
+  FileData (FsData fs, Buffer dataRecord)
   // ---------------------------------------------------------------------------------//
   {
     super (fs);

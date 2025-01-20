@@ -19,7 +19,7 @@ public interface AppleFileSystem extends AppleContainer
 
   //  int getDiskLength ();
 
-  DataRecord getDataRecord ();
+  Buffer getDiskBuffer ();
 
   boolean isHybridComponent ();
 

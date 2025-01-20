@@ -71,7 +71,6 @@ public class FilePascal extends AbstractAppleFile
   public int getTotalBlocks ()                   // in blocks
   // ---------------------------------------------------------------------------------//
   {
-    //    return lastBlock - firstBlock;
     return dataBlocks.size ();
   }
 
@@ -85,10 +84,10 @@ public class FilePascal extends AbstractAppleFile
 
   // ---------------------------------------------------------------------------------//
   @Override
-  public DataRecord getDataRecord ()
+  public Buffer getFileBuffer ()
   // ---------------------------------------------------------------------------------//
   {
-    return getDataRecord (getFileLength ());
+    return getFileBuffer (getFileLength ());
   }
 
   // ---------------------------------------------------------------------------------//
