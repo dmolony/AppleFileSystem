@@ -13,12 +13,6 @@ public interface AppleFileSystem extends AppleContainer
 
   String getFileName ();
 
-  //  byte[] getDiskBuffer ();
-
-  //  int getDiskOffset ();
-
-  //  int getDiskLength ();
-
   Buffer getDiskBuffer ();
 
   boolean isHybridComponent ();
@@ -59,7 +53,7 @@ public interface AppleFileSystem extends AppleContainer
 
   byte[] readBlocks (List<AppleBlock> blocks);
 
-  void writeBlock (AppleBlock block, byte[] buffer);
+  void writeBlock (AppleBlock block);
 
   void writeBlocks (List<AppleBlock> blocks, byte[] buffer);
 

@@ -20,6 +20,7 @@ public class FileSystemFactory
 
   private List<AppleFileSystem> fileSystems;
   private List<String> errorMessages;
+
   private boolean debug = false;
 
   // ---------------------------------------------------------------------------------//
@@ -27,6 +28,13 @@ public class FileSystemFactory
   // ---------------------------------------------------------------------------------//
   {
     return getFileSystem (new BlockReader (path));
+  }
+
+  // ---------------------------------------------------------------------------------//
+  public AppleFileSystem getFileSystem (String name, byte[] buffer)
+  // ---------------------------------------------------------------------------------//
+  {
+    return getFileSystem (new BlockReader (name, buffer));
   }
 
   // ---------------------------------------------------------------------------------//
@@ -38,7 +46,7 @@ public class FileSystemFactory
 
     if (debug)
     {
-      Buffer dataRecord = blockReader.getDataRecord ();
+      Buffer dataRecord = blockReader.getDiskBuffer ();
       System.out.println ("-----------------------------------------------------");
       //      System.out.printf ("Checking: %s%n", blockReader.getPath ());
       System.out.printf ("Length  : %,d%n", dataRecord.length ());
@@ -125,7 +133,7 @@ public class FileSystemFactory
   private void getDos31 (BlockReader blockReader)
   // ---------------------------------------------------------------------------------//
   {
-    if (blockReader.getDataRecord ().length () == SECTOR_13_SIZE)
+    if (blockReader.getDiskBuffer ().length () == SECTOR_13_SIZE)
     {
       try
       {
@@ -154,7 +162,7 @@ public class FileSystemFactory
 
     List<FsDos3> fsList = new ArrayList<> (2);
 
-    if (blockReader.getDataRecord ().length () == SECTOR_16_SIZE)
+    if (blockReader.getDiskBuffer ().length () == SECTOR_16_SIZE)
       for (int i = 0; i < 2; i++)
         try
         {
@@ -169,7 +177,7 @@ public class FileSystemFactory
           if (fs.getTotalCatalogBlocks () > 0)
           {
             fsList.add (fs);
-            if (fs.getTotalCatalogBlocks () == 15)        // can't get better than this
+            if (fs.getTotalCatalogBlocks () >= 15)        // can't get better than this
               break;
           }
         }
@@ -189,11 +197,12 @@ public class FileSystemFactory
         break;
 
       case 2:
-        if (fsList.get (0).getTotalCatalogBlocks () > fsList.get (1)
-            .getTotalCatalogBlocks ())
-          fileSystems.add (fsList.get (0));
+        FsDos3 fs0 = fsList.get (0);
+        FsDos3 fs1 = fsList.get (1);
+        if (fs0.getTotalCatalogBlocks () > fs1.getTotalCatalogBlocks ())
+          fileSystems.add (fs0);
         else
-          fileSystems.add (fsList.get (1));
+          fileSystems.add (fs1);
     }
 
     if (debug)
@@ -204,13 +213,13 @@ public class FileSystemFactory
   private void getDos4 (BlockReader blockReader)
   // ---------------------------------------------------------------------------------//
   {
-    if (blockReader.getDataRecord ().length () == SECTOR_16_SIZE
-        || blockReader.getDataRecord ().length () == SECTOR_32_SIZE)
+    if (blockReader.getDiskBuffer ().length () == SECTOR_16_SIZE
+        || blockReader.getDiskBuffer ().length () == SECTOR_32_SIZE)
       try
       {
         BlockReader dos4Reader = new BlockReader (blockReader);
 
-        if (blockReader.getDataRecord ().length () == SECTOR_16_SIZE)
+        if (blockReader.getDiskBuffer ().length () == SECTOR_16_SIZE)
           dos4Reader.setParameters (256, AddressType.SECTOR, 0, 16);
         else
           dos4Reader.setParameters (256, AddressType.SECTOR, 0, 32);
@@ -231,7 +240,7 @@ public class FileSystemFactory
   private void getUnidos (BlockReader blockReader)
   // ---------------------------------------------------------------------------------//
   {
-    if (blockReader.getDataRecord ().length () == UNIDOS_SIZE)
+    if (blockReader.getDiskBuffer ().length () == UNIDOS_SIZE)
       try
       {
         BlockReader unidosReader = new BlockReader (blockReader);
@@ -254,7 +263,7 @@ public class FileSystemFactory
   // ---------------------------------------------------------------------------------//
   {
     // should check for common HD sizes
-    if (blockReader.getDataRecord ().length () >= SECTOR_16_SIZE)
+    if (blockReader.getDiskBuffer ().length () >= SECTOR_16_SIZE)
       for (int i = 0; i < 2; i++)
         try
         {
@@ -283,7 +292,7 @@ public class FileSystemFactory
   // ---------------------------------------------------------------------------------//
   {
     // should check for common HD sizes
-    if (blockReader.getDataRecord ().length () >= SECTOR_16_SIZE)
+    if (blockReader.getDiskBuffer ().length () >= SECTOR_16_SIZE)
       for (int i = 0; i < 2; i++)
         try
         {
@@ -313,7 +322,7 @@ public class FileSystemFactory
   private void getCpm (BlockReader blockReader)
   // ---------------------------------------------------------------------------------//
   {
-    if (blockReader.getDataRecord ().length () == SECTOR_16_SIZE)
+    if (blockReader.getDiskBuffer ().length () == SECTOR_16_SIZE)
       try
       {
         BlockReader cpmReader = new BlockReader (blockReader);
@@ -336,7 +345,7 @@ public class FileSystemFactory
   private void getCpm2 (BlockReader blockReader)
   // ---------------------------------------------------------------------------------//
   {
-    if (blockReader.getDataRecord ().length () == CPAM_SIZE)
+    if (blockReader.getDiskBuffer ().length () == CPAM_SIZE)
       try
       {
         BlockReader cpamReader = new BlockReader (blockReader);

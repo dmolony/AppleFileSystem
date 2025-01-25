@@ -7,11 +7,15 @@ import java.util.Optional;
 public interface AppleContainer
 // -----------------------------------------------------------------------------------//
 {
-  public void addFile (AppleFile file);
+  void addFile (AppleFile file);
 
   public List<AppleFile> getFiles ();
 
   public Optional<AppleFile> getFile (String fileName);
+
+  public void putFile (AppleFile file);
+
+  public void deleteFile (AppleFile file);
 
   public void addFileSystem (AppleFileSystem fileSystem);
 

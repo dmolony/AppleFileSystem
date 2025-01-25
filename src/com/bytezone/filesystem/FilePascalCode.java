@@ -49,8 +49,7 @@ public class FilePascalCode extends FilePascal implements AppleContainer
         if (segmentName.length () == 0)
           segmentName = "NONAME-" + ++nonameCounter;
 
-        FilePascalSegment segment =
-            new FilePascalSegment (this, buffer, i, segmentName);
+        FilePascalSegment segment = new FilePascalSegment (this, buffer, i, segmentName);
         segments.add (segment);
       }
     }
@@ -99,6 +98,22 @@ public class FilePascalCode extends FilePascal implements AppleContainer
         return Optional.of (segment);
 
     return Optional.empty ();
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
+  public void putFile (AppleFile file)
+  // ---------------------------------------------------------------------------------//
+  {
+    throw new UnsupportedOperationException ("cannot add File to PascalCode");
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
+  public void deleteFile (AppleFile file)
+  // ---------------------------------------------------------------------------------//
+  {
+    throw new UnsupportedOperationException ("cannot deleteFile() in PascalCode");
   }
 
   // ---------------------------------------------------------------------------------//

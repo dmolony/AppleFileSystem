@@ -61,6 +61,7 @@ public class FsDos3 extends FsDos
 
       buffer = catalogSector.read ();
       int ptr = 11;
+      int index = 0;
 
       while (ptr < buffer.length && buffer[ptr] != 0)
       {
@@ -77,6 +78,8 @@ public class FsDos3 extends FsDos
           try
           {
             FileDos3 file = new FileDos3 (this, buffer, ptr);
+            file.catalogEntryBlock = catalogSector;
+            file.catalogEntryIndex = index;
             addFile (file);
           }
           catch (FileFormatException e)
@@ -91,6 +94,7 @@ public class FsDos3 extends FsDos
           }
 
         ptr += ENTRY_SIZE;
+        index++;
       }
     }
 
@@ -156,5 +160,33 @@ public class FsDos3 extends FsDos
     }
 
     return Utility.rtrim (text);
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
+  public void deleteFile (AppleFile file)
+  // ---------------------------------------------------------------------------------//
+  {
+    if (file.getParentFileSystem () != this)
+      throw new InvalidParentFileSystemException ("file not part of this File System");
+
+    List<AppleBlock> blocks = file.getBlocks ();
+    for (AppleBlock block : blocks)
+    {
+      System.out.println (block);
+      volumeBitMap.clear (block.getBlockNo ());
+    }
+
+    AppleBlock catalogSector = ((FileDos3) file).catalogEntryBlock;
+    byte[] buffer = catalogSector.read ();
+    int ptr = 11 + ((FileDos3) file).catalogEntryIndex * ENTRY_SIZE;
+    buffer[ptr + 0x20] = buffer[ptr];
+    buffer[ptr] = (byte) 0xFF;            // deleted file
+
+    // write the VTOC and catalog sectors
+    //    vtoc.write??
+    //    catalogSector.write (buffer);
+
+    System.out.println ("DOS 3 AbstractFileSystem.deleteFile() not written yet");
   }
 }

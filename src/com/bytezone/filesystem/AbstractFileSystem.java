@@ -181,15 +181,23 @@ abstract class AbstractFileSystem implements AppleFileSystem
   public byte[] readBlocks (List<AppleBlock> blocks)
   // ---------------------------------------------------------------------------------//
   {
-    return blockReader.read (blocks);
+    int blockSize = blockReader.getBlockSize ();
+    byte[] buffer = new byte[blocks.size () * blockSize];
+
+    int count = 0;
+    for (AppleBlock block : blocks)
+      System.arraycopy (blockReader.read (block), 0, buffer, blockSize * count++,
+          blockSize);
+
+    return buffer;
   }
 
   // ---------------------------------------------------------------------------------//
   @Override
-  public void writeBlock (AppleBlock block, byte[] buffer)
+  public void writeBlock (AppleBlock block)
   // ---------------------------------------------------------------------------------//
   {
-    blockReader.write (block, buffer);
+    blockReader.write (block);
   }
 
   // ---------------------------------------------------------------------------------//
@@ -197,7 +205,12 @@ abstract class AbstractFileSystem implements AppleFileSystem
   public void writeBlocks (List<AppleBlock> blocks, byte[] buffer)
   // ---------------------------------------------------------------------------------//
   {
-    blockReader.write (blocks, buffer);
+    int blockSize = blockReader.getBlockSize ();
+
+    int count = 0;
+    for (AppleBlock block : blocks)
+      System.arraycopy (buffer, blockSize * count++, blockReader.read (block), 0,
+          blockSize);
   }
 
   // ---------------------------------------------------------------------------------//
@@ -254,35 +267,30 @@ abstract class AbstractFileSystem implements AppleFileSystem
 
   // ---------------------------------------------------------------------------------//
   @Override
-  public Buffer getDiskBuffer ()
+  public void putFile (AppleFile file)
   // ---------------------------------------------------------------------------------//
   {
-    return blockReader.getDataRecord ();
+    System.out.println ("AbstractFileSystem.putFile() not written yet");
   }
 
   // ---------------------------------------------------------------------------------//
-  //  @Override
-  //  public byte[] getDiskBuffer ()
-  //  // ---------------------------------------------------------------------------------//
-  //  {
-  //    return blockReader.getDataRecord ().data ();
-  //  }
-  //
-  //  // ---------------------------------------------------------------------------------//
-  //  @Override
-  //  public int getDiskOffset ()
-  //  // ---------------------------------------------------------------------------------//
-  //  {
-  //    return blockReader.getDataRecord ().offset ();
-  //  }
-  //
-  //  // ---------------------------------------------------------------------------------//
-  //  @Override
-  //  public int getDiskLength ()               // in bytes
-  //  // ---------------------------------------------------------------------------------//
-  //  {
-  //    return blockReader.getDataRecord ().length ();
-  //  }
+  @Override
+  public void deleteFile (AppleFile file)
+  // ---------------------------------------------------------------------------------//
+  {
+    if (file.getParentFileSystem () != this)
+      throw new InvalidParentFileSystemException ("file not part of this File System");
+
+    System.out.println ("AbstractFileSystem.deleteFile() not written yet");
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
+  public Buffer getDiskBuffer ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return blockReader.getDiskBuffer ();
+  }
 
   // ---------------------------------------------------------------------------------//
   @Override

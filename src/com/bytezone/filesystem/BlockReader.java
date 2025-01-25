@@ -10,6 +10,10 @@ import com.bytezone.filesystem.AppleBlock.BlockType;
 import com.bytezone.utility.Utility;
 
 // -----------------------------------------------------------------------------------//
+// Convert a byte array (disk buffer) into an array of AppleBlocks. The type of
+// file system is not known at this point. Block size and interleave must be specified
+// before use.
+// -----------------------------------------------------------------------------------//
 public class BlockReader
 // -----------------------------------------------------------------------------------//
 {
@@ -24,9 +28,9 @@ public class BlockReader
   //      { 0, 9, 3, 12, 6, 15, 1, 10, 4, 13, 7, 8, 2, 11, 5, 14 },       // CPM Prodos
   //      { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15 } };     // test
 
-  private final byte[] diskBuffer;
-  private final int diskOffset;
-  private final int diskLength;
+  //  private final byte[] diskBuffer;
+  //  private final int diskOffset;
+  //  private final int diskLength;
   private final Buffer dataRecord;
 
   private String name;
@@ -52,11 +56,11 @@ public class BlockReader
   {
     byte[] buffer = readAllBytes (path);
 
-    diskBuffer = buffer;
-    diskOffset = 0;
-    diskLength = buffer.length == 143_488 ? 143_360 : buffer.length;
+    //    diskBuffer = buffer;
+    //    diskOffset = 0;
+    int diskLength = buffer.length == 143_488 ? 143_360 : buffer.length;
 
-    dataRecord = new Buffer (buffer, diskOffset, diskLength);
+    dataRecord = new Buffer (buffer, 0, diskLength);
 
     name = path.toFile ().getName ();
   }
@@ -74,9 +78,10 @@ public class BlockReader
   {
     Objects.checkFromIndexSize (diskOffset, diskLength, diskBuffer.length);
 
-    this.diskBuffer = diskBuffer;
-    this.diskOffset = diskOffset;
-    this.diskLength = diskLength == 143_488 ? 143_360 : diskLength;
+    //    this.diskBuffer = diskBuffer;
+    //    this.diskOffset = diskOffset;
+    if (diskLength == 143_488)
+      diskLength = 143_360;
 
     dataRecord = new Buffer (diskBuffer, diskOffset, diskLength);
     this.name = name;
@@ -86,13 +91,13 @@ public class BlockReader
   public BlockReader (String name, Buffer dataRecord)
   // ---------------------------------------------------------------------------------//
   {
-    this.diskBuffer = dataRecord.data ();
-    this.diskOffset = dataRecord.offset ();
-    this.diskLength = dataRecord.length ();
+    //    this.diskBuffer = dataRecord.data ();
+    //    this.diskOffset = dataRecord.offset ();
+    //    this.diskLength = dataRecord.length ();
 
-    Objects.checkFromIndexSize (diskOffset, diskLength, diskBuffer.length);
+    //    Objects.checkFromIndexSize (diskOffset, diskLength, diskBuffer.length);
 
-    this.dataRecord = dataRecord;
+    this.dataRecord = dataRecord.copyBuffer ();
     this.name = name;
   }
 
@@ -100,11 +105,11 @@ public class BlockReader
   BlockReader (BlockReader original)
   // ---------------------------------------------------------------------------------//
   {
-    this.diskBuffer = original.diskBuffer;
-    this.diskOffset = original.diskOffset;
-    this.diskLength = original.diskLength;
+    //    this.diskBuffer = original.diskBuffer;
+    //    this.diskOffset = original.diskOffset;
+    //    this.diskLength = original.diskLength;
 
-    dataRecord = original.dataRecord;
+    dataRecord = original.dataRecord.copyBuffer ();
 
     this.name = original.name;
   }
@@ -120,7 +125,7 @@ public class BlockReader
     this.blocksPerTrack = blocksPerTrack;
 
     bytesPerTrack = bytesPerBlock * blocksPerTrack;
-    totalBlocks = (diskLength - 1) / bytesPerBlock + 1;   // includes partial blocks
+    totalBlocks = (dataRecord.length () - 1) / bytesPerBlock + 1;   // includes partial blocks
 
     appleBlocks = new AppleBlock[totalBlocks];
   }
@@ -144,16 +149,17 @@ public class BlockReader
   boolean isMagic (int offset, byte[] magic)
   // ---------------------------------------------------------------------------------//
   {
-    return Utility.isMagic (diskBuffer, diskOffset + offset, magic);
+    return Utility.isMagic (dataRecord.data (), dataRecord.offset () + offset, magic);
   }
 
   // ---------------------------------------------------------------------------------//
   boolean byteAt (int offset, byte magic)
   // ---------------------------------------------------------------------------------//
   {
-    return diskBuffer[diskOffset + offset] == magic;
+    return dataRecord.data ()[dataRecord.offset () + offset] == magic;
   }
 
+  // this routine always reads the block (in order to set block type)
   // ---------------------------------------------------------------------------------//
   public AppleBlock getBlock (AppleFileSystem fs, int blockNo)
   // ---------------------------------------------------------------------------------//
@@ -172,6 +178,7 @@ public class BlockReader
     return block;
   }
 
+  // this routine never reads the block (block type is provided)
   // ---------------------------------------------------------------------------------//
   AppleBlock getBlock (AppleFileSystem fs, int blockNo, BlockType blockType)
   // ---------------------------------------------------------------------------------//
@@ -191,6 +198,7 @@ public class BlockReader
     return block;
   }
 
+  // this routine always reads the sector (in order to set block type)
   // ---------------------------------------------------------------------------------//
   public AppleBlock getSector (AppleFileSystem fs, int track, int sector)
   // ---------------------------------------------------------------------------------//
@@ -213,6 +221,7 @@ public class BlockReader
     return block;
   }
 
+  // this routine never reads the sector (block type is provided)
   // ---------------------------------------------------------------------------------//
   AppleBlock getSector (AppleFileSystem fs, int track, int sector, BlockType blockType)
   // ---------------------------------------------------------------------------------//
@@ -269,9 +278,10 @@ public class BlockReader
 
     read (block, blockBuffer, 0);
 
-    return blockBuffer;
+    return blockBuffer;         // this will be placed in the block's local buffer
   }
 
+  // this doesn't belong here (BlockReader should only deal with single blocks)
   // ---------------------------------------------------------------------------------//
   public byte[] read (List<AppleBlock> blocks)
   // ---------------------------------------------------------------------------------//
@@ -284,12 +294,17 @@ public class BlockReader
     return blockBuffer;
   }
 
+  // copy the needed disk buffer bytes into the provided local buffer
+  // this should fill the block's local buffer
   // ---------------------------------------------------------------------------------//
   private void read (AppleBlock block, byte[] blockBuffer, int bufferOffset)
   // ---------------------------------------------------------------------------------//
   {
     if (block == null)        // sparse file
       return;
+
+    byte[] diskBuffer = dataRecord.data ();
+    int diskOffset = dataRecord.offset ();
 
     switch (addressType)
     {
@@ -352,24 +367,25 @@ public class BlockReader
   }
 
   // ---------------------------------------------------------------------------------//
-  public void write (AppleBlock block, byte[] blockBuffer)
-  // ---------------------------------------------------------------------------------//
-  {
-    write (block, blockBuffer, 0);
-  }
-
-  // ---------------------------------------------------------------------------------//
-  public void write (List<AppleBlock> blocks, byte[] blockBuffer)
+  public void write (List<AppleBlock> blocks)
   // ---------------------------------------------------------------------------------//
   {
     for (int i = 0; i < blocks.size (); i++)
-      write (blocks.get (i), blockBuffer, i * bytesPerBlock);
+      //      write (blocks.get (i), blockBuffer, i * bytesPerBlock);
+      write (blocks.get (i));
   }
 
+  // write the block's local buffer back to the disk buffer
   // ---------------------------------------------------------------------------------//
-  private void write (AppleBlock block, byte[] blockBuffer, int bufferOffset)
+  public void write (AppleBlock block)
   // ---------------------------------------------------------------------------------//
   {
+    byte[] blockBuffer = block.read ();
+    int bufferOffset = 0;     // fix this later
+
+    byte[] diskBuffer = dataRecord.data ();
+    int diskOffset = dataRecord.offset ();
+
     switch (addressType)
     {
       case SECTOR:
@@ -387,6 +403,7 @@ public class BlockReader
           break;
         }
 
+        // non-zero interleave
         int base = block.getTrackNo () * bytesPerTrack;
         int sectorsPerBlock = bytesPerBlock / 256;
 
@@ -408,39 +425,11 @@ public class BlockReader
   }
 
   // ---------------------------------------------------------------------------------//
-  Buffer getDataRecord ()
+  Buffer getDiskBuffer ()
   // ---------------------------------------------------------------------------------//
   {
     return dataRecord;
   }
-
-  // ---------------------------------------------------------------------------------//
-  //  byte[] getDiskBuffer ()
-  //  // ---------------------------------------------------------------------------------//
-  //  {
-  //    return diskBuffer;
-  //  }
-  //
-  //  // ---------------------------------------------------------------------------------//
-  //  int getDiskOffset ()
-  //  // ---------------------------------------------------------------------------------//
-  //  {
-  //    return diskOffset;
-  //  }
-  //
-  //  // ---------------------------------------------------------------------------------//
-  //  int getDiskLength ()
-  //  // ---------------------------------------------------------------------------------//
-  //  {
-  //    return diskLength;
-  //  }
-
-  // ---------------------------------------------------------------------------------//
-  //  Path getPath ()
-  //  // ---------------------------------------------------------------------------------//
-  //  {
-  //    return path;
-  //  }
 
   // ---------------------------------------------------------------------------------//
   int getBlockSize ()
@@ -518,8 +507,8 @@ public class BlockReader
   {
     StringBuilder text = new StringBuilder ();
 
-    text.append ("File system offset .... %,d%n".formatted (diskOffset));
-    text.append ("File system length .... %,d%n".formatted (diskLength));
+    text.append ("File system offset .... %,d%n".formatted (dataRecord.offset ()));
+    text.append ("File system length .... %,d%n".formatted (dataRecord.length ()));
     text.append ("Address type .......... %s%n".formatted (addressType));
     text.append ("Total blocks .......... %,d  (%<04X)%n".formatted (totalBlocks));
     text.append ("Bytes per block ....... %d%n".formatted (bytesPerBlock));

@@ -10,6 +10,8 @@ abstract class AbstractBlock implements AppleBlock
 // -----------------------------------------------------------------------------------//
 {
   protected final AppleFileSystem fileSystem;
+  protected final BlockReader blockReader;
+
   protected AppleFile fileOwner;
   protected BlockType blockType;
   protected String blockSubType = "";
@@ -27,6 +29,7 @@ abstract class AbstractBlock implements AppleBlock
   // ---------------------------------------------------------------------------------//
   {
     this.fileSystem = Objects.requireNonNull (fileSystem, "File System is null");
+    this.blockReader = fileSystem.getBlockReader ();
     this.blockNo = blockNo;
 
     int blocksPerTrack = fileSystem.getBlocksPerTrack ();
@@ -47,6 +50,7 @@ abstract class AbstractBlock implements AppleBlock
   // ---------------------------------------------------------------------------------//
   {
     this.fileSystem = Objects.requireNonNull (fileSystem, "File System is null");
+    this.blockReader = fileSystem.getBlockReader ();
     this.blockNo = fileSystem.getBlocksPerTrack () * trackNo + sectorNo;
 
     this.trackNo = trackNo;
@@ -141,7 +145,7 @@ abstract class AbstractBlock implements AppleBlock
   // ---------------------------------------------------------------------------------//
   {
     if (buffer == null)
-      buffer = fileSystem.readBlock (this);
+      buffer = blockReader.read (this);
 
     return buffer;
   }

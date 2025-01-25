@@ -161,6 +161,22 @@ class FolderProdos extends AbstractAppleFile implements AppleContainer
 
   // ---------------------------------------------------------------------------------//
   @Override
+  public void putFile (AppleFile file)
+  // ---------------------------------------------------------------------------------//
+  {
+    System.out.println ("FolderProdos.putFile() not written yet");
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
+  public void deleteFile (AppleFile file)
+  // ---------------------------------------------------------------------------------//
+  {
+    System.out.println ("FolderProdos.deleteFile() not written yet");
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
   public String getCatalogLine ()
   // ---------------------------------------------------------------------------------//
   {

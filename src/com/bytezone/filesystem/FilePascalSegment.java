@@ -131,6 +131,22 @@ public class FilePascalSegment extends AbstractAppleFile implements AppleContain
 
   // ---------------------------------------------------------------------------------//
   @Override
+  public void putFile (AppleFile file)
+  // ---------------------------------------------------------------------------------//
+  {
+    throw new UnsupportedOperationException ("cannot add File to PascalSegment");
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
+  public void deleteFile (AppleFile file)
+  // ---------------------------------------------------------------------------------//
+  {
+    throw new UnsupportedOperationException ("cannot deleteFile() in PascalSegment");
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
   public void addFileSystem (AppleFileSystem fileSystem)
   // ---------------------------------------------------------------------------------//
   {

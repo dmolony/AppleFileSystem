@@ -17,6 +17,9 @@ public abstract class FileDos extends AbstractAppleFile
   protected List<AppleBlock> indexBlocks = new ArrayList<> ();
   protected boolean isNameValid;
 
+  AppleBlock catalogEntryBlock;
+  int catalogEntryIndex;
+
   // ---------------------------------------------------------------------------------//
   FileDos (FsDos fs)
   // ---------------------------------------------------------------------------------//
@@ -32,17 +35,17 @@ public abstract class FileDos extends AbstractAppleFile
     {
       if (dataBlocks.size () > 0)
       {
-        byte[] fileBuffer = getParentFileSystem ().readBlock (dataBlocks.get (0));
-        loadAddress = Utility.unsignedShort (fileBuffer, 0);
-        eof = Utility.unsignedShort (fileBuffer, 2);
+        byte[] buffer = dataBlocks.get (0).read ();
+        loadAddress = Utility.unsignedShort (buffer, 0);
+        eof = Utility.unsignedShort (buffer, 2);
       }
     }
     else if (fileType == 1 || fileType == 2)        // integer basic or applesoft
     {
       if (dataBlocks.size () > 0)
       {
-        byte[] fileBuffer = getParentFileSystem ().readBlock (dataBlocks.get (0));
-        eof = Utility.unsignedShort (fileBuffer, 0);
+        byte[] buffer = dataBlocks.get (0).read ();
+        eof = Utility.unsignedShort (buffer, 0);
         // could calculate the address from the line numbers
       }
     }
@@ -137,6 +140,9 @@ public abstract class FileDos extends AbstractAppleFile
     StringBuilder text = new StringBuilder (super.toString ());
 
     text.append (String.format ("Locked ................ %s%n", isLocked));
+    text.append (String.format ("Catalog sector ........ %02X / %02X%n",
+        catalogEntryBlock.getTrackNo (), catalogEntryBlock.getSectorNo ()));
+    text.append (String.format ("Catalog entry ......... %d%n", catalogEntryIndex));
     text.append (String.format ("Sectors ............... %04X  %<,5d%n", sectorCount));
     text.append (String.format ("File length ........... %04X  %<,5d%n", eof));
     text.append (String.format ("Load address .......... %04X  %<,5d%n", loadAddress));

@@ -42,8 +42,8 @@ public class Fs2img extends AbstractFileSystem
   {
     super (blockReader, FileSystemType.IMG2);
 
-    byte[] buffer = blockReader.getDataRecord ().data ();
-    int diskOffset = blockReader.getDataRecord ().offset ();
+    byte[] buffer = blockReader.getDiskBuffer ().data ();
+    int diskOffset = blockReader.getDiskBuffer ().offset ();
 
     assert blockReader.isMagic (0, TWO_IMG);
 
