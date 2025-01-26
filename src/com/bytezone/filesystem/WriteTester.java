@@ -10,7 +10,7 @@ public class WriteTester
   String adi = base + "Apple Disk Images/";
 
   String[] fileNames = {                             //
-      adi + "blankdisk.DSK",                         // 0: 3.3 intl 0
+      adi + "DENIS.DSK",                         // 0: 3.3 intl 0
   };
 
   // ---------------------------------------------------------------------------------//
@@ -20,17 +20,27 @@ public class WriteTester
     FileSystemFactory factory = new FileSystemFactory ();
 
     AppleFileSystem fs = factory.getFileSystem (Path.of (fileNames[0]));
+    if (fs == null)
+    {
+      System.out.println ("disk not found");
+      return;
+    }
+
+    String newDisk = "blanketyblank.dsk";
 
     AppleFileSystem newFs =
-        factory.getFileSystem ("tester.dsk", fs.getDiskBuffer ().copyData ());
+        factory.getFileSystem (newDisk, fs.getDiskBuffer ().copyData ());
 
-    System.out.println (newFs);
+    //    System.out.println (newFs);
 
     for (AppleFile file : newFs.getFiles ())
     {
-      System.out.println (file);
+      System.out.printf ("deleting %s%n", file.getFileName ());
       newFs.deleteFile (file);
     }
+
+    String fileName = adi + newDisk;
+    newFs.create (fileName);
   }
 
   // ---------------------------------------------------------------------------------//

@@ -39,7 +39,7 @@ public class FsPascal extends AbstractFileSystem
 
     AppleBlock vtoc = getBlock (2, BlockType.FS_DATA);
     vtoc.setBlockSubType ("CATALOG");
-    byte[] buffer = vtoc.read ();
+    byte[] buffer = vtoc.getBuffer ();
 
     firstCatalogBlock = Utility.unsignedShort (buffer, 0);
     firstFileBlock = Utility.unsignedShort (buffer, 2);

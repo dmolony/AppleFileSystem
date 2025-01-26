@@ -17,8 +17,8 @@ public abstract class FileDos extends AbstractAppleFile
   protected List<AppleBlock> indexBlocks = new ArrayList<> ();
   protected boolean isNameValid;
 
-  AppleBlock catalogEntryBlock;
-  int catalogEntryIndex;
+  protected AppleBlock catalogEntryBlock;
+  protected int catalogEntryIndex;
 
   // ---------------------------------------------------------------------------------//
   FileDos (FsDos fs)
@@ -35,7 +35,7 @@ public abstract class FileDos extends AbstractAppleFile
     {
       if (dataBlocks.size () > 0)
       {
-        byte[] buffer = dataBlocks.get (0).read ();
+        byte[] buffer = dataBlocks.get (0).getBuffer ();
         loadAddress = Utility.unsignedShort (buffer, 0);
         eof = Utility.unsignedShort (buffer, 2);
       }
@@ -44,7 +44,7 @@ public abstract class FileDos extends AbstractAppleFile
     {
       if (dataBlocks.size () > 0)
       {
-        byte[] buffer = dataBlocks.get (0).read ();
+        byte[] buffer = dataBlocks.get (0).getBuffer ();
         eof = Utility.unsignedShort (buffer, 0);
         // could calculate the address from the line numbers
       }

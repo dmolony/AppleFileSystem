@@ -19,7 +19,7 @@ public class FsLbr extends AbstractFileSystem
     {
       AppleBlock block = getBlock (i, BlockType.FS_DATA);
       block.setBlockSubType ("CATALOG");
-      byte[] buffer = block.read ();
+      byte[] buffer = block.getBuffer ();
 
       for (int j = 0; j < 4; j++)
       {

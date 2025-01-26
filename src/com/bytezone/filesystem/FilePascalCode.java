@@ -26,7 +26,7 @@ public class FilePascalCode extends FilePascal implements AppleContainer
     super (fs, catalogBuffer, ptr);
 
     AppleBlock block = fs.getBlock (getFirstBlock ());
-    byte[] buffer = block.read ();          // code catalog
+    byte[] buffer = block.getBuffer ();          // code catalog
 
     if (!validSegmentDictionary (buffer))
       return;

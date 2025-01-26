@@ -81,7 +81,7 @@ public class FileLbr extends AbstractAppleFile
     if (dataBlocks.size () == 0 || extension.charAt (1) != c)
       return;
 
-    buffer = dataBlocks.get (0).read ();
+    buffer = dataBlocks.get (0).getBuffer ();
 
     if (buffer[0] != 0x76 || buffer[1] != b)
       return;

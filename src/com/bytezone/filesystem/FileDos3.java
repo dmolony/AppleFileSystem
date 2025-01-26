@@ -40,7 +40,7 @@ public class FileDos3 extends FileDos
       if (--sectorsLeft <= 0)
         break;
 
-      byte[] sectorBuffer = tsSector.read ();
+      byte[] sectorBuffer = tsSector.getBuffer ();
 
       for (int i = 12; i < 256; i += 2)
       {

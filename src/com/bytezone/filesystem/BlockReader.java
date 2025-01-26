@@ -3,6 +3,7 @@ package com.bytezone.filesystem;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -44,6 +45,7 @@ public class BlockReader
   private int totalBlocks;
 
   private AppleBlock[] appleBlocks;
+  private List<AppleBlock> dirtyBlocks = new ArrayList<> ();
 
   public enum AddressType
   {
@@ -380,7 +382,7 @@ public class BlockReader
   public void write (AppleBlock block)
   // ---------------------------------------------------------------------------------//
   {
-    byte[] blockBuffer = block.read ();
+    byte[] blockBuffer = block.getBuffer ();
     int bufferOffset = 0;     // fix this later
 
     byte[] diskBuffer = dataRecord.data ();
@@ -422,6 +424,14 @@ public class BlockReader
         assert false;
         break;          // impossible
     }
+  }
+
+  // ---------------------------------------------------------------------------------//
+  public void markDirty (AppleBlock dirtyBlock)
+  // ---------------------------------------------------------------------------------//
+  {
+    if (!dirtyBlocks.contains (dirtyBlock))
+      dirtyBlocks.add (dirtyBlock);
   }
 
   // ---------------------------------------------------------------------------------//
@@ -478,7 +488,7 @@ public class BlockReader
   boolean isEmpty (AppleBlock block)
   // ---------------------------------------------------------------------------------//
   {
-    for (byte b : block.read ())
+    for (byte b : block.getBuffer ())
       if (b != 0)               // won't work for CPM disks
         return false;
 
@@ -498,6 +508,15 @@ public class BlockReader
       e.printStackTrace ();
       return null;
     }
+  }
+
+  // ---------------------------------------------------------------------------------//
+  void clean ()
+  // ---------------------------------------------------------------------------------//
+  {
+    for (AppleBlock block : dirtyBlocks)
+      write (block);
+
   }
 
   // ---------------------------------------------------------------------------------//

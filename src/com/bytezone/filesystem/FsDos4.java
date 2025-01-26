@@ -31,7 +31,7 @@ class FsDos4 extends FsDos
 
     AppleBlock vtoc = getSector (17, 0, BlockType.FS_DATA);
     vtoc.setBlockSubType ("VTOC");
-    byte[] buffer = vtoc.read ();
+    byte[] buffer = vtoc.getBuffer ();
 
     createVolumeBitMap (buffer);
 
@@ -72,7 +72,7 @@ class FsDos4 extends FsDos
         return;
       catalogSector.setBlockSubType ("CATALOG");
 
-      buffer = catalogSector.read ();
+      buffer = catalogSector.getBuffer ();
 
       int ptr = 11;
 

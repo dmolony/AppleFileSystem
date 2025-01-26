@@ -116,6 +116,31 @@ public class FsDos extends AbstractFileSystem
   }
 
   // ---------------------------------------------------------------------------------//
+  protected void writeVolumeBitMap (byte[] buffer)
+  // ---------------------------------------------------------------------------------//
+  {
+    int blocksPerTrack = blockReader.getBlocksPerTrack ();
+    int totalBlocks = blockReader.getTotalBlocks ();
+    int totalTracks = totalBlocks / blocksPerTrack;
+
+    int ptr = 0x38;
+    for (int track = 0; track < totalTracks; track++)
+    {
+      int bits = 0;
+      int mask = 0x80000000;
+      for (int sector = blocksPerTrack - 1; sector >= 0; sector--)
+      {
+        if (volumeBitMap.get (track * blocksPerTrack + sector))
+          bits |= mask;
+        mask >>>= 1;
+      }
+
+      Utility.writeIntBigEndian (buffer, ptr, bits);
+      ptr += 4;
+    }
+  }
+
+  // ---------------------------------------------------------------------------------//
   void flagDosSectors ()
   // ---------------------------------------------------------------------------------//
   {

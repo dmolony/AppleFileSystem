@@ -21,6 +21,7 @@ abstract class AbstractBlock implements AppleBlock
   protected final int sectorNo;
 
   protected byte[] buffer;
+  protected boolean dirty;
 
   protected Object userData;
 
@@ -141,13 +142,22 @@ abstract class AbstractBlock implements AppleBlock
 
   // ---------------------------------------------------------------------------------//
   @Override
-  public byte[] read ()
+  public byte[] getBuffer ()
   // ---------------------------------------------------------------------------------//
   {
     if (buffer == null)
       buffer = blockReader.read (this);
 
     return buffer;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
+  public void setBuffer (byte[] buffer)
+  // ---------------------------------------------------------------------------------//
+  {
+    this.buffer = buffer;         // still needs to be copied back to the disk buffer
+    dirty = true;
   }
 
   // ---------------------------------------------------------------------------------//

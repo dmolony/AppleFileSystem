@@ -58,7 +58,7 @@ public class FileProdos extends AbstractAppleFile implements AppleForkedFile
     block.setFileOwner (this);
 
     dataBlocks.add (block);
-    byte[] buffer = block.read ();
+    byte[] buffer = block.getBuffer ();
 
     for (int ptr = 0; ptr < 512; ptr += 256)
     {

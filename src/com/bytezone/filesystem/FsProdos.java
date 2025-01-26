@@ -31,7 +31,7 @@ public class FsProdos extends AbstractFileSystem
     while (nextBlockNo != 0)
     {
       AppleBlock vtoc = getBlock (nextBlockNo, BlockType.FS_DATA);
-      byte[] buffer = vtoc.read ();
+      byte[] buffer = vtoc.getBuffer ();
 
       if (catalogBlocks == 0)
         directoryEntry = new DirectoryEntryProdos (buffer, 4);
@@ -82,7 +82,7 @@ public class FsProdos extends AbstractFileSystem
     if (catalogBlock == null)
       throw new FileFormatException ("FsProdos: Invalid catalog");
 
-    byte[] buffer = catalogBlock.read ();
+    byte[] buffer = catalogBlock.getBuffer ();
     boolean isFolder = (buffer[4] & 0xF0) == 0xE0;      // subdirectory header
 
     FileProdos file = null;
@@ -161,7 +161,7 @@ public class FsProdos extends AbstractFileSystem
       if (catalogBlock == null)
         throw new FileFormatException ("FsProdos: Invalid catalog");
 
-      buffer = catalogBlock.read ();
+      buffer = catalogBlock.getBuffer ();
     }
   }
 
@@ -182,7 +182,7 @@ public class FsProdos extends AbstractFileSystem
       {
         AppleBlock block = getBlock (blockNo++, BlockType.FS_DATA);
         block.setBlockSubType ("V-BITMAP");
-        buffer = block.read ();
+        buffer = block.getBuffer ();
         bfrPtr = 0;
       }
 

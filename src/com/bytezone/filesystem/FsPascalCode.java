@@ -19,7 +19,7 @@ public class FsPascalCode extends AbstractFileSystem
     super (blockReader, FileSystemType.PASCAL_CODE);
 
     AppleBlock block = getBlock (0, BlockType.FS_DATA);
-    byte[] buffer = block.read ();
+    byte[] buffer = block.getBuffer ();
     block.setBlockSubType ("CATALOG");
     setTotalCatalogBlocks (1);
 

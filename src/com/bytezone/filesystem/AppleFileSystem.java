@@ -21,6 +21,8 @@ public interface AppleFileSystem extends AppleContainer
 
   AppleBlock allocate ();
 
+  void create (String fileName);
+
   // passed through to BlockReader
 
   AddressType getAddressType ();             // BLOCK, SECTOR
@@ -52,6 +54,8 @@ public interface AppleFileSystem extends AppleContainer
   byte[] readBlock (AppleBlock block);
 
   byte[] readBlocks (List<AppleBlock> blocks);
+
+  void markDirty (AppleBlock dirtyBlock);
 
   void writeBlock (AppleBlock block);
 

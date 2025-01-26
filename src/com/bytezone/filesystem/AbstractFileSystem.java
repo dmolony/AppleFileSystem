@@ -1,5 +1,9 @@
 package com.bytezone.filesystem;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -215,6 +219,14 @@ abstract class AbstractFileSystem implements AppleFileSystem
 
   // ---------------------------------------------------------------------------------//
   @Override
+  public void markDirty (AppleBlock dirtyBlock)
+  // ---------------------------------------------------------------------------------//
+  {
+    blockReader.markDirty (dirtyBlock);
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
   public String getFileName ()
   // ---------------------------------------------------------------------------------//
   {
@@ -408,6 +420,33 @@ abstract class AbstractFileSystem implements AppleFileSystem
   // ---------------------------------------------------------------------------------//
   {
     this.errorMessage = errorMessage;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
+  public void create (String fileName)
+  // ---------------------------------------------------------------------------------//
+  {
+    File file = new File (fileName);
+    if (file.exists ())
+      System.out.printf ("%s already exists%n", fileName);
+    else
+    {
+      blockReader.clean ();
+
+      try
+      {
+        file.createNewFile ();
+
+        OutputStream Stream = new FileOutputStream (fileName);
+        Stream.write (blockReader.getDiskBuffer ().data ());
+        Stream.close ();
+      }
+      catch (IOException e)
+      {
+        e.printStackTrace ();
+      }
+    }
   }
 
   // ---------------------------------------------------------------------------------//

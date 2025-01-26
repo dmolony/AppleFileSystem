@@ -22,7 +22,7 @@ public class FsDos3 extends FsDos
 
     vtoc.setBlockSubType ("VTOC");
 
-    byte[] buffer = vtoc.read ();
+    byte[] buffer = vtoc.getBuffer ();
     createVolumeBitMap (buffer);
 
     if (buffer[3] < 0x01 || buffer[3] > 0x03)
@@ -59,13 +59,13 @@ public class FsDos3 extends FsDos
 
       catalogSectors.add (catalogSector);
 
-      buffer = catalogSector.read ();
+      buffer = catalogSector.getBuffer ();
       int ptr = 11;
       int index = 0;
 
       while (ptr < buffer.length && buffer[ptr] != 0)
       {
-        if ((buffer[ptr] & 0x80) != 0)        // deleted file
+        if (buffer[ptr] == (byte) 0xFF)        // deleted file
         {
           String fileName = Utility.string (buffer, ptr + 3, 29).trim ();
           int sectorCount = Utility.unsignedShort (buffer, ptr + 33);
@@ -84,7 +84,6 @@ public class FsDos3 extends FsDos
           }
           catch (FileFormatException e)
           {
-            //            System.out.println (e);
             String fileName = Utility.string (buffer, ptr + 3, 30).trim ();
             int sectorCount = Utility.unsignedShort (buffer, ptr + 33);
             int fileType = buffer[ptr + 2] & 0x7F;
@@ -170,23 +169,21 @@ public class FsDos3 extends FsDos
     if (file.getParentFileSystem () != this)
       throw new InvalidParentFileSystemException ("file not part of this File System");
 
-    List<AppleBlock> blocks = file.getBlocks ();
-    for (AppleBlock block : blocks)
-    {
-      System.out.println (block);
-      volumeBitMap.clear (block.getBlockNo ());
-    }
-
+    // mark file as deleted in the catalog
     AppleBlock catalogSector = ((FileDos3) file).catalogEntryBlock;
-    byte[] buffer = catalogSector.read ();
+    byte[] buffer = catalogSector.getBuffer ();
     int ptr = 11 + ((FileDos3) file).catalogEntryIndex * ENTRY_SIZE;
     buffer[ptr + 0x20] = buffer[ptr];
     buffer[ptr] = (byte) 0xFF;            // deleted file
+    markDirty (catalogSector);
 
-    // write the VTOC and catalog sectors
-    //    vtoc.write??
-    //    catalogSector.write (buffer);
+    // mark file's sectors as free in the vtoc
+    for (AppleBlock block : file.getBlocks ())      // index and data blocks
+      volumeBitMap.set (block.getBlockNo ());
 
-    System.out.println ("DOS 3 AbstractFileSystem.deleteFile() not written yet");
+    AppleBlock vtoc = getSector (17, 0);
+    buffer = vtoc.getBuffer ();
+    writeVolumeBitMap (buffer);
+    markDirty (vtoc);
   }
 }

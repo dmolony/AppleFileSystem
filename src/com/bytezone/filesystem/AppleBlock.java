@@ -12,7 +12,9 @@ public interface AppleBlock         // this could be renamed to Address
 
   int getSectorNo ();
 
-  byte[] read ();
+  byte[] getBuffer ();
+
+  void setBuffer (byte[] buffer);
 
   void setBlockType (BlockType blockType);
 

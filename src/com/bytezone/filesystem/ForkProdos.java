@@ -147,7 +147,7 @@ public class ForkProdos extends AbstractAppleFile
     indexBlock.setFileOwner (this);
     indexBlocks.add (indexBlock);
 
-    byte[] buffer = indexBlock.read ();
+    byte[] buffer = indexBlock.getBuffer ();
 
     for (int i = 0; i < 256; i++)
     {
@@ -176,7 +176,7 @@ public class ForkProdos extends AbstractAppleFile
     masterIndexBlock = indexBlock;
     indexBlocks.add (indexBlock);
 
-    byte[] buffer = masterIndexBlock.read ();             // master index
+    byte[] buffer = masterIndexBlock.getBuffer ();             // master index
 
     int highest = 0x80;
     while (highest-- > 0)                                 // decrement after test

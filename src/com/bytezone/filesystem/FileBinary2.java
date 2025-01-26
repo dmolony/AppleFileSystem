@@ -68,7 +68,7 @@ public class FileBinary2 extends AbstractAppleFile
     headerBlock = fs.getBlock (headerBlockNo, BlockType.FS_DATA);
     headerBlock.setBlockSubType ("BIN2 HDR");
     headerBlock.setFileOwner (this);
-    byte[] buffer = headerBlock.read ();
+    byte[] buffer = headerBlock.getBuffer ();
 
     accessCode = buffer[3] & 0xFF;
     fileType = buffer[4] & 0xFF;
@@ -133,7 +133,7 @@ public class FileBinary2 extends AbstractAppleFile
 
     if (validBlocks && (isCompressed () || fileName.endsWith (".QQ")))
     {
-      buffer = dataBlocks.get (0).read ();
+      buffer = dataBlocks.get (0).getBuffer ();
       if (buffer[0] == 0x76 && buffer[1] == (byte) 0xFF)      // squeeze
       {
         String name = Utility.getCString (buffer, 4);

@@ -59,7 +59,7 @@ public class FileDos4 extends FileDos
       indexBlocks.add (tsSector);
       --sectorsLeft;
 
-      byte[] sectorBuffer = tsSector.read ();
+      byte[] sectorBuffer = tsSector.getBuffer ();
       //      int offset = Utility.unsignedShort (sectorBuffer, 5);
 
       for (int i = 12; i < 256; i += 2)
