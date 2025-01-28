@@ -290,10 +290,7 @@ abstract class AbstractFileSystem implements AppleFileSystem
   public void deleteFile (AppleFile file)
   // ---------------------------------------------------------------------------------//
   {
-    if (file.getParentFileSystem () != this)
-      throw new InvalidParentFileSystemException ("file not part of this File System");
-
-    System.out.println ("AbstractFileSystem.deleteFile() not written yet");
+    throw new UnsupportedOperationException ("deleteFile() not implemented");
   }
 
   // ---------------------------------------------------------------------------------//

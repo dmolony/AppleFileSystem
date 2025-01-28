@@ -29,9 +29,6 @@ public class BlockReader
   //      { 0, 9, 3, 12, 6, 15, 1, 10, 4, 13, 7, 8, 2, 11, 5, 14 },       // CPM Prodos
   //      { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15 } };     // test
 
-  //  private final byte[] diskBuffer;
-  //  private final int diskOffset;
-  //  private final int diskLength;
   private final Buffer dataRecord;
 
   private String name;
@@ -56,10 +53,11 @@ public class BlockReader
   public BlockReader (Path path)
   // ---------------------------------------------------------------------------------//
   {
+    if (!path.toFile ().exists ())
+      throw new FileFormatException (String.format ("Path %s does not exist%n", path));
+
     byte[] buffer = readAllBytes (path);
 
-    //    diskBuffer = buffer;
-    //    diskOffset = 0;
     int diskLength = buffer.length == 143_488 ? 143_360 : buffer.length;
 
     dataRecord = new Buffer (buffer, 0, diskLength);
@@ -80,8 +78,6 @@ public class BlockReader
   {
     Objects.checkFromIndexSize (diskOffset, diskLength, diskBuffer.length);
 
-    //    this.diskBuffer = diskBuffer;
-    //    this.diskOffset = diskOffset;
     if (diskLength == 143_488)
       diskLength = 143_360;
 
@@ -93,12 +89,6 @@ public class BlockReader
   public BlockReader (String name, Buffer dataRecord)
   // ---------------------------------------------------------------------------------//
   {
-    //    this.diskBuffer = dataRecord.data ();
-    //    this.diskOffset = dataRecord.offset ();
-    //    this.diskLength = dataRecord.length ();
-
-    //    Objects.checkFromIndexSize (diskOffset, diskLength, diskBuffer.length);
-
     this.dataRecord = dataRecord.copyBuffer ();
     this.name = name;
   }
@@ -107,10 +97,6 @@ public class BlockReader
   BlockReader (BlockReader original)
   // ---------------------------------------------------------------------------------//
   {
-    //    this.diskBuffer = original.diskBuffer;
-    //    this.diskOffset = original.diskOffset;
-    //    this.diskLength = original.diskLength;
-
     dataRecord = original.dataRecord.copyBuffer ();
 
     this.name = original.name;
@@ -127,7 +113,8 @@ public class BlockReader
     this.blocksPerTrack = blocksPerTrack;
 
     bytesPerTrack = bytesPerBlock * blocksPerTrack;
-    totalBlocks = (dataRecord.length () - 1) / bytesPerBlock + 1;   // includes partial blocks
+    totalBlocks = (dataRecord.length () - 1) //
+        / bytesPerBlock + 1;                            // includes partial blocks
 
     appleBlocks = new AppleBlock[totalBlocks];
   }

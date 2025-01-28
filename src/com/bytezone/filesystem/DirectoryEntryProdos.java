@@ -37,9 +37,10 @@ class DirectoryEntryProdos
   final String storageTypeText;
 
   // ---------------------------------------------------------------------------------//
-  DirectoryEntryProdos (byte[] buffer, int ptr)
+  DirectoryEntryProdos (AppleBlock catalogBlock, int ptr)
   // ---------------------------------------------------------------------------------//
   {
+    byte[] buffer = catalogBlock.getBuffer ();
     storageType = (buffer[ptr] & 0xF0) >>> 4;
     storageTypeText = ProdosConstants.storageTypes[storageType];
 

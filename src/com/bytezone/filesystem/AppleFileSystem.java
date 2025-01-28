@@ -23,6 +23,10 @@ public interface AppleFileSystem extends AppleContainer
 
   void create (String fileName);
 
+  public void putFile (AppleFile file);
+
+  public void deleteFile (AppleFile file);
+
   // passed through to BlockReader
 
   AddressType getAddressType ();             // BLOCK, SECTOR

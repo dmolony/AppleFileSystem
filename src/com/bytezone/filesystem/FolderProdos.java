@@ -26,26 +26,34 @@ class FolderProdos extends AbstractAppleFile implements AppleContainer
   List<AppleFile> files = new ArrayList<> ();
   List<AppleFileSystem> fileSystems = new ArrayList<> ();
 
+  AppleBlock catalogBlock;
+  int catalogPtr;
+
   // This file is used by both a VDH and SDH. The VDH has only a DirectoryEntry,
   // but an SDH is created first as a normal file (with a FileEntry), and then has
   // the DirectoryEntry added when the subdirectory is processed.
   // ---------------------------------------------------------------------------------//
-  FolderProdos (FsProdos parent, AppleContainer container, byte[] buffer, int ptr)
+  FolderProdos (FsProdos parent, AppleContainer container, AppleBlock catalogBlock,
+      int ptr)
   // ---------------------------------------------------------------------------------//
   {
     super (parent);
 
     this.parent = container;
+    this.catalogBlock = catalogBlock;
+    this.catalogPtr = ptr;
+
+    byte[] buffer = catalogBlock.getBuffer ();
 
     if ((buffer[ptr] & 0xF0) == 0xF0)         // Volume Directory Header
     {
       fileTypeText = "VOL";
-      directoryEntry = new DirectoryEntryProdos (buffer, ptr);
+      directoryEntry = new DirectoryEntryProdos (catalogBlock, ptr);
       //      fileTypeText = ProdosConstants.fileTypes[directoryEntry.fileType];
     }
     else                                      // Subdirectory
     {
-      fileEntry = new FileEntryProdos (buffer, ptr);
+      fileEntry = new FileEntryProdos (catalogBlock, ptr);
       fileName = fileEntry.fileName;
       fileType = fileEntry.fileType;
       fileTypeText = ProdosConstants.fileTypes[fileEntry.fileType];
@@ -55,10 +63,11 @@ class FolderProdos extends AbstractAppleFile implements AppleContainer
   }
 
   // ---------------------------------------------------------------------------------//
-  void addDirectoryEntry (byte[] buffer, int ptr)
+  void addDirectoryEntry (AppleBlock catalogBlock, int ptr)
   // ---------------------------------------------------------------------------------//
   {
-    this.directoryEntry = new DirectoryEntryProdos (buffer, ptr);
+    //    this.directoryEntry = new DirectoryEntryProdos (buffer, ptr);
+    this.directoryEntry = new DirectoryEntryProdos (catalogBlock, ptr);
   }
 
   // ---------------------------------------------------------------------------------//
@@ -157,22 +166,6 @@ class FolderProdos extends AbstractAppleFile implements AppleContainer
         return Optional.of (file);
 
     return Optional.empty ();
-  }
-
-  // ---------------------------------------------------------------------------------//
-  @Override
-  public void putFile (AppleFile file)
-  // ---------------------------------------------------------------------------------//
-  {
-    System.out.println ("FolderProdos.putFile() not written yet");
-  }
-
-  // ---------------------------------------------------------------------------------//
-  @Override
-  public void deleteFile (AppleFile file)
-  // ---------------------------------------------------------------------------------//
-  {
-    System.out.println ("FolderProdos.deleteFile() not written yet");
   }
 
   // ---------------------------------------------------------------------------------//

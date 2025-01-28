@@ -102,22 +102,6 @@ public class FilePascalCode extends FilePascal implements AppleContainer
 
   // ---------------------------------------------------------------------------------//
   @Override
-  public void putFile (AppleFile file)
-  // ---------------------------------------------------------------------------------//
-  {
-    throw new UnsupportedOperationException ("cannot add File to PascalCode");
-  }
-
-  // ---------------------------------------------------------------------------------//
-  @Override
-  public void deleteFile (AppleFile file)
-  // ---------------------------------------------------------------------------------//
-  {
-    throw new UnsupportedOperationException ("cannot deleteFile() in PascalCode");
-  }
-
-  // ---------------------------------------------------------------------------------//
-  @Override
   public void addFileSystem (AppleFileSystem fileSystem)
   // ---------------------------------------------------------------------------------//
   {

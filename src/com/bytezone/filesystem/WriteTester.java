@@ -10,7 +10,9 @@ public class WriteTester
   String adi = base + "Apple Disk Images/";
 
   String[] fileNames = {                             //
-      adi + "DENIS.DSK",                         // 0: 3.3 intl 0
+      adi + "DENIS.DSK",                             // 0: 3.3 intl 0
+      base + "prodos/View-Sector.dsk",               // 1: Prodos block
+      base + "incoming/EDASM.DSK",                   // 2: prodos sector
   };
 
   // ---------------------------------------------------------------------------------//
@@ -19,28 +21,36 @@ public class WriteTester
   {
     FileSystemFactory factory = new FileSystemFactory ();
 
-    AppleFileSystem fs = factory.getFileSystem (Path.of (fileNames[0]));
+    AppleFileSystem fs = factory.getFileSystem (Path.of (fileNames[1]));
     if (fs == null)
     {
       System.out.println ("disk not found");
       return;
     }
 
-    String newDisk = "blanketyblank.dsk";
+    String newDiskName = "blanketyblank.dsk";
 
     AppleFileSystem newFs =
-        factory.getFileSystem (newDisk, fs.getDiskBuffer ().copyData ());
+        factory.getFileSystem (newDiskName, fs.getDiskBuffer ().copyData ());
 
-    //    System.out.println (newFs);
+    deleteFiles (newFs, 0);
 
-    for (AppleFile file : newFs.getFiles ())
+    newFs.create (adi + newDiskName);
+  }
+
+  // ---------------------------------------------------------------------------------//
+  private void deleteFiles (AppleContainer container, int depth)
+  // ---------------------------------------------------------------------------------//
+  {
+    for (AppleFile file : container.getFiles ())
     {
-      System.out.printf ("deleting %s%n", file.getFileName ());
-      newFs.deleteFile (file);
-    }
+      System.out.printf ("%02d  %s%n", depth, file.getFileName ());
 
-    String fileName = adi + newDisk;
-    newFs.create (fileName);
+      if (file instanceof AppleContainer ac)                    // folder
+        deleteFiles (ac, depth + 1);
+
+      file.delete ();
+    }
   }
 
   // ---------------------------------------------------------------------------------//

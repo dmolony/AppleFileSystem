@@ -13,10 +13,6 @@ public interface AppleContainer
 
   public Optional<AppleFile> getFile (String fileName);
 
-  public void putFile (AppleFile file);
-
-  public void deleteFile (AppleFile file);
-
   public void addFileSystem (AppleFileSystem fileSystem);
 
   public List<AppleFileSystem> getFileSystems ();

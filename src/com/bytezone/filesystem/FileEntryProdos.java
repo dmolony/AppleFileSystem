@@ -40,9 +40,10 @@ class FileEntryProdos
   final String storageTypeText;
 
   // ---------------------------------------------------------------------------------//
-  FileEntryProdos (byte[] buffer, int ptr)
+  FileEntryProdos (AppleBlock catalogBlock, int ptr)
   // ---------------------------------------------------------------------------------//
   {
+    byte[] buffer = catalogBlock.getBuffer ();
     storageType = (buffer[ptr] & 0xF0) >>> 4;
 
     int nameLength = buffer[ptr] & 0x0F;

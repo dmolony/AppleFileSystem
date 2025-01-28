@@ -23,16 +23,23 @@ public class FileProdos extends AbstractAppleFile implements AppleForkedFile
   private AppleContainer container;                             // parent
 
   private ForkProdos dataFork;                                  // for non-forked files
-  private List<AppleFile> forks = new ArrayList<> ();           // for forked files
+  List<AppleFile> forks = new ArrayList<> ();                   // for forked files
+
+  AppleBlock catalogBlock;
+  int catalogPtr;
 
   // ---------------------------------------------------------------------------------//
-  FileProdos (FsProdos parent, AppleContainer container, byte[] buffer, int ptr)
+  FileProdos (FsProdos parent, AppleContainer container, AppleBlock catalogBlock, int ptr)
   // ---------------------------------------------------------------------------------//
   {
     super (parent);
 
     this.container = container;
-    fileEntry = new FileEntryProdos (buffer, ptr);
+    this.catalogBlock = catalogBlock;
+    this.catalogPtr = ptr;
+
+    //    byte[] buffer = catalogBlock.getBuffer ();
+    fileEntry = new FileEntryProdos (catalogBlock, ptr);
 
     fileName = fileEntry.fileName;
     fileType = fileEntry.fileType;

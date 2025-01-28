@@ -52,6 +52,8 @@ public interface AppleFile
 
   public void write (byte[] buffer);
 
+  public void delete ();
+
   public String getErrorMessage ();                 // if file can't be read
 
   public enum ForkType

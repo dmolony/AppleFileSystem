@@ -3,6 +3,7 @@ package com.bytezone.filesystem;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import com.bytezone.filesystem.AppleFileSystem.FileSystemType;
 import com.bytezone.filesystem.BlockReader.AddressType;
@@ -27,6 +28,9 @@ public class FileSystemFactory
   public AppleFileSystem getFileSystem (Path path)
   // ---------------------------------------------------------------------------------//
   {
+    if (!path.toFile ().exists ())
+      throw new FileFormatException (String.format ("Path %s does not exist%n", path));
+
     return getFileSystem (new BlockReader (path));
   }
 
@@ -41,6 +45,8 @@ public class FileSystemFactory
   public AppleFileSystem getFileSystem (BlockReader blockReader)
   // ---------------------------------------------------------------------------------//
   {
+    Objects.requireNonNull (blockReader);
+
     fileSystems = new ArrayList<> ();
     errorMessages = new ArrayList<> ();
 

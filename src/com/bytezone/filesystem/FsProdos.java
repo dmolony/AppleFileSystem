@@ -1,6 +1,7 @@
 package com.bytezone.filesystem;
 
 import java.util.BitSet;
+import java.util.List;
 import java.util.Optional;
 
 import com.bytezone.filesystem.AppleBlock.BlockType;
@@ -12,6 +13,8 @@ import com.bytezone.utility.Utility;
 public class FsProdos extends AbstractFileSystem
 // -----------------------------------------------------------------------------------//
 {
+  private static final int FIRST_CATALOG_BLOCK = 2;
+
   private final BitSet volumeBitMap;
   private DirectoryEntryProdos directoryEntry;
   private boolean isDosMaster;
@@ -22,7 +25,7 @@ public class FsProdos extends AbstractFileSystem
   {
     super (blockReader, FileSystemType.PRODOS);
 
-    int nextBlockNo = 2;                    // first catalog block
+    int nextBlockNo = FIRST_CATALOG_BLOCK;
     int prevBlockNo = -1;
 
     assert totalCatalogBlocks == 0;
@@ -33,20 +36,22 @@ public class FsProdos extends AbstractFileSystem
       AppleBlock vtoc = getBlock (nextBlockNo, BlockType.FS_DATA);
       byte[] buffer = vtoc.getBuffer ();
 
-      if (catalogBlocks == 0)
-        directoryEntry = new DirectoryEntryProdos (buffer, 4);
+      if (catalogBlocks == 0)       // first time through, so this is the Volume Header
+      {
+        directoryEntry = new DirectoryEntryProdos (vtoc, 4);
 
-      if (directoryEntry.storageType != ProdosConstants.VOLUME_HEADER)
-        throw new FileFormatException ("FsProdos: No Volume Header");
+        if (directoryEntry.storageType != ProdosConstants.VOLUME_HEADER)
+          throw new FileFormatException ("FsProdos: No Volume Header");
 
-      if (directoryEntry.entryLength != ProdosConstants.ENTRY_SIZE
-          || directoryEntry.entriesPerBlock != ProdosConstants.ENTRIES_PER_BLOCK)
-        throw new FileFormatException ("FsProdos: Invalid entry data");
+        if (directoryEntry.entryLength != ProdosConstants.ENTRY_SIZE
+            || directoryEntry.entriesPerBlock != ProdosConstants.ENTRIES_PER_BLOCK)
+          throw new FileFormatException ("FsProdos: Invalid entry data");
 
-      // check first bitmap block number (usually 6)
-      if (directoryEntry.keyPtr < 3 || directoryEntry.keyPtr > 10)
-        throw new FileFormatException (
-            "FsProdos: Invalid bitmap block value: " + directoryEntry.keyPtr);
+        // check first bitmap block number (usually 6)
+        if (directoryEntry.keyPtr < 3 || directoryEntry.keyPtr > 10)
+          throw new FileFormatException (
+              "FsProdos: Invalid bitmap block value: " + directoryEntry.keyPtr);
+      }
 
       prevBlockNo = Utility.unsignedShort (buffer, 0);
       nextBlockNo = Utility.unsignedShort (buffer, 2);
@@ -62,7 +67,7 @@ public class FsProdos extends AbstractFileSystem
       ++catalogBlocks;
     }
 
-    processFolder (this, 2);              // volume directory
+    processFolder (this, FIRST_CATALOG_BLOCK);              // volume directory
 
     assert directoryEntry.fileCount == getFiles ().size ();
     setTotalCatalogBlocks (catalogBlocks);
@@ -108,7 +113,7 @@ public class FsProdos extends AbstractFileSystem
           case ProdosConstants.SEEDLING:
           case ProdosConstants.SAPLING:
           case ProdosConstants.TREE:
-            file = new FileProdos (this, parent, buffer, ptr);
+            file = new FileProdos (this, parent, catalogBlock, ptr);
             parent.addFile (file);
 
             if (file.getFileType () == ProdosConstants.FILE_TYPE_LBR)
@@ -121,23 +126,23 @@ public class FsProdos extends AbstractFileSystem
             break;
 
           case ProdosConstants.PASCAL_ON_PROFILE:
-            file = new FileProdos (this, parent, buffer, ptr);
+            file = new FileProdos (this, parent, catalogBlock, ptr);
             parent.addFile (file);
             addEmbeddedFileSystem (file, 1024);
             break;
 
           case ProdosConstants.GSOS_EXTENDED_FILE:
-            parent.addFile (new FileProdos (this, parent, buffer, ptr));
+            parent.addFile (new FileProdos (this, parent, catalogBlock, ptr));
             break;
 
           case ProdosConstants.SUBDIRECTORY:
-            FolderProdos folder = new FolderProdos (this, parent, buffer, ptr);
+            FolderProdos folder = new FolderProdos (this, parent, catalogBlock, ptr);
             parent.addFile (folder);
             processFolder (folder, folder.fileEntry.keyPtr);        // recursive
             break;
 
           case ProdosConstants.SUBDIRECTORY_HEADER:
-            ((FolderProdos) parent).addDirectoryEntry (buffer, ptr);
+            ((FolderProdos) parent).addDirectoryEntry (catalogBlock, ptr);
             break;
 
           case ProdosConstants.VOLUME_HEADER:
@@ -199,6 +204,13 @@ public class FsProdos extends AbstractFileSystem
     }
 
     return bitMap;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  private void writeVolumeBitMap ()
+  // ---------------------------------------------------------------------------------//
+  {
+
   }
 
   // ---------------------------------------------------------------------------------//
@@ -278,6 +290,58 @@ public class FsProdos extends AbstractFileSystem
             freeBlocks, totalBlocks - freeBlocks, totalBlocks));
 
     return text.toString ();
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
+  public void deleteFile (AppleFile appleFile)
+  // ---------------------------------------------------------------------------------//
+  {
+    if (appleFile.getParentFileSystem () != this)
+      throw new InvalidParentFileSystemException ("file not part of this File System");
+
+    if (appleFile.isFolder ())
+    {
+      System.out.printf ("delete folder: %s%n", appleFile.getFileName ());
+      FolderProdos folder = (FolderProdos) appleFile;
+      deleteCatalogEntry (folder.catalogBlock, folder.catalogPtr);
+    }
+    else
+    {
+      System.out.printf ("delete file: %s%n", appleFile.getFileName ());
+      FileProdos file = (FileProdos) appleFile;
+      deleteCatalogEntry (file.catalogBlock, file.catalogPtr);
+    }
+
+    // mark file's sectors as free in the vtoc
+    List<AppleBlock> blocks = appleFile.getBlocks ();
+    if (appleFile.isFork ())
+      for (AppleFile file : ((FileProdos) appleFile).forks)
+        blocks.addAll (file.getBlocks ());
+
+    for (AppleBlock block : blocks)
+    {
+      volumeBitMap.set (block.getBlockNo ());
+      System.out.printf ("     block : %-10s %4d%n", block.getBlockSubType (),
+          block.getBlockNo ());
+    }
+
+    if (appleFile.isFork ())
+    {
+      // free (both) fork's blocks
+    }
+
+    System.out.printf ("Used blocks: %,d%n",
+        directoryEntry.totalBlocks - volumeBitMap.cardinality ());
+  }
+
+  // ---------------------------------------------------------------------------------//
+  private void deleteCatalogEntry (AppleBlock catalogBlock, int ptr)
+  // ---------------------------------------------------------------------------------//
+  {
+    byte[] buffer = catalogBlock.getBuffer ();
+    buffer[ptr] = (byte) 0xFF;
+    markDirty (catalogBlock);
   }
 
   // ---------------------------------------------------------------------------------//
