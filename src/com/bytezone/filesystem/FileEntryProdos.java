@@ -25,7 +25,7 @@ class FileEntryProdos
   final int blocksUsed;
   final int eof;
   final int auxType;
-  final int headerPtr;
+  final int headerPtr;              // catalog sector containing the file count
 
   final int version;
   final int minVersion;

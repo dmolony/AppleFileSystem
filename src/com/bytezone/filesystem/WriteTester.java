@@ -12,7 +12,7 @@ public class WriteTester
   String[] fileNames = {                             //
       adi + "DENIS.DSK",                             // 0: 3.3 intl 0
       base + "prodos/View-Sector.dsk",               // 1: Prodos block
-      base + "incoming/EDASM.DSK",                   // 2: prodos sector
+      base + "HDV/8-bit Games.hdv",                  // 
   };
 
   // ---------------------------------------------------------------------------------//
@@ -21,6 +21,7 @@ public class WriteTester
   {
     FileSystemFactory factory = new FileSystemFactory ();
 
+    System.out.println ("Original disk");
     AppleFileSystem fs = factory.getFileSystem (Path.of (fileNames[1]));
     if (fs == null)
     {
@@ -30,6 +31,7 @@ public class WriteTester
 
     String newDiskName = "blanketyblank.dsk";
 
+    System.out.println ("creating copy");
     AppleFileSystem newFs =
         factory.getFileSystem (newDiskName, fs.getDiskBuffer ().copyData ());
 

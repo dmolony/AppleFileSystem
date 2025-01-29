@@ -19,27 +19,27 @@ public class FileProdos extends AbstractAppleFile implements AppleForkedFile
   protected static final DateTimeFormatter stf = DateTimeFormatter.ofPattern ("H:mm");
   protected static final String NO_DATE = "<NO DATE>";
 
-  private FileEntryProdos fileEntry;
-  private AppleContainer container;                             // parent
+  FileEntryProdos fileEntry;
+  private AppleContainer parentCcontainer;
 
-  private ForkProdos dataFork;                                  // for non-forked files
-  List<AppleFile> forks = new ArrayList<> ();                   // for forked files
+  private ForkProdos dataFork;                        // for non-forked files
+  List<AppleFile> forks = new ArrayList<> ();         // for forked files
 
-  AppleBlock catalogBlock;
-  int catalogPtr;
+  AppleBlock parentCatalogBlock;                      // block containing file entry
+  int parentCatalogPtr;                               // file entry offset
 
   // ---------------------------------------------------------------------------------//
-  FileProdos (FsProdos parent, AppleContainer container, AppleBlock catalogBlock, int ptr)
+  FileProdos (FsProdos parent, AppleContainer parentContainer,
+      AppleBlock parentCatalogBlock, int ptr)
   // ---------------------------------------------------------------------------------//
   {
     super (parent);
 
-    this.container = container;
-    this.catalogBlock = catalogBlock;
-    this.catalogPtr = ptr;
+    this.parentCcontainer = parentContainer;
+    this.parentCatalogBlock = parentCatalogBlock;
+    this.parentCatalogPtr = ptr;
 
-    //    byte[] buffer = catalogBlock.getBuffer ();
-    fileEntry = new FileEntryProdos (catalogBlock, ptr);
+    fileEntry = new FileEntryProdos (parentCatalogBlock, ptr);
 
     fileName = fileEntry.fileName;
     fileType = fileEntry.fileType;
@@ -143,7 +143,7 @@ public class FileProdos extends AbstractAppleFile implements AppleForkedFile
   String getPath ()
   // ---------------------------------------------------------------------------------//
   {
-    return container.getPath () + "/" + getFileName ();
+    return parentCcontainer.getPath () + "/" + getFileName ();
   }
 
   // ---------------------------------------------------------------------------------//

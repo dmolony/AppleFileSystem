@@ -1,5 +1,6 @@
 package com.bytezone.filesystem;
 
+import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.List;
 import java.util.Optional;
@@ -25,85 +26,36 @@ public class FsProdos extends AbstractFileSystem
   {
     super (blockReader, FileSystemType.PRODOS);
 
-    int nextBlockNo = FIRST_CATALOG_BLOCK;
-    int prevBlockNo = -1;
+    directoryEntry = new DirectoryEntryProdos (this, FIRST_CATALOG_BLOCK);
 
-    assert totalCatalogBlocks == 0;
-    int catalogBlocks = 0;
+    setTotalCatalogBlocks (directoryEntry.catalogBlocks.size ());
 
-    while (nextBlockNo != 0)
-    {
-      AppleBlock vtoc = getBlock (nextBlockNo, BlockType.FS_DATA);
-      byte[] buffer = vtoc.getBuffer ();
+    processFolder (this);
 
-      if (catalogBlocks == 0)       // first time through, so this is the Volume Header
-      {
-        directoryEntry = new DirectoryEntryProdos (vtoc, 4);
-
-        if (directoryEntry.storageType != ProdosConstants.VOLUME_HEADER)
-          throw new FileFormatException ("FsProdos: No Volume Header");
-
-        if (directoryEntry.entryLength != ProdosConstants.ENTRY_SIZE
-            || directoryEntry.entriesPerBlock != ProdosConstants.ENTRIES_PER_BLOCK)
-          throw new FileFormatException ("FsProdos: Invalid entry data");
-
-        // check first bitmap block number (usually 6)
-        if (directoryEntry.keyPtr < 3 || directoryEntry.keyPtr > 10)
-          throw new FileFormatException (
-              "FsProdos: Invalid bitmap block value: " + directoryEntry.keyPtr);
-      }
-
-      prevBlockNo = Utility.unsignedShort (buffer, 0);
-      nextBlockNo = Utility.unsignedShort (buffer, 2);
-
-      if (!isValidAddress (prevBlockNo))
-        throw new FileFormatException (
-            "FsProdos: Invalid catalog previous block - " + prevBlockNo);
-
-      if (!isValidAddress (nextBlockNo))
-        throw new FileFormatException (
-            "FsProdos: Invalid catalog next block - " + nextBlockNo);
-
-      ++catalogBlocks;
-    }
-
-    processFolder (this, FIRST_CATALOG_BLOCK);              // volume directory
+    System.out.printf ("Name        : %s%n", directoryEntry.fileName);
+    System.out.printf ("Total files : %d%n", getFiles ().size ());
+    System.out.printf ("FileCount   : %d%n%n", directoryEntry.fileCount);
 
     assert directoryEntry.fileCount == getFiles ().size ();
-    setTotalCatalogBlocks (catalogBlocks);
 
     volumeBitMap = createVolumeBitMap (directoryEntry);
     freeBlocks = volumeBitMap.cardinality ();
 
-    if (isDosMaster)
+    if (isDosMaster)                                    // found DOS.3.3 file
       isDosMaster = checkDosMaster ();
   }
 
   // ---------------------------------------------------------------------------------//
-  private void processFolder (AppleContainer parent, int blockNo)
+  private void processFolder (AppleContainer parent)
   // ---------------------------------------------------------------------------------//
   {
-    AppleBlock catalogBlock = getBlock (blockNo, BlockType.FS_DATA);
-    if (catalogBlock == null)
-      throw new FileFormatException ("FsProdos: Invalid catalog");
-
-    byte[] buffer = catalogBlock.getBuffer ();
-    boolean isFolder = (buffer[4] & 0xF0) == 0xE0;      // subdirectory header
-
     FileProdos file = null;
 
-    while (true)
+    for (AppleBlock catalogBlock : directoryEntry.catalogBlocks)
     {
-      catalogBlock.setBlockSubType (isFolder ? "FOLDER" : "CATALOG");
-      if (isFolder)
-      {
-        catalogBlock.setBlockSubType ("FOLDER");
-        ((FolderProdos) parent).dataBlocks.add (catalogBlock);
-      }
-      else
-        catalogBlock.setBlockSubType ("CATALOG");
-
+      byte[] buffer = catalogBlock.getBuffer ();
       int ptr = 4;
+
       for (int i = 0; i < ProdosConstants.ENTRIES_PER_BLOCK; i++)
       {
         int blockType = (buffer[ptr] & 0xF0) >>> 4;
@@ -138,35 +90,19 @@ public class FsProdos extends AbstractFileSystem
           case ProdosConstants.SUBDIRECTORY:
             FolderProdos folder = new FolderProdos (this, parent, catalogBlock, ptr);
             parent.addFile (folder);
-            processFolder (folder, folder.fileEntry.keyPtr);        // recursive
             break;
 
           case ProdosConstants.SUBDIRECTORY_HEADER:
-            ((FolderProdos) parent).addDirectoryEntry (catalogBlock, ptr);
-            break;
-
           case ProdosConstants.VOLUME_HEADER:
-            break;
-
           case ProdosConstants.FREE:
             break;
 
           default:
             System.out.printf ("Unknown Blocktype: %02X%n", blockType);
         }
+
         ptr += ProdosConstants.ENTRY_SIZE;
       }
-
-      int nextBlockNo = Utility.unsignedShort (buffer, 2);
-      if (nextBlockNo == 0)
-        break;
-
-      catalogBlock = getBlock (nextBlockNo, BlockType.FS_DATA);
-
-      if (catalogBlock == null)
-        throw new FileFormatException ("FsProdos: Invalid catalog");
-
-      buffer = catalogBlock.getBuffer ();
     }
   }
 
@@ -210,7 +146,7 @@ public class FsProdos extends AbstractFileSystem
   private void writeVolumeBitMap ()
   // ---------------------------------------------------------------------------------//
   {
-
+    System.out.println ("volume bitmap not writted");
   }
 
   // ---------------------------------------------------------------------------------//
@@ -302,46 +238,57 @@ public class FsProdos extends AbstractFileSystem
 
     if (appleFile.isFolder ())
     {
-      System.out.printf ("delete folder: %s%n", appleFile.getFileName ());
       FolderProdos folder = (FolderProdos) appleFile;
-      deleteCatalogEntry (folder.catalogBlock, folder.catalogPtr);
+      deleteCatalogEntry (folder.parentCatalogBlock, folder.parentCatalogPtr,
+          folder.fileEntry);
     }
     else
     {
-      System.out.printf ("delete file: %s%n", appleFile.getFileName ());
       FileProdos file = (FileProdos) appleFile;
-      deleteCatalogEntry (file.catalogBlock, file.catalogPtr);
+      deleteCatalogEntry (file.parentCatalogBlock, file.parentCatalogPtr, file.fileEntry);
     }
 
     // mark file's sectors as free in the vtoc
-    List<AppleBlock> blocks = appleFile.getBlocks ();
+    List<AppleBlock> freeBlocks = new ArrayList<> (appleFile.getBlocks ());
     if (appleFile.isFork ())
       for (AppleFile file : ((FileProdos) appleFile).forks)
-        blocks.addAll (file.getBlocks ());
+        freeBlocks.addAll (file.getBlocks ());
 
-    for (AppleBlock block : blocks)
+    System.out.printf ("%4d blocks to mark as free%n", freeBlocks.size ());
+    int count = 0;
+    for (AppleBlock block : freeBlocks)
     {
+      if (block == null)
+        continue;
+
+      if (true)
+        System.out.printf ("     %03d block : %-10s %,6d  %<04X%n", count,
+            block.getBlockSubType (), block.getBlockNo ());
+
       volumeBitMap.set (block.getBlockNo ());
-      System.out.printf ("     block : %-10s %4d%n", block.getBlockSubType (),
-          block.getBlockNo ());
-    }
-
-    if (appleFile.isFork ())
-    {
-      // free (both) fork's blocks
+      count++;
     }
 
     System.out.printf ("Used blocks: %,d%n",
         directoryEntry.totalBlocks - volumeBitMap.cardinality ());
+
+    writeVolumeBitMap ();
   }
 
   // ---------------------------------------------------------------------------------//
-  private void deleteCatalogEntry (AppleBlock catalogBlock, int ptr)
+  private void deleteCatalogEntry (AppleBlock catalogBlock, int ptr,
+      FileEntryProdos fileEntry)
   // ---------------------------------------------------------------------------------//
   {
-    byte[] buffer = catalogBlock.getBuffer ();
-    buffer[ptr] = (byte) 0xFF;
+    byte[] buffer = catalogBlock.getBuffer ();    // catalog block with file's fileEntry
+    buffer[ptr] = (byte) 0x00;                    // mark file as deleted
     markDirty (catalogBlock);
+
+    AppleBlock firstCatalogBlock = getBlock (fileEntry.headerPtr);
+    buffer = firstCatalogBlock.getBuffer ();
+    int fileCount = Utility.unsignedShort (buffer, 0x25);
+    Utility.writeShort (buffer, 0x25, fileCount - 1);
+    markDirty (firstCatalogBlock);
   }
 
   // ---------------------------------------------------------------------------------//

@@ -21,53 +21,97 @@ class FolderProdos extends AbstractAppleFile implements AppleContainer
 
   FileEntryProdos fileEntry;                  // SDH only
   DirectoryEntryProdos directoryEntry;        // both VDH and SDH
-  AppleContainer parent;
+  AppleContainer parentContainer;
 
   List<AppleFile> files = new ArrayList<> ();
   List<AppleFileSystem> fileSystems = new ArrayList<> ();
 
-  AppleBlock catalogBlock;
-  int catalogPtr;
+  AppleBlock parentCatalogBlock;                // block containing this file entry
+  int parentCatalogPtr;
 
-  // This file is used by both a VDH and SDH. The VDH has only a DirectoryEntry,
-  // but an SDH is created first as a normal file (with a FileEntry), and then has
-  // the DirectoryEntry added when the subdirectory is processed.
   // ---------------------------------------------------------------------------------//
-  FolderProdos (FsProdos parent, AppleContainer container, AppleBlock catalogBlock,
-      int ptr)
+  FolderProdos (FsProdos fs, AppleContainer parentContainer,
+      AppleBlock parentCatalogBlock, int ptr)
   // ---------------------------------------------------------------------------------//
   {
-    super (parent);
+    super (fs);
 
-    this.parent = container;
-    this.catalogBlock = catalogBlock;
-    this.catalogPtr = ptr;
+    this.parentContainer = parentContainer;              // file system or folder
+    this.parentCatalogBlock = parentCatalogBlock;
+    this.parentCatalogPtr = ptr;
 
-    byte[] buffer = catalogBlock.getBuffer ();
+    fileEntry = new FileEntryProdos (parentCatalogBlock, ptr);
 
-    if ((buffer[ptr] & 0xF0) == 0xF0)         // Volume Directory Header
-    {
-      fileTypeText = "VOL";
-      directoryEntry = new DirectoryEntryProdos (catalogBlock, ptr);
-      //      fileTypeText = ProdosConstants.fileTypes[directoryEntry.fileType];
-    }
-    else                                      // Subdirectory
-    {
-      fileEntry = new FileEntryProdos (catalogBlock, ptr);
-      fileName = fileEntry.fileName;
-      fileType = fileEntry.fileType;
-      fileTypeText = ProdosConstants.fileTypes[fileEntry.fileType];
-    }
+    fileName = fileEntry.fileName;
+    fileType = fileEntry.fileType;
+    fileTypeText = ProdosConstants.fileTypes[fileEntry.fileType];
+
+    directoryEntry =
+        new DirectoryEntryProdos ((FsProdos) parentFileSystem, fileEntry.keyPtr);
+
+    processFolder (this);
+    dataBlocks.addAll (directoryEntry.catalogBlocks);
 
     isFolder = true;
   }
 
   // ---------------------------------------------------------------------------------//
-  void addDirectoryEntry (AppleBlock catalogBlock, int ptr)
+  private void processFolder (AppleContainer parent)
   // ---------------------------------------------------------------------------------//
   {
-    //    this.directoryEntry = new DirectoryEntryProdos (buffer, ptr);
-    this.directoryEntry = new DirectoryEntryProdos (catalogBlock, ptr);
+    FsProdos fs = (FsProdos) parentFileSystem;
+
+    FileProdos file = null;
+
+    for (AppleBlock catalogBlock : directoryEntry.catalogBlocks)
+    {
+      byte[] buffer = catalogBlock.getBuffer ();
+
+      int ptr = 4;
+      for (int i = 0; i < ProdosConstants.ENTRIES_PER_BLOCK; i++)
+      {
+        int blockType = (buffer[ptr] & 0xF0) >>> 4;
+
+        switch (blockType)
+        {
+          case ProdosConstants.SEEDLING:
+          case ProdosConstants.SAPLING:
+          case ProdosConstants.TREE:
+            file = new FileProdos (fs, parent, catalogBlock, ptr);
+            parent.addFile (file);
+
+            if (file.getFileType () == ProdosConstants.FILE_TYPE_LBR)
+              fs.addEmbeddedFileSystem (file, 0);
+
+            break;
+
+          case ProdosConstants.PASCAL_ON_PROFILE:
+            file = new FileProdos (fs, parent, catalogBlock, ptr);
+            parent.addFile (file);
+            fs.addEmbeddedFileSystem (file, 1024);
+            break;
+
+          case ProdosConstants.GSOS_EXTENDED_FILE:
+            parent.addFile (new FileProdos (fs, parent, catalogBlock, ptr));
+            break;
+
+          case ProdosConstants.SUBDIRECTORY:
+            FolderProdos folder = new FolderProdos (fs, parent, catalogBlock, ptr);
+            parent.addFile (folder);
+            break;
+
+          case ProdosConstants.SUBDIRECTORY_HEADER:
+          case ProdosConstants.VOLUME_HEADER:
+          case ProdosConstants.FREE:
+            break;
+
+          default:
+            System.out.printf ("Unknown Blocktype: %02X%n", blockType);
+        }
+
+        ptr += ProdosConstants.ENTRY_SIZE;
+      }
+    }
   }
 
   // ---------------------------------------------------------------------------------//
@@ -141,19 +185,11 @@ class FolderProdos extends AbstractAppleFile implements AppleContainer
   }
 
   // ---------------------------------------------------------------------------------//
-  //  @Override
-  //  public byte[] read ()
-  //  // ---------------------------------------------------------------------------------//
-  //  {
-  //    return null;
-  //  }
-
-  // ---------------------------------------------------------------------------------//
   @Override
   public String getPath ()
   // ---------------------------------------------------------------------------------//
   {
-    return parent.getPath () + "/" + getFileName ();
+    return parentContainer.getPath () + "/" + getFileName ();
   }
 
   // ---------------------------------------------------------------------------------//
