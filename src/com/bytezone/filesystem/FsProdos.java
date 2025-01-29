@@ -115,9 +115,9 @@ public class FsProdos extends AbstractFileSystem
     {
       if (bitPtr % 0x1000 == 0)
       {
-        AppleBlock block = getBlock (blockNo++, BlockType.FS_DATA);
-        block.setBlockSubType ("V-BITMAP");
-        buffer = block.getBuffer ();
+        AppleBlock bitmapBlock = getBlock (blockNo++, BlockType.FS_DATA);
+        bitmapBlock.setBlockSubType ("V-BITMAP");
+        buffer = bitmapBlock.getBuffer ();
         bfrPtr = 0;
       }
 
@@ -150,10 +150,9 @@ public class FsProdos extends AbstractFileSystem
     {
       if (bitPtr % 0x1000 == 0)
       {
-        AppleBlock block = getBlock (blockNo++);
-        markDirty (block);
-        block.setBlockSubType ("V-BITMAP");
-        buffer = block.getBuffer ();
+        AppleBlock bitmapBlock = getBlock (blockNo++);
+        markDirty (bitmapBlock);
+        buffer = bitmapBlock.getBuffer ();
         bfrPtr = 0;
       }
 
@@ -172,11 +171,11 @@ public class FsProdos extends AbstractFileSystem
   }
 
   // ---------------------------------------------------------------------------------//
-  public int getBitmapBlockNo ()
-  // ---------------------------------------------------------------------------------//
-  {
-    return directoryEntry.keyPtr;
-  }
+  //  public int getBitmapBlockNo ()
+  //  // ---------------------------------------------------------------------------------//
+  //  {
+  //    return directoryEntry.keyPtr;
+  //  }
 
   // ---------------------------------------------------------------------------------//
   public static String getFileTypeText (int fileType)
@@ -276,14 +275,14 @@ public class FsProdos extends AbstractFileSystem
       for (AppleFile file : ((FileProdos) appleFile).forks)
         freeBlocks.addAll (file.getBlocks ());
 
-    System.out.printf ("%4d blocks to mark as free%n", freeBlocks.size ());
+    //    System.out.printf ("%4d blocks to mark as free%n", freeBlocks.size ());
     int count = 0;
     for (AppleBlock block : freeBlocks)
     {
       if (block == null)
         continue;
 
-      if (true)
+      if (false)
         System.out.printf ("     %03d block : %-10s %,6d  %<04X%n", count,
             block.getBlockSubType (), block.getBlockNo ());
 
@@ -309,6 +308,7 @@ public class FsProdos extends AbstractFileSystem
     AppleBlock firstCatalogBlock = getBlock (fileEntry.headerPtr);
     buffer = firstCatalogBlock.getBuffer ();
     int fileCount = Utility.unsignedShort (buffer, 0x25);
+    assert fileCount > 0;
     Utility.writeShort (buffer, 0x25, fileCount - 1);
     markDirty (firstCatalogBlock);
   }

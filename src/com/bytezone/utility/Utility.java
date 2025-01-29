@@ -104,7 +104,7 @@ public class Utility
     }
     catch (ArrayIndexOutOfBoundsException e)
     {
-      System.out.printf ("Index out of range (unsignedLong): %d > %d%n", ptr,
+      System.out.printf ("Index out of range (unsignedInt): %d > %d%n", ptr,
           buffer.length);
       return 0;
     }
@@ -114,8 +114,21 @@ public class Utility
   public static int unsignedIntBigEndian (byte[] buffer, int ptr)
   // ---------------------------------------------------------------------------------//
   {
-    return (buffer[ptr] & 0xFF) * 16777216 + (buffer[ptr + 1] & 0xFF) * 65536
-        + (buffer[ptr + 2] & 0xFF) * 256 + (buffer[ptr + 3] & 0xFF);
+    //    return (buffer[ptr] & 0xFF) * 16777216 + (buffer[ptr + 1] & 0xFF) * 65536
+    //        + (buffer[ptr + 2] & 0xFF) * 256 + (buffer[ptr + 3] & 0xFF);
+    try
+    {
+      return (buffer[ptr + 3] & 0xFF)         //
+          | (buffer[ptr + 2] & 0xFF) << 8     //
+          | (buffer[ptr + 1] & 0xFF) << 16    //
+          | (buffer[ptr] & 0xFF) << 24;
+    }
+    catch (ArrayIndexOutOfBoundsException e)
+    {
+      System.out.printf ("Index out of range (unsignedIntBigEndian): %d > %d%n", ptr,
+          buffer.length);
+      return 0;
+    }
   }
 
   // ---------------------------------------------------------------------------------//
