@@ -269,13 +269,13 @@ public class FsProdos extends AbstractFileSystem
       deleteCatalogEntry (file.parentCatalogBlock, file.parentCatalogPtr, file.fileEntry);
     }
 
-    // mark file's sectors as free in the vtoc
+    // create list of blocks to free
     List<AppleBlock> freeBlocks = new ArrayList<> (appleFile.getBlocks ());
     if (appleFile.isFork ())
       for (AppleFile file : ((FileProdos) appleFile).forks)
         freeBlocks.addAll (file.getBlocks ());
 
-    //    System.out.printf ("%4d blocks to mark as free%n", freeBlocks.size ());
+    // mark blocks as free in the vtoc
     int count = 0;
     for (AppleBlock block : freeBlocks)
     {
@@ -307,8 +307,10 @@ public class FsProdos extends AbstractFileSystem
 
     AppleBlock firstCatalogBlock = getBlock (fileEntry.headerPtr);
     buffer = firstCatalogBlock.getBuffer ();
+
     int fileCount = Utility.unsignedShort (buffer, 0x25);
     assert fileCount > 0;
+
     Utility.writeShort (buffer, 0x25, fileCount - 1);
     markDirty (firstCatalogBlock);
   }
