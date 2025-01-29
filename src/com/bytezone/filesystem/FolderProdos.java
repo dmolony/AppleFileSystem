@@ -26,8 +26,8 @@ class FolderProdos extends AbstractAppleFile implements AppleContainer
   List<AppleFile> files = new ArrayList<> ();
   List<AppleFileSystem> fileSystems = new ArrayList<> ();
 
-  AppleBlock parentCatalogBlock;                // block containing this file entry
-  int parentCatalogPtr;
+  AppleBlock parentCatalogBlock;              // block containing this file entry
+  int parentCatalogPtr;                       // offset to this file entry
 
   // ---------------------------------------------------------------------------------//
   FolderProdos (FsProdos fs, AppleContainer parentContainer,
@@ -46,21 +46,21 @@ class FolderProdos extends AbstractAppleFile implements AppleContainer
     fileType = fileEntry.fileType;
     fileTypeText = ProdosConstants.fileTypes[fileEntry.fileType];
 
+    // create the Sub Directory Header
     directoryEntry =
         new DirectoryEntryProdos ((FsProdos) parentFileSystem, fileEntry.keyPtr);
-
-    processFolder (this);
     dataBlocks.addAll (directoryEntry.catalogBlocks);
+
+    readCatalog ();
 
     isFolder = true;
   }
 
   // ---------------------------------------------------------------------------------//
-  private void processFolder (AppleContainer parent)
+  private void readCatalog ()
   // ---------------------------------------------------------------------------------//
   {
     FsProdos fs = (FsProdos) parentFileSystem;
-
     FileProdos file = null;
 
     for (AppleBlock catalogBlock : directoryEntry.catalogBlocks)
@@ -77,8 +77,8 @@ class FolderProdos extends AbstractAppleFile implements AppleContainer
           case ProdosConstants.SEEDLING:
           case ProdosConstants.SAPLING:
           case ProdosConstants.TREE:
-            file = new FileProdos (fs, parent, catalogBlock, ptr);
-            parent.addFile (file);
+            file = new FileProdos (fs, this, catalogBlock, ptr);
+            addFile (file);
 
             if (file.getFileType () == ProdosConstants.FILE_TYPE_LBR)
               fs.addEmbeddedFileSystem (file, 0);
@@ -86,18 +86,18 @@ class FolderProdos extends AbstractAppleFile implements AppleContainer
             break;
 
           case ProdosConstants.PASCAL_ON_PROFILE:
-            file = new FileProdos (fs, parent, catalogBlock, ptr);
-            parent.addFile (file);
+            file = new FileProdos (fs, this, catalogBlock, ptr);
+            addFile (file);
             fs.addEmbeddedFileSystem (file, 1024);
             break;
 
           case ProdosConstants.GSOS_EXTENDED_FILE:
-            parent.addFile (new FileProdos (fs, parent, catalogBlock, ptr));
+            addFile (new FileProdos (fs, this, catalogBlock, ptr));
             break;
 
           case ProdosConstants.SUBDIRECTORY:
-            FolderProdos folder = new FolderProdos (fs, parent, catalogBlock, ptr);
-            parent.addFile (folder);
+            FolderProdos folder = new FolderProdos (fs, this, catalogBlock, ptr);
+            addFile (folder);
             break;
 
           case ProdosConstants.SUBDIRECTORY_HEADER:

@@ -26,19 +26,13 @@ public class FsProdos extends AbstractFileSystem
   {
     super (blockReader, FileSystemType.PRODOS);
 
+    // create the Volume Directory Header
     directoryEntry = new DirectoryEntryProdos (this, FIRST_CATALOG_BLOCK);
-
     setTotalCatalogBlocks (directoryEntry.catalogBlocks.size ());
 
-    processFolder (this);
+    readCatalog ();
 
-    System.out.printf ("Name        : %s%n", directoryEntry.fileName);
-    System.out.printf ("Total files : %d%n", getFiles ().size ());
-    System.out.printf ("FileCount   : %d%n%n", directoryEntry.fileCount);
-
-    assert directoryEntry.fileCount == getFiles ().size ();
-
-    volumeBitMap = createVolumeBitMap (directoryEntry);
+    volumeBitMap = createVolumeBitMap ();
     freeBlocks = volumeBitMap.cardinality ();
 
     if (isDosMaster)                                    // found DOS.3.3 file
@@ -46,7 +40,7 @@ public class FsProdos extends AbstractFileSystem
   }
 
   // ---------------------------------------------------------------------------------//
-  private void processFolder (AppleContainer parent)
+  private void readCatalog ()
   // ---------------------------------------------------------------------------------//
   {
     FileProdos file = null;
@@ -65,8 +59,8 @@ public class FsProdos extends AbstractFileSystem
           case ProdosConstants.SEEDLING:
           case ProdosConstants.SAPLING:
           case ProdosConstants.TREE:
-            file = new FileProdos (this, parent, catalogBlock, ptr);
-            parent.addFile (file);
+            file = new FileProdos (this, this, catalogBlock, ptr);
+            addFile (file);
 
             if (file.getFileType () == ProdosConstants.FILE_TYPE_LBR)
               addEmbeddedFileSystem (file, 0);
@@ -78,18 +72,18 @@ public class FsProdos extends AbstractFileSystem
             break;
 
           case ProdosConstants.PASCAL_ON_PROFILE:
-            file = new FileProdos (this, parent, catalogBlock, ptr);
-            parent.addFile (file);
+            file = new FileProdos (this, this, catalogBlock, ptr);
+            addFile (file);
             addEmbeddedFileSystem (file, 1024);
             break;
 
           case ProdosConstants.GSOS_EXTENDED_FILE:
-            parent.addFile (new FileProdos (this, parent, catalogBlock, ptr));
+            addFile (new FileProdos (this, this, catalogBlock, ptr));
             break;
 
           case ProdosConstants.SUBDIRECTORY:
-            FolderProdos folder = new FolderProdos (this, parent, catalogBlock, ptr);
-            parent.addFile (folder);
+            FolderProdos folder = new FolderProdos (this, this, catalogBlock, ptr);
+            addFile (folder);
             break;
 
           case ProdosConstants.SUBDIRECTORY_HEADER:
@@ -107,7 +101,7 @@ public class FsProdos extends AbstractFileSystem
   }
 
   // ---------------------------------------------------------------------------------//
-  private BitSet createVolumeBitMap (DirectoryEntryProdos directoryEntry)
+  private BitSet createVolumeBitMap ()
   // ---------------------------------------------------------------------------------//
   {
     int bitPtr = 0;
@@ -146,7 +140,35 @@ public class FsProdos extends AbstractFileSystem
   private void writeVolumeBitMap ()
   // ---------------------------------------------------------------------------------//
   {
-    System.out.println ("volume bitmap not writted");
+    int bitPtr = 0;
+    int bfrPtr = 0;
+
+    byte[] buffer = null;
+    int blockNo = directoryEntry.keyPtr;
+
+    while (bitPtr < directoryEntry.totalBlocks)
+    {
+      if (bitPtr % 0x1000 == 0)
+      {
+        AppleBlock block = getBlock (blockNo++);
+        markDirty (block);
+        block.setBlockSubType ("V-BITMAP");
+        buffer = block.getBuffer ();
+        bfrPtr = 0;
+      }
+
+      byte flags = 0;
+      byte mask = (byte) 0x80;
+
+      for (int i = 0; i < 8; i++)
+      {
+        if (!volumeBitMap.get (bitPtr++))
+          flags |= mask;
+        mask >>>= 1;
+      }
+
+      buffer[bfrPtr++] = flags;
+    }
   }
 
   // ---------------------------------------------------------------------------------//

@@ -20,7 +20,7 @@ public class FileProdos extends AbstractAppleFile implements AppleForkedFile
   protected static final String NO_DATE = "<NO DATE>";
 
   FileEntryProdos fileEntry;
-  private AppleContainer parentCcontainer;
+  private AppleContainer parentContainer;
 
   private ForkProdos dataFork;                        // for non-forked files
   List<AppleFile> forks = new ArrayList<> ();         // for forked files
@@ -29,13 +29,13 @@ public class FileProdos extends AbstractAppleFile implements AppleForkedFile
   int parentCatalogPtr;                               // file entry offset
 
   // ---------------------------------------------------------------------------------//
-  FileProdos (FsProdos parent, AppleContainer parentContainer,
+  FileProdos (FsProdos parentFs, AppleContainer parentContainer,
       AppleBlock parentCatalogBlock, int ptr)
   // ---------------------------------------------------------------------------------//
   {
-    super (parent);
+    super (parentFs);
 
-    this.parentCcontainer = parentContainer;
+    this.parentContainer = parentContainer;
     this.parentCatalogBlock = parentCatalogBlock;
     this.parentCatalogPtr = ptr;
 
@@ -143,7 +143,7 @@ public class FileProdos extends AbstractAppleFile implements AppleForkedFile
   String getPath ()
   // ---------------------------------------------------------------------------------//
   {
-    return parentCcontainer.getPath () + "/" + getFileName ();
+    return parentContainer.getPath () + "/" + getFileName ();
   }
 
   // ---------------------------------------------------------------------------------//

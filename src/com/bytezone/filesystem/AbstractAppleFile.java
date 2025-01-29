@@ -27,10 +27,10 @@ public abstract class AbstractAppleFile implements AppleFile
   protected Buffer dataRecord;
 
   // ---------------------------------------------------------------------------------//
-  AbstractAppleFile (AppleFileSystem appleFileSystem)
+  AbstractAppleFile (AppleFileSystem parentFileSystem)
   // ---------------------------------------------------------------------------------//
   {
-    this.parentFileSystem = appleFileSystem;
+    this.parentFileSystem = parentFileSystem;
   }
 
   // ---------------------------------------------------------------------------------//
