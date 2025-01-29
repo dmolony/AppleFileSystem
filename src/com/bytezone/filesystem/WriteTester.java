@@ -21,8 +21,8 @@ public class WriteTester
   {
     FileSystemFactory factory = new FileSystemFactory ();
 
-    System.out.println ("Original disk");
-    AppleFileSystem fs = factory.getFileSystem (Path.of (fileNames[1]));
+    //    System.out.println ("Original disk");
+    AppleFileSystem fs = factory.getFileSystem (Path.of (fileNames[2]));
     if (fs == null)
     {
       System.out.println ("disk not found");
@@ -31,7 +31,7 @@ public class WriteTester
 
     String newDiskName = "blanketyblank.dsk";
 
-    System.out.println ("creating copy");
+    //    System.out.println ("creating copy");
     AppleFileSystem newFs =
         factory.getFileSystem (newDiskName, fs.getDiskBuffer ().copyData ());
 

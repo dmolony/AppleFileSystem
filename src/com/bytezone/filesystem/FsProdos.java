@@ -15,6 +15,7 @@ public class FsProdos extends AbstractFileSystem
 // -----------------------------------------------------------------------------------//
 {
   private static final int FIRST_CATALOG_BLOCK = 2;
+  private static final int BITS_PER_BLOCK = 0x1000;
 
   private final BitSet volumeBitMap;
   private DirectoryEntryProdos directoryEntry;
@@ -113,7 +114,7 @@ public class FsProdos extends AbstractFileSystem
 
     while (bitPtr < directoryEntry.totalBlocks)
     {
-      if (bitPtr % 0x1000 == 0)
+      if (bitPtr % BITS_PER_BLOCK == 0)
       {
         AppleBlock bitmapBlock = getBlock (blockNo++, BlockType.FS_DATA);
         bitmapBlock.setBlockSubType ("V-BITMAP");
@@ -125,15 +126,47 @@ public class FsProdos extends AbstractFileSystem
 
       for (int i = 0; i < 8; i++)
       {
-        if ((flags & 0x80) != 0)
+        if ((flags & 0x80) != 0)      // on == free
           bitMap.set (bitPtr);
 
         flags <<= 1;
-        ++bitPtr;
+        bitPtr++;
       }
     }
 
+    //    showUsed (bitMap);
+
     return bitMap;
+  }
+
+  // debugging
+  // ---------------------------------------------------------------------------------//
+  private void showUsed (BitSet bitMap)
+  // ---------------------------------------------------------------------------------//
+  {
+    int count = 0;
+    for (int i = 0; i < directoryEntry.totalBlocks; i++)
+      if (!bitMap.get (i))        // off = used
+      {
+        count++;
+        System.out.printf ("%04X  %<4d%n", i);
+      }
+
+    System.out.printf ("total %d%n", count);
+  }
+
+  // debugging
+  // ---------------------------------------------------------------------------------//
+  private void dump (BitSet bitMap)
+  // ---------------------------------------------------------------------------------//
+  {
+    for (int i = 0; i < 280; i++)
+    {
+      if (i % 8 == 0)
+        System.out.println ();
+      System.out.printf ("%s ", bitMap.get (i) ? "1" : "0");
+    }
+    System.out.println ();
   }
 
   // ---------------------------------------------------------------------------------//
@@ -148,7 +181,7 @@ public class FsProdos extends AbstractFileSystem
 
     while (bitPtr < directoryEntry.totalBlocks)
     {
-      if (bitPtr % 0x1000 == 0)
+      if (bitPtr % 0x1000 == 0)           // get the next block
       {
         AppleBlock bitmapBlock = getBlock (blockNo++);
         markDirty (bitmapBlock);
@@ -156,26 +189,26 @@ public class FsProdos extends AbstractFileSystem
         bfrPtr = 0;
       }
 
-      byte flags = 0;
-      byte mask = (byte) 0x80;
+      int flags = 0;
+      int mask = 0x80;
 
       for (int i = 0; i < 8; i++)
       {
-        if (!volumeBitMap.get (bitPtr++))
+        if (volumeBitMap.get (bitPtr++))       // on = free
           flags |= mask;
         mask >>>= 1;
       }
 
-      buffer[bfrPtr++] = flags;
+      buffer[bfrPtr++] = (byte) (flags & 0xFF);
     }
   }
 
   // ---------------------------------------------------------------------------------//
-  //  public int getBitmapBlockNo ()
-  //  // ---------------------------------------------------------------------------------//
-  //  {
-  //    return directoryEntry.keyPtr;
-  //  }
+  public int getBitmapBlockNo ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return directoryEntry.keyPtr;
+  }
 
   // ---------------------------------------------------------------------------------//
   public static String getFileTypeText (int fileType)
@@ -271,7 +304,7 @@ public class FsProdos extends AbstractFileSystem
 
     // create list of blocks to free
     List<AppleBlock> freeBlocks = new ArrayList<> (appleFile.getBlocks ());
-    if (appleFile.isFork ())
+    if (appleFile.isForkedFile ())
       for (AppleFile file : ((FileProdos) appleFile).forks)
         freeBlocks.addAll (file.getBlocks ());
 
@@ -286,12 +319,12 @@ public class FsProdos extends AbstractFileSystem
         System.out.printf ("     %03d block : %-10s %,6d  %<04X%n", count,
             block.getBlockSubType (), block.getBlockNo ());
 
-      volumeBitMap.set (block.getBlockNo ());
+      volumeBitMap.set (block.getBlockNo ());       // mark block free
       count++;
     }
 
-    System.out.printf ("Used blocks: %,d%n",
-        directoryEntry.totalBlocks - volumeBitMap.cardinality ());
+    //    System.out.printf ("Used blocks: %,d%n",
+    //        directoryEntry.totalBlocks - volumeBitMap.cardinality ());
 
     writeVolumeBitMap ();
   }

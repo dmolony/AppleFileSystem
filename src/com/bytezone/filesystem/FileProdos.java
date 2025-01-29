@@ -61,6 +61,7 @@ public class FileProdos extends AbstractAppleFile implements AppleForkedFile
   {
     AppleBlock block =
         getParentFileSystem ().getBlock (fileEntry.keyPtr, BlockType.FS_DATA);
+
     block.setBlockSubType ("FORK");
     block.setFileOwner (this);
 
