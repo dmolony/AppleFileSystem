@@ -173,7 +173,7 @@ public class FsPascal extends AbstractFileSystem
     text.append (line);
     text.append (
         String.format ("%nBlocks free : %3d  Blocks used : %3d  Total blocks : %3d",
-            getFreeBlocks (), getTotalBlocks () - getFreeBlocks (), getTotalBlocks ()));
+            getTotalFreeBlocks (), getTotalBlocks () - getTotalFreeBlocks (), getTotalBlocks ()));
 
     return Utility.rtrim (text);
   }

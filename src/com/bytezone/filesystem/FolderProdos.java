@@ -250,7 +250,7 @@ class FolderProdos extends AbstractAppleFile implements AppleContainer
     }
 
     int totalBlocks = getParentFileSystem ().getTotalBlocks ();
-    int freeBlocks = getParentFileSystem ().getFreeBlocks ();
+    int freeBlocks = getParentFileSystem ().getTotalFreeBlocks ();
 
     text.append (
         String.format ("%nBLOCKS FREE:%5d     BLOCKS USED:%5d     TOTAL BLOCKS:%5d%n",

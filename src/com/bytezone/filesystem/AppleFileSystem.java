@@ -37,7 +37,7 @@ public interface AppleFileSystem extends AppleContainer
 
   int getBlockSize ();
 
-  int getFreeBlocks ();
+  int getTotalFreeBlocks ();
 
   boolean isValidAddress (int blockNo);
 
@@ -58,6 +58,10 @@ public interface AppleFileSystem extends AppleContainer
   byte[] readBlock (AppleBlock block);
 
   byte[] readBlocks (List<AppleBlock> blocks);
+
+  void clean ();
+
+  boolean isFree (AppleBlock block);
 
   void markDirty (AppleBlock dirtyBlock);
 

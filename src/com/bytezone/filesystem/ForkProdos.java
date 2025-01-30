@@ -36,7 +36,7 @@ public class ForkProdos extends AbstractAppleFile
   // All ForkProdos files have a single FileProdos parent. Forks are also AppleFiles,
   // but only the DATA and RESOURCE forks are treated as standalone files. Normal
   // prodos files simply use a ForkProdos for their data (as the code to read them 
-  // is identical.
+  // is identical).
   // DATA and RESOURCE forks are stored as children of the FileProdos, normal
   // prodos files keep a private reference to its data 'fork'.
   // ---------------------------------------------------------------------------------//
@@ -179,7 +179,7 @@ public class ForkProdos extends AbstractAppleFile
     byte[] buffer = masterIndexBlock.getBuffer ();             // master index
 
     int highest = 0x80;
-    while (highest-- > 0)                                 // decrement after test
+    while (highest-- > 0)                                      // decrement after test
       if (buffer[highest] != 0 || buffer[highest + 0x100] != 0)
         break;
 
@@ -218,6 +218,7 @@ public class ForkProdos extends AbstractAppleFile
         System.arraycopy (data, 0, temp, 0, data.length);
         data = temp;
       }
+
       dataRecord = new Buffer (data, 0, eof);
     }
 

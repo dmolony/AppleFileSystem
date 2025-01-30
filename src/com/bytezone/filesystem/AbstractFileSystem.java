@@ -29,6 +29,7 @@ abstract class AbstractFileSystem implements AppleFileSystem
   protected String errorMessage = "";
 
   protected boolean partOfHybrid;     // this FS is one of two file systems on the disk
+  private byte[] empty = new byte[1024];
 
   // ---------------------------------------------------------------------------------//
   AbstractFileSystem (BlockReader blockReader, FileSystemType fileSystemType)
@@ -146,6 +147,31 @@ abstract class AbstractFileSystem implements AppleFileSystem
   // ---------------------------------------------------------------------------------//
   {
     return blockReader.getSector (this, buffer, offset, blockType);
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
+  public boolean isFree (AppleBlock block)
+  // ---------------------------------------------------------------------------------//
+  {
+    return false;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
+  public void clean ()
+  // ---------------------------------------------------------------------------------//
+  {
+    for (int i = 0; i < blockReader.getTotalBlocks (); i++)
+    {
+      AppleBlock block = blockReader.getBlock (this, i);
+      if (isFree (block))
+      {
+        byte[] buffer = block.getBuffer ();
+        System.arraycopy (empty, 0, buffer, 0, blockReader.getBlockSize ());
+        markDirty (block);
+      }
+    }
   }
 
   // ---------------------------------------------------------------------------------//
@@ -311,7 +337,7 @@ abstract class AbstractFileSystem implements AppleFileSystem
 
   // ---------------------------------------------------------------------------------//
   @Override
-  public int getFreeBlocks ()              // in blocks
+  public int getTotalFreeBlocks ()         // in blocks
   // ---------------------------------------------------------------------------------//
   {
     return freeBlocks;

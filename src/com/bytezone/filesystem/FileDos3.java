@@ -18,7 +18,7 @@ public class FileDos3 extends FileDos
 
     fileType = catalogBuffer[ptr + 2] & 0x7F;
     isLocked = (catalogBuffer[ptr + 2] & 0x80) != 0;
-    fileName = Utility.string (catalogBuffer, ptr + 3, 30);
+    fileName = Utility.string (catalogBuffer, ptr + 3, 30).trim ();
     isNameValid = checkName (fileName);                   // check for invalid characters
     sectorCount = Utility.unsignedShort (catalogBuffer, ptr + 33);
     fileTypeText = fs.getFileTypeText (fileType);

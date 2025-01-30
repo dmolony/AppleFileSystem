@@ -19,6 +19,7 @@ public class FileDos4 extends FileDos
 
   boolean tsListZero;
   LocalDateTime modified;
+  boolean deleted;
 
   // ---------------------------------------------------------------------------------//
   FileDos4 (FsDos4 fs, byte[] buffer, int ptr)
@@ -29,7 +30,7 @@ public class FileDos4 extends FileDos
     int nextTrack = buffer[ptr] & 0xFF;
     int nextSector = buffer[ptr + 1] & 0xFF;
 
-    boolean deleted = (buffer[ptr] & 0x80) != 0;
+    deleted = (buffer[ptr] & 0x80) != 0;
     tsListZero = (buffer[ptr] & 0x40) != 0;
 
     isLocked = (buffer[ptr + 2] & 0x80) != 0;

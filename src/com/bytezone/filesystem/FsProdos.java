@@ -134,8 +134,6 @@ public class FsProdos extends AbstractFileSystem
       }
     }
 
-    //    showUsed (bitMap);
-
     return bitMap;
   }
 
@@ -204,7 +202,15 @@ public class FsProdos extends AbstractFileSystem
   }
 
   // ---------------------------------------------------------------------------------//
-  public int getBitmapBlockNo ()
+  @Override
+  public boolean isFree (AppleBlock block)
+  // ---------------------------------------------------------------------------------//
+  {
+    return volumeBitMap.get (block.getBlockNo ());
+  }
+
+  // ---------------------------------------------------------------------------------//
+  public int getFirstBitmapBlockNo ()
   // ---------------------------------------------------------------------------------//
   {
     return directoryEntry.keyPtr;
@@ -273,7 +279,7 @@ public class FsProdos extends AbstractFileSystem
     }
 
     int totalBlocks = getTotalBlocks ();
-    int freeBlocks = getFreeBlocks ();
+    int freeBlocks = getTotalFreeBlocks ();
 
     text.append (
         String.format ("%nBLOCKS FREE:%5d     BLOCKS USED:%5d     TOTAL BLOCKS:%5d%n",

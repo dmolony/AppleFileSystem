@@ -129,7 +129,7 @@ class FsDos4 extends FsDos
     }
 
     int totalSectors = getTotalBlocks ();
-    int freeSectors = getFreeBlocks ();
+    int freeSectors = getTotalFreeBlocks ();
 
     text.append (underline);
     text.append (String.format (

@@ -8,11 +8,13 @@ public class WriteTester
 {
   String base = System.getProperty ("user.home") + "/Documents/Examples/";
   String adi = base + "Apple Disk Images/";
+  String indent = "                        ";
 
   String[] fileNames = {                             //
       adi + "DENIS.DSK",                             // 0: 3.3 intl 0
       base + "prodos/View-Sector.dsk",               // 1: Prodos block
       base + "HDV/8-bit Games.hdv",                  // 
+      base + "GS/IIGS System 2.0.po",               // 
   };
 
   // ---------------------------------------------------------------------------------//
@@ -21,8 +23,7 @@ public class WriteTester
   {
     FileSystemFactory factory = new FileSystemFactory ();
 
-    //    System.out.println ("Original disk");
-    AppleFileSystem fs = factory.getFileSystem (Path.of (fileNames[2]));
+    AppleFileSystem fs = factory.getFileSystem (Path.of (fileNames[0]));
     if (fs == null)
     {
       System.out.println ("disk not found");
@@ -31,11 +32,11 @@ public class WriteTester
 
     String newDiskName = "blanketyblank.dsk";
 
-    //    System.out.println ("creating copy");
     AppleFileSystem newFs =
         factory.getFileSystem (newDiskName, fs.getDiskBuffer ().copyData ());
 
     deleteFiles (newFs, 0);
+    newFs.clean ();
 
     newFs.create (adi + newDiskName);
   }
@@ -46,7 +47,13 @@ public class WriteTester
   {
     for (AppleFile file : container.getFiles ())
     {
-      System.out.printf ("%02d  %s%n", depth, file.getFileName ());
+      if (file.getFileName ().equals ("PRODOS"))
+        continue;
+      if (file.getFileName ().equals ("HELLO"))
+        continue;
+
+      System.out.printf ("%s %s %s%n", indent.substring (0, depth * 2),
+          file.getFileName (), file.isForkedFile () ? "*** Forked ***" : "");
 
       if (file instanceof AppleContainer ac)                    // folder
         deleteFiles (ac, depth + 1);
