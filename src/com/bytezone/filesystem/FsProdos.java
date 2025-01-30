@@ -137,36 +137,6 @@ public class FsProdos extends AbstractFileSystem
     return bitMap;
   }
 
-  // debugging
-  // ---------------------------------------------------------------------------------//
-  private void showUsed (BitSet bitMap)
-  // ---------------------------------------------------------------------------------//
-  {
-    int count = 0;
-    for (int i = 0; i < directoryEntry.totalBlocks; i++)
-      if (!bitMap.get (i))        // off = used
-      {
-        count++;
-        System.out.printf ("%04X  %<4d%n", i);
-      }
-
-    System.out.printf ("total %d%n", count);
-  }
-
-  // debugging
-  // ---------------------------------------------------------------------------------//
-  private void dump (BitSet bitMap)
-  // ---------------------------------------------------------------------------------//
-  {
-    for (int i = 0; i < 280; i++)
-    {
-      if (i % 8 == 0)
-        System.out.println ();
-      System.out.printf ("%s ", bitMap.get (i) ? "1" : "0");
-    }
-    System.out.println ();
-  }
-
   // ---------------------------------------------------------------------------------//
   private void writeVolumeBitMap ()
   // ---------------------------------------------------------------------------------//
@@ -182,7 +152,7 @@ public class FsProdos extends AbstractFileSystem
       if (bitPtr % 0x1000 == 0)           // get the next block
       {
         AppleBlock bitmapBlock = getBlock (blockNo++);
-        markDirty (bitmapBlock);
+        bitmapBlock.markDirty ();
         buffer = bitmapBlock.getBuffer ();
         bfrPtr = 0;
       }
@@ -199,14 +169,6 @@ public class FsProdos extends AbstractFileSystem
 
       buffer[bfrPtr++] = (byte) (flags & 0xFF);
     }
-  }
-
-  // ---------------------------------------------------------------------------------//
-  @Override
-  public boolean isFree (AppleBlock block)
-  // ---------------------------------------------------------------------------------//
-  {
-    return volumeBitMap.get (block.getBlockNo ());
   }
 
   // ---------------------------------------------------------------------------------//
@@ -342,7 +304,7 @@ public class FsProdos extends AbstractFileSystem
   {
     byte[] buffer = catalogBlock.getBuffer ();    // catalog block with file's fileEntry
     buffer[ptr] = (byte) 0x00;                    // mark file as deleted
-    markDirty (catalogBlock);
+    catalogBlock.markDirty ();
 
     AppleBlock firstCatalogBlock = getBlock (fileEntry.headerPtr);
     buffer = firstCatalogBlock.getBuffer ();
@@ -351,7 +313,7 @@ public class FsProdos extends AbstractFileSystem
     assert fileCount > 0;
 
     Utility.writeShort (buffer, 0x25, fileCount - 1);
-    markDirty (firstCatalogBlock);
+    firstCatalogBlock.markDirty ();
   }
 
   // ---------------------------------------------------------------------------------//

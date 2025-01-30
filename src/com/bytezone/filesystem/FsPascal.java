@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 import java.util.ArrayList;
+import java.util.BitSet;
 import java.util.List;
 
 import com.bytezone.filesystem.AppleBlock.BlockType;
@@ -27,6 +28,7 @@ public class FsPascal extends AbstractFileSystem
   private int totalFiles;          // no of files on disk
   private int firstBlock;
   private LocalDate date;
+
   private List<AppleBlock> catalogBlocks = new ArrayList<> ();
 
   private boolean debug = false;
@@ -61,7 +63,10 @@ public class FsPascal extends AbstractFileSystem
     firstBlock = Utility.unsignedShort (buffer, 18);
     date = Utility.getPascalLocalDate (buffer, 20);         // 2 bytes
 
+    volumeBitMap = new BitSet (totalBlocks);                // initially all off (used)
+
     setTotalCatalogBlocks (firstFileBlock - 2);
+    volumeBitMap.set (firstFileBlock, totalBlocks);         // on = free
 
     if (debug)
       System.out.println (this);
@@ -86,16 +91,14 @@ public class FsPascal extends AbstractFileSystem
         if (true)
         {
           FilePascalCode file = new FilePascalCode (this, buffer, ptr);
-          addFile2 (file);
+          addFile (file);
         }
         else
         {
           FilePascal file = new FilePascal (this, buffer, ptr);
-          addFile2 (file);
+          addFile (file);
 
           Buffer dataRecord = file.getFileBuffer ();
-          //          BlockReader blockReader2 
-          //              = new BlockReader (file.getFileName (), file.read ());
           BlockReader blockReader2 =
               new BlockReader (file.getFileName (), dataRecord.data ());
           blockReader2.setParameters (512, AddressType.BLOCK, 0, 0);
@@ -106,17 +109,27 @@ public class FsPascal extends AbstractFileSystem
       else
       {
         FilePascal file = new FilePascal (this, buffer, ptr);
-        addFile2 (file);
+        addFile (file);
       }
     }
   }
 
   // ---------------------------------------------------------------------------------//
-  private void addFile2 (AppleFile file)
+  private void addFile (FilePascal file)
   // ---------------------------------------------------------------------------------//
   {
     super.addFile (file);
+
     freeBlocks -= file.getTotalBlocks ();
+    volumeBitMap.clear (file.getFirstBlock (), file.getLastBlock ());
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
+  public boolean isFree (AppleBlock block)
+  // ---------------------------------------------------------------------------------//
+  {
+    return volumeBitMap.get (block.getBlockNo ());
   }
 
   // ---------------------------------------------------------------------------------//
@@ -173,7 +186,8 @@ public class FsPascal extends AbstractFileSystem
     text.append (line);
     text.append (
         String.format ("%nBlocks free : %3d  Blocks used : %3d  Total blocks : %3d",
-            getTotalFreeBlocks (), getTotalBlocks () - getTotalFreeBlocks (), getTotalBlocks ()));
+            getTotalFreeBlocks (), getTotalBlocks () - getTotalFreeBlocks (),
+            getTotalBlocks ()));
 
     return Utility.rtrim (text);
   }

@@ -59,7 +59,7 @@ public interface AppleFileSystem extends AppleContainer
 
   byte[] readBlocks (List<AppleBlock> blocks);
 
-  void clean ();
+  void cleanDisk ();
 
   boolean isFree (AppleBlock block);
 

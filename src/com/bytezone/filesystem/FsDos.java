@@ -19,7 +19,6 @@ public class FsDos extends AbstractFileSystem
 
   static final int ENTRY_SIZE = 35;
 
-  protected BitSet volumeBitMap;
   protected int dosVersion;
   protected int volumeNumber;
   protected int maxTSpairs;
@@ -162,14 +161,6 @@ public class FsDos extends AbstractFileSystem
         block.setBlockSubType ("DOS");
       }
     }
-  }
-
-  // ---------------------------------------------------------------------------------//
-  @Override
-  public boolean isFree (AppleBlock block)
-  // ---------------------------------------------------------------------------------//
-  {
-    return volumeBitMap.get (block.getBlockNo ());
   }
 
   // ---------------------------------------------------------------------------------//

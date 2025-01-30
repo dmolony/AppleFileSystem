@@ -56,7 +56,8 @@ public class FileWriter
   }
 
   // ---------------------------------------------------------------------------------//
-  void writeRecord (int recordNo, byte[] dataBuffer, int recordLength) throws DiskFullException
+  void writeRecord (int recordNo, byte[] dataBuffer, int recordLength)
+      throws DiskFullException
   // ---------------------------------------------------------------------------------//
   {
     assert recordLength > 0;
@@ -114,7 +115,8 @@ public class FileWriter
     switch (storageType)
     {
       case TREE:
-        return masterIndexBlock.get (logicalBlockNo / 0x100).getPosition (logicalBlockNo % 0x100);
+        return masterIndexBlock.get (logicalBlockNo / 0x100)
+            .getPosition (logicalBlockNo % 0x100);
 
       case SAPLING:
         if (logicalBlockNo < 0x100)
@@ -161,7 +163,8 @@ public class FileWriter
         indexBlock = null;
       }
 
-      getIndexBlock (logicalBlockNo / 0x100).setPosition (logicalBlockNo % 0x100, nextBlockNo);
+      getIndexBlock (logicalBlockNo / 0x100).setPosition (logicalBlockNo % 0x100,
+          nextBlockNo);
     }
     else if (logicalBlockNo > 0)                      // potential SAPLING
     {

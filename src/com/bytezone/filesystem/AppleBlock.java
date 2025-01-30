@@ -28,6 +28,14 @@ public interface AppleBlock         // this could be renamed to Address
 
   AppleFile getFileOwner ();
 
+  boolean isFree ();
+
+  boolean isDirty ();
+
+  void markDirty ();
+
+  void markClean ();
+
   void setUserData (Object userData);
 
   Object getUserData ();

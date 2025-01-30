@@ -36,7 +36,7 @@ public class WriteTester
         factory.getFileSystem (newDiskName, fs.getDiskBuffer ().copyData ());
 
     deleteFiles (newFs, 0);
-    newFs.clean ();
+    newFs.cleanDisk ();
 
     newFs.create (adi + newDiskName);
   }

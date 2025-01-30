@@ -175,7 +175,7 @@ public class FsDos3 extends FsDos
     int ptr = 11 + ((FileDos3) file).catalogEntryIndex * ENTRY_SIZE;
     buffer[ptr + 0x20] = buffer[ptr];
     buffer[ptr] = (byte) 0xFF;            // deleted file
-    markDirty (catalogSector);
+    catalogSector.markDirty ();
 
     // mark file's sectors as free in the vtoc
     for (AppleBlock block : file.getBlocks ())      // index and data blocks
@@ -184,6 +184,6 @@ public class FsDos3 extends FsDos
     AppleBlock vtoc = getSector (17, 0);
     buffer = vtoc.getBuffer ();
     writeVolumeBitMap (buffer);
-    markDirty (vtoc);
+    vtoc.markDirty ();
   }
 }

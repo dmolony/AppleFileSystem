@@ -5,6 +5,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.BitSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -30,6 +31,7 @@ abstract class AbstractFileSystem implements AppleFileSystem
 
   protected boolean partOfHybrid;     // this FS is one of two file systems on the disk
   private byte[] empty = new byte[1024];
+  protected BitSet volumeBitMap;
 
   // ---------------------------------------------------------------------------------//
   AbstractFileSystem (BlockReader blockReader, FileSystemType fileSystemType)
@@ -154,22 +156,22 @@ abstract class AbstractFileSystem implements AppleFileSystem
   public boolean isFree (AppleBlock block)
   // ---------------------------------------------------------------------------------//
   {
-    return false;
+    return volumeBitMap == null ? false : volumeBitMap.get (block.getBlockNo ());
   }
 
   // ---------------------------------------------------------------------------------//
   @Override
-  public void clean ()
+  public void cleanDisk ()
   // ---------------------------------------------------------------------------------//
   {
     for (int i = 0; i < blockReader.getTotalBlocks (); i++)
     {
       AppleBlock block = blockReader.getBlock (this, i);
-      if (isFree (block))
+      if (isFree (block) && block.getBlockType () != BlockType.EMPTY)
       {
         byte[] buffer = block.getBuffer ();
         System.arraycopy (empty, 0, buffer, 0, blockReader.getBlockSize ());
-        markDirty (block);
+        block.markDirty ();
       }
     }
   }
@@ -470,6 +472,36 @@ abstract class AbstractFileSystem implements AppleFileSystem
         e.printStackTrace ();
       }
     }
+  }
+
+  // debugging
+  // ---------------------------------------------------------------------------------//
+  private void showUsed (BitSet bitMap, int size)
+  // ---------------------------------------------------------------------------------//
+  {
+    int count = 0;
+    for (int i = 0; i < size; i++)
+      if (!bitMap.get (i))        // off = used
+      {
+        count++;
+        System.out.printf ("%04X  %<4d%n", i);
+      }
+
+    System.out.printf ("total %d%n", count);
+  }
+
+  // debugging
+  // ---------------------------------------------------------------------------------//
+  protected void dump (BitSet bitMap, int size)
+  // ---------------------------------------------------------------------------------//
+  {
+    for (int i = 0; i < size; i++)
+    {
+      if (i % 8 == 0)
+        System.out.println ();
+      System.out.printf ("%s ", bitMap.get (i) ? "1" : "0");
+    }
+    System.out.println ();
   }
 
   // ---------------------------------------------------------------------------------//
