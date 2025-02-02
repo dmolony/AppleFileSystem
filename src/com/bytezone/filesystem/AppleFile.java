@@ -38,9 +38,9 @@ public interface AppleFile
 
   public int getFileLength ();                      // in bytes (eof)
 
-  public int getTotalBlocks ();                     // in data blocks
+  public int getTotalBlocks ();                     // in data+index blocks
 
-  public List<AppleBlock> getBlocks ();
+  public List<AppleBlock> getBlocks ();             // dataBlocks + indexBlocks
 
   public String getCatalogLine ();
 

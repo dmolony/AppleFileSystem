@@ -167,7 +167,7 @@ abstract class AbstractFileSystem implements AppleFileSystem
     for (int i = 0; i < blockReader.getTotalBlocks (); i++)
     {
       AppleBlock block = blockReader.getBlock (this, i);
-      if (isFree (block) && block.getBlockType () != BlockType.EMPTY)
+      if (block.isFree () && block.getBlockType () != BlockType.EMPTY)
       {
         byte[] buffer = block.getBuffer ();
         System.arraycopy (empty, 0, buffer, 0, blockReader.getBlockSize ());
@@ -274,7 +274,7 @@ abstract class AbstractFileSystem implements AppleFileSystem
   public List<AppleFileSystem> getFileSystems ()
   // ---------------------------------------------------------------------------------//
   {
-    return fileSystems;
+    return new ArrayList<AppleFileSystem> (fileSystems);
   }
 
   // ---------------------------------------------------------------------------------//
@@ -290,7 +290,7 @@ abstract class AbstractFileSystem implements AppleFileSystem
   public List<AppleFile> getFiles ()
   // ---------------------------------------------------------------------------------//
   {
-    return files;
+    return new ArrayList<AppleFile> (files);
   }
 
   // ---------------------------------------------------------------------------------//
@@ -457,15 +457,17 @@ abstract class AbstractFileSystem implements AppleFileSystem
       System.out.printf ("%s already exists%n", fileName);
     else
     {
-      blockReader.clean ();
+      blockReader.clean ();         // move dirty blocks back to disk buffer 
+      byte[] diskBuffer = blockReader.getDiskBuffer ().data ();
 
       try
       {
-        file.createNewFile ();
-
-        OutputStream Stream = new FileOutputStream (fileName);
-        Stream.write (blockReader.getDiskBuffer ().data ());
-        Stream.close ();
+        if (file.createNewFile ())
+        {
+          OutputStream Stream = new FileOutputStream (fileName);
+          Stream.write (diskBuffer);
+          Stream.close ();
+        }
       }
       catch (IOException e)
       {

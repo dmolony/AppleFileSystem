@@ -3,19 +3,10 @@ package com.bytezone.filesystem;
 import java.nio.file.Path;
 
 // -----------------------------------------------------------------------------------//
-public class WriteTester
+public class WriteTester extends Tester
 // -----------------------------------------------------------------------------------//
 {
-  String base = System.getProperty ("user.home") + "/Documents/Examples/";
-  String adi = base + "Apple Disk Images/";
   String indent = "                        ";
-
-  String[] fileNames = {                             //
-      adi + "DENIS.DSK",                             // 0: 3.3 intl 0
-      base + "prodos/View-Sector.dsk",               // 1: Prodos block
-      base + "HDV/8-bit Games.hdv",                  // 
-      base + "GS/IIGS System 2.0.po",               // 
-  };
 
   // ---------------------------------------------------------------------------------//
   public WriteTester ()
@@ -23,7 +14,7 @@ public class WriteTester
   {
     FileSystemFactory factory = new FileSystemFactory ();
 
-    AppleFileSystem fs = factory.getFileSystem (Path.of (fileNames[0]));
+    AppleFileSystem fs = factory.getFileSystem (Path.of (fileNames[14]));
     if (fs == null)
     {
       System.out.println ("disk not found");
@@ -51,12 +42,16 @@ public class WriteTester
         continue;
       if (file.getFileName ().equals ("HELLO"))
         continue;
+      if (file.getFileName ().equals ("SYSTEM.CHARSET"))
+        continue;
+      if (file.getFileName ().equals ("SYSTEM.PASCAL"))
+        continue;
 
       System.out.printf ("%s %s %s%n", indent.substring (0, depth * 2),
           file.getFileName (), file.isForkedFile () ? "*** Forked ***" : "");
 
-      if (file instanceof AppleContainer ac)                    // folder
-        deleteFiles (ac, depth + 1);
+      if (file.isFolder ())
+        deleteFiles ((AppleContainer) file, depth + 1);
 
       file.delete ();
     }

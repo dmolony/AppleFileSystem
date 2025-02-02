@@ -17,7 +17,6 @@ public class FsProdos extends AbstractFileSystem
   private static final int FIRST_CATALOG_BLOCK = 2;
   private static final int BITS_PER_BLOCK = 0x1000;
 
-  private final BitSet volumeBitMap;
   private DirectoryEntryProdos directoryEntry;
   private boolean isDosMaster;
 

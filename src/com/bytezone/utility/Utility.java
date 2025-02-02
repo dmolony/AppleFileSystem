@@ -265,6 +265,9 @@ public class Utility
   // ---------------------------------------------------------------------------------//
   {
     int length = buffer[offset] & 0xFF;
+    if (length == 0)
+      return "";
+
     if (offset + 1 + length < buffer.length)
       return new String (buffer, offset + 1, length);
 

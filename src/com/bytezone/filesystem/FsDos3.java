@@ -26,7 +26,8 @@ public class FsDos3 extends FsDos
     createVolumeBitMap (buffer);
 
     if (buffer[3] < 0x01 || buffer[3] > 0x03)
-      throw new FileFormatException ("Dos: byte 3 invalid");
+      throw new FileFormatException (
+          String.format ("Dos: version byte invalid: %02X", buffer[3]));
 
     dosVersion = buffer[0x03] & 0xFF;
     volumeNumber = buffer[0x06] & 0xFF;

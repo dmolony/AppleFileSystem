@@ -8,7 +8,6 @@ import java.util.BitSet;
 import java.util.List;
 
 import com.bytezone.filesystem.AppleBlock.BlockType;
-import com.bytezone.filesystem.BlockReader.AddressType;
 import com.bytezone.utility.Utility;
 
 // -----------------------------------------------------------------------------------//
@@ -19,19 +18,10 @@ public class FsPascal extends AbstractFileSystem
       DateTimeFormatter.ofLocalizedDate (FormatStyle.SHORT);
 
   private static final int CATALOG_ENTRY_SIZE = 26;
-
-  private String volumeName;
-  private int firstCatalogBlock;
-  private int firstFileBlock;
-  private int entryType;
-  private int totalBlocks;         // size of disk
-  private int totalFiles;          // no of files on disk
-  private int firstBlock;
-  private LocalDate date;
+  private CatalogEntryPascal[] fileEntries;
 
   private List<AppleBlock> catalogBlocks = new ArrayList<> ();
-
-  private boolean debug = false;
+  private byte[] catalogBuffer;
 
   // ---------------------------------------------------------------------------------//
   public FsPascal (BlockReader blockReader)
@@ -43,34 +33,11 @@ public class FsPascal extends AbstractFileSystem
     vtoc.setBlockSubType ("CATALOG");
     byte[] buffer = vtoc.getBuffer ();
 
-    firstCatalogBlock = Utility.unsignedShort (buffer, 0);
-    firstFileBlock = Utility.unsignedShort (buffer, 2);
-    if (firstCatalogBlock != 0 || firstFileBlock != 6)
-      throw new FileFormatException (
-          String.format ("Pascal: from: %d, to: %d", firstCatalogBlock, firstFileBlock));
+    CatalogEntryPascal.checkFormat (buffer);
 
-    entryType = Utility.unsignedShort (buffer, 4);
-    if (entryType != 0)
-      throw new FileFormatException ("Pascal: entry type != 0");
+    int firstFileBlock = Utility.unsignedShort (buffer, 2);
 
-    int nameLength = buffer[6] & 0xFF;
-    if (nameLength < 1 || nameLength > 7)
-      throw new FileFormatException ("bad name length : " + nameLength);
-
-    volumeName = Utility.string (buffer, 7, nameLength);
-    totalBlocks = Utility.unsignedShort (buffer, 14);       // 280, 1600, 2048
-    totalFiles = Utility.unsignedShort (buffer, 16);
-    firstBlock = Utility.unsignedShort (buffer, 18);
-    date = Utility.getPascalLocalDate (buffer, 20);         // 2 bytes
-
-    volumeBitMap = new BitSet (totalBlocks);                // initially all off (used)
-
-    setTotalCatalogBlocks (firstFileBlock - 2);
-    volumeBitMap.set (firstFileBlock, totalBlocks);         // on = free
-
-    if (debug)
-      System.out.println (this);
-
+    // build the catalog buffer (usually blocks 2/3/4/5)
     for (int i = 2; i < firstFileBlock; i++)
     {
       AppleBlock block = getBlock (i, BlockType.FS_DATA);
@@ -78,39 +45,36 @@ public class FsPascal extends AbstractFileSystem
       catalogBlocks.add (block);
     }
 
-    buffer = readBlocks (catalogBlocks);
-    freeBlocks = totalBlocks - firstFileBlock;
+    catalogBuffer = readBlocks (catalogBlocks);
+    setTotalCatalogBlocks (firstFileBlock - 2);
 
-    for (int i = 1; i <= totalFiles; i++)                   // skip volume entry
+    // read all potential catalog entries (78 in 4 blocks)
+    int maxEntries = totalCatalogBlocks * getBlockSize () / CATALOG_ENTRY_SIZE;
+    fileEntries = new CatalogEntryPascal[maxEntries];
+
+    for (int i = 0; i < maxEntries; i++)
+      fileEntries[i] = new CatalogEntryPascal (catalogBuffer, i);
+
+    CatalogEntryPascal volumeEntry = fileEntries[0];
+    freeBlocks = volumeEntry.totalBlocks - firstFileBlock;
+
+    volumeBitMap = new BitSet (volumeEntry.totalBlocks);    // initially all off (used)
+    volumeBitMap.set (firstFileBlock, volumeEntry.totalBlocks);   // on = free
+
+    // process each file in the catalog (skip the volume entry)
+    for (int i = 1, count = 0; count < volumeEntry.totalFiles; i++)
     {
-      int ptr = i * CATALOG_ENTRY_SIZE;
-      int fileType = buffer[ptr + 4] & 0xFF;
+      CatalogEntryPascal catalogEntry = fileEntries[i];
 
-      if (fileType == 2)                                    // Code
-      {
-        if (true)
-        {
-          FilePascalCode file = new FilePascalCode (this, buffer, ptr);
-          addFile (file);
-        }
-        else
-        {
-          FilePascal file = new FilePascal (this, buffer, ptr);
-          addFile (file);
+      if (catalogEntry.firstBlock == 0)
+        continue;
 
-          Buffer dataRecord = file.getFileBuffer ();
-          BlockReader blockReader2 =
-              new BlockReader (file.getFileName (), dataRecord.data ());
-          blockReader2.setParameters (512, AddressType.BLOCK, 0, 0);
-          FsPascalCode fs = new FsPascalCode (blockReader2);
-          file.embedFileSystem (fs);
-        }
-      }
+      ++count;
+
+      if (catalogEntry.fileType == 2)                           // Code
+        addFile (new FilePascalCode (this, catalogEntry, i));
       else
-      {
-        FilePascal file = new FilePascal (this, buffer, ptr);
-        addFile (file);
-      }
+        addFile (new FilePascal (this, catalogEntry, i));
     }
   }
 
@@ -140,24 +104,135 @@ public class FsPascal extends AbstractFileSystem
   }
 
   // ---------------------------------------------------------------------------------//
+  public byte[] getCatalogBuffer ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return catalogBuffer;
+  }
+
+  // ---------------------------------------------------------------------------------//
   public int getVolumeTotalBlocks ()
   // ---------------------------------------------------------------------------------//
   {
-    return totalBlocks;
+    return fileEntries[0].totalBlocks;
   }
 
   // ---------------------------------------------------------------------------------//
   public String getVolumeName ()
   // ---------------------------------------------------------------------------------//
   {
-    return volumeName;
+    return fileEntries[0].volumeName;
   }
 
   // ---------------------------------------------------------------------------------//
   public LocalDate getDate ()
   // ---------------------------------------------------------------------------------//
   {
-    return date;
+    return fileEntries[0].volumeDate;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
+  public void cleanDisk ()
+  // ---------------------------------------------------------------------------------//
+  {
+    super.cleanDisk ();
+    crunch ();
+  }
+
+  // ---------------------------------------------------------------------------------//
+  private void moveFile (FilePascal file, int destination)
+  // ---------------------------------------------------------------------------------//
+  {
+    int first = file.getFirstBlock ();
+    int last = file.getLastBlock ();
+
+    // free blocks
+
+    // save file
+  }
+
+  // ---------------------------------------------------------------------------------//
+  public void crunch ()
+  // ---------------------------------------------------------------------------------//
+  {
+    for (AppleFile appleFile : getFiles ())
+    {
+      FilePascal file = (FilePascal) appleFile;
+      int gap = measureGap (file);
+      if (gap > 0)
+      {
+        int from = file.getFirstBlock ();
+        int size = file.getLastBlock () - from - 1;
+
+        System.out.printf ("Moving %s from %04X to %04X%n", file.getFileName (), from,
+            from - gap);
+
+        file.delete ();
+
+        int nextBlockNo = from - gap;                     // new starting location
+        for (AppleBlock block : file.getBlocks ())
+        {
+          AppleBlock newBlock = getBlock (nextBlockNo);
+          newBlock.setBuffer (block.getBuffer ());
+          newBlock.markDirty ();
+          volumeBitMap.clear (nextBlockNo);
+        }
+      }
+    }
+  }
+
+  // count the number of free blocks immediately before this file
+  // ---------------------------------------------------------------------------------//
+  private int measureGap (FilePascal file)
+  // ---------------------------------------------------------------------------------//
+  {
+    int freeBlocks = 0;
+    int next = file.getFirstBlock ();
+
+    while (volumeBitMap.get (--next))             // next block is free
+      ++freeBlocks;
+
+    return freeBlocks;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
+  public void deleteFile (AppleFile file)
+  // ---------------------------------------------------------------------------------//
+  {
+    if (file.getParentFileSystem () != this)
+      throw new InvalidParentFileSystemException ("file not part of this File System");
+
+    System.out.printf ("deleting %s%n", file.getFileName ());
+    ((FilePascal) file).setDeleted (catalogBuffer);
+
+    int filesOnDisk = Utility.unsignedShort (catalogBuffer, 0x10);
+    Utility.writeShort (catalogBuffer, 0x10, filesOnDisk - 1);
+
+    for (AppleBlock block : file.getBlocks ())
+      volumeBitMap.set (block.getBlockNo ());               // on = free
+
+    writeCatalogBlocks ();
+
+    files.remove (file);
+  }
+
+  // ---------------------------------------------------------------------------------//
+  private void writeCatalogBlocks ()
+  // ---------------------------------------------------------------------------------//
+  {
+    // put catalog buffer back into its blocks
+    int ptr = 0;
+    int size = blockReader.getBlockSize ();
+
+    for (AppleBlock catalogBlock : catalogBlocks)
+    {
+      byte[] buffer = catalogBlock.getBuffer ();
+      System.arraycopy (catalogBuffer, ptr, buffer, 0, size);
+      ptr += size;
+      catalogBlock.markDirty ();
+    }
   }
 
   // ---------------------------------------------------------------------------------//
@@ -199,15 +274,18 @@ public class FsPascal extends AbstractFileSystem
   {
     StringBuilder text = new StringBuilder (super.toString ());
 
+    CatalogEntryPascal volumeEntry = fileEntries[0];
+
     text.append ("---- Pascal Header ----\n");
-    text.append (String.format ("Volume name ........... %s%n", volumeName));
-    text.append (String.format ("Directory ............. %d : %d%n", firstCatalogBlock,
-        firstFileBlock - 1));
-    text.append (String.format ("Entry type ............ %,d%n", entryType));
-    text.append (String.format ("Total blocks .......... %,d%n", totalBlocks));
-    text.append (String.format ("Total files ........... %,d%n", totalFiles));
-    text.append (String.format ("First block ........... %,d%n", firstBlock));
-    text.append (String.format ("Date .................. %s", date));
+    text.append (String.format ("Volume name ........... %s%n", volumeEntry.volumeName));
+    text.append (String.format ("Directory ............. %d : %d%n",
+        volumeEntry.firstCatalogBlock, volumeEntry.firstFileBlock - 1));
+    text.append (String.format ("Entry type ............ %,d%n", volumeEntry.entryType));
+    text.append (
+        String.format ("Total blocks .......... %,d%n", volumeEntry.totalBlocks));
+    text.append (String.format ("Total files ........... %,d%n", volumeEntry.totalFiles));
+    text.append (String.format ("First block ........... %,d%n", volumeEntry.firstBlock));
+    text.append (String.format ("Date .................. %s", volumeEntry.volumeDate));
 
     return text.toString ();
   }

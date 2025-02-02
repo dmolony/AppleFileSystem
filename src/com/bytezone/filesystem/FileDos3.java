@@ -19,9 +19,11 @@ public class FileDos3 extends FileDos
     fileType = catalogBuffer[ptr + 2] & 0x7F;
     isLocked = (catalogBuffer[ptr + 2] & 0x80) != 0;
     fileName = Utility.string (catalogBuffer, ptr + 3, 30).trim ();
+
     isNameValid = checkName (fileName);                   // check for invalid characters
     sectorCount = Utility.unsignedShort (catalogBuffer, ptr + 33);
     fileTypeText = fs.getFileTypeText (fileType);
+
     String blockSubType = fs.getBlockSubTypeText (fileType);
 
     int sectorsLeft = sectorCount;
@@ -97,7 +99,7 @@ public class FileDos3 extends FileDos
       message = "** Bad size **";
 
     if (getSectorCount () > 999)
-      message += "Reported " + getSectorCount ();
+      message += " - Reported " + getSectorCount ();
 
     if (textFileGaps > 0)
       message += String.format ("gaps %,d", textFileGaps);

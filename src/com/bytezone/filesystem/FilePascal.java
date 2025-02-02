@@ -14,39 +14,48 @@ public class FilePascal extends AbstractAppleFile
 {
   private static final DateTimeFormatter dtf =
       DateTimeFormatter.ofLocalizedDate (FormatStyle.SHORT);
+  private static final int CATALOG_ENTRY_SIZE = 26;
 
   private static final String[] fileTypes =
       { "Volume", "Bad ", "Code", "Text", "Info", "Data", "Graf", "Foto", "SecureDir" };
 
-  private int firstBlock;
-  private int lastBlock;
-  private int bytesUsedInLastBlock;
-  private int wildCard;
-  private LocalDate date;
+  //  private int firstBlock;
+  //  private int lastBlock;
+  //  private int bytesUsedInLastBlock;
+  //  private int wildCard;
+  //  private LocalDate date;
+  //  private int catalogPtr;
+  CatalogEntryPascal catalogEntry;
+  int slot;
 
   private boolean debug = false;
 
   // ---------------------------------------------------------------------------------//
-  FilePascal (FsPascal fs, byte[] buffer, int ptr)
+  FilePascal (FsPascal fs, CatalogEntryPascal catalogEntry, int slot)
   // ---------------------------------------------------------------------------------//
   {
     super (fs);
 
-    firstBlock = Utility.unsignedShort (buffer, ptr);
-    lastBlock = Utility.unsignedShort (buffer, ptr + 2);
-    fileType = buffer[ptr + 4] & 0xFF;
+    //    this.catalogPtr = ptr;          // for possible updating
+    this.catalogEntry = catalogEntry;
+    this.slot = slot;
+
+    //    firstBlock = Utility.unsignedShort (buffer, ptr);
+    //    lastBlock = Utility.unsignedShort (buffer, ptr + 2);
+
+    fileType = catalogEntry.fileType;
     fileTypeText = fileTypes[fileType];
 
-    wildCard = buffer[ptr + 5] & 0xFF;
+    //    wildCard = buffer[ptr + 5] & 0xFF;
 
-    fileName = Utility.getPascalString (buffer, ptr + 6);
-    bytesUsedInLastBlock = Utility.unsignedShort (buffer, ptr + 22);
-    date = Utility.getPascalLocalDate (buffer, ptr + 24);           // could return null
+    fileName = catalogEntry.fileName;
+    //    bytesUsedInLastBlock = Utility.unsignedShort (buffer, ptr + 22);
+    //    date = Utility.getPascalLocalDate (buffer, ptr + 24);           // could return null
 
-    if (debug)
-      System.out.printf ("First block: %d, last block: %d%n", firstBlock, lastBlock);
+    //    if (debug)
+    //      System.out.printf ("First block: %d, last block: %d%n", firstBlock, lastBlock);
 
-    for (int i = firstBlock; i < lastBlock; i++)
+    for (int i = catalogEntry.firstBlock; i < catalogEntry.lastBlock; i++)
     {
       AppleBlock block = fs.getBlock (i, BlockType.FILE_DATA);
       if (block == null)
@@ -63,7 +72,7 @@ public class FilePascal extends AbstractAppleFile
   // ---------------------------------------------------------------------------------//
   {
     return (getTotalBlocks () - 1) * getParentFileSystem ().getBlockSize ()
-        + bytesUsedInLastBlock;
+        + catalogEntry.bytesUsedInLastBlock;
   }
 
   // ---------------------------------------------------------------------------------//
@@ -94,21 +103,31 @@ public class FilePascal extends AbstractAppleFile
   public LocalDate getDate ()
   // ---------------------------------------------------------------------------------//
   {
-    return date;
+    return catalogEntry.fileDate;
   }
 
   // ---------------------------------------------------------------------------------//
   public int getFirstBlock ()
   // ---------------------------------------------------------------------------------//
   {
-    return firstBlock;
+    return catalogEntry.firstBlock;
   }
 
   // ---------------------------------------------------------------------------------//
   public int getLastBlock ()
   // ---------------------------------------------------------------------------------//
   {
-    return lastBlock;
+    return catalogEntry.lastBlock;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  void setDeleted (byte[] buffer)
+  // ---------------------------------------------------------------------------------//
+  {
+    int catalogPtr = slot * CATALOG_ENTRY_SIZE;
+
+    Utility.writeShort (buffer, catalogPtr, 0);           // first block
+    Utility.writeShort (buffer, catalogPtr + 2, 0);       // last block
   }
 
   // ---------------------------------------------------------------------------------//
@@ -128,9 +147,10 @@ public class FilePascal extends AbstractAppleFile
   {
     StringBuilder text = new StringBuilder (super.toString ());
 
-    text.append (String.format ("First block ........... %d%n", firstBlock));
-    text.append (String.format ("Last block ............ %d%n", lastBlock));
-    text.append (String.format ("Bytes in last block ... %d%n", bytesUsedInLastBlock));
+    text.append (String.format ("First block ........... %d%n", catalogEntry.firstBlock));
+    text.append (String.format ("Last block ............ %d%n", catalogEntry.lastBlock));
+    text.append (String.format ("Bytes in last block ... %d%n",
+        catalogEntry.bytesUsedInLastBlock));
     text.append (String.format ("Date .................. %s%n", getDate ().format (dtf)));
 
     return Utility.rtrim (text);

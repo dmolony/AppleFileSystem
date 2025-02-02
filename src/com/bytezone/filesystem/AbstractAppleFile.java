@@ -14,7 +14,7 @@ public abstract class AbstractAppleFile implements AppleFile
 
   protected boolean isFile = true;
   protected boolean isFolder;
-  protected boolean isForkedFile;             // FileProdos or FileNuFX
+  protected boolean isForkedFile;             // FileProdos or FileNuFX with fork(s)
   protected boolean isFork;                   // Data or Resource fork
 
   protected String fileName;
@@ -83,12 +83,13 @@ public abstract class AbstractAppleFile implements AppleFile
     return isFork;
   }
 
+  // override to flag files that are just catalog fillers
   // ---------------------------------------------------------------------------------//
   @Override
   public boolean isValidFile ()
   // ---------------------------------------------------------------------------------//
   {
-    return true;
+    return dataBlocks.size () > 0;
   }
 
   // ---------------------------------------------------------------------------------//
@@ -193,14 +194,16 @@ public abstract class AbstractAppleFile implements AppleFile
         "getFileLength() not implemented in " + fileName);
   }
 
+  // assumes no index blocks
   // ---------------------------------------------------------------------------------//
   @Override
-  public int getTotalBlocks ()                        // in blocks
+  public int getTotalBlocks ()                    // in blocks
   // ---------------------------------------------------------------------------------//
   {
     return dataBlocks.size ();
   }
 
+  // assumes no index blocks
   // ---------------------------------------------------------------------------------//
   @Override
   public List<AppleBlock> getBlocks ()
