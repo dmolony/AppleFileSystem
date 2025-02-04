@@ -205,7 +205,7 @@ public class ForkProdos extends AbstractAppleFile
   // ---------------------------------------------------------------------------------//
   {
     // maybe this routine should always declare the buffer and pass it to read()
-    if (dataRecord == null)
+    if (fileBuffer == null)
     {
       byte[] data = fileSystem.readBlocks (dataBlocks);
 
@@ -219,10 +219,10 @@ public class ForkProdos extends AbstractAppleFile
         data = temp;
       }
 
-      dataRecord = new Buffer (data, 0, eof);
+      fileBuffer = new Buffer (data, 0, eof);
     }
 
-    return dataRecord;
+    return fileBuffer;
   }
 
   // ---------------------------------------------------------------------------------//

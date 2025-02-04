@@ -67,13 +67,13 @@ public class ForkNuFX extends AbstractAppleFile
   public Buffer getFileBuffer ()
   // ---------------------------------------------------------------------------------//
   {
-    if (dataRecord == null)
+    if (fileBuffer == null)
     {
       byte[] buffer = thread.getData ();
-      dataRecord = new Buffer (buffer, 0, buffer.length);
+      fileBuffer = new Buffer (buffer, 0, buffer.length);
     }
 
-    return dataRecord;
+    return fileBuffer;
   }
 
   // ---------------------------------------------------------------------------------//

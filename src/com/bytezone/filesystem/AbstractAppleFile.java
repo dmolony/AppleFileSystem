@@ -24,7 +24,7 @@ public abstract class AbstractAppleFile implements AppleFile
 
   protected String errorMessage = "";
   protected List<AppleBlock> dataBlocks = new ArrayList<> ();
-  protected Buffer dataRecord;
+  protected Buffer fileBuffer;
 
   // ---------------------------------------------------------------------------------//
   AbstractAppleFile (AppleFileSystem parentFileSystem)
@@ -146,13 +146,13 @@ public abstract class AbstractAppleFile implements AppleFile
   public Buffer getFileBuffer ()
   // ---------------------------------------------------------------------------------//
   {
-    if (dataRecord == null)
+    if (fileBuffer == null)
     {
       byte[] data = parentFileSystem.readBlocks (dataBlocks);
-      dataRecord = new Buffer (data, 0, data.length);
+      fileBuffer = new Buffer (data, 0, data.length);
     }
 
-    return dataRecord;
+    return fileBuffer;
   }
 
   // ---------------------------------------------------------------------------------//
@@ -160,13 +160,13 @@ public abstract class AbstractAppleFile implements AppleFile
   public Buffer getFileBuffer (int eof)
   // ---------------------------------------------------------------------------------//
   {
-    if (dataRecord == null)
+    if (fileBuffer == null)
     {
       byte[] data = parentFileSystem.readBlocks (dataBlocks);
-      dataRecord = new Buffer (data, 0, eof);
+      fileBuffer = new Buffer (data, 0, eof);
     }
 
-    return dataRecord;
+    return fileBuffer;
   }
 
   // ---------------------------------------------------------------------------------//

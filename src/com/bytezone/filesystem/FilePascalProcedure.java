@@ -53,7 +53,7 @@ public class FilePascalProcedure extends AbstractAppleFile
       int start = procHeader - 2 - entryIC;
       dataLength = entryIC + 4;
 
-      dataRecord = new Buffer (buffer, start, dataLength);
+      fileBuffer = new Buffer (buffer, start, dataLength);
     }
   }
 

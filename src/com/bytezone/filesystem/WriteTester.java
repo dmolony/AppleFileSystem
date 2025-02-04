@@ -22,6 +22,7 @@ public class WriteTester extends Tester
     }
 
     String newDiskName = "blanketyblank.dsk";
+    System.out.printf ("Copying : %s%n", fs.getFileName ());
 
     AppleFileSystem newFs =
         factory.getFileSystem (newDiskName, fs.getDiskBuffer ().copyData ());
@@ -44,8 +45,8 @@ public class WriteTester extends Tester
         continue;
       if (file.getFileName ().equals ("SYSTEM.CHARSET"))
         continue;
-      if (file.getFileName ().equals ("SYSTEM.PASCAL"))
-        continue;
+      //      if (file.getFileName ().equals ("SYSTEM.PASCAL"))
+      //        continue;
 
       System.out.printf ("%s %s %s%n", indent.substring (0, depth * 2),
           file.getFileName (), file.isForkedFile () ? "*** Forked ***" : "");

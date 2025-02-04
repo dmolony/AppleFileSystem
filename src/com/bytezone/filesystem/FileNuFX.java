@@ -294,20 +294,20 @@ public class FileNuFX extends AbstractAppleFile implements AppleFilePath, AppleF
     if (isForkedFile)
       throw new FileFormatException ("Cannot read() a forked file");
 
-    if (dataRecord != null)
-      return dataRecord;
+    if (fileBuffer != null)
+      return fileBuffer;
 
     try           // some nufx files are corrupt
     {
       if (isDiskImage)
       {
         byte[] buffer = diskImageThread.getData ();
-        dataRecord = new Buffer (buffer, 0, buffer.length);
-        return dataRecord;
+        fileBuffer = new Buffer (buffer, 0, buffer.length);
+        return fileBuffer;
       }
 
-      dataRecord = dataFork.getFileBuffer ();
-      return dataRecord;
+      fileBuffer = dataFork.getFileBuffer ();
+      return fileBuffer;
     }
     catch (Exception e)
     {

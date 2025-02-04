@@ -276,6 +276,16 @@ public class Utility
   }
 
   // ---------------------------------------------------------------------------------//
+  public static void writePascalString (String text, byte[] buffer, int offset)
+  // ---------------------------------------------------------------------------------//
+  {
+    int len = text.length ();
+    buffer[offset++] = (byte) len;
+    for (int i = 0, ptr = offset; i < len; i++)
+      buffer[ptr++] = (byte) text.charAt (i);
+  }
+
+  // ---------------------------------------------------------------------------------//
   public static String getMaskedPascalString (byte[] buffer, int offset)
   // ---------------------------------------------------------------------------------//
   {
@@ -451,6 +461,13 @@ public class Utility
     {
       return null;
     }
+  }
+
+  // ---------------------------------------------------------------------------------//
+  public static void writePascalLocalDate (LocalDate fileDate, byte[] buffer, int ptr)
+  // ---------------------------------------------------------------------------------//
+  {
+    System.out.println ("date not writted");
   }
 
   // ---------------------------------------------------------------------------------//

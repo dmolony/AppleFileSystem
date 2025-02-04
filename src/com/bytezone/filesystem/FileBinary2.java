@@ -289,8 +289,8 @@ public class FileBinary2 extends AbstractAppleFile
   public Buffer getFileBuffer ()
   // ---------------------------------------------------------------------------------//
   {
-    if (dataRecord != null)
-      return dataRecord;
+    if (fileBuffer != null)
+      return fileBuffer;
 
     String suffix = Utility.getSuffix (getParentFileSystem ().getFileName ());
     if (suffix.equals ("bqy") && squeezeName != null)
@@ -299,13 +299,13 @@ public class FileBinary2 extends AbstractAppleFile
       byte[] buffer = getParentFileSystem ().readBlocks (dataBlocks);
 
       byte[] unsqueeze = squeeze.unSqueeze (buffer);
-      dataRecord = new Buffer (unsqueeze, 0, unsqueeze.length);
-      return dataRecord;
+      fileBuffer = new Buffer (unsqueeze, 0, unsqueeze.length);
+      return fileBuffer;
     }
 
     byte[] buffer = parentFileSystem.readBlocks (dataBlocks);
-    dataRecord = new Buffer (buffer, 0, buffer.length);
-    return dataRecord;
+    fileBuffer = new Buffer (buffer, 0, buffer.length);
+    return fileBuffer;
   }
 
   // ---------------------------------------------------------------------------------//

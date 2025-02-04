@@ -21,7 +21,7 @@ class FileData extends AbstractAppleFile
 
     fileName = "Raw data";
     fileTypeText = "DATA";
-    this.dataRecord = dataRecord;
+    this.fileBuffer = dataRecord;
   }
 
   // ---------------------------------------------------------------------------------//
@@ -29,7 +29,7 @@ class FileData extends AbstractAppleFile
   public int getFileLength ()                                 // in bytes (eof)
   // ---------------------------------------------------------------------------------//
   {
-    return dataRecord.length ();
+    return fileBuffer.length ();
   }
 
   // ---------------------------------------------------------------------------------//
@@ -37,7 +37,7 @@ class FileData extends AbstractAppleFile
   public int getTotalBlocks ()                            // in blocks
   // ---------------------------------------------------------------------------------//
   {
-    return dataRecord.length () / 512;
+    return fileBuffer.length () / 512;
   }
 
   // ---------------------------------------------------------------------------------//
@@ -48,7 +48,7 @@ class FileData extends AbstractAppleFile
     StringBuilder text = new StringBuilder (super.toString ());
 
     //    text.append (String.format ("Length ................ %,d", buffer.length));
-    text.append (String.format ("Length ................ %,d", dataRecord.length ()));
+    text.append (String.format ("Length ................ %,d", fileBuffer.length ()));
 
     return Utility.rtrim (text);
   }

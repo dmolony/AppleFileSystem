@@ -20,7 +20,7 @@ public class FileZip extends AbstractAppleFile implements AppleFilePath
     super (fs);
 
     //    this.buffer = buffer;
-    dataRecord = new Buffer (buffer, 0, buffer.length);
+    fileBuffer = new Buffer (buffer, 0, buffer.length);
     this.fileName = fileName;
     this.zipEntry = zipEntry;
   }
@@ -63,7 +63,7 @@ public class FileZip extends AbstractAppleFile implements AppleFilePath
   public int getFileLength ()
   // ---------------------------------------------------------------------------------//
   {
-    return dataRecord.length ();
+    return fileBuffer.length ();
   }
 
   // ---------------------------------------------------------------------------------//
