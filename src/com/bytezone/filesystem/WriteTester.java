@@ -27,8 +27,8 @@ public class WriteTester extends Tester
     AppleFileSystem newFs =
         factory.getFileSystem (newDiskName, fs.getDiskBuffer ().copyData ());
 
-    deleteFiles (newFs, 0);
-    newFs.cleanDisk ();
+    deleteFiles (newFs, 0);                 // recursively delete files and folders
+    newFs.cleanDisk ();                     // zero out unused blocks
 
     newFs.create (adi + newDiskName);
   }
@@ -37,24 +37,30 @@ public class WriteTester extends Tester
   private void deleteFiles (AppleContainer container, int depth)
   // ---------------------------------------------------------------------------------//
   {
+    int count = 0;
     for (AppleFile file : container.getFiles ())
     {
-      if (file.getFileName ().equals ("PRODOS"))
-        continue;
-      if (file.getFileName ().equals ("HELLO"))
-        continue;
-      if (file.getFileName ().equals ("SYSTEM.CHARSET"))
-        continue;
+      //      if (file.getFileName ().equals ("PRODOS"))
+      //        continue;
+      //      if (file.getFileName ().equals ("HELLO"))
+      //        continue;
+      //      if (file.getFileName ().equals ("SYSTEM.CHARSET"))
+      //        continue;
       //      if (file.getFileName ().equals ("SYSTEM.PASCAL"))
       //        continue;
 
-      System.out.printf ("%s %s %s%n", indent.substring (0, depth * 2),
-          file.getFileName (), file.isForkedFile () ? "*** Forked ***" : "");
+      ++count;
+      if (count == 1 || count == 6)
+      {
 
-      if (file.isFolder ())
-        deleteFiles ((AppleContainer) file, depth + 1);
+        System.out.printf ("%s %s %s%n", indent.substring (0, depth * 2),
+            file.getFileName (), file.isForkedFile () ? "*** Forked ***" : "");
 
-      file.delete ();
+        if (file.isFolder ())
+          deleteFiles ((AppleContainer) file, depth + 1);
+
+        file.delete ();
+      }
     }
   }
 

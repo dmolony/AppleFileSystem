@@ -289,11 +289,11 @@ public class Utility
   public static String getMaskedPascalString (byte[] buffer, int offset)
   // ---------------------------------------------------------------------------------//
   {
-    int length = buffer[offset] & 0xFF;
+    int length = buffer[offset++] & 0xFF;
     byte[] text = new byte[length];
 
     for (int i = 0; i < length; i++)
-      text[i] = (byte) (buffer[offset + i + 1] & 0x7F);
+      text[i] = (byte) (buffer[offset++] & 0x7F);
 
     return new String (text);
   }
@@ -467,7 +467,13 @@ public class Utility
   public static void writePascalLocalDate (LocalDate fileDate, byte[] buffer, int ptr)
   // ---------------------------------------------------------------------------------//
   {
-    System.out.println ("date not writted");
+    int month = fileDate.getMonthValue ();            // 1 - 12
+    int day = fileDate.getDayOfMonth ();              // 1 - 31
+    int year = fileDate.getYear () % 100;             // 0 - 99
+
+    int date = (year << 9) | (day << 4) | month;
+
+    writeShort (buffer, ptr, date);
   }
 
   // ---------------------------------------------------------------------------------//

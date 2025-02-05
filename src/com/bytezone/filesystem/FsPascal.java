@@ -23,6 +23,8 @@ public class FsPascal extends AbstractFileSystem
   private List<AppleBlock> catalogBlocks = new ArrayList<> ();
   private byte[] catalogBuffer;
 
+  private boolean debug = false;
+
   // ---------------------------------------------------------------------------------//
   public FsPascal (BlockReader blockReader)
   // ---------------------------------------------------------------------------------//
@@ -76,6 +78,9 @@ public class FsPascal extends AbstractFileSystem
       else
         addFile (new FilePascal (this, catalogEntry, i));
     }
+
+    if (debug)
+      listSlots ();
   }
 
   // ---------------------------------------------------------------------------------//
@@ -136,17 +141,17 @@ public class FsPascal extends AbstractFileSystem
   public void cleanDisk ()
   // ---------------------------------------------------------------------------------//
   {
-    crunch ();
-    super.cleanDisk ();
+    crunch ();                    // shuffle files to the front
+    super.cleanDisk ();           // zero out unused blocks
   }
 
   // ---------------------------------------------------------------------------------//
-  public void crunch ()
+  void crunch ()
   // ---------------------------------------------------------------------------------//
   {
     int count = 0;
     CatalogEntryPascal volumeEntry = fileEntries[0];
-    int nextBlock = volumeEntry.firstFileBlock;
+    int nextBlock = volumeEntry.lastCatalogBlock;         // where to store the next file
 
     for (int i = 1; i < fileEntries.length; i++)          // skip volume header
     {
@@ -154,22 +159,16 @@ public class FsPascal extends AbstractFileSystem
         break;
 
       if (fileEntries[i].firstBlock == 0)                 // found a gap
+      {
+        if (debug)
+          System.out.printf ("Crunching slot %d%n", i);
         moveFile (findNextSlot (i), i, nextBlock);        // fill the gap
+      }
 
       nextBlock += fileEntries[i].length ();              // now has valid data
     }
 
-    writeCatalogBlocks ();                        // move catalog buffers to disk buffer
-  }
-
-  // ---------------------------------------------------------------------------------//
-  private int findNextSlot (int from)
-  // ---------------------------------------------------------------------------------//
-  {
-    while (fileEntries[from].firstBlock == 0)
-      ++from;
-
-    return from;
+    writeCatalogBlocks ();                   // move catalog buffers to disk buffer
   }
 
   // ---------------------------------------------------------------------------------//
@@ -181,6 +180,15 @@ public class FsPascal extends AbstractFileSystem
     List<AppleBlock> oldBlocks = file.getBlocks ();
     List<AppleBlock> newBlocks = new ArrayList<> (oldBlocks.size ());
 
+    if (debug)
+    {
+      System.out.printf ("Moving slot %d (%s) to slot %d%n", slotFrom, file.fileName,
+          slotTo);
+      CatalogEntryPascal from = fileEntries[slotFrom];
+      System.out.printf ("  Blocks %3d:%3d -> %3d:%3d%n", from.firstBlock,
+          from.lastBlock - 1, nextDataBlock, nextDataBlock + oldBlocks.size () - 1);
+    }
+
     // copy blocks
     int blockPtr = nextDataBlock;
     for (AppleBlock oldBlock : oldBlocks)
@@ -189,37 +197,45 @@ public class FsPascal extends AbstractFileSystem
       AppleBlock newBlock = getBlock (blockPtr++);
       newBlocks.add (newBlock);
 
+      if (debug)
+        System.out.printf ("  %3d -> %3d%n", oldBlock.getBlockNo (),
+            newBlock.getBlockNo ());
+
       // copy data
       byte[] fromBuffer = oldBlock.getBuffer ();
       byte[] toBuffer = newBlock.getBuffer ();
       System.arraycopy (fromBuffer, 0, toBuffer, 0, fromBuffer.length);
+      newBlock.markDirty ();
 
       // set free/used
       volumeBitMap.set (oldBlock.getBlockNo ());
       volumeBitMap.clear (newBlock.getBlockNo ());
     }
 
-    // move block ownership
-    file.getBlocks ().clear ();
-    file.getBlocks ().addAll (newBlocks);
+    // remove file's reference to old blocks, add new blocks
+    oldBlocks.clear ();
+    oldBlocks.addAll (newBlocks);
 
-    fileEntries[slotTo].firstBlock = nextDataBlock;
-    fileEntries[slotTo].lastBlock = fileEntries[slotTo].firstBlock + newBlocks.size ();
-    fileEntries[slotTo].fileName = fileEntries[slotFrom].fileName;
-    fileEntries[slotTo].fileType = fileEntries[slotFrom].fileType;
-    fileEntries[slotTo].bytesUsedInLastBlock = fileEntries[slotFrom].bytesUsedInLastBlock;
-    fileEntries[slotTo].fileDate = fileEntries[slotFrom].fileDate;
+    // move catalog data to new slot
+    fileEntries[slotTo].copyFileEntry (fileEntries[slotFrom], nextDataBlock);
 
-    fileEntries[slotFrom].firstBlock = 0;
-    fileEntries[slotFrom].lastBlock = 0;
-    fileEntries[slotFrom].fileName = "";
+    // mark old slot as unused
+    fileEntries[slotFrom].clearFileEntry ();
 
+    // update catalog buffer
     fileEntries[slotFrom].writeCatalogEntry ();
     fileEntries[slotTo].writeCatalogEntry ();
+
+    if (debug)
+    {
+      System.out.printf ("After crunching slot %d%n", slotFrom);
+      listSlots ();
+    }
   }
 
+  // find the file referenced by the slot
   // ---------------------------------------------------------------------------------//
-  FilePascal findFile (int slot)
+  private FilePascal findFile (int slot)
   // ---------------------------------------------------------------------------------//
   {
     CatalogEntryPascal fileEntry = fileEntries[slot];
@@ -232,8 +248,9 @@ public class FsPascal extends AbstractFileSystem
     return null;
   }
 
+  // find the slot containing an existing file
   // ---------------------------------------------------------------------------------//
-  int findSlot (FilePascal file)
+  private int findSlot (FilePascal file)
   // ---------------------------------------------------------------------------------//
   {
     for (int i = 1; i < fileEntries.length; i++)
@@ -242,6 +259,17 @@ public class FsPascal extends AbstractFileSystem
 
     System.out.println (file.fileName + " not found");
     return -1;
+  }
+
+  // search list for next unused slot
+  // ---------------------------------------------------------------------------------//
+  private int findNextSlot (int from)
+  // ---------------------------------------------------------------------------------//
+  {
+    while (fileEntries[from].firstBlock == 0)
+      ++from;
+
+    return from;
   }
 
   // ---------------------------------------------------------------------------------//
@@ -254,6 +282,9 @@ public class FsPascal extends AbstractFileSystem
 
     FilePascal file = (FilePascal) appleFile;
 
+    if (debug)
+      System.out.printf ("Deleting %s%n", file.fileName);
+
     for (AppleBlock block : file.getBlocks ())
       volumeBitMap.set (block.getBlockNo ());               // on = free
 
@@ -264,8 +295,8 @@ public class FsPascal extends AbstractFileSystem
 
     writeCatalogBlocks ();                        // move catalog buffers to disk buffer
 
-    //    for (int i = 0; i < 15; i++)
-    //      System.out.println (fileEntries[i].getLine ());
+    if (debug)
+      listSlots ();
   }
 
   // ---------------------------------------------------------------------------------//
@@ -274,14 +305,29 @@ public class FsPascal extends AbstractFileSystem
   {
     // put catalog buffer back into its blocks
     int ptr = 0;
-    int size = blockReader.getBlockSize ();
 
     for (AppleBlock catalogBlock : catalogBlocks)
     {
       byte[] buffer = catalogBlock.getBuffer ();
-      System.arraycopy (catalogBuffer, ptr, buffer, 0, size);
-      ptr += size;
+      System.arraycopy (catalogBuffer, ptr, buffer, 0, buffer.length);
+
+      ptr += buffer.length;
       catalogBlock.markDirty ();
+    }
+  }
+
+  // ---------------------------------------------------------------------------------//
+  private void listSlots ()
+  // ---------------------------------------------------------------------------------//
+  {
+    int count = 0;
+    int max = fileEntries[0].totalFiles;
+
+    for (int i = 0; count < max; i++)
+    {
+      System.out.println (fileEntries[i].getLine ());
+      if (fileEntries[i].firstBlock > 0)
+        ++count;
     }
   }
 
@@ -294,10 +340,12 @@ public class FsPascal extends AbstractFileSystem
 
     String line = "----   ---------------   ----   --------  -------   ----   ----";
 
+    CatalogEntryPascal volumeEntry = fileEntries[0];
     String date = getDate () == null ? "--" : getDate ().format (dtf);
 
     text.append (String.format ("Volume : %s%n", getVolumeName ()));
-    text.append (String.format ("Date   : %s%n%n", date));
+    text.append (String.format ("Date   : %s%n", date));
+    text.append (String.format ("Files  : %s%n%n", volumeEntry.totalFiles));
     text.append ("Blks   Name              Type     Date     Length   Frst   Last\n");
     text.append (line);
     text.append ("\n");

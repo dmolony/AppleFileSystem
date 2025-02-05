@@ -20,7 +20,7 @@ public class CatalogEntryPascal
   // header entry
   String volumeName;
   int firstCatalogBlock;    // always 0
-  int firstFileBlock;       // usually 6
+  int lastCatalogBlock;     // usually 6
   int entryType;            // always 0
   int totalBlocks;          // size of disk
   int totalFiles;           // no of files on disk
@@ -29,7 +29,7 @@ public class CatalogEntryPascal
   // fileEntry
   int firstBlock;
   int lastBlock;
-  int fileType;             // bits 0:3
+  int fileType;
   String fileName;
   int wildCard;
   int bytesUsedInLastBlock;
@@ -45,11 +45,11 @@ public class CatalogEntryPascal
     if (slot == 0)                         // volume header
     {
       firstCatalogBlock = Utility.unsignedShort (buffer, 0);
-      firstFileBlock = Utility.unsignedShort (buffer, 2);
+      lastCatalogBlock = Utility.unsignedShort (buffer, 2);
 
-      if (firstCatalogBlock != 0 || firstFileBlock != 6)
+      if (firstCatalogBlock != 0 || lastCatalogBlock != 6)
         throw new FileFormatException (String.format ("Pascal: from: %d, to: %d",
-            firstCatalogBlock, firstFileBlock));
+            firstCatalogBlock, lastCatalogBlock));
 
       entryType = Utility.unsignedShort (buffer, 4);
       if (entryType != 0)
@@ -70,11 +70,15 @@ public class CatalogEntryPascal
       int ptr = slot * CATALOG_ENTRY_SIZE;
 
       firstBlock = Utility.unsignedShort (buffer, ptr);
-      fileName = Utility.getPascalString (buffer, ptr + 6);
 
-      if (firstBlock == 0 || fileName.isEmpty ())
+      int nameLength = buffer[ptr + 6] & 0xFF;
+      if (firstBlock == 0 || nameLength == 0 || nameLength > 15)
+      {
+        firstBlock = 0;
         return;
+      }
 
+      fileName = Utility.getMaskedPascalString (buffer, ptr + 6);
       lastBlock = Utility.unsignedShort (buffer, ptr + 2);
       fileType = buffer[ptr + 4] & 0xFF;
       wildCard = buffer[ptr + 5] & 0x80;
@@ -89,9 +93,22 @@ public class CatalogEntryPascal
   // ---------------------------------------------------------------------------------//
   {
     if (slot == 0)
-      return firstFileBlock - firstCatalogBlock;
+      return lastCatalogBlock - firstCatalogBlock;
 
     return lastBlock - firstBlock;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  void copyFileEntry (CatalogEntryPascal copy, int newFirstBlock)
+  // ---------------------------------------------------------------------------------//
+  {
+    firstBlock = newFirstBlock;
+    lastBlock = newFirstBlock + copy.lastBlock - copy.firstBlock;
+    fileType = copy.fileType;
+    fileName = copy.fileName;
+    wildCard = copy.wildCard;
+    bytesUsedInLastBlock = copy.bytesUsedInLastBlock;
+    fileDate = copy.fileDate;
   }
 
   // ---------------------------------------------------------------------------------//
@@ -106,7 +123,11 @@ public class CatalogEntryPascal
     {
       firstBlock = 0;
       lastBlock = 0;
+      fileType = 0;
       fileName = "";
+      wildCard = 0;
+      bytesUsedInLastBlock = 0;
+      fileDate = null;
     }
 
     writeCatalogEntry ();
@@ -132,7 +153,11 @@ public class CatalogEntryPascal
 
       Utility.writePascalString (fileName, catalogBuffer, ptr + 6);
       Utility.writeShort (catalogBuffer, ptr + 22, bytesUsedInLastBlock);
-      Utility.writePascalLocalDate (fileDate, catalogBuffer, ptr + 24);
+
+      if (fileDate == null)
+        Utility.writeShort (catalogBuffer, ptr + 24, 0);
+      else
+        Utility.writePascalLocalDate (fileDate, catalogBuffer, ptr + 24);
     }
   }
 
@@ -161,9 +186,14 @@ public class CatalogEntryPascal
   // ---------------------------------------------------------------------------------//
   {
     if (slot == 0)
-      return String.format ("%2d  %-20s  %3d  %3d", slot, volumeName, firstCatalogBlock,
-          firstFileBlock);
-    return String.format ("%2d  %-20s  %3d  %3d", slot, fileName, firstBlock, lastBlock);
+      return String.format ("%2d  %-20s  %3d  %3d  %5d  %3d", slot, volumeName,
+          firstCatalogBlock, lastCatalogBlock, totalBlocks, totalFiles);
+
+    String date = fileDate == null ? "" : fileDate.toString ();
+    String name = fileName == null ? "" : fileName;
+
+    return String.format ("%2d  %-20s  %3d  %3d  %3d  %2d  %s", slot, name, firstBlock,
+        lastBlock, bytesUsedInLastBlock, fileType, date);
   }
 
   // ---------------------------------------------------------------------------------//
@@ -178,7 +208,7 @@ public class CatalogEntryPascal
       text.append ("---- Pascal Header ----\n");
       text.append (String.format ("Volume name ........... %s%n", volumeName));
       text.append (String.format ("First catalog block ... %d%n", firstCatalogBlock));
-      text.append (String.format ("First file block ...... %d%n", firstFileBlock));
+      text.append (String.format ("First file block ...... %d%n", lastCatalogBlock));
       text.append (String.format ("Entry type ............ %,d%n", entryType));
       text.append (String.format ("Total blocks .......... %,d%n", totalBlocks));
       text.append (String.format ("Total files ........... %,d%n", totalFiles));
