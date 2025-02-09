@@ -17,18 +17,22 @@ public class FileDos4 extends FileDos
   private static final DateTimeFormatter sdf2 =
       DateTimeFormatter.ofPattern ("dd-LLL-yy HH:mm:ss", US);
 
+  CatalogEntryDos4 catalogEntry;
+
   boolean tsListZero;
   LocalDateTime modified;
   boolean deleted;
 
   // ---------------------------------------------------------------------------------//
-  FileDos4 (FsDos4 fs, byte[] buffer, int ptr)
+  FileDos4 (FsDos4 fs, byte[] buffer, int ptr, int slot)
   // ---------------------------------------------------------------------------------//
   {
     super (fs);
 
     int nextTrack = buffer[ptr] & 0xFF;
     int nextSector = buffer[ptr + 1] & 0xFF;
+
+    catalogEntry = new CatalogEntryDos4 (buffer, ptr, slot);
 
     deleted = (buffer[ptr] & 0x80) != 0;
     tsListZero = (buffer[ptr] & 0x40) != 0;

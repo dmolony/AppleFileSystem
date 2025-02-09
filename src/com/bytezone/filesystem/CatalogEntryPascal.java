@@ -7,15 +7,12 @@ import java.time.format.FormatStyle;
 import com.bytezone.utility.Utility;
 
 // -----------------------------------------------------------------------------------//
-public class CatalogEntryPascal
+public class CatalogEntryPascal extends CatalogEntry
 // -----------------------------------------------------------------------------------//
 {
   private static final int CATALOG_ENTRY_SIZE = 26;
   private static final DateTimeFormatter dtf =
       DateTimeFormatter.ofLocalizedDate (FormatStyle.SHORT);
-
-  private final int slot;
-  private byte[] catalogBuffer;
 
   // header entry
   String volumeName;
@@ -39,9 +36,16 @@ public class CatalogEntryPascal
   public CatalogEntryPascal (byte[] buffer, int slot)
   // ---------------------------------------------------------------------------------//
   {
-    this.slot = slot;
-    this.catalogBuffer = buffer;
+    super (buffer, slot);
 
+    readCatalogEntry ();
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
+  public void readCatalogEntry ()
+  // ---------------------------------------------------------------------------------//
+  {
     if (slot == 0)                         // volume header
     {
       firstCatalogBlock = Utility.unsignedShort (buffer, 0);
@@ -89,6 +93,36 @@ public class CatalogEntryPascal
   }
 
   // ---------------------------------------------------------------------------------//
+  @Override
+  void writeCatalogEntry ()
+  // ---------------------------------------------------------------------------------//
+  {
+    if (slot == 0)
+    {
+      Utility.writeShort (buffer, 0x10, totalFiles);
+    }
+    else
+    {
+      int ptr = slot * CATALOG_ENTRY_SIZE;
+
+      Utility.writeShort (buffer, ptr, firstBlock);
+      Utility.writeShort (buffer, ptr + 2, lastBlock);
+
+      buffer[ptr + 4] = (byte) fileType;
+      buffer[ptr + 5] = (byte) wildCard;
+
+      Utility.writePascalString (fileName, buffer, ptr + 6);
+      Utility.writeShort (buffer, ptr + 22, bytesUsedInLastBlock);
+
+      if (fileDate == null)
+        Utility.writeShort (buffer, ptr + 24, 0);
+      else
+        Utility.writePascalLocalDate (fileDate, buffer, ptr + 24);
+    }
+  }
+
+  // file size in blocks
+  // ---------------------------------------------------------------------------------//
   int length ()
   // ---------------------------------------------------------------------------------//
   {
@@ -131,34 +165,6 @@ public class CatalogEntryPascal
     }
 
     writeCatalogEntry ();
-  }
-
-  // ---------------------------------------------------------------------------------//
-  void writeCatalogEntry ()
-  // ---------------------------------------------------------------------------------//
-  {
-    if (slot == 0)
-    {
-      Utility.writeShort (catalogBuffer, 0x10, totalFiles);
-    }
-    else
-    {
-      int ptr = slot * CATALOG_ENTRY_SIZE;
-
-      Utility.writeShort (catalogBuffer, ptr, firstBlock);
-      Utility.writeShort (catalogBuffer, ptr + 2, lastBlock);
-
-      catalogBuffer[ptr + 4] = (byte) fileType;
-      catalogBuffer[ptr + 5] = (byte) wildCard;
-
-      Utility.writePascalString (fileName, catalogBuffer, ptr + 6);
-      Utility.writeShort (catalogBuffer, ptr + 22, bytesUsedInLastBlock);
-
-      if (fileDate == null)
-        Utility.writeShort (catalogBuffer, ptr + 24, 0);
-      else
-        Utility.writePascalLocalDate (fileDate, catalogBuffer, ptr + 24);
-    }
   }
 
   // ---------------------------------------------------------------------------------//

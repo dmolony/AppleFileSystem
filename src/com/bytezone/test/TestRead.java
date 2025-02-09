@@ -1,16 +1,21 @@
-package com.bytezone.filesystem;
+package com.bytezone.test;
 
 import java.io.IOException;
 import java.nio.file.Path;
 
+import com.bytezone.filesystem.AppleContainer;
+import com.bytezone.filesystem.AppleFile;
+import com.bytezone.filesystem.AppleFileSystem;
+import com.bytezone.filesystem.FileSystemFactory;
+
 // see: https://github.com/zeek/bromagic/blob/master/database/apple
 // -----------------------------------------------------------------------------------//
-public class ReadTester extends Tester
+public class TestRead extends Tester
 // -----------------------------------------------------------------------------------//
 {
 
   // ---------------------------------------------------------------------------------//
-  ReadTester ()
+  TestRead ()
   // ---------------------------------------------------------------------------------//
   {
     FileSystemFactory factory = new FileSystemFactory ();
@@ -87,6 +92,6 @@ public class ReadTester extends Tester
   public static void main (String[] args) throws IOException
   // ---------------------------------------------------------------------------------//
   {
-    new ReadTester ();
+    new TestRead ();
   }
 }

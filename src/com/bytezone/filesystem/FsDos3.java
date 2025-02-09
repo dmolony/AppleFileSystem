@@ -10,6 +10,8 @@ import com.bytezone.utility.Utility;
 public class FsDos3 extends FsDos
 // -----------------------------------------------------------------------------------//
 {
+  List<AppleBlock> catalogSectors = new ArrayList<> ();
+
   // ---------------------------------------------------------------------------------//
   FsDos3 (BlockReader blockReader)
   // ---------------------------------------------------------------------------------//
@@ -39,7 +41,7 @@ public class FsDos3 extends FsDos
     sectorsPerTrack = buffer[0x35] & 0xFF;
     bytesPerSector = Utility.signedShort (buffer, 0x36);
 
-    List<AppleBlock> catalogSectors = new ArrayList<> ();   // to check for looping
+    //    List<AppleBlock> catalogSectors = new ArrayList<> ();   // to check for looping
 
     while (true)
     {
@@ -78,7 +80,7 @@ public class FsDos3 extends FsDos
         else
           try
           {
-            FileDos3 file = new FileDos3 (this, buffer, ptr);
+            FileDos3 file = new FileDos3 (this, buffer, ptr, index);
             file.catalogEntryBlock = catalogSector;
             file.catalogEntryIndex = index;
             addFile (file);

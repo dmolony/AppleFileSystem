@@ -7,25 +7,30 @@ import com.bytezone.utility.Utility;
 public class FileDos3 extends FileDos
 // -----------------------------------------------------------------------------------//
 {
+  CatalogEntryDos3 catalogEntry;
+
   // ---------------------------------------------------------------------------------//
-  FileDos3 (FsDos3 fs, byte[] catalogBuffer, int ptr)
+  FileDos3 (FsDos3 fs, byte[] catalogBuffer, int ptr, int slot)
   // ---------------------------------------------------------------------------------//
   {
     super (fs);
 
+    catalogEntry = new CatalogEntryDos3 (catalogBuffer, ptr, slot);
+
     int nextTrack = catalogBuffer[ptr] & 0xFF;
     int nextSector = catalogBuffer[ptr + 1] & 0xFF;
 
-    fileType = catalogBuffer[ptr + 2] & 0x7F;
-    isLocked = (catalogBuffer[ptr + 2] & 0x80) != 0;
-    fileName = Utility.string (catalogBuffer, ptr + 3, 30).trim ();
+    fileType = catalogEntry.fileType;
+    isLocked = catalogEntry.isLocked;
+    fileName = catalogEntry.fileName;
 
-    isNameValid = checkName (fileName);                   // check for invalid characters
-    sectorCount = Utility.unsignedShort (catalogBuffer, ptr + 33);
+    isNameValid = catalogEntry.isNameValid;
+    sectorCount = catalogEntry.sectorCount;
     fileTypeText = fs.getFileTypeText (fileType);
 
     String blockSubType = fs.getBlockSubTypeText (fileType);
 
+    // build lists of index and data sectors
     int sectorsLeft = sectorCount;
     loop: while (nextTrack != 0)
     {
@@ -42,6 +47,9 @@ public class FileDos3 extends FileDos
         break;
 
       byte[] sectorBuffer = tsSector.getBuffer ();
+
+      int sectorOffset = Utility.unsignedShort (sectorBuffer, 5);   // 0/122/244/366 etc
+      //      System.out.printf ("Sector offset: %,5d%n", sectorOffset);
 
       for (int i = 12; i < 256; i += 2)
       {

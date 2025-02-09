@@ -1,15 +1,20 @@
-package com.bytezone.filesystem;
+package com.bytezone.test;
 
 import java.nio.file.Path;
 
+import com.bytezone.filesystem.AppleContainer;
+import com.bytezone.filesystem.AppleFile;
+import com.bytezone.filesystem.AppleFileSystem;
+import com.bytezone.filesystem.FileSystemFactory;
+
 // -----------------------------------------------------------------------------------//
-public class WriteTester extends Tester
+public class TestWrite extends Tester
 // -----------------------------------------------------------------------------------//
 {
   String indent = "                        ";
 
   // ---------------------------------------------------------------------------------//
-  public WriteTester ()
+  public TestWrite ()
   // ---------------------------------------------------------------------------------//
   {
     FileSystemFactory factory = new FileSystemFactory ();
@@ -68,6 +73,6 @@ public class WriteTester extends Tester
   public static void main (String[] args)
   // ---------------------------------------------------------------------------------//
   {
-    new WriteTester ();
+    new TestWrite ();
   }
 }

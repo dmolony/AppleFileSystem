@@ -75,6 +75,7 @@ class FsDos4 extends FsDos
       buffer = catalogSector.getBuffer ();
 
       int ptr = 11;
+      int slot = 0;
 
       while (ptr < buffer.length && buffer[ptr] != 0)
       {
@@ -87,7 +88,7 @@ class FsDos4 extends FsDos
         {
           try
           {
-            FileDos4 file = new FileDos4 (this, buffer, ptr);
+            FileDos4 file = new FileDos4 (this, buffer, ptr, slot);
             addFile (file);
           }
           catch (FileFormatException e)

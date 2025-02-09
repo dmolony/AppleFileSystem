@@ -1,4 +1,4 @@
-package com.bytezone.filesystem;
+package com.bytezone.test;
 
 public class Tester
 {

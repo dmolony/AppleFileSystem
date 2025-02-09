@@ -261,6 +261,22 @@ public class Utility
   }
 
   // ---------------------------------------------------------------------------------//
+  public static void writeString (String text, byte[] buffer, int offset)
+  // ---------------------------------------------------------------------------------//
+  {
+    for (byte b : text.getBytes ())
+      buffer[offset++] = b;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  public static void writePascalString (String text, byte[] buffer, int offset)
+  // ---------------------------------------------------------------------------------//
+  {
+    buffer[offset++] = (byte) text.length ();
+    writeString (text, buffer, offset);
+  }
+
+  // ---------------------------------------------------------------------------------//
   public static String getPascalString (byte[] buffer, int offset)
   // ---------------------------------------------------------------------------------//
   {
@@ -273,16 +289,6 @@ public class Utility
 
     System.out.printf ("Error in string parameters");
     return "";
-  }
-
-  // ---------------------------------------------------------------------------------//
-  public static void writePascalString (String text, byte[] buffer, int offset)
-  // ---------------------------------------------------------------------------------//
-  {
-    int len = text.length ();
-    buffer[offset++] = (byte) len;
-    for (int i = 0, ptr = offset; i < len; i++)
-      buffer[ptr++] = (byte) text.charAt (i);
   }
 
   // ---------------------------------------------------------------------------------//

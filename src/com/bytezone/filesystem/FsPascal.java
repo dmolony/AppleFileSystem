@@ -261,7 +261,7 @@ public class FsPascal extends AbstractFileSystem
     return -1;
   }
 
-  // search list for next unused slot
+  // search list for next empty slot
   // ---------------------------------------------------------------------------------//
   private int findNextSlot (int from)
   // ---------------------------------------------------------------------------------//
