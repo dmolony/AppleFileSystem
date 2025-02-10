@@ -48,18 +48,18 @@ public class ForkProdos extends AbstractAppleFile
 
     isFork = forkType != null;
 
-    fileType = parentFile.getFileType ();
-    fileTypeText = parentFile.getFileTypeText ();
+    //    fileType = parentFile.getFileType ();
+    //    fileTypeText = parentFile.getFileTypeText ();
 
     this.parentFile = parentFile;
     this.forkType = forkType;
 
-    this.fileName = switch (forkType)
-    {
-      case DATA -> "Data fork";
-      case RESOURCE -> "Resource fork";
-      case null -> parentFile.getFileName ();
-    };
+    //    this.fileName = switch (forkType)
+    //    {
+    //      case DATA -> "Data fork";
+    //      case RESOURCE -> "Resource fork";
+    //      case null -> parentFile.getFileName ();
+    //    };
 
     this.fileSystem = (FsProdos) parentFile.getParentFileSystem ();
     this.storageType = storageType;
@@ -239,6 +239,43 @@ public class ForkProdos extends AbstractAppleFile
   }
 
   // ---------------------------------------------------------------------------------//
+  @Override
+  public String getFileName ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return switch (forkType)
+    {
+      case DATA -> "Data fork";
+      case RESOURCE -> "Resource fork";
+      case null -> parentFile.getFileName ();
+    };
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
+  public int getFileType ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return parentFile.getFileType ();
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
+  public String getFileTypeText ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return parentFile.getFileTypeText ();
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
+  public boolean isLocked ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return parentFile.isLocked ();
+  }
+
+  // ---------------------------------------------------------------------------------//
   public int getAuxType ()
   // ---------------------------------------------------------------------------------//
   {
@@ -325,7 +362,8 @@ public class ForkProdos extends AbstractAppleFile
 
     if (isFork)             // an actual fork, not the default data for a FileProdos
     {
-      text.append (String.format ("File name ............. %s%n", parentFile.fileName));
+      text.append (
+          String.format ("File name ............. %s%n", parentFile.getFileName ()));
       text.append (
           String.format ("File system type ...... %s%n%n", fileSystem.fileSystemType));
       text.append (String.format ("Storage type .......... %02X  %s%n", storageType,

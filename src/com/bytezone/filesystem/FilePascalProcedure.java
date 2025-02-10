@@ -23,6 +23,10 @@ public class FilePascalProcedure extends AbstractAppleFile
   Buffer record;
   FilePascalSegment parent;
 
+  String fileName;
+  int fileType;
+  String fileTypeText;
+
   // ---------------------------------------------------------------------------------//
   FilePascalProcedure (FilePascalSegment parent, byte[] buffer, int eof, int procNo)
   // ---------------------------------------------------------------------------------//
@@ -55,6 +59,38 @@ public class FilePascalProcedure extends AbstractAppleFile
 
       fileBuffer = new Buffer (buffer, start, dataLength);
     }
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
+  public String getFileName ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return fileName;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
+  public int getFileType ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return fileType;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
+  public String getFileTypeText ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return fileTypeText;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
+  public boolean isLocked ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return false;
   }
 
   // ---------------------------------------------------------------------------------//

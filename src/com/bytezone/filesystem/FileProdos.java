@@ -41,12 +41,12 @@ public class FileProdos extends AbstractAppleFile implements AppleForkedFile
 
     fileEntry = new FileEntryProdos (parentCatalogBlock, ptr);
 
-    fileName = fileEntry.fileName;
-    fileType = fileEntry.fileType;
-    fileTypeText = ProdosConstants.fileTypes[fileEntry.fileType];
+    //    fileName = fileEntry.fileName;
+    //    fileType = fileEntry.fileType;
+    //    fileTypeText = ProdosConstants.fileTypes[fileEntry.fileType];
 
     isForkedFile = fileEntry.storageType == ProdosConstants.GSOS_EXTENDED_FILE;
-    isLocked = fileEntry.isLocked;
+    //    isLocked = fileEntry.isLocked;
 
     if (isForkedFile)
       createForks ();
@@ -83,10 +83,50 @@ public class FileProdos extends AbstractAppleFile implements AppleForkedFile
 
   // ---------------------------------------------------------------------------------//
   @Override
+  public String getFileName ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return fileEntry.fileName;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
+  public int getFileType ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return fileEntry.fileType;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
+  public String getFileTypeText ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return ProdosConstants.fileTypes[fileEntry.fileType];
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
+  public boolean isLocked ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return fileEntry.isLocked;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
   public List<AppleBlock> getBlocks ()
   // ---------------------------------------------------------------------------------//
   {
     return isForkedFile ? dataBlocks : dataFork.getBlocks ();
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
+  public boolean isValidFile ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return getTotalBlocks () > 0;
   }
 
   // ---------------------------------------------------------------------------------//

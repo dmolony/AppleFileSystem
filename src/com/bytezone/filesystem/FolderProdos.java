@@ -42,9 +42,9 @@ class FolderProdos extends AbstractAppleFile implements AppleContainer
 
     fileEntry = new FileEntryProdos (parentCatalogBlock, ptr);
 
-    fileName = fileEntry.fileName;
-    fileType = fileEntry.fileType;
-    fileTypeText = ProdosConstants.fileTypes[fileEntry.fileType];
+    //    fileName = fileEntry.fileName;
+    //    fileType = fileEntry.fileType;
+    //    fileTypeText = ProdosConstants.fileTypes[fileEntry.fileType];
 
     // create the Sub Directory Header
     directoryEntry =
@@ -127,7 +127,31 @@ class FolderProdos extends AbstractAppleFile implements AppleContainer
   public String getFileName ()
   // ---------------------------------------------------------------------------------//
   {
-    return directoryEntry.fileName;
+    return fileEntry.fileName;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
+  public int getFileType ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return fileEntry.fileType;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
+  public String getFileTypeText ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return ProdosConstants.fileTypes[fileEntry.fileType];
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
+  public boolean isLocked ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return fileEntry.isLocked;
   }
 
   // ---------------------------------------------------------------------------------//

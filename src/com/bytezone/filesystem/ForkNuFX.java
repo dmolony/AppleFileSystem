@@ -19,16 +19,49 @@ public class ForkNuFX extends AbstractAppleFile
 
     isFork = forkType != null;
 
-    fileType = parentFile.getFileType ();
-    fileTypeText = parentFile.getFileTypeText ();
+    //    fileType = parentFile.getFileType ();
+    //    fileTypeText = parentFile.getFileTypeText ();
 
     this.parentFile = parentFile;
     this.forkType = forkType;
-    this.fileName = forkType == ForkType.DATA ? "Data fork"
-        : forkType == ForkType.RESOURCE ? "Resource fork" : "Not forked";
+    //    this.fileName = forkType == ForkType.DATA ? "Data fork"
+    //        : forkType == ForkType.RESOURCE ? "Resource fork" : "Not forked";
 
     this.fileSystem = (FsNuFX) parentFile.getParentFileSystem ();
     this.thread = thread;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
+  public String getFileName ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return forkType == ForkType.DATA ? "Data fork"
+        : forkType == ForkType.RESOURCE ? "Resource fork" : "Not forked";
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
+  public int getFileType ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return parentFile.getFileType ();
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
+  public String getFileTypeText ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return parentFile.getFileTypeText ();
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
+  public boolean isLocked ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return parentFile.isLocked ();
   }
 
   // ---------------------------------------------------------------------------------//
@@ -83,10 +116,10 @@ public class ForkNuFX extends AbstractAppleFile
   {
     StringBuilder text = new StringBuilder ();
 
-    text.append (String.format ("File name ............. %s%n", fileName));
+    text.append (String.format ("File name ............. %s%n", getFileName ()));
     text.append (String.format ("Fork type ............. %s%n", forkType));
-    text.append (
-        String.format ("File type ............. %02X  %s%n", fileType, fileTypeText));
+    text.append (String.format ("File type ............. %02X  %s%n", getFileType (),
+        getFileTypeText ()));
     text.append (
         String.format ("Eof ................... %04X  %<,7d%n", getFileLength ()));
     text.append (String.format ("Parent ................ %s%n", parentFile.fileName));

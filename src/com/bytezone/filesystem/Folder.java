@@ -6,10 +6,14 @@ import java.util.Optional;
 
 import com.bytezone.utility.Utility;
 
+// -----------------------------------------------------------------------------------//
 public class Folder extends AbstractAppleFile implements AppleContainer
+// -----------------------------------------------------------------------------------//
 {
   List<AppleFile> files = new ArrayList<> ();
   List<AppleFileSystem> fileSystems = new ArrayList<> ();
+
+  String fileName;
 
   // This class is not used by FileSystem, but may be used by other projects when
   // displaying NuFX/Zip/Gzip file contents (eg DiskBrowser2 and AppleFormat)
@@ -19,9 +23,40 @@ public class Folder extends AbstractAppleFile implements AppleContainer
   {
     super (parent);
 
-    this.fileName = name;
-
+    fileName = name;
     isFolder = true;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
+  public String getFileName ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return fileName;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
+  public int getFileType ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return 0;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
+  public String getFileTypeText ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return "DIR";
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
+  public boolean isLocked ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return false;
   }
 
   // ---------------------------------------------------------------------------------//

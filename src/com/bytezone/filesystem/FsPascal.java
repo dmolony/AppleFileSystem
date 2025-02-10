@@ -182,8 +182,8 @@ public class FsPascal extends AbstractFileSystem
 
     if (debug)
     {
-      System.out.printf ("Moving slot %d (%s) to slot %d%n", slotFrom, file.fileName,
-          slotTo);
+      System.out.printf ("Moving slot %d (%s) to slot %d%n", slotFrom,
+          file.getFileName (), slotTo);
       CatalogEntryPascal from = fileEntries[slotFrom];
       System.out.printf ("  Blocks %3d:%3d -> %3d:%3d%n", from.firstBlock,
           from.lastBlock - 1, nextDataBlock, nextDataBlock + oldBlocks.size () - 1);
@@ -254,10 +254,10 @@ public class FsPascal extends AbstractFileSystem
   // ---------------------------------------------------------------------------------//
   {
     for (int i = 1; i < fileEntries.length; i++)
-      if (fileEntries[i].fileName.equals (file.fileName))
+      if (fileEntries[i].fileName.equals (file.getFileName ()))
         return i;
 
-    System.out.println (file.fileName + " not found");
+    System.out.println (file.getFileName () + " not found");
     return -1;
   }
 
@@ -283,7 +283,7 @@ public class FsPascal extends AbstractFileSystem
     FilePascal file = (FilePascal) appleFile;
 
     if (debug)
-      System.out.printf ("Deleting %s%n", file.fileName);
+      System.out.printf ("Deleting %s%n", file.getFileName ());
 
     for (AppleBlock block : file.getBlocks ())
       volumeBitMap.set (block.getBlockNo ());               // on = free

@@ -54,6 +54,9 @@ public class FileNuFX extends AbstractAppleFile implements AppleFilePath, AppleF
   private ForkNuFX dataFork;            // for non-forked files only
   protected final List<AppleFile> forks = new ArrayList<> ();
 
+  String fileName;
+  int fileType;
+
   // A Record  
   // ---------------------------------------------------------------------------------//
   FileNuFX (FsNuFX fs, byte[] buffer, int offset)
@@ -73,7 +76,7 @@ public class FileNuFX extends AbstractAppleFile implements AppleFilePath, AppleF
     access = Utility.unsignedInt (buffer, offset + 18);
 
     fileType = Utility.unsignedInt (buffer, offset + 22);
-    fileTypeText = fileTypes[fileType];
+    //    fileTypeText = fileTypes[fileType];
 
     auxType = Utility.unsignedInt (buffer, offset + 26);
     storType = Utility.unsignedShort (buffer, offset + 30);
@@ -199,6 +202,30 @@ public class FileNuFX extends AbstractAppleFile implements AppleFilePath, AppleF
   // ---------------------------------------------------------------------------------//
   {
     return fileName;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
+  public int getFileType ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return fileType;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
+  public String getFileTypeText ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return fileTypes[fileType];
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
+  public boolean isLocked ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return false;
   }
 
   // ---------------------------------------------------------------------------------//

@@ -20,8 +20,8 @@ public class FileCpm extends AbstractAppleFile
     assert fileEntries.size () > 0;
 
     this.fileEntries = fileEntries;
-    this.fileTypeText = fileEntries.get (0).getFileTypeText ();
-    this.fileName = fileEntries.get (0).getFileName ();
+    //    this.fileTypeText = fileEntries.get (0).getFileTypeText ();
+    //    this.fileName = fileEntries.get (0).getFileName ();
 
     for (FileEntryCpm fileEntry : fileEntries)
       for (int blockNo : fileEntry)
@@ -37,6 +37,30 @@ public class FileCpm extends AbstractAppleFile
           dataBlocks.add (block);
         }
       }
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
+  public String getFileName ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return fileEntries.get (0).getFileName ();
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
+  public int getFileType ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return 0;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
+  public String getFileTypeText ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return fileEntries.get (0).getFileTypeText ();
   }
 
   // ---------------------------------------------------------------------------------//

@@ -17,10 +17,10 @@ public abstract class AbstractAppleFile implements AppleFile
   protected boolean isForkedFile;             // FileProdos or FileNuFX with fork(s)
   protected boolean isFork;                   // Data or Resource fork
 
-  protected String fileName;
-  protected int fileType;
-  protected String fileTypeText;
-  protected boolean isLocked;
+  //  protected String fileName;
+  //  protected int fileType;
+  //  protected String fileTypeText;
+  //  protected boolean isLocked;
 
   protected String errorMessage = "";
   protected List<AppleBlock> dataBlocks = new ArrayList<> ();
@@ -34,20 +34,20 @@ public abstract class AbstractAppleFile implements AppleFile
   }
 
   // ---------------------------------------------------------------------------------//
-  @Override
-  public String getFileName ()
-  // ---------------------------------------------------------------------------------//
-  {
-    return fileName;
-  }
+  //  @Override
+  //  public String getFileName ()
+  //  // ---------------------------------------------------------------------------------//
+  //  {
+  //    return fileName;
+  //  }
 
   // ---------------------------------------------------------------------------------//
-  @Override
-  public boolean isLocked ()
-  // ---------------------------------------------------------------------------------//
-  {
-    return isLocked;
-  }
+  //  @Override
+  //  public boolean isLocked ()
+  //  // ---------------------------------------------------------------------------------//
+  //  {
+  //    return isLocked;
+  //  }
 
   // ---------------------------------------------------------------------------------//
   @Override
@@ -174,7 +174,8 @@ public abstract class AbstractAppleFile implements AppleFile
   public void write (byte[] buffer)
   // ---------------------------------------------------------------------------------//
   {
-    throw new UnsupportedOperationException ("write() not implemented in " + fileName);
+    throw new UnsupportedOperationException (
+        "write() not implemented in " + getFileName ());
   }
 
   // ---------------------------------------------------------------------------------//
@@ -191,7 +192,7 @@ public abstract class AbstractAppleFile implements AppleFile
   // ---------------------------------------------------------------------------------//
   {
     throw new UnsupportedOperationException (
-        "getFileLength() not implemented in " + fileName);
+        "getFileLength() not implemented in " + getFileName ());
   }
 
   // assumes no index blocks
@@ -213,12 +214,12 @@ public abstract class AbstractAppleFile implements AppleFile
   }
 
   // ---------------------------------------------------------------------------------//
-  @Override
-  public int getFileType ()
-  // ---------------------------------------------------------------------------------//
-  {
-    return fileType;
-  }
+  //  @Override
+  //  public int getFileType ()
+  //  // ---------------------------------------------------------------------------------//
+  //  {
+  //    return fileType;
+  //  }
 
   // ---------------------------------------------------------------------------------//
   @Override
@@ -226,16 +227,16 @@ public abstract class AbstractAppleFile implements AppleFile
   // ---------------------------------------------------------------------------------//
   {
     throw new UnsupportedOperationException (
-        "getForkType() not implemented in " + fileName);
+        "getForkType() not implemented in " + getFileName ());
   }
 
   // ---------------------------------------------------------------------------------//
-  @Override
-  public String getFileTypeText ()
-  // ---------------------------------------------------------------------------------//
-  {
-    return fileTypeText;
-  }
+  //  @Override
+  //  public String getFileTypeText ()
+  //  // ---------------------------------------------------------------------------------//
+  //  {
+  //    return fileTypeText;
+  //  }
 
   // ---------------------------------------------------------------------------------//
   @Override
@@ -250,7 +251,7 @@ public abstract class AbstractAppleFile implements AppleFile
   public String getCatalogLine ()
   // ---------------------------------------------------------------------------------//
   {
-    return fileName;
+    return getFileName ();
   }
 
   // ---------------------------------------------------------------------------------//
@@ -261,13 +262,13 @@ public abstract class AbstractAppleFile implements AppleFile
     StringBuilder text = new StringBuilder ();
 
     text.append ("-------- File ---------\n");
-    text.append (String.format ("File name ............. %s%n", fileName));
+    text.append (String.format ("File name ............. %s%n", getFileName ()));
     text.append (String.format ("File system type ...... %s%n", getFileSystemType ()));
     if (embeddedFileSystem != null)
       text.append (String.format ("Embedded FS type ...... %s%n",
           embeddedFileSystem.getFileSystemType ()));
-    text.append (
-        String.format ("File type ............. %,6d  %s%n", fileType, fileTypeText));
+    text.append (String.format ("File type ............. %,6d  %s%n", getFileType (),
+        getFileTypeText ()));
     text.append (
         String.format ("EOF ................... %,6d  %<04X%n", getFileLength ()));
 

@@ -77,7 +77,7 @@ public class FilePascalCode extends FilePascal implements AppleContainer
   public void addFile (AppleFile file)
   // ---------------------------------------------------------------------------------//
   {
-    throw new UnsupportedOperationException ("cannot add File to " + fileName);
+    throw new UnsupportedOperationException ("cannot add File to " + getFileName ());
   }
 
   // ---------------------------------------------------------------------------------//
@@ -105,7 +105,8 @@ public class FilePascalCode extends FilePascal implements AppleContainer
   public void addFileSystem (AppleFileSystem fileSystem)
   // ---------------------------------------------------------------------------------//
   {
-    throw new UnsupportedOperationException ("cannot add FileSystem to " + fileName);
+    throw new UnsupportedOperationException (
+        "cannot add FileSystem to " + getFileName ());
   }
 
   // ---------------------------------------------------------------------------------//
@@ -180,7 +181,7 @@ public class FilePascalCode extends FilePascal implements AppleContainer
 
     text.append ("\n\n");
     text.append ("-------- File ---------\n");
-    text.append (String.format ("File name ............. %s%n", fileName));
+    text.append (String.format ("File name ............. %s%n", getFileName ()));
     text.append (String.format ("File system type ...... %s%n", getFileSystemType ()));
     text.append (String.format ("Total segments ........ %d%n", segments.size ()));
     text.append (String.format ("Comment ............... %s%n", comment));

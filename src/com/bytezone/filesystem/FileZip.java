@@ -9,9 +9,10 @@ import com.bytezone.utility.Utility;
 public class FileZip extends AbstractAppleFile implements AppleFilePath
 // -----------------------------------------------------------------------------------//
 {
-  //  byte[] buffer;
   private final char separator = '/';
   private final ZipEntry zipEntry;
+
+  String fileName;
 
   // ---------------------------------------------------------------------------------//
   FileZip (FsZip fs, String fileName, byte[] buffer, ZipEntry zipEntry)
@@ -19,19 +20,10 @@ public class FileZip extends AbstractAppleFile implements AppleFilePath
   {
     super (fs);
 
-    //    this.buffer = buffer;
     fileBuffer = new Buffer (buffer, 0, buffer.length);
     this.fileName = fileName;
     this.zipEntry = zipEntry;
   }
-
-  // ---------------------------------------------------------------------------------//
-  //  @Override
-  //  public byte[] read ()
-  //  // ---------------------------------------------------------------------------------//
-  //  {
-  //    return buffer;
-  //  }
 
   // ---------------------------------------------------------------------------------//
   @Override
@@ -39,6 +31,14 @@ public class FileZip extends AbstractAppleFile implements AppleFilePath
   // ---------------------------------------------------------------------------------//
   {
     return separator;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
+  public boolean isValidFile ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return true;
   }
 
   // ---------------------------------------------------------------------------------//
@@ -56,6 +56,30 @@ public class FileZip extends AbstractAppleFile implements AppleFilePath
   // ---------------------------------------------------------------------------------//
   {
     return fileName;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
+  public int getFileType ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return 0;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
+  public String getFileTypeText ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return "???";
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
+  public boolean isLocked ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return false;
   }
 
   // ---------------------------------------------------------------------------------//

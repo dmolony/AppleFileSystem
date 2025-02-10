@@ -31,9 +31,9 @@ public class FilePascal extends AbstractAppleFile
     this.catalogEntry = catalogEntry;
     this.slot = slot;
 
-    fileType = catalogEntry.fileType;
-    fileTypeText = fileTypes[fileType];
-    fileName = catalogEntry.fileName;
+    //    fileType = catalogEntry.fileType;
+    //    fileTypeText = fileTypes[fileType];
+    //    fileName = catalogEntry.fileName;
 
     for (int i = catalogEntry.firstBlock; i < catalogEntry.lastBlock; i++)
     {
@@ -98,6 +98,38 @@ public class FilePascal extends AbstractAppleFile
   // ---------------------------------------------------------------------------------//
   {
     return catalogEntry.lastBlock;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
+  public String getFileName ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return catalogEntry.fileName;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
+  public int getFileType ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return catalogEntry.fileType;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
+  public String getFileTypeText ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return ProdosConstants.fileTypes[catalogEntry.fileType];
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
+  public boolean isLocked ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return false;
   }
 
   // ---------------------------------------------------------------------------------//

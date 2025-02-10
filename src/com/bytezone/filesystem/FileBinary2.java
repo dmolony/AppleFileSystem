@@ -57,6 +57,10 @@ public class FileBinary2 extends AbstractAppleFile
   private boolean debug = false;
   private boolean validBlocks = true;
 
+  int fileType;
+  String fileName;
+  String fileTypeText;
+
   // ---------------------------------------------------------------------------------//
   FileBinary2 (FsBinary2 fs, int headerBlockNo)
   // ---------------------------------------------------------------------------------//
@@ -71,7 +75,7 @@ public class FileBinary2 extends AbstractAppleFile
     byte[] buffer = headerBlock.getBuffer ();
 
     accessCode = buffer[3] & 0xFF;
-    fileType = buffer[4] & 0xFF;
+    fileType = buffer[4] & 0xFF;                        // local variable
     auxType = Utility.unsignedShort (buffer, 5);
     storageType = buffer[7] & 0xFF;
     blocks = Utility.unsignedShort (buffer, 8);
@@ -85,7 +89,7 @@ public class FileBinary2 extends AbstractAppleFile
     createTime = Utility.unsignedShort (buffer, 16);
 
     eof = Utility.unsignedTriple (buffer, 20);
-    fileName = Utility.getMaskedPascalString (buffer, 23);
+    fileName = Utility.getMaskedPascalString (buffer, 23);        // local variable
     nativeName = Utility.getMaskedPascalString (buffer, 39);
 
     gAuxType = Utility.unsignedShort (buffer, 109);
@@ -103,7 +107,7 @@ public class FileBinary2 extends AbstractAppleFile
     version = buffer[126] & 0xFF;
     filesFollowing = buffer[127] & 0xFF;
 
-    fileTypeText = switch (osType)
+    fileTypeText = switch (osType)                      // local variable
     {
       case 0 -> FsProdos.getFileTypeText (fileType);
       case 1 -> "Dos type " + nativeFileType;
@@ -162,12 +166,28 @@ public class FileBinary2 extends AbstractAppleFile
   }
 
   // ---------------------------------------------------------------------------------//
-  //  @Override
-  //  public int getFileType ()
-  //  // ---------------------------------------------------------------------------------//
-  //  {
-  //    return fileType;
-  //  }
+  @Override
+  public int getFileType ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return fileType;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
+  public String getFileTypeText ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return fileTypeText;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
+  public boolean isLocked ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return false;
+  }
 
   // ---------------------------------------------------------------------------------//
   public int getAuxType ()

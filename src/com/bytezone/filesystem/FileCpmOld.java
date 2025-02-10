@@ -20,6 +20,10 @@ public class FileCpmOld extends AbstractAppleFile
   private final int byteCount;
   private int recordCount;                      // records used in this extent
 
+  String fileName;
+  int fileType;
+  String fileTypeText;
+
   // ---------------------------------------------------------------------------------//
   FileCpmOld (FsCpm parent, byte[] buffer, int ptr)
   // ---------------------------------------------------------------------------------//
@@ -139,6 +143,22 @@ public class FileCpmOld extends AbstractAppleFile
   // ---------------------------------------------------------------------------------//
   {
     return fileTypeText.isEmpty () ? fileName : fileName + "." + fileTypeText;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
+  public int getFileType ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return fileType;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
+  public String getFileTypeText ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return fileTypeText;
   }
 
   // ---------------------------------------------------------------------------------//

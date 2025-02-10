@@ -20,15 +20,15 @@ public class FileDos3 extends FileDos
     int nextTrack = catalogBuffer[ptr] & 0xFF;
     int nextSector = catalogBuffer[ptr + 1] & 0xFF;
 
-    fileType = catalogEntry.fileType;
-    isLocked = catalogEntry.isLocked;
-    fileName = catalogEntry.fileName;
+    //    fileType = catalogEntry.fileType;
+    //    isLocked = catalogEntry.isLocked;
+    //    fileName = catalogEntry.fileName;
 
     isNameValid = catalogEntry.isNameValid;
     sectorCount = catalogEntry.sectorCount;
-    fileTypeText = fs.getFileTypeText (fileType);
+    //    fileTypeText = fs.getFileTypeText (fileType);
 
-    String blockSubType = fs.getBlockSubTypeText (fileType);
+    String blockSubType = fs.getBlockSubTypeText (getFileType ());
 
     // build lists of index and data sectors
     int sectorsLeft = sectorCount;
@@ -58,7 +58,7 @@ public class FileDos3 extends FileDos
 
         if (track == 0 && sector == 0)            // invalid address
         {
-          if (fileType != 0x00)                   // not a text file
+          if (getFileType () != 0x00)             // not a text file
             break loop;
 
           dataBlocks.add (null);                  // must be a sparse file
@@ -68,8 +68,8 @@ public class FileDos3 extends FileDos
         {
           AppleBlock dataSector = fs.getSector (track, sector, BlockType.FILE_DATA);
           if (dataSector == null)
-            throw new FileFormatException (String
-                .format ("%s - Invalid data sector - %d, %d", fileName, track, sector));
+            throw new FileFormatException (String.format (
+                "%s - Invalid data sector - %d, %d", getFileName (), track, sector));
 
           dataSector.setFileOwner (this);
           dataSector.setBlockSubType (blockSubType);
@@ -116,5 +116,37 @@ public class FileDos3 extends FileDos
         lockedFlag, getFileTypeText (), getSectorCount () % 1000, getFileName (),
         addressText, lengthText, getTotalIndexSectors (), getTotalDataSectors (),
         message.trim ());
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
+  public String getFileName ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return catalogEntry.fileName;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
+  public boolean isLocked ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return catalogEntry.isLocked;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
+  public int getFileType ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return catalogEntry.fileType;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
+  public String getFileTypeText ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return ((FsDos) parentFileSystem).getFileTypeText (catalogEntry.fileType);
   }
 }

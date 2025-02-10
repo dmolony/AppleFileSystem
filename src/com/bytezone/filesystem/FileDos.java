@@ -31,7 +31,7 @@ public abstract class FileDos extends AbstractAppleFile
   protected void setLength ()
   // ---------------------------------------------------------------------------------//
   {
-    if (fileType == 4)                              // binary
+    if (getFileType () == 4)                              // binary
     {
       if (dataBlocks.size () > 0)
       {
@@ -40,7 +40,7 @@ public abstract class FileDos extends AbstractAppleFile
         eof = Utility.unsignedShort (buffer, 2);
       }
     }
-    else if (fileType == 1 || fileType == 2)        // integer basic or applesoft
+    else if (getFileType () == 1 || getFileType () == 2)    // integer basic or applesoft
     {
       if (dataBlocks.size () > 0)
       {
@@ -115,7 +115,7 @@ public abstract class FileDos extends AbstractAppleFile
   // ---------------------------------------------------------------------------------//
   {
     // Beagle Brothers "applesoft program"
-    if (fileType == 2 && eof <= 3 && fileName.startsWith ("  "))
+    if (getFileType () == 2 && eof <= 3 && getFileName ().startsWith ("  "))
       return false;
 
     return isNameValid && dataBlocks.size () > 0;
@@ -139,7 +139,7 @@ public abstract class FileDos extends AbstractAppleFile
   {
     StringBuilder text = new StringBuilder (super.toString ());
 
-    text.append (String.format ("Locked ................ %s%n", isLocked));
+    text.append (String.format ("Locked ................ %s%n", isLocked ()));
     text.append (String.format ("Catalog sector ........ %02X / %02X%n",
         catalogEntryBlock.getTrackNo (), catalogEntryBlock.getSectorNo ()));
     text.append (String.format ("Catalog entry ......... %d%n", catalogEntryIndex));
