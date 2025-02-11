@@ -24,6 +24,8 @@ public class FileSystemFactory
 
   private boolean debug = false;
 
+  private Header2img header2img;
+
   // ---------------------------------------------------------------------------------//
   public AppleFileSystem getFileSystem (Path path)
   // ---------------------------------------------------------------------------------//
@@ -60,6 +62,14 @@ public class FileSystemFactory
       System.out.println ("-----------------------------------------------------");
     }
 
+    if (blockReader.isMagic (0, Fs2img.TWO_IMG))
+    {
+      header2img = new Header2img (blockReader);
+      Buffer diskBuffer = blockReader.getDiskBuffer ();
+      blockReader = new BlockReader (blockReader.getName (), diskBuffer.data (),
+          diskBuffer.offset () + header2img.offset, header2img.originalLength);
+    }
+
     getDos33 (blockReader);
 
     if (fileSystems.size () == 0)
@@ -83,12 +93,16 @@ public class FileSystemFactory
       getZip (blockReader);
     if (fileSystems.size () == 0)
       getGZip (blockReader);
-    if (fileSystems.size () == 0)
-      get2img (blockReader);
+    //    if (fileSystems.size () == 0)
+    //      get2img (blockReader);
     if (fileSystems.size () == 0)
       getUnidos (blockReader);
     if (fileSystems.size () == 0)
       getWoz (blockReader);
+
+    if (header2img != null)
+      for (AppleFileSystem fs : fileSystems)
+        fs.setHeader2img (header2img);
 
     switch (fileSystems.size ())
     {
@@ -447,29 +461,39 @@ public class FileSystemFactory
   }
 
   // ---------------------------------------------------------------------------------//
-  private void get2img (BlockReader blockReader)
+  //  private Header2img read2imgHeader (BlockReader blockReader)
+  //  // ---------------------------------------------------------------------------------//
+  //  {
+  //    if (blockReader.isMagic (0, Fs2img.TWO_IMG))
+  //      return new Header2img (blockReader);
+  //
+  //    return null;
+  //  }
+
   // ---------------------------------------------------------------------------------//
-  {
-    if (blockReader.isMagic (0, Fs2img.TWO_IMG))
-      try
-      {
-        if (debug)
-          System.out.println ("Checking 2img");
-
-        BlockReader lbrReader = new BlockReader (blockReader);
-        lbrReader.setParameters (128, AddressType.BLOCK, 0, 0);
-
-        Fs2img fs = new Fs2img (lbrReader);
-
-        if (fs.getFileSystems ().size () > 0 || fs.getFiles ().size () > 0)
-          fileSystems.add (fs);
-      }
-      catch (FileFormatException e)
-      {
-        if (debug)
-          System.out.println (e);
-      }
-  }
+  //  private void get2img (BlockReader blockReader)
+  //  // ---------------------------------------------------------------------------------//
+  //  {
+  //    if (blockReader.isMagic (0, Fs2img.TWO_IMG))
+  //      try
+  //      {
+  //        if (debug)
+  //          System.out.println ("Checking 2img");
+  //
+  //        BlockReader lbrReader = new BlockReader (blockReader);
+  //        lbrReader.setParameters (128, AddressType.BLOCK, 0, 0);
+  //
+  //        Fs2img fs = new Fs2img (lbrReader);
+  //
+  //        if (fs.getFileSystems ().size () > 0 || fs.getFiles ().size () > 0)
+  //          fileSystems.add (fs);
+  //      }
+  //      catch (FileFormatException e)
+  //      {
+  //        if (debug)
+  //          System.out.println (e);
+  //      }
+  //  }
 
   // ---------------------------------------------------------------------------------//
   private void getZip (BlockReader blockReader)

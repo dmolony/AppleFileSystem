@@ -121,7 +121,7 @@ public class FilePascal extends AbstractAppleFile
   public String getFileTypeText ()
   // ---------------------------------------------------------------------------------//
   {
-    return ProdosConstants.fileTypes[catalogEntry.fileType];
+    return fileTypes[catalogEntry.fileType];
   }
 
   // ---------------------------------------------------------------------------------//

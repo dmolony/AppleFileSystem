@@ -69,6 +69,8 @@ public interface AppleFileSystem extends AppleContainer
 
   void writeBlocks (List<AppleBlock> blocks, byte[] buffer);
 
+  void setHeader2img (Header2img header2img);
+
   void setErrorMessage (String errorMessage);    // if file can't be read
 
   String getErrorMessage ();                     // if file can't be read

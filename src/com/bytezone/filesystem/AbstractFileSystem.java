@@ -33,6 +33,8 @@ abstract class AbstractFileSystem implements AppleFileSystem
   private byte[] empty = new byte[1024];
   protected BitSet volumeBitMap;
 
+  protected Header2img header2img;
+
   // ---------------------------------------------------------------------------------//
   AbstractFileSystem (BlockReader blockReader, FileSystemType fileSystemType)
   // ---------------------------------------------------------------------------------//
@@ -508,6 +510,14 @@ abstract class AbstractFileSystem implements AppleFileSystem
 
   // ---------------------------------------------------------------------------------//
   @Override
+  public void setHeader2img (Header2img header2img)
+  // ---------------------------------------------------------------------------------//
+  {
+    this.header2img = header2img;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
   public String toString ()
   // ---------------------------------------------------------------------------------//
   {
@@ -515,6 +525,13 @@ abstract class AbstractFileSystem implements AppleFileSystem
         ? msg = " (embedded file system)" : "";
 
     StringBuilder text = new StringBuilder ();
+
+    if (header2img != null)
+    {
+      text.append ("----- Header 2img -----\n");
+      text.append (header2img);
+      text.append ("\n\n");
+    }
 
     text.append ("----- File System -----\n");
     text.append (String.format ("File name ............. %s%n", getFileName ()));

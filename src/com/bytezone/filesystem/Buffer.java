@@ -42,6 +42,13 @@ public record Buffer (byte[] data, int offset, int length)
   public String toString ()
   // ---------------------------------------------------------------------------------//
   {
-    return Utility.format (data, offset, length, true, offset);
+    StringBuilder text = new StringBuilder ();
+
+    text.append (String.format ("Buffer ... %d%n", data.length));
+    text.append (String.format ("Offset ... %d%n", offset));
+    text.append (String.format ("Length ... %d%n", length));
+    text.append (Utility.format (data, offset, length, true, offset));
+
+    return text.toString ();
   }
 }

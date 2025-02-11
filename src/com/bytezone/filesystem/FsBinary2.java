@@ -65,12 +65,4 @@ public class FsBinary2 extends AbstractFileSystem
 
     return text.toString ();
   }
-
-  // ---------------------------------------------------------------------------------//
-  //  @Override
-  //  public String toString ()
-  //  // ---------------------------------------------------------------------------------//
-  //  {
-  //    return Utility.rtrim (new StringBuilder (super.toString ()));
-  //  }
 }

@@ -219,7 +219,7 @@ public class ForkProdos extends AbstractAppleFile
         data = temp;
       }
 
-      fileBuffer = new Buffer (data, 0, eof);
+      fileBuffer = new Buffer (data, 0, eof == 0 ? data.length : eof);
     }
 
     return fileBuffer;
