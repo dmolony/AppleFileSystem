@@ -267,10 +267,10 @@ public abstract class AbstractAppleFile implements AppleFile
     if (embeddedFileSystem != null)
       text.append (String.format ("Embedded FS type ...... %s%n",
           embeddedFileSystem.getFileSystemType ()));
-    text.append (String.format ("File type ............. %,6d  %s%n", getFileType (),
-        getFileTypeText ()));
+    text.append (String.format ("File type ............. %02X      %<,7d  %s%n",
+        getFileType (), getFileTypeText ()));
     text.append (
-        String.format ("EOF ................... %,6d  %<04X%n", getFileLength ()));
+        String.format ("EOF ................... %04X  %<,9d%n", getFileLength ()));
 
     return text.toString ();
   }

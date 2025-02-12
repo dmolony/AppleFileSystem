@@ -270,6 +270,7 @@ public class FileProdos extends AbstractAppleFile implements AppleForkedFile
   {
     StringBuilder text = new StringBuilder (super.toString ());
 
+    text.append ("\n");
     text.append (fileEntry);
     text.append ("\n\n");
 

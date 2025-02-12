@@ -149,7 +149,7 @@ public class FilePascal extends AbstractAppleFile
   {
     StringBuilder text = new StringBuilder (super.toString ());
 
-    text.append ("\n");
+    text.append ("\n\n");
     text.append (catalogEntry);
     text.append ("\n\n");
 

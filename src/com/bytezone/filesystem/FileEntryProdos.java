@@ -87,26 +87,23 @@ class FileEntryProdos
   {
     StringBuilder text = new StringBuilder ();
 
-    //    String message = "";
-    //    if (dataBlocks.size () * 512 < eof)
-    //      message = "<-- past data blocks";
-
-    text.append (String.format ("Storage type .......... %02X  %s%n", storageType,
-        storageTypeText));
+    text.append ("---- Catalog entry ----\n");
+    text.append (String.format ("Storage type .......... %02X               %s%n",
+        storageType, storageTypeText));
     text.append (String.format ("File name ............. %s%n", fileName));
-    text.append (
-        String.format ("File type ............. %02X  %s%n", fileType, fileTypeText));
+    text.append (String.format ("File type ............. %02X      %<,7d  %s%n", fileType,
+        fileTypeText));
     text.append (String.format ("Key ptr ............... %04X    %<,7d%n", keyPtr));
     text.append (String.format ("Blocks used ........... %04X    %<,7d%n", blocksUsed));
     text.append (String.format ("Eof ................... %06X %<,8d%n", eof));
     text.append (
         String.format ("Created ............... %9s %-5s%n", dateCreated, timeCreated));
+    text.append (
+        String.format ("Modified .............. %9s %-5s%n", dateModified, timeModified));
     text.append (String.format ("Version ............... %d%n", version));
     text.append (String.format ("Min version ........... %d%n", minVersion));
     text.append (String.format ("Access ................ %02X      %<7d%n", access));
     text.append (String.format ("Auxtype ............... %04X    %<,7d%n", auxType));
-    text.append (
-        String.format ("Modified .............. %9s %-5s%n", dateModified, timeModified));
     text.append (String.format ("Header ptr ............ %04X    %<,7d%n", headerPtr));
 
     return Utility.rtrim (text);
