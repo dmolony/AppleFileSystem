@@ -11,7 +11,7 @@ public class FsCpm extends AbstractFileSystem
 // -----------------------------------------------------------------------------------//
 {
   private static final int EMPTY_BYTE_VALUE = 0xE5;
-  private List<FileEntryCpm> fileEntries = new ArrayList<> ();
+  private List<CatalogEntryCpm> fileEntries = new ArrayList<> ();
 
   // ---------------------------------------------------------------------------------//
   public FsCpm (BlockReader blockReader)
@@ -61,7 +61,7 @@ public class FsCpm extends AbstractFileSystem
           //          throw new FileFormatException ("CPM: bad name value");
           break OUT;
 
-        fileEntries.add (new FileEntryCpm (buffer, j, size));
+        fileEntries.add (new CatalogEntryCpm (buffer, j, size));
       }
 
       ++catalogBlocks;
@@ -73,9 +73,9 @@ public class FsCpm extends AbstractFileSystem
 
     // create files
 
-    List<FileEntryCpm> shortList = new ArrayList<> ();
+    List<CatalogEntryCpm> shortList = new ArrayList<> ();
 
-    for (FileEntryCpm fileEntryCpm : fileEntries)
+    for (CatalogEntryCpm fileEntryCpm : fileEntries)
     {
       //      System.out.println (fileEntryCpm);
       //      System.out.println ();

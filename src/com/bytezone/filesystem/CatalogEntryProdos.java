@@ -7,8 +7,7 @@ import java.util.Locale;
 import com.bytezone.utility.Utility;
 
 // -----------------------------------------------------------------------------------//
-class FileEntryProdos
-// -----------------------------------------------------------------------------------//
+class CatalogEntryProdos
 {
   private static Locale US = Locale.US;                 // to force 3 character months
   private static final DateTimeFormatter df =
@@ -40,7 +39,7 @@ class FileEntryProdos
   final String storageTypeText;
 
   // ---------------------------------------------------------------------------------//
-  FileEntryProdos (AppleBlock catalogBlock, int ptr)
+  CatalogEntryProdos (AppleBlock catalogBlock, int ptr)
   // ---------------------------------------------------------------------------------//
   {
     byte[] buffer = catalogBlock.getBuffer ();

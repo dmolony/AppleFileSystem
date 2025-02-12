@@ -298,7 +298,7 @@ public class FsProdos extends AbstractFileSystem
 
   // ---------------------------------------------------------------------------------//
   private void deleteCatalogEntry (AppleBlock catalogBlock, int ptr,
-      FileEntryProdos fileEntry)
+      CatalogEntryProdos fileEntry)
   // ---------------------------------------------------------------------------------//
   {
     byte[] buffer = catalogBlock.getBuffer ();    // catalog block with file's fileEntry

@@ -7,7 +7,7 @@ import java.util.List;
 import com.bytezone.utility.Utility;
 
 // -----------------------------------------------------------------------------------//
-public class FileEntryCpm implements Iterable<Integer>
+public class CatalogEntryCpm implements Iterable<Integer>
 // -----------------------------------------------------------------------------------//
 {
   private final int userNumber;
@@ -29,7 +29,7 @@ public class FileEntryCpm implements Iterable<Integer>
   private final int extentNo;
 
   // ---------------------------------------------------------------------------------//
-  FileEntryCpm (byte[] buffer, int ptr, int size)
+  CatalogEntryCpm (byte[] buffer, int ptr, int size)
   // ---------------------------------------------------------------------------------//
   {
     userNumber = buffer[ptr] & 0xFF;

@@ -19,7 +19,7 @@ class FolderProdos extends AbstractAppleFile implements AppleContainer
   protected static final DateTimeFormatter stf = DateTimeFormatter.ofPattern ("H:mm");
   protected static final String NO_DATE = "<NO DATE>";
 
-  FileEntryProdos fileEntry;                  // SDH only
+  CatalogEntryProdos fileEntry;                  // SDH only
   DirectoryEntryProdos directoryEntry;        // both VDH and SDH
   AppleContainer parentContainer;
 
@@ -40,7 +40,7 @@ class FolderProdos extends AbstractAppleFile implements AppleContainer
     this.parentCatalogBlock = parentCatalogBlock;
     this.parentCatalogPtr = ptr;
 
-    fileEntry = new FileEntryProdos (parentCatalogBlock, ptr);
+    fileEntry = new CatalogEntryProdos (parentCatalogBlock, ptr);
 
     //    fileName = fileEntry.fileName;
     //    fileType = fileEntry.fileType;

@@ -19,7 +19,7 @@ public class FileProdos extends AbstractAppleFile implements AppleForkedFile
   protected static final DateTimeFormatter stf = DateTimeFormatter.ofPattern ("H:mm");
   protected static final String NO_DATE = "<NO DATE>";
 
-  FileEntryProdos fileEntry;
+  CatalogEntryProdos fileEntry;
   private AppleContainer parentContainer;
 
   private ForkProdos dataFork;                        // for non-forked files
@@ -39,7 +39,7 @@ public class FileProdos extends AbstractAppleFile implements AppleForkedFile
     this.parentCatalogBlock = parentCatalogBlock;
     this.parentCatalogPtr = ptr;
 
-    fileEntry = new FileEntryProdos (parentCatalogBlock, ptr);
+    fileEntry = new CatalogEntryProdos (parentCatalogBlock, ptr);
 
     //    fileName = fileEntry.fileName;
     //    fileType = fileEntry.fileType;

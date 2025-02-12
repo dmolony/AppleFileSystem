@@ -9,10 +9,10 @@ import com.bytezone.utility.Utility;
 public class FileCpm extends AbstractAppleFile
 // -----------------------------------------------------------------------------------//
 {
-  private final List<FileEntryCpm> fileEntries;
+  private final List<CatalogEntryCpm> fileEntries;
 
   // ---------------------------------------------------------------------------------//
-  FileCpm (FsCpm parent, List<FileEntryCpm> fileEntries)
+  FileCpm (FsCpm parent, List<CatalogEntryCpm> fileEntries)
   // ---------------------------------------------------------------------------------//
   {
     super (parent);
@@ -23,7 +23,7 @@ public class FileCpm extends AbstractAppleFile
     //    this.fileTypeText = fileEntries.get (0).getFileTypeText ();
     //    this.fileName = fileEntries.get (0).getFileName ();
 
-    for (FileEntryCpm fileEntry : fileEntries)
+    for (CatalogEntryCpm fileEntry : fileEntries)
       for (int blockNo : fileEntry)
       {
         AppleBlock block = getParentFileSystem ().getBlock (blockNo, BlockType.FILE_DATA);
@@ -85,7 +85,7 @@ public class FileCpm extends AbstractAppleFile
   {
     StringBuilder text = new StringBuilder ();
 
-    for (FileEntryCpm fileEntry : fileEntries)
+    for (CatalogEntryCpm fileEntry : fileEntries)
     {
       text.append (fileEntry.getLine ());
       text.append ("\n");
@@ -101,7 +101,7 @@ public class FileCpm extends AbstractAppleFile
   {
     StringBuilder text = new StringBuilder (super.toString ());
 
-    for (FileEntryCpm fileEntry : fileEntries)
+    for (CatalogEntryCpm fileEntry : fileEntries)
     {
       text.append (fileEntry);
       text.append ("\n\n");
