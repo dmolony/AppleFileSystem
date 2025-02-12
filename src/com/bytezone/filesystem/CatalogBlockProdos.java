@@ -10,8 +10,7 @@ import com.bytezone.filesystem.AppleBlock.BlockType;
 import com.bytezone.utility.Utility;
 
 // -----------------------------------------------------------------------------------//
-class DirectoryEntryProdos
-// -----------------------------------------------------------------------------------//
+class CatalogBlockProdos
 {
   private static Locale US = Locale.US;          // to force 3 character months
   private static final DateTimeFormatter df =
@@ -44,7 +43,7 @@ class DirectoryEntryProdos
   final List<AppleBlock> catalogBlocks = new ArrayList<AppleBlock> ();
 
   // ---------------------------------------------------------------------------------//
-  DirectoryEntryProdos (FsProdos fs, int firstCatalogBlockNo)
+  CatalogBlockProdos (FsProdos fs, int firstCatalogBlockNo)
   // ---------------------------------------------------------------------------------//
   {
     this.fileSystem = fs;

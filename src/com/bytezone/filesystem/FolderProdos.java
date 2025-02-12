@@ -20,7 +20,7 @@ class FolderProdos extends AbstractAppleFile implements AppleContainer
   protected static final String NO_DATE = "<NO DATE>";
 
   CatalogEntryProdos fileEntry;                  // SDH only
-  DirectoryEntryProdos directoryEntry;        // both VDH and SDH
+  CatalogBlockProdos directoryEntry;        // both VDH and SDH
   AppleContainer parentContainer;
 
   List<AppleFile> files = new ArrayList<> ();
@@ -48,7 +48,7 @@ class FolderProdos extends AbstractAppleFile implements AppleContainer
 
     // create the Sub Directory Header
     directoryEntry =
-        new DirectoryEntryProdos ((FsProdos) parentFileSystem, fileEntry.keyPtr);
+        new CatalogBlockProdos ((FsProdos) parentFileSystem, fileEntry.keyPtr);
     dataBlocks.addAll (directoryEntry.catalogBlocks);
 
     readCatalog ();

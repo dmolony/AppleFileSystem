@@ -17,7 +17,7 @@ public class FsProdos extends AbstractFileSystem
   private static final int FIRST_CATALOG_BLOCK = 2;
   private static final int BITS_PER_BLOCK = 0x1000;
 
-  private DirectoryEntryProdos directoryEntry;
+  private CatalogBlockProdos directoryEntry;
   private boolean isDosMaster;
 
   // ---------------------------------------------------------------------------------//
@@ -27,7 +27,7 @@ public class FsProdos extends AbstractFileSystem
     super (blockReader, FileSystemType.PRODOS);
 
     // create the Volume Directory Header
-    directoryEntry = new DirectoryEntryProdos (this, FIRST_CATALOG_BLOCK);
+    directoryEntry = new CatalogBlockProdos (this, FIRST_CATALOG_BLOCK);
     setTotalCatalogBlocks (directoryEntry.catalogBlocks.size ());
 
     readCatalog ();
