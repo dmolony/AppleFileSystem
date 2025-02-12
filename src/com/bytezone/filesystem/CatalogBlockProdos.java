@@ -11,6 +11,7 @@ import com.bytezone.utility.Utility;
 
 // -----------------------------------------------------------------------------------//
 class CatalogBlockProdos
+// -----------------------------------------------------------------------------------//
 {
   private static Locale US = Locale.US;          // to force 3 character months
   private static final DateTimeFormatter df =
