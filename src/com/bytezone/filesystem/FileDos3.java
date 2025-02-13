@@ -10,12 +10,13 @@ public class FileDos3 extends FileDos
   CatalogEntryDos3 catalogEntry;
 
   // ---------------------------------------------------------------------------------//
-  FileDos3 (FsDos3 fs, byte[] catalogBuffer, int ptr, int slot)
+  FileDos3 (FsDos3 fs, AppleBlock catalogBlock, int ptr, int slot)
   // ---------------------------------------------------------------------------------//
   {
     super (fs);
 
-    catalogEntry = new CatalogEntryDos3 (catalogBuffer, ptr, slot);
+    catalogEntry = new CatalogEntryDos3 (catalogBlock, ptr, slot);
+    byte[] catalogBuffer = catalogBlock.getBuffer ();
 
     int nextTrack = catalogBuffer[ptr] & 0xFF;
     int nextSector = catalogBuffer[ptr + 1] & 0xFF;

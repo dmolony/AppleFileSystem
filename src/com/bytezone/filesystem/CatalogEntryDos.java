@@ -16,10 +16,10 @@ public abstract class CatalogEntryDos extends CatalogEntry
   boolean isNameValid;
 
   // ---------------------------------------------------------------------------------//
-  public CatalogEntryDos (byte[] buffer, int slot)
+  public CatalogEntryDos (AppleBlock catalogBlock, int slot)
   // ---------------------------------------------------------------------------------//
   {
-    super (buffer, slot);
+    super (catalogBlock, slot);
   }
 
   // ---------------------------------------------------------------------------------//

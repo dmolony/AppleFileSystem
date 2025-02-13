@@ -55,7 +55,7 @@ public class FsPascal extends AbstractFileSystem
     fileEntries = new CatalogEntryPascal[maxEntries];
 
     for (int i = 0; i < maxEntries; i++)
-      fileEntries[i] = new CatalogEntryPascal (catalogBuffer, i);
+      fileEntries[i] = new CatalogEntryPascal (catalogBlocks, catalogBuffer, i);
 
     CatalogEntryPascal volumeEntry = fileEntries[0];
     freeBlocks = volumeEntry.totalBlocks - firstFileBlock;
@@ -223,8 +223,8 @@ public class FsPascal extends AbstractFileSystem
     fileEntries[slotFrom].clearFileEntry ();
 
     // update catalog buffer
-    fileEntries[slotFrom].writeCatalogEntry ();
-    fileEntries[slotTo].writeCatalogEntry ();
+    fileEntries[slotFrom].write ();
+    fileEntries[slotTo].write ();
 
     if (debug)
     {

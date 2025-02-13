@@ -17,7 +17,7 @@ public class FsProdos extends AbstractFileSystem
   private static final int FIRST_CATALOG_BLOCK = 2;
   private static final int BITS_PER_BLOCK = 0x1000;
 
-  private CatalogBlockProdos directoryEntry;
+  private DirectoryHeaderProdos directoryHeader;
   private boolean isDosMaster;
 
   // ---------------------------------------------------------------------------------//
@@ -26,10 +26,14 @@ public class FsProdos extends AbstractFileSystem
   {
     super (blockReader, FileSystemType.PRODOS);
 
-    // create the Volume Directory Header
-    directoryEntry = new CatalogBlockProdos (this, FIRST_CATALOG_BLOCK);
-    setTotalCatalogBlocks (directoryEntry.catalogBlocks.size ());
+    // Create the Volume Directory Header. This is the first entry in the
+    // first block of the catalog (block 2).
+    directoryHeader = new DirectoryHeaderProdos (this, FIRST_CATALOG_BLOCK);
+    setTotalCatalogBlocks (directoryHeader.catalogBlocks.size ());
 
+    // Create a FileProdos or FolderProdos for each catalog entry. Each one creates
+    // its own CatalogEntryProdos. When a FolderProdos is created, it reads its
+    // own catalog and repeats the process.
     readCatalog ();
 
     volumeBitMap = createVolumeBitMap ();
@@ -45,7 +49,7 @@ public class FsProdos extends AbstractFileSystem
   {
     FileProdos file = null;
 
-    for (AppleBlock catalogBlock : directoryEntry.catalogBlocks)
+    for (AppleBlock catalogBlock : directoryHeader.catalogBlocks)
     {
       byte[] buffer = catalogBlock.getBuffer ();
       int ptr = 4;
@@ -74,7 +78,7 @@ public class FsProdos extends AbstractFileSystem
           case ProdosConstants.PASCAL_ON_PROFILE:
             file = new FileProdos (this, this, catalogBlock, ptr);
             addFile (file);
-            addEmbeddedFileSystem (file, 1024);
+            addEmbeddedFileSystem (file, 1024);       // fs starts 2 blocks in
             break;
 
           case ProdosConstants.GSOS_EXTENDED_FILE:
@@ -108,14 +112,14 @@ public class FsProdos extends AbstractFileSystem
     int bfrPtr = 0;
     byte[] buffer = null;
 
-    BitSet bitMap = new BitSet (directoryEntry.totalBlocks);
-    int blockNo = directoryEntry.keyPtr;
+    BitSet bitMap = new BitSet (directoryHeader.totalBlocks);
+    int bitMapBlockNo = directoryHeader.keyPtr;             // first block of the bitmap
 
-    while (bitPtr < directoryEntry.totalBlocks)
+    while (bitPtr < directoryHeader.totalBlocks)
     {
       if (bitPtr % BITS_PER_BLOCK == 0)
       {
-        AppleBlock bitmapBlock = getBlock (blockNo++, BlockType.FS_DATA);
+        AppleBlock bitmapBlock = getBlock (bitMapBlockNo++, BlockType.FS_DATA);
         bitmapBlock.setBlockSubType ("V-BITMAP");
         buffer = bitmapBlock.getBuffer ();
         bfrPtr = 0;
@@ -144,11 +148,11 @@ public class FsProdos extends AbstractFileSystem
     int bfrPtr = 0;
 
     byte[] buffer = null;
-    int blockNo = directoryEntry.keyPtr;
+    int blockNo = directoryHeader.keyPtr;
 
-    while (bitPtr < directoryEntry.totalBlocks)
+    while (bitPtr < directoryHeader.totalBlocks)
     {
-      if (bitPtr % 0x1000 == 0)           // get the next block
+      if (bitPtr % 0x1000 == 0)                 // get the next block
       {
         AppleBlock bitmapBlock = getBlock (blockNo++);
         bitmapBlock.markDirty ();
@@ -174,7 +178,7 @@ public class FsProdos extends AbstractFileSystem
   public int getFirstBitmapBlockNo ()
   // ---------------------------------------------------------------------------------//
   {
-    return directoryEntry.keyPtr;
+    return directoryHeader.keyPtr;
   }
 
   // ---------------------------------------------------------------------------------//
@@ -189,7 +193,7 @@ public class FsProdos extends AbstractFileSystem
   public String getPath ()
   // ---------------------------------------------------------------------------------//
   {
-    return String.format ("/%s", directoryEntry.fileName);
+    return String.format ("/%s", directoryHeader.fileName);
   }
 
   // ---------------------------------------------------------------------------------//
@@ -257,22 +261,26 @@ public class FsProdos extends AbstractFileSystem
     if (appleFile.getParentFileSystem () != this)
       throw new InvalidParentFileSystemException ("file not part of this File System");
 
-    if (appleFile.isFolder ())
-    {
-      FolderProdos folder = (FolderProdos) appleFile;
-      deleteCatalogEntry (folder.parentCatalogBlock, folder.parentCatalogPtr,
-          folder.fileEntry);
-    }
-    else
-    {
-      FileProdos file = (FileProdos) appleFile;
-      deleteCatalogEntry (file.parentCatalogBlock, file.parentCatalogPtr, file.fileEntry);
-    }
+    //    if (appleFile.isFolder ())
+    //    {
+    //      FolderProdos folder = (FolderProdos) appleFile;
+    //      deleteCatalogEntry (folder.parentCatalogBlock, folder.parentCatalogPtr,
+    //          folder.fileEntry);
+    //    }
+    //    else
+    //    {
+    //      FileProdos file = (FileProdos) appleFile;
+    //      deleteCatalogEntry (file.parentCatalogBlock, file.parentCatalogPtr, file.fileEntry);
+    //    }
+
+    FileProdos fileProdos = (FileProdos) appleFile;
+
+    fileProdos.catalogEntry.delete ();
 
     // create list of blocks to free
     List<AppleBlock> freeBlocks = new ArrayList<> (appleFile.getBlocks ());
     if (appleFile.isForkedFile ())
-      for (AppleFile file : ((FileProdos) appleFile).forks)
+      for (AppleFile file : fileProdos.forks)
         freeBlocks.addAll (file.getBlocks ());
 
     // mark blocks as free in the vtoc
@@ -322,7 +330,7 @@ public class FsProdos extends AbstractFileSystem
   {
     StringBuilder text = new StringBuilder (super.toString ());
 
-    text.append (directoryEntry);
+    text.append (directoryHeader);
 
     return Utility.rtrim (text);
   }

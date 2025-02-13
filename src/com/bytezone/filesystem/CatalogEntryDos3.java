@@ -10,21 +10,21 @@ public class CatalogEntryDos3 extends CatalogEntryDos
   int firstSector;
 
   // ---------------------------------------------------------------------------------//
-  public CatalogEntryDos3 (byte[] buffer, int ptr, int slot)
+  public CatalogEntryDos3 (AppleBlock catalogBlock, int ptr, int slot)
   // ---------------------------------------------------------------------------------//
   {
-    super (buffer, slot);
+    super (catalogBlock, slot);
     //    this.slot = slot;
     //    this.catalogEntryBlock = catalogEntryBlock;
 
     //    catalogBuffer = catalogEntryBlock.getBuffer ();
 
-    readCatalogEntry ();
+    read ();
   }
 
   // ---------------------------------------------------------------------------------//
   @Override
-  void readCatalogEntry ()
+  void read ()
   // ---------------------------------------------------------------------------------//
   {
     int ptr = HEADER_SIZE + slot * ENTRY_SIZE;
@@ -42,7 +42,7 @@ public class CatalogEntryDos3 extends CatalogEntryDos
 
   // ---------------------------------------------------------------------------------//
   @Override
-  void writeCatalogEntry ()
+  void write ()
   // ---------------------------------------------------------------------------------//
   {
     int ptr = HEADER_SIZE + slot * ENTRY_SIZE;
@@ -54,6 +54,14 @@ public class CatalogEntryDos3 extends CatalogEntryDos
     Utility.writeShort (buffer, ptr + 33, sectorCount);
 
     //    catalogEntryBlock.markDirty ();
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
+  void clear ()
+  // ---------------------------------------------------------------------------------//
+  {
+
   }
 
   // ---------------------------------------------------------------------------------//

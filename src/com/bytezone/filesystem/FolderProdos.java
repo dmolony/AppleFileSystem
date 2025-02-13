@@ -13,21 +13,21 @@ import com.bytezone.utility.Utility;
 class FolderProdos extends AbstractAppleFile implements AppleContainer
 // -----------------------------------------------------------------------------------//
 {
-  private static Locale US = Locale.US;          // to force 3 character months
+  private static Locale US = Locale.US;        // to force 3 character months
   protected static final DateTimeFormatter sdf =
       DateTimeFormatter.ofPattern ("d-LLL-yy", US);
   protected static final DateTimeFormatter stf = DateTimeFormatter.ofPattern ("H:mm");
   protected static final String NO_DATE = "<NO DATE>";
 
-  CatalogEntryProdos fileEntry;                  // SDH only
-  CatalogBlockProdos directoryEntry;        // both VDH and SDH
+  CatalogEntryProdos fileEntry;                // SDH only
+  DirectoryHeaderProdos directoryEntry;        // both VDH and SDH
   AppleContainer parentContainer;
 
   List<AppleFile> files = new ArrayList<> ();
   List<AppleFileSystem> fileSystems = new ArrayList<> ();
 
-  AppleBlock parentCatalogBlock;              // block containing this file entry
-  int parentCatalogPtr;                       // offset to this file entry
+  AppleBlock parentCatalogBlock;               // block containing this file entry
+  int parentCatalogPtr;                        // offset to this file entry
 
   // ---------------------------------------------------------------------------------//
   FolderProdos (FsProdos fs, AppleContainer parentContainer,
@@ -40,15 +40,12 @@ class FolderProdos extends AbstractAppleFile implements AppleContainer
     this.parentCatalogBlock = parentCatalogBlock;
     this.parentCatalogPtr = ptr;
 
+    // the file entry that points to this folder (shouldn't it be passed here?)
     fileEntry = new CatalogEntryProdos (parentCatalogBlock, ptr);
-
-    //    fileName = fileEntry.fileName;
-    //    fileType = fileEntry.fileType;
-    //    fileTypeText = ProdosConstants.fileTypes[fileEntry.fileType];
 
     // create the Sub Directory Header
     directoryEntry =
-        new CatalogBlockProdos ((FsProdos) parentFileSystem, fileEntry.keyPtr);
+        new DirectoryHeaderProdos ((FsProdos) parentFileSystem, fileEntry.keyPtr);
     dataBlocks.addAll (directoryEntry.catalogBlocks);
 
     readCatalog ();
@@ -290,11 +287,12 @@ class FolderProdos extends AbstractAppleFile implements AppleContainer
   {
     StringBuilder text = new StringBuilder (super.toString ());
 
-    if (fileEntry != null)
-    {
-      text.append (fileEntry);
-      text.append ("\n\n");
-    }
+    //    if (fileEntry != null)
+    //    {
+    text.append ("\n");
+    text.append (fileEntry);
+    text.append ("\n\n");
+    //    }
 
     text.append (directoryEntry);
 

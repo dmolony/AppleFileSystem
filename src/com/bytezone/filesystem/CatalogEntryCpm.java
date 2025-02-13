@@ -176,6 +176,7 @@ public class CatalogEntryCpm implements Iterable<Integer>
   {
     StringBuilder text = new StringBuilder ();
 
+    text.append ("------ Catalog entry -------");
     text.append (String.format ("File name ............. %s%n", fileName));
     text.append (String.format ("File extension ........ %s%n", fileTypeText));
     text.append (String.format ("Read only ............. %s%n", readOnly));

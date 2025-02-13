@@ -90,6 +90,7 @@ public class ForkProdos extends AbstractAppleFile
           break;
 
         case ProdosConstants.PASCAL_ON_PROFILE:
+          // this file type has no index blocks, and the data blocks are all contiguous
           for (int i = keyPtr; i < parentFileSystem.getTotalBlocks (); i++)
             blockNumbers.add (i);
           break;
@@ -375,7 +376,7 @@ public class ForkProdos extends AbstractAppleFile
     text.append (String.format ("Data blocks ........... %04X    %<,7d %s%n",
         dataBlocks.size (), nulls));
     text.append (
-        String.format ("Eof ................... %06X  %<,7d  %s%n", eof, message));
+        String.format ("EOF ................... %06X  %<,7d  %s%n", eof, message));
 
     return Utility.rtrim (text);
   }

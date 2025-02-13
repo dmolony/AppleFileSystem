@@ -80,7 +80,8 @@ public class FsDos3 extends FsDos
         else
           try
           {
-            FileDos3 file = new FileDos3 (this, buffer, ptr, index);
+            //            FileDos3 file = new FileDos3 (this, buffer, ptr, index);
+            FileDos3 file = new FileDos3 (this, catalogSector, ptr, index);
             file.catalogEntryBlock = catalogSector;
             file.catalogEntryIndex = index;
             addFile (file);

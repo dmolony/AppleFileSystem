@@ -88,7 +88,7 @@ class FsDos4 extends FsDos
         {
           try
           {
-            FileDos4 file = new FileDos4 (this, buffer, ptr, slot);
+            FileDos4 file = new FileDos4 (this, catalogSector, ptr, slot);
             addFile (file);
           }
           catch (FileFormatException e)

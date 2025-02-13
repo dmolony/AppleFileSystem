@@ -24,15 +24,16 @@ public class FileDos4 extends FileDos
   boolean deleted;
 
   // ---------------------------------------------------------------------------------//
-  FileDos4 (FsDos4 fs, byte[] buffer, int ptr, int slot)
+  FileDos4 (FsDos4 fs, AppleBlock catalogSector, int ptr, int slot)
   // ---------------------------------------------------------------------------------//
   {
     super (fs);
 
+    byte[] buffer = catalogSector.getBuffer ();
     int nextTrack = buffer[ptr] & 0xFF;
     int nextSector = buffer[ptr + 1] & 0xFF;
 
-    catalogEntry = new CatalogEntryDos4 (buffer, ptr, slot);
+    catalogEntry = new CatalogEntryDos4 (catalogSector, ptr, slot);
 
     deleted = (buffer[ptr] & 0x80) != 0;
     tsListZero = (buffer[ptr] & 0x40) != 0;

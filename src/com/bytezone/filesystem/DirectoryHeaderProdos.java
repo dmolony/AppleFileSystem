@@ -10,7 +10,7 @@ import com.bytezone.filesystem.AppleBlock.BlockType;
 import com.bytezone.utility.Utility;
 
 // -----------------------------------------------------------------------------------//
-class CatalogBlockProdos
+class DirectoryHeaderProdos
 // -----------------------------------------------------------------------------------//
 {
   private static Locale US = Locale.US;          // to force 3 character months
@@ -26,6 +26,7 @@ class CatalogBlockProdos
   final int access;
   final int entryLength;
   final int entriesPerBlock;
+  final String reserved;
 
   int fileCount;                  // modified if a file is added or deleted
 
@@ -43,8 +44,14 @@ class CatalogBlockProdos
   final FsProdos fileSystem;
   final List<AppleBlock> catalogBlocks = new ArrayList<AppleBlock> ();
 
+  // Either a Volume Directory Header or Subdirectory Header. It is the first of up to
+  // 13 entries in the first directory block. The Volume Directory always has exactly
+  // 4 directory blocks, while subdirectories have  1 - n blocks.
+  // A Directory Header keeps a running total of the number of active entries in the
+  // directory.
+  //
   // ---------------------------------------------------------------------------------//
-  CatalogBlockProdos (FsProdos fs, int firstCatalogBlockNo)
+  DirectoryHeaderProdos (FsProdos fs, int firstCatalogBlockNo)
   // ---------------------------------------------------------------------------------//
   {
     this.fileSystem = fs;
@@ -60,6 +67,7 @@ class CatalogBlockProdos
     fileName = nameLength > 0 ? Utility.string (buffer, ptr + 1, nameLength) : "";
 
     folderType = buffer[ptr + 0x10] & 0xFF;
+    reserved = Utility.formatRaw (buffer, ptr + 0x10, 7);
 
     created = Utility.getAppleDate (buffer, ptr + 0x18);
     dateCreated = created == null ? NO_DATE : created.format (df);
@@ -130,31 +138,41 @@ class CatalogBlockProdos
   {
     StringBuilder text = new StringBuilder ();
 
-    text.append ("---- Prodos Header ----\n");
+    if (storageType == 0x0F)
+      text.append ("---- Volume Header ----\n");
+    else
+      text.append ("--- Directory Header --\n");
+
     text.append (String.format ("Storage type .......... %02X  %s%n", storageType,
         storageTypeText));
     text.append (String.format ("File name ............. %s%n", fileName));
     text.append (String.format ("Reserved .............. $%02X%n", folderType));
+    text.append (String.format ("Reserved .............. %s%n", reserved));
     text.append (
         String.format ("Created ............... %9s %-5s%n", dateCreated, timeCreated));
     text.append (String.format ("Version ............... %d%n", version));
     text.append (String.format ("Min version ........... %d%n", minVersion));
-    text.append (String.format ("Access ................ %02X    %<7d%n", access));
+    text.append (String.format ("Access ................ %02X    %<7d  %s%n", access,
+        Utility.getAccessText (access)));
     text.append (String.format ("Entry length .......... %d%n", entryLength));
     text.append (String.format ("Entries per block ..... %d%n", entriesPerBlock));
     text.append (String.format ("File count ............ %d%n", fileCount));
-    text.append (String.format ("Catalog blocks ........ %d%n", catalogBlocks.size ()));
+    text.append (String.format ("Catalog blocks ........ %d%n%n", catalogBlocks.size ()));
 
     if (storageType == 0x0F)
     {
-      text.append (String.format ("Bitmap pointer ........ %d%n", keyPtr));
-      text.append (String.format ("Total blocks .......... %d%n", totalBlocks));
+      text.append (String.format ("Bitmap pointer ........ %04X  %<,7d%n", keyPtr));
+      text.append (String.format ("Total blocks .......... %04X  %<,7d%n", totalBlocks));
     }
     else
     {
-      text.append (String.format ("Parent pointer ........ %d%n", keyPtr));
-      text.append (String.format ("Parent entry .......... %d%n", parentEntry));
-      text.append (String.format ("Parent entry length ... %d%n", parentEntryLength));
+      text.append (String.format (
+          "Parent pointer ........ %04X  %<,9d  (parent Directory Header block)%n",
+          keyPtr));
+      text.append (String.format (
+          "Parent entry .......... %02X      %<,7d  (slot in catalog)%n", parentEntry));
+      text.append (String.format (
+          "Parent entry length ... %02X      %<,7d  (always 0x27)%n", parentEntryLength));
     }
 
     return text.toString ();

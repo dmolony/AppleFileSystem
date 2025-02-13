@@ -3,6 +3,7 @@ package com.bytezone.filesystem;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
+import java.util.List;
 
 import com.bytezone.utility.Utility;
 
@@ -33,17 +34,17 @@ public class CatalogEntryPascal extends CatalogEntry
   LocalDate fileDate;
 
   // ---------------------------------------------------------------------------------//
-  public CatalogEntryPascal (byte[] buffer, int slot)
+  public CatalogEntryPascal (List<AppleBlock> catalogBlocks, byte[] buffer, int slot)
   // ---------------------------------------------------------------------------------//
   {
-    super (buffer, slot);
+    super (catalogBlocks, buffer, slot);
 
-    readCatalogEntry ();
+    read ();
   }
 
   // ---------------------------------------------------------------------------------//
   @Override
-  public void readCatalogEntry ()
+  public void read ()
   // ---------------------------------------------------------------------------------//
   {
     if (slot == 0)                         // volume header
@@ -94,7 +95,7 @@ public class CatalogEntryPascal extends CatalogEntry
 
   // ---------------------------------------------------------------------------------//
   @Override
-  void writeCatalogEntry ()
+  void write ()
   // ---------------------------------------------------------------------------------//
   {
     if (slot == 0)
@@ -119,6 +120,14 @@ public class CatalogEntryPascal extends CatalogEntry
       else
         Utility.writePascalLocalDate (fileDate, buffer, ptr + 24);
     }
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
+  void clear ()
+  // ---------------------------------------------------------------------------------//
+  {
+
   }
 
   // file size in blocks
@@ -164,7 +173,7 @@ public class CatalogEntryPascal extends CatalogEntry
       fileDate = null;
     }
 
-    writeCatalogEntry ();
+    write ();
   }
 
   // ---------------------------------------------------------------------------------//

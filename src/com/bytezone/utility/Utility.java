@@ -159,6 +159,18 @@ public class Utility
   }
 
   // ---------------------------------------------------------------------------------//
+  public static String formatRaw (byte[] buffer, int offset, int length)
+  // ---------------------------------------------------------------------------------//
+  {
+    StringBuilder line = new StringBuilder ();
+
+    for (int i = 0; i < length; i++)
+      line.append (String.format ("%02X ", buffer[offset++]));
+
+    return line.toString ();
+  }
+
+  // ---------------------------------------------------------------------------------//
   public static String format (byte[] buffer)
   // ---------------------------------------------------------------------------------//
   {
@@ -311,6 +323,32 @@ public class Utility
     if (text.length () > 0)
       while (text.charAt (text.length () - 1) == '\n')
         text.deleteCharAt (text.length () - 1);
+
+    return text.toString ();
+  }
+
+  // ---------------------------------------------------------------------------------//
+  public static String getAccessText (int access)
+  // ---------------------------------------------------------------------------------//
+  {
+    StringBuilder text = new StringBuilder ();
+
+    if ((access & 0x80) != 0)
+      text.append ("destroy, ");
+    if ((access & 0x40) != 0)
+      text.append ("rename, ");
+    if ((access & 0x20) != 0)
+      text.append ("changed, ");
+    if ((access & 0x02) != 0)
+      text.append ("write, ");
+    if ((access & 0x01) != 0)
+      text.append ("read, ");
+
+    if (text.length () > 0)
+    {
+      text.deleteCharAt (text.length () - 1);
+      text.deleteCharAt (text.length () - 1);
+    }
 
     return text.toString ();
   }

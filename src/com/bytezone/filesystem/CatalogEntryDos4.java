@@ -18,17 +18,17 @@ public class CatalogEntryDos4 extends CatalogEntryDos
   boolean deleted;
 
   // ---------------------------------------------------------------------------------//
-  public CatalogEntryDos4 (byte[] buffer, int ptr, int slot)
+  public CatalogEntryDos4 (AppleBlock catalogBlock, int ptr, int slot)
   // ---------------------------------------------------------------------------------//
   {
-    super (buffer, slot);
+    super (catalogBlock, slot);
 
-    readCatalogEntry ();
+    read ();
   }
 
   // ---------------------------------------------------------------------------------//
   @Override
-  void readCatalogEntry ()
+  void read ()
   // ---------------------------------------------------------------------------------//
   {
     int ptr = HEADER_SIZE + slot * ENTRY_SIZE;
@@ -52,7 +52,15 @@ public class CatalogEntryDos4 extends CatalogEntryDos
 
   // ---------------------------------------------------------------------------------//
   @Override
-  void writeCatalogEntry ()
+  void write ()
+  // ---------------------------------------------------------------------------------//
+  {
+
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
+  void clear ()
   // ---------------------------------------------------------------------------------//
   {
 

@@ -19,14 +19,14 @@ public class FileProdos extends AbstractAppleFile implements AppleForkedFile
   protected static final DateTimeFormatter stf = DateTimeFormatter.ofPattern ("H:mm");
   protected static final String NO_DATE = "<NO DATE>";
 
-  CatalogEntryProdos fileEntry;
+  final CatalogEntryProdos catalogEntry;
   private AppleContainer parentContainer;
 
   private ForkProdos dataFork;                        // for non-forked files
   List<AppleFile> forks = new ArrayList<> ();         // for forked files
 
-  AppleBlock parentCatalogBlock;                      // block containing file entry
-  int parentCatalogPtr;                               // file entry offset
+  //  AppleBlock parentCatalogBlock;                      // block containing file entry
+  //  int parentCatalogPtr;                               // file entry offset
 
   // ---------------------------------------------------------------------------------//
   FileProdos (FsProdos parentFs, AppleContainer parentContainer,
@@ -36,23 +36,17 @@ public class FileProdos extends AbstractAppleFile implements AppleForkedFile
     super (parentFs);
 
     this.parentContainer = parentContainer;
-    this.parentCatalogBlock = parentCatalogBlock;
-    this.parentCatalogPtr = ptr;
+    //    this.parentCatalogBlock = parentCatalogBlock;
+    //    this.parentCatalogPtr = ptr;
 
-    fileEntry = new CatalogEntryProdos (parentCatalogBlock, ptr);
-
-    //    fileName = fileEntry.fileName;
-    //    fileType = fileEntry.fileType;
-    //    fileTypeText = ProdosConstants.fileTypes[fileEntry.fileType];
-
-    isForkedFile = fileEntry.storageType == ProdosConstants.GSOS_EXTENDED_FILE;
-    //    isLocked = fileEntry.isLocked;
+    catalogEntry = new CatalogEntryProdos (parentCatalogBlock, ptr);
+    isForkedFile = catalogEntry.storageType == ProdosConstants.GSOS_EXTENDED_FILE;
 
     if (isForkedFile)
       createForks ();
     else
-      dataFork = new ForkProdos (this, null, fileEntry.keyPtr, fileEntry.storageType,
-          fileEntry.blocksUsed, fileEntry.eof);
+      dataFork = new ForkProdos (this, null, catalogEntry.keyPtr,
+          catalogEntry.storageType, catalogEntry.blocksUsed, catalogEntry.eof);
   }
 
   // ---------------------------------------------------------------------------------//
@@ -60,7 +54,7 @@ public class FileProdos extends AbstractAppleFile implements AppleForkedFile
   // ---------------------------------------------------------------------------------//
   {
     AppleBlock block =
-        getParentFileSystem ().getBlock (fileEntry.keyPtr, BlockType.FS_DATA);
+        getParentFileSystem ().getBlock (catalogEntry.keyPtr, BlockType.FS_DATA);
 
     block.setBlockSubType ("FORK");
     block.setFileOwner (this);
@@ -86,7 +80,7 @@ public class FileProdos extends AbstractAppleFile implements AppleForkedFile
   public String getFileName ()
   // ---------------------------------------------------------------------------------//
   {
-    return fileEntry.fileName;
+    return catalogEntry.fileName;
   }
 
   // ---------------------------------------------------------------------------------//
@@ -94,7 +88,7 @@ public class FileProdos extends AbstractAppleFile implements AppleForkedFile
   public int getFileType ()
   // ---------------------------------------------------------------------------------//
   {
-    return fileEntry.fileType;
+    return catalogEntry.fileType;
   }
 
   // ---------------------------------------------------------------------------------//
@@ -102,7 +96,7 @@ public class FileProdos extends AbstractAppleFile implements AppleForkedFile
   public String getFileTypeText ()
   // ---------------------------------------------------------------------------------//
   {
-    return ProdosConstants.fileTypes[fileEntry.fileType];
+    return ProdosConstants.fileTypes[catalogEntry.fileType];
   }
 
   // ---------------------------------------------------------------------------------//
@@ -110,7 +104,7 @@ public class FileProdos extends AbstractAppleFile implements AppleForkedFile
   public boolean isLocked ()
   // ---------------------------------------------------------------------------------//
   {
-    return fileEntry.isLocked;
+    return catalogEntry.isLocked;
   }
 
   // ---------------------------------------------------------------------------------//
@@ -133,21 +127,21 @@ public class FileProdos extends AbstractAppleFile implements AppleForkedFile
   public int getAuxType ()
   // ---------------------------------------------------------------------------------//
   {
-    return fileEntry.auxType;
+    return catalogEntry.auxType;
   }
 
   // ---------------------------------------------------------------------------------//
   public LocalDateTime getCreated ()
   // ---------------------------------------------------------------------------------//
   {
-    return fileEntry.created;
+    return catalogEntry.created;
   }
 
   // ---------------------------------------------------------------------------------//
   public LocalDateTime getModified ()
   // ---------------------------------------------------------------------------------//
   {
-    return fileEntry.modified;
+    return catalogEntry.modified;
   }
 
   // ---------------------------------------------------------------------------------//
@@ -177,7 +171,7 @@ public class FileProdos extends AbstractAppleFile implements AppleForkedFile
   public int getTotalBlocks ()                                      // in blocks
   // ---------------------------------------------------------------------------------//
   {
-    return fileEntry.blocksUsed;                // size of both forks if GSOS extended
+    return catalogEntry.blocksUsed;                // size of both forks if GSOS extended
   }
 
   // ---------------------------------------------------------------------------------//
@@ -271,7 +265,7 @@ public class FileProdos extends AbstractAppleFile implements AppleForkedFile
     StringBuilder text = new StringBuilder (super.toString ());
 
     text.append ("\n");
-    text.append (fileEntry);
+    text.append (catalogEntry);
     text.append ("\n\n");
 
     if (dataFork != null)
