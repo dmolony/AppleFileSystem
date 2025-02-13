@@ -34,5 +34,5 @@ public abstract class CatalogEntry
 
   abstract void write ();
 
-  abstract void clear ();
+  abstract void delete ();
 }
