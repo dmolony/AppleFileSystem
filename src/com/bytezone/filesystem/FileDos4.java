@@ -1,9 +1,5 @@
 package com.bytezone.filesystem;
 
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.Locale;
-
 import com.bytezone.filesystem.AppleBlock.BlockType;
 import com.bytezone.utility.Utility;
 
@@ -11,17 +7,7 @@ import com.bytezone.utility.Utility;
 public class FileDos4 extends FileDos
 // -----------------------------------------------------------------------------------//
 {
-  private static Locale US = Locale.US;                 // to force 3 character months
-  private static final DateTimeFormatter sdf1 =
-      DateTimeFormatter.ofPattern ("dd-LLL-yy HH:mm", US);
-  private static final DateTimeFormatter sdf2 =
-      DateTimeFormatter.ofPattern ("dd-LLL-yy HH:mm:ss", US);
-
   CatalogEntryDos4 catalogEntry;
-
-  boolean tsListZero;
-  LocalDateTime modified;
-  boolean deleted;
 
   // ---------------------------------------------------------------------------------//
   FileDos4 (FsDos4 fs, AppleBlock catalogSector, int ptr, int slot)
@@ -30,28 +16,19 @@ public class FileDos4 extends FileDos
     super (fs);
 
     byte[] buffer = catalogSector.getBuffer ();
+
     int nextTrack = buffer[ptr] & 0xFF;
     int nextSector = buffer[ptr + 1] & 0xFF;
 
-    catalogEntry = new CatalogEntryDos4 (catalogSector, ptr, slot);
+    catalogEntry = new CatalogEntryDos4 (catalogSector, slot);
 
-    deleted = (buffer[ptr] & 0x80) != 0;
-    tsListZero = (buffer[ptr] & 0x40) != 0;
-
-    //    isLocked = (buffer[ptr + 2] & 0x80) != 0;
-    //    fileType = buffer[ptr + 2] & 0x7F;
-
-    //    fileTypeText = fs.getFileTypeText (fileType);
-    String blockSubType = fs.getBlockSubTypeText (getFileType ());
-
-    //    fileName = Utility.string (buffer, ptr + 3, 24).trim ();
     isNameValid = catalogEntry.isNameValid;
     sectorCount = catalogEntry.sectorCount;
-    //    isNameValid = checkName (fileName);         // check for invalid characters
-    modified = Utility.getDos4LocalDateTime (buffer, ptr + 27);
-    //    sectorCount = Utility.unsignedShort (buffer, ptr + 33);
-    int sectorsLeft = sectorCount;
 
+    String blockSubType = fs.getBlockSubTypeText (catalogEntry.fileType);
+
+    // build lists of index and data sectors
+    int sectorsLeft = sectorCount;
     loop: while (nextTrack != 0)
     {
       nextTrack &= 0x3F;
@@ -68,7 +45,7 @@ public class FileDos4 extends FileDos
       --sectorsLeft;
 
       byte[] sectorBuffer = tsSector.getBuffer ();
-      //      int offset = Utility.unsignedShort (sectorBuffer, 5);
+      int sectorOffset = Utility.unsignedShort (sectorBuffer, 5);   // 0/122/244/366 etc
 
       for (int i = 12; i < 256; i += 2)
       {
@@ -77,12 +54,12 @@ public class FileDos4 extends FileDos
         boolean zero = (fileTrack & 0x40) != 0;
         fileTrack &= 0x3F;
 
-        if (fileTrack == 0 && !zero && fileSector == 0)
+        if (fileTrack == 0 && !zero && fileSector == 0)     // invalid address
         {
-          if (getFileType () != 0x00)             // not a text file
+          if (getFileType () != 0x00)                       // not a text file
             break loop;
 
-          dataBlocks.add (null);                  // must be a sparse file
+          dataBlocks.add (null);                            // must be a sparse file
           ++textFileGaps;
         }
         else
@@ -126,7 +103,6 @@ public class FileDos4 extends FileDos
 
     String message = "";
     String lockedFlag = (isLocked ()) ? "*" : " ";
-    String dateModified = modified == null ? "x" : modified.format (sdf1);
 
     if (getSectorCount () != actualSize)
       message = "** Bad size **";
@@ -139,7 +115,7 @@ public class FileDos4 extends FileDos
 
     return String.format ("%1s  %1s  %03d  %-24.24s  %-15.15s  %-5s  %-13s %3d %3d   %s",
         lockedFlag, getFileTypeText (), getSectorCount () % 1000, getFileName (),
-        dateModified, addressText, lengthText, getTotalIndexSectors (),
+        catalogEntry.getModified1 (), addressText, lengthText, getTotalIndexSectors (),
         getTotalDataSectors (), message.trim ());
   }
 
@@ -182,8 +158,7 @@ public class FileDos4 extends FileDos
   {
     StringBuilder text = new StringBuilder (super.toString ());
 
-    text.append (String.format ("%nZero flag ............. %s%n", tsListZero));
-    text.append (String.format ("Modified .............. %s%n", modified.format (sdf2)));
+    text.append (catalogEntry);
 
     return Utility.rtrim (text);
   }

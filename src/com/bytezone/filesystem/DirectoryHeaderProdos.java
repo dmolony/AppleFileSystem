@@ -19,21 +19,22 @@ class DirectoryHeaderProdos
   private static final DateTimeFormatter tf = DateTimeFormatter.ofPattern ("H:mm");
   private static final String NO_DATE = "<NO DATE>";
 
-  final String fileName;
-  final int storageType;
-  final int version;
-  final int minVersion;
-  final int access;
-  final int entryLength;
-  final int entriesPerBlock;
-  final String reserved;
+  //  int firstCatalogBlock;
+  protected final String fileName;
+  protected final int storageType;
+  protected final int version;
+  protected final int minVersion;
+  protected final int access;
+  protected final int entryLength;
+  protected final int entriesPerBlock;
+  protected final String reserved;
 
   int fileCount;                  // modified if a file is added or deleted
 
   final int keyPtr;               // bitmap ptr or first directory block
   final int totalBlocks;          // if volume directory header
-  final int parentEntry;          // if subdirectory header
-  final int parentEntryLength;    // if subdirectory header
+  final int parentEntry;          // if subdirectory header (1:13)
+  final int parentEntryLength;    // if subdirectory header (always 0x27)
 
   final int folderType;           // 0 = Volume Directory, 0x75 = Subdirectory (0x76?)
 
@@ -41,7 +42,6 @@ class DirectoryHeaderProdos
   final String dateCreated, timeCreated;
   final String storageTypeText;
 
-  final FsProdos fileSystem;
   final List<AppleBlock> catalogBlocks = new ArrayList<AppleBlock> ();
 
   // Either a Volume Directory Header or Subdirectory Header. It is the first of up to
@@ -54,55 +54,52 @@ class DirectoryHeaderProdos
   DirectoryHeaderProdos (FsProdos fs, int firstCatalogBlockNo)
   // ---------------------------------------------------------------------------------//
   {
-    this.fileSystem = fs;
-
-    int ptr = 4;
-    getCatalogBlocks (firstCatalogBlockNo);
+    getCatalogBlocks (fs, firstCatalogBlockNo);
     byte[] buffer = catalogBlocks.get (0).getBuffer ();
 
-    storageType = (buffer[ptr] & 0xF0) >>> 4;
+    storageType = (buffer[0x04] & 0xF0) >>> 4;
     storageTypeText = ProdosConstants.storageTypes[storageType];
 
-    int nameLength = buffer[ptr] & 0x0F;
-    fileName = nameLength > 0 ? Utility.string (buffer, ptr + 1, nameLength) : "";
+    int nameLength = buffer[0x04] & 0x0F;
+    fileName = nameLength > 0 ? Utility.string (buffer, 0x05, nameLength) : "";
 
-    folderType = buffer[ptr + 0x10] & 0xFF;
-    reserved = Utility.formatRaw (buffer, ptr + 0x10, 7);
+    folderType = buffer[0x14] & 0xFF;                     // 0x75 for SDH
+    reserved = Utility.formatRaw (buffer, 0x14, 7);
 
-    created = Utility.getAppleDate (buffer, ptr + 0x18);
+    created = Utility.getAppleDate (buffer, 0x1C);
     dateCreated = created == null ? NO_DATE : created.format (df);
     timeCreated = created == null ? "" : created.format (tf);
 
-    version = buffer[ptr + 0x1C] & 0xFF;
-    minVersion = buffer[ptr + 0x1D] & 0xFF;
-    access = buffer[ptr + 0x1E] & 0xFF;
-    entryLength = buffer[ptr + 0x1F] & 0xFF;
-    entriesPerBlock = buffer[ptr + 0x20] & 0xFF;
-    fileCount = Utility.unsignedShort (buffer, ptr + 0x21);
+    version = buffer[0x20] & 0xFF;
+    minVersion = buffer[0x21] & 0xFF;
+    access = buffer[0x22] & 0xFF;
+    entryLength = buffer[0x23] & 0xFF;
+    entriesPerBlock = buffer[0x24] & 0xFF;
+    fileCount = Utility.unsignedShort (buffer, 0x25);
 
     if (entryLength != ProdosConstants.ENTRY_SIZE
         || entriesPerBlock != ProdosConstants.ENTRIES_PER_BLOCK)
       throw new FileFormatException ("FsProdos: Invalid entry data");
 
     // bitmap pointer for VOL, first directory block for DIR
-    keyPtr = Utility.unsignedShort (buffer, ptr + 0x23);
+    keyPtr = Utility.unsignedShort (buffer, 0x27);
 
     if (storageType == 0x0F)         // volume directory header
     {
-      totalBlocks = Utility.unsignedShort (buffer, ptr + 0x25);
+      totalBlocks = Utility.unsignedShort (buffer, 0x29);
       parentEntry = -1;
       parentEntryLength = -1;
     }
     else                             // subdirectory header
     {
       totalBlocks = -1;
-      parentEntry = buffer[ptr + 0x25] & 0xFF;
-      parentEntryLength = buffer[ptr + 0x26] & 0xFF;
+      parentEntry = buffer[0x29] & 0xFF;
+      parentEntryLength = buffer[0x2A] & 0xFF;
     }
   }
 
   // ---------------------------------------------------------------------------------//
-  private void getCatalogBlocks (int nextBlockNo)
+  private void getCatalogBlocks (FsProdos fs, int nextBlockNo)
   // ---------------------------------------------------------------------------------//
   {
     int prevBlockNo;
@@ -110,7 +107,7 @@ class DirectoryHeaderProdos
 
     while (nextBlockNo != 0)
     {
-      AppleBlock vtoc = fileSystem.getBlock (nextBlockNo, BlockType.FS_DATA);
+      AppleBlock vtoc = fs.getBlock (nextBlockNo, BlockType.FS_DATA);
       if (vtoc == null)
         throw new FileFormatException ("FolderProdos: Invalid catalog");
 
@@ -121,11 +118,11 @@ class DirectoryHeaderProdos
       prevBlockNo = Utility.unsignedShort (buffer, 0);
       nextBlockNo = Utility.unsignedShort (buffer, 2);
 
-      if (!fileSystem.isValidAddress (prevBlockNo))
+      if (!fs.isValidAddress (prevBlockNo))
         throw new FileFormatException (
             "FolderProdos: Invalid catalog previous block - " + prevBlockNo);
 
-      if (!fileSystem.isValidAddress (nextBlockNo))
+      if (!fs.isValidAddress (nextBlockNo))
         throw new FileFormatException (
             "FolderProdos: Invalid catalog next block - " + nextBlockNo);
     }
@@ -138,21 +135,26 @@ class DirectoryHeaderProdos
   {
     StringBuilder text = new StringBuilder ();
 
+    String message = "";
     if (storageType == 0x0F)
       text.append ("---- Volume Header ----\n");
     else
+    {
       text.append ("--- Directory Header --\n");
+      message = folderType == 0x75 ? "" : "<-- should be $75";
+    }
 
     text.append (String.format ("Storage type .......... %02X  %s%n", storageType,
         storageTypeText));
     text.append (String.format ("File name ............. %s%n", fileName));
-    text.append (String.format ("Reserved .............. $%02X%n", folderType));
+    text.append (String.format ("Reserved .............. $%02X              %s%n",
+        folderType, message));
     text.append (String.format ("Reserved .............. %s%n", reserved));
     text.append (
         String.format ("Created ............... %9s %-5s%n", dateCreated, timeCreated));
     text.append (String.format ("Version ............... %d%n", version));
     text.append (String.format ("Min version ........... %d%n", minVersion));
-    text.append (String.format ("Access ................ %02X    %<7d  %s%n", access,
+    text.append (String.format ("Access ................ %02X    %<9d  %s%n", access,
         Utility.getAccessText (access)));
     text.append (String.format ("Entry length .......... %d%n", entryLength));
     text.append (String.format ("Entries per block ..... %d%n", entriesPerBlock));
@@ -161,8 +163,8 @@ class DirectoryHeaderProdos
 
     if (storageType == 0x0F)
     {
-      text.append (String.format ("Bitmap pointer ........ %04X  %<,7d%n", keyPtr));
-      text.append (String.format ("Total blocks .......... %04X  %<,7d%n", totalBlocks));
+      text.append (String.format ("Bitmap pointer ........ %04X  %<,9d%n", keyPtr));
+      text.append (String.format ("Total blocks .......... %04X  %<,9d%n", totalBlocks));
     }
     else
     {

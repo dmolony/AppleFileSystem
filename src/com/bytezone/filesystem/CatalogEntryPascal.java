@@ -197,6 +197,13 @@ public class CatalogEntryPascal extends CatalogEntry
   }
 
   // ---------------------------------------------------------------------------------//
+  String fileDateFormatted ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return fileDate == null ? "" : fileDate.format (dtf);
+  }
+
+  // ---------------------------------------------------------------------------------//
   String getLine ()
   // ---------------------------------------------------------------------------------//
   {
@@ -204,11 +211,10 @@ public class CatalogEntryPascal extends CatalogEntry
       return String.format ("%2d  %-20s  %3d  %3d  %5d  %3d", slot, volumeName,
           firstCatalogBlock, lastCatalogBlock, totalBlocks, totalFiles);
 
-    String date = fileDate == null ? "" : fileDate.toString ();
     String name = fileName == null ? "" : fileName;
 
     return String.format ("%2d  %-20s  %3d  %3d  %3d  %2d  %s", slot, name, firstBlock,
-        lastBlock, bytesUsedInLastBlock, fileType, date);
+        lastBlock, bytesUsedInLastBlock, fileType, fileDateFormatted ());
   }
 
   // ---------------------------------------------------------------------------------//
@@ -237,7 +243,7 @@ public class CatalogEntryPascal extends CatalogEntry
       text.append (String.format ("Last block ............ %d%n", lastBlock));
       text.append (String.format ("Bytes in last block ... %d%n", bytesUsedInLastBlock));
       text.append (
-          String.format ("Date .................. %s%n%n", fileDate.format (dtf)));
+          String.format ("Date .................. %s%n%n", fileDateFormatted ()));
     }
 
     return Utility.rtrim (text);

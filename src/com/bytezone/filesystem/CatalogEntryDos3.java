@@ -10,14 +10,10 @@ public class CatalogEntryDos3 extends CatalogEntryDos
   int firstSector;
 
   // ---------------------------------------------------------------------------------//
-  public CatalogEntryDos3 (AppleBlock catalogBlock, int ptr, int slot)
+  public CatalogEntryDos3 (AppleBlock catalogBlock, int slot)
   // ---------------------------------------------------------------------------------//
   {
     super (catalogBlock, slot);
-    //    this.slot = slot;
-    //    this.catalogEntryBlock = catalogEntryBlock;
-
-    //    catalogBuffer = catalogEntryBlock.getBuffer ();
 
     read ();
   }
@@ -53,7 +49,7 @@ public class CatalogEntryDos3 extends CatalogEntryDos
     Utility.writeString (String.format ("%-30s", fileName), buffer, ptr + 3);
     Utility.writeShort (buffer, ptr + 33, sectorCount);
 
-    //    catalogEntryBlock.markDirty ();
+    catalogBlock.markDirty ();
   }
 
   // ---------------------------------------------------------------------------------//

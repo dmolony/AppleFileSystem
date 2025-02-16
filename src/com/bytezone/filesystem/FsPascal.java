@@ -73,10 +73,10 @@ public class FsPascal extends AbstractFileSystem
 
       ++count;
 
-      if (catalogEntry.fileType == 2)                           // Code
-        addFile (new FilePascalCode (this, catalogEntry, i));
-      else
-        addFile (new FilePascal (this, catalogEntry, i));
+      //      if (catalogEntry.fileType == 2)                           // Code
+      //        addFile (new FilePascalCode (this, catalogEntry, i));
+      //      else
+      addFile (new FilePascal (this, catalogEntry, i));
     }
 
     if (debug)

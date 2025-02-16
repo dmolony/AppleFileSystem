@@ -14,7 +14,6 @@ public class FilePascal extends AbstractAppleFile
 {
   private static final DateTimeFormatter dtf =
       DateTimeFormatter.ofLocalizedDate (FormatStyle.SHORT);
-  //  private static final int CATALOG_ENTRY_SIZE = 26;
 
   private static final String[] fileTypes =
       { "Volume", "Bad ", "Code", "Text", "Info", "Data", "Graf", "Foto", "SecureDir" };
@@ -30,10 +29,6 @@ public class FilePascal extends AbstractAppleFile
 
     this.catalogEntry = catalogEntry;
     this.slot = slot;
-
-    //    fileType = catalogEntry.fileType;
-    //    fileTypeText = fileTypes[fileType];
-    //    fileName = catalogEntry.fileName;
 
     for (int i = catalogEntry.firstBlock; i < catalogEntry.lastBlock; i++)
     {

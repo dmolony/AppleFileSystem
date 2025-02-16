@@ -7,7 +7,7 @@ import java.util.Locale;
 import com.bytezone.utility.Utility;
 
 // -----------------------------------------------------------------------------------//
-class CatalogEntryProdos
+class CatalogEntryProdos extends CatalogEntry
 // -----------------------------------------------------------------------------------//
 {
   private static Locale US = Locale.US;                 // to force 3 character months
@@ -16,38 +16,45 @@ class CatalogEntryProdos
   private static final DateTimeFormatter tf = DateTimeFormatter.ofPattern ("H:mm");
   private static final String NO_DATE = "<NO DATE>";
 
-  final String fileName;
-  final int fileType;
-  final boolean isLocked;
+  //  String fileName;
+  int fileType;
+  boolean isLocked;
 
-  final int storageType;
-  final int keyPtr;                 // blockNumber 
-  final int blocksUsed;
-  final int eof;
-  final int auxType;
-  final int headerPtr;              // catalog sector containing the file count
+  int storageType;
+  int keyPtr;                 // blockNumber 
+  int blocksUsed;
+  int eof;
+  int auxType;
+  int headerPtr;              // catalog sector containing the file count
 
-  final int version;
-  final int minVersion;
-  final int access;
+  int version;
+  int minVersion;
+  int access;
 
-  final LocalDateTime created;
-  final LocalDateTime modified;
-  final String dateCreated, timeCreated;
-  final String dateModified, timeModified;
+  LocalDateTime created;
+  LocalDateTime modified;
+  String dateCreated, timeCreated;
+  String dateModified, timeModified;
 
-  final String fileTypeText;
-  final String storageTypeText;
-
-  final AppleBlock catalogBlock;
-  final int ptr;
+  String fileTypeText;
+  String storageTypeText;
 
   // ---------------------------------------------------------------------------------//
-  CatalogEntryProdos (AppleBlock catalogBlock, int ptr)
+  CatalogEntryProdos (AppleBlock catalogBlock, int slot)
   // ---------------------------------------------------------------------------------//
   {
-    this.catalogBlock = catalogBlock;
-    this.ptr = ptr;
+    super (catalogBlock, slot);
+
+    read ();
+
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
+  public void read ()
+  // ---------------------------------------------------------------------------------//
+  {
+    int ptr = 4 + slot * ProdosConstants.ENTRY_SIZE;
 
     byte[] buffer = catalogBlock.getBuffer ();
     storageType = (buffer[ptr] & 0xF0) >>> 4;         // 0=deleted
@@ -82,9 +89,20 @@ class CatalogEntryProdos
   }
 
   // ---------------------------------------------------------------------------------//
+  @Override
+  void write ()
+  // ---------------------------------------------------------------------------------//
+  {
+
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
   void delete ()
   // ---------------------------------------------------------------------------------//
   {
+    int ptr = 4 + slot * ProdosConstants.ENTRY_SIZE;
+
     // mark this file's entry as deleted
     byte[] buffer = catalogBlock.getBuffer ();
     buffer[ptr] = 0;              // deleted
@@ -107,14 +125,14 @@ class CatalogEntryProdos
   public String toString ()
   // ---------------------------------------------------------------------------------//
   {
-    StringBuilder text = new StringBuilder ();
+    StringBuilder text = new StringBuilder (super.toString ());
 
     String message = eof == 0 ? message = "<-- zero" : "";
 
-    text.append ("---- Catalog entry ----\n");
+    //    text.append ("---- Catalog entry ----\n");
     text.append (String.format ("Storage type .......... %02X               %s%n",
         storageType, storageTypeText));
-    text.append (String.format ("File name ............. %s%n", fileName));
+    //    text.append (String.format ("File name ............. %s%n", fileName));
     text.append (String.format ("File type ............. %02X      %<,7d  %s%n", fileType,
         fileTypeText));
     text.append (String.format ("Key ptr ............... %04X    %<,7d%n", keyPtr));

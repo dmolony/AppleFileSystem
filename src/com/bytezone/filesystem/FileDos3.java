@@ -15,19 +15,15 @@ public class FileDos3 extends FileDos
   {
     super (fs);
 
-    catalogEntry = new CatalogEntryDos3 (catalogBlock, ptr, slot);
-    byte[] catalogBuffer = catalogBlock.getBuffer ();
+    byte[] buffer = catalogBlock.getBuffer ();
 
-    int nextTrack = catalogBuffer[ptr] & 0xFF;
-    int nextSector = catalogBuffer[ptr + 1] & 0xFF;
+    int nextTrack = buffer[ptr] & 0xFF;
+    int nextSector = buffer[ptr + 1] & 0xFF;
 
-    //    fileType = catalogEntry.fileType;
-    //    isLocked = catalogEntry.isLocked;
-    //    fileName = catalogEntry.fileName;
+    catalogEntry = new CatalogEntryDos3 (catalogBlock, slot);
 
     isNameValid = catalogEntry.isNameValid;
     sectorCount = catalogEntry.sectorCount;
-    //    fileTypeText = fs.getFileTypeText (fileType);
 
     String blockSubType = fs.getBlockSubTypeText (getFileType ());
 
@@ -50,7 +46,6 @@ public class FileDos3 extends FileDos
       byte[] sectorBuffer = tsSector.getBuffer ();
 
       int sectorOffset = Utility.unsignedShort (sectorBuffer, 5);   // 0/122/244/366 etc
-      //      System.out.printf ("Sector offset: %,5d%n", sectorOffset);
 
       for (int i = 12; i < 256; i += 2)
       {

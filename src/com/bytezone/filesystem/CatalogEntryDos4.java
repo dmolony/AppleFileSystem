@@ -10,15 +10,18 @@ import com.bytezone.utility.Utility;
 public class CatalogEntryDos4 extends CatalogEntryDos
 // -----------------------------------------------------------------------------------//
 {
+  private static Locale US = Locale.US;                 // to force 3 character months
+  private static final DateTimeFormatter sdf1 =
+      DateTimeFormatter.ofPattern ("dd-LLL-yy HH:mm", US);
   private static final DateTimeFormatter sdf2 =
-      DateTimeFormatter.ofPattern ("dd-LLL-yy HH:mm:ss", Locale.US);
+      DateTimeFormatter.ofPattern ("dd-LLL-yy HH:mm:ss", US);
 
   boolean tsListZero;
   LocalDateTime modified;
   boolean deleted;
 
   // ---------------------------------------------------------------------------------//
-  public CatalogEntryDos4 (AppleBlock catalogBlock, int ptr, int slot)
+  public CatalogEntryDos4 (AppleBlock catalogBlock, int slot)
   // ---------------------------------------------------------------------------------//
   {
     super (catalogBlock, slot);
@@ -33,9 +36,6 @@ public class CatalogEntryDos4 extends CatalogEntryDos
   {
     int ptr = HEADER_SIZE + slot * ENTRY_SIZE;
 
-    //    int nextTrack = buffer[ptr] & 0xFF;
-    //    int nextSector = buffer[ptr + 1] & 0xFF;
-
     deleted = (buffer[ptr] & 0x80) != 0;
     tsListZero = (buffer[ptr] & 0x40) != 0;
 
@@ -46,8 +46,6 @@ public class CatalogEntryDos4 extends CatalogEntryDos
     isNameValid = checkName (fileName);                 // check for invalid characters
     modified = Utility.getDos4LocalDateTime (buffer, ptr + 27);
     sectorCount = Utility.unsignedShort (buffer, ptr + 33);
-    //    int sectorsLeft = sectorCount;
-
   }
 
   // ---------------------------------------------------------------------------------//
@@ -79,6 +77,20 @@ public class CatalogEntryDos4 extends CatalogEntryDos
   }
 
   // ---------------------------------------------------------------------------------//
+  public String getModified1 ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return modified == null ? "x" : modified.format (sdf1);
+  }
+
+  // ---------------------------------------------------------------------------------//
+  public String getModified2 ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return modified == null ? "x" : modified.format (sdf2);
+  }
+
+  // ---------------------------------------------------------------------------------//
   @Override
   public String toString ()
   // ---------------------------------------------------------------------------------//
@@ -86,7 +98,7 @@ public class CatalogEntryDos4 extends CatalogEntryDos
     StringBuilder text = new StringBuilder (super.toString ());
 
     text.append (String.format ("%nZero flag ............. %s%n", tsListZero));
-    text.append (String.format ("Modified .............. %s%n", modified.format (sdf2)));
+    text.append (String.format ("Modified .............. %s%n", getModified2 ()));
 
     return text.toString ();
   }

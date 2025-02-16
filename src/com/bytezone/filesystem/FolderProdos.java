@@ -19,38 +19,60 @@ class FolderProdos extends AbstractAppleFile implements AppleContainer
   protected static final DateTimeFormatter stf = DateTimeFormatter.ofPattern ("H:mm");
   protected static final String NO_DATE = "<NO DATE>";
 
-  CatalogEntryProdos fileEntry;                // SDH only
-  DirectoryHeaderProdos directoryEntry;        // both VDH and SDH
+  CatalogEntryProdos catalogEntry;             // standard prodos catalog entry
+  DirectoryHeaderProdos directoryEntry;        // SDH
   AppleContainer parentContainer;
 
   List<AppleFile> files = new ArrayList<> ();
   List<AppleFileSystem> fileSystems = new ArrayList<> ();
 
-  AppleBlock parentCatalogBlock;               // block containing this file entry
-  int parentCatalogPtr;                        // offset to this file entry
-
+  // Every ProdosFolder is represented by a standard Prodos File Entry, and its
+  // key ptr indicates the first (1:n) block of its own catalog where the SDH is
+  // located.
+  // Like all file entries it has a pointer back to the directory block which
+  // contains the VDH/SDH for the set of catalog blocks which contain this entry.
+  // That makes it easier to update the total # of files in this catalog.
   // ---------------------------------------------------------------------------------//
   FolderProdos (FsProdos fs, AppleContainer parentContainer,
-      AppleBlock parentCatalogBlock, int ptr)
+      AppleBlock parentCatalogBlock, int slot)
   // ---------------------------------------------------------------------------------//
   {
     super (fs);
 
     this.parentContainer = parentContainer;              // file system or folder
-    this.parentCatalogBlock = parentCatalogBlock;
-    this.parentCatalogPtr = ptr;
 
-    // the file entry that points to this folder (shouldn't it be passed here?)
-    fileEntry = new CatalogEntryProdos (parentCatalogBlock, ptr);
+    catalogEntry = new CatalogEntryProdos (parentCatalogBlock, slot);
+    //    checkChain (parentCatalogBlock.getBlockNo (), catalogEntry.headerPtr);
 
-    // create the Sub Directory Header
+    // create the Sub Directory Header (which collects all the catalog blocks)
+    // this is the first entry in the first catalog block pointed to by the key ptr
     directoryEntry =
-        new DirectoryHeaderProdos ((FsProdos) parentFileSystem, fileEntry.keyPtr);
+        new DirectoryHeaderProdos ((FsProdos) parentFileSystem, catalogEntry.keyPtr);
+
+    // the data blocks for a folder are the 1:n blocks containing its catalog file list
     dataBlocks.addAll (directoryEntry.catalogBlocks);
 
     readCatalog ();
 
     isFolder = true;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  private void checkChain (int thisBlockNo, int headerBlockNo)
+  // ---------------------------------------------------------------------------------//
+  {
+    System.out.printf ("This block: %04X Header: %04X  SDH: %04X  %s%n",
+        catalogEntry.catalogBlock.getBlockNo (), catalogEntry.headerPtr,
+        catalogEntry.keyPtr, catalogEntry.fileName);
+    System.out.printf ("%04X  %04X%n", thisBlockNo, headerBlockNo);
+
+    while (thisBlockNo != headerBlockNo)
+    {
+      byte[] buffer = parentFileSystem.getBlock (thisBlockNo).getBuffer ();
+      thisBlockNo = Utility.unsignedShort (buffer, 0);
+      System.out.printf ("%04X  %04X%n", thisBlockNo, headerBlockNo);
+    }
+    ;
   }
 
   // ---------------------------------------------------------------------------------//
@@ -74,7 +96,7 @@ class FolderProdos extends AbstractAppleFile implements AppleContainer
           case ProdosConstants.SEEDLING:
           case ProdosConstants.SAPLING:
           case ProdosConstants.TREE:
-            file = new FileProdos (fs, this, catalogBlock, ptr);
+            file = new FileProdos (fs, this, catalogBlock, i);
             addFile (file);
 
             if (file.getFileType () == ProdosConstants.FILE_TYPE_LBR)
@@ -83,17 +105,17 @@ class FolderProdos extends AbstractAppleFile implements AppleContainer
             break;
 
           case ProdosConstants.PASCAL_ON_PROFILE:
-            file = new FileProdos (fs, this, catalogBlock, ptr);
+            file = new FileProdos (fs, this, catalogBlock, i);
             addFile (file);
             fs.addEmbeddedFileSystem (file, 1024);
             break;
 
           case ProdosConstants.GSOS_EXTENDED_FILE:
-            addFile (new FileProdos (fs, this, catalogBlock, ptr));
+            addFile (new FileProdos (fs, this, catalogBlock, i));
             break;
 
           case ProdosConstants.SUBDIRECTORY:
-            FolderProdos folder = new FolderProdos (fs, this, catalogBlock, ptr);
+            FolderProdos folder = new FolderProdos (fs, this, catalogBlock, i);
             addFile (folder);
             break;
 
@@ -116,7 +138,7 @@ class FolderProdos extends AbstractAppleFile implements AppleContainer
   public int getTotalBlocks ()
   // ---------------------------------------------------------------------------------//
   {
-    return fileEntry.blocksUsed;
+    return catalogEntry.blocksUsed;
   }
 
   // ---------------------------------------------------------------------------------//
@@ -124,7 +146,7 @@ class FolderProdos extends AbstractAppleFile implements AppleContainer
   public String getFileName ()
   // ---------------------------------------------------------------------------------//
   {
-    return fileEntry.fileName;
+    return catalogEntry.fileName;
   }
 
   // ---------------------------------------------------------------------------------//
@@ -132,7 +154,7 @@ class FolderProdos extends AbstractAppleFile implements AppleContainer
   public int getFileType ()
   // ---------------------------------------------------------------------------------//
   {
-    return fileEntry.fileType;
+    return catalogEntry.fileType;
   }
 
   // ---------------------------------------------------------------------------------//
@@ -140,7 +162,7 @@ class FolderProdos extends AbstractAppleFile implements AppleContainer
   public String getFileTypeText ()
   // ---------------------------------------------------------------------------------//
   {
-    return ProdosConstants.fileTypes[fileEntry.fileType];
+    return ProdosConstants.fileTypes[catalogEntry.fileType];
   }
 
   // ---------------------------------------------------------------------------------//
@@ -148,7 +170,7 @@ class FolderProdos extends AbstractAppleFile implements AppleContainer
   public boolean isLocked ()
   // ---------------------------------------------------------------------------------//
   {
-    return fileEntry.isLocked;
+    return catalogEntry.isLocked;
   }
 
   // ---------------------------------------------------------------------------------//
@@ -194,7 +216,7 @@ class FolderProdos extends AbstractAppleFile implements AppleContainer
   public LocalDateTime getModified ()
   // ---------------------------------------------------------------------------------//
   {
-    return fileEntry.modified;
+    return catalogEntry.modified;
   }
 
   // ---------------------------------------------------------------------------------//
@@ -202,7 +224,7 @@ class FolderProdos extends AbstractAppleFile implements AppleContainer
   public int getFileLength ()
   // ---------------------------------------------------------------------------------//
   {
-    return fileEntry.eof;
+    return catalogEntry.eof;
   }
 
   // ---------------------------------------------------------------------------------//
@@ -287,14 +309,10 @@ class FolderProdos extends AbstractAppleFile implements AppleContainer
   {
     StringBuilder text = new StringBuilder (super.toString ());
 
-    //    if (fileEntry != null)
-    //    {
     text.append ("\n");
-    text.append (fileEntry);
+    text.append (catalogEntry);         // the folder's own file entry
     text.append ("\n\n");
-    //    }
-
-    text.append (directoryEntry);
+    text.append (directoryEntry);       // the directory header (SDH)
 
     return Utility.rtrim (text);
   }

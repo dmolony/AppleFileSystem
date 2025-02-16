@@ -25,21 +25,16 @@ public class FileProdos extends AbstractAppleFile implements AppleForkedFile
   private ForkProdos dataFork;                        // for non-forked files
   List<AppleFile> forks = new ArrayList<> ();         // for forked files
 
-  //  AppleBlock parentCatalogBlock;                      // block containing file entry
-  //  int parentCatalogPtr;                               // file entry offset
-
   // ---------------------------------------------------------------------------------//
   FileProdos (FsProdos parentFs, AppleContainer parentContainer,
-      AppleBlock parentCatalogBlock, int ptr)
+      AppleBlock parentCatalogBlock, int slot)
   // ---------------------------------------------------------------------------------//
   {
     super (parentFs);
 
     this.parentContainer = parentContainer;
-    //    this.parentCatalogBlock = parentCatalogBlock;
-    //    this.parentCatalogPtr = ptr;
 
-    catalogEntry = new CatalogEntryProdos (parentCatalogBlock, ptr);
+    catalogEntry = new CatalogEntryProdos (parentCatalogBlock, slot);
     isForkedFile = catalogEntry.storageType == ProdosConstants.GSOS_EXTENDED_FILE;
 
     if (isForkedFile)
@@ -150,7 +145,7 @@ public class FileProdos extends AbstractAppleFile implements AppleForkedFile
   // ---------------------------------------------------------------------------------//
   {
     if (isForkedFile ())
-      throw new FileFormatException ("Cannot getDataRecord() on a forked file");
+      return super.getFileBuffer ();
 
     return dataFork.getFileBuffer ();
   }
@@ -161,7 +156,7 @@ public class FileProdos extends AbstractAppleFile implements AppleForkedFile
   // ---------------------------------------------------------------------------------//
   {
     if (isForkedFile ())
-      throw new FileFormatException ("Cannot getLength() on a forked file");
+      return catalogEntry.eof;
 
     return dataFork.getFileLength ();
   }

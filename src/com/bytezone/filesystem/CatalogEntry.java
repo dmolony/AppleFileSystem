@@ -12,6 +12,8 @@ public abstract class CatalogEntry
   protected AppleBlock catalogBlock;            // most filesystems are self-contained
   protected List<AppleBlock> catalogBlocks;     // pascal uses 4 contiguous blocks
 
+  protected String fileName;
+
   // ---------------------------------------------------------------------------------//
   public CatalogEntry (AppleBlock catalogBlock, int slot)
   // ---------------------------------------------------------------------------------//
@@ -35,4 +37,26 @@ public abstract class CatalogEntry
   abstract void write ();
 
   abstract void delete ();
+
+  // ---------------------------------------------------------------------------------//
+  @Override
+  public String toString ()
+  // ---------------------------------------------------------------------------------//
+  {
+    StringBuilder text = new StringBuilder ();
+
+    text.append ("---- Catalog entry ----\n");
+
+    if (catalogBlock != null)
+      text.append (String.format ("Catalog block ......... %04X    %<,7d%n",
+          catalogBlock.getBlockNo ()));
+    else
+      text.append (
+          String.format ("Catalog blocks .......... %s   %n", catalogBlocks.toString ()));
+
+    text.append (String.format ("Catalog slot .......... %d%n", slot));
+    text.append (String.format ("File name ............. %s%n", fileName));
+
+    return text.toString ();
+  }
 }

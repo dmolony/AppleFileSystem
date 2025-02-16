@@ -63,7 +63,7 @@ public class FsProdos extends AbstractFileSystem
           case ProdosConstants.SEEDLING:
           case ProdosConstants.SAPLING:
           case ProdosConstants.TREE:
-            file = new FileProdos (this, this, catalogBlock, ptr);
+            file = new FileProdos (this, this, catalogBlock, i);
             addFile (file);
 
             if (file.getFileType () == ProdosConstants.FILE_TYPE_LBR)
@@ -76,17 +76,17 @@ public class FsProdos extends AbstractFileSystem
             break;
 
           case ProdosConstants.PASCAL_ON_PROFILE:
-            file = new FileProdos (this, this, catalogBlock, ptr);
+            file = new FileProdos (this, this, catalogBlock, i);
             addFile (file);
             addEmbeddedFileSystem (file, 1024);       // fs starts 2 blocks in
             break;
 
           case ProdosConstants.GSOS_EXTENDED_FILE:
-            addFile (new FileProdos (this, this, catalogBlock, ptr));
+            addFile (new FileProdos (this, this, catalogBlock, i));
             break;
 
           case ProdosConstants.SUBDIRECTORY:
-            FolderProdos folder = new FolderProdos (this, this, catalogBlock, ptr);
+            FolderProdos folder = new FolderProdos (this, this, catalogBlock, i);
             addFile (folder);
             break;
 
