@@ -269,7 +269,6 @@ public abstract class AbstractAppleFile implements AppleFile
           embeddedFileSystem.getFileSystemType ()));
     text.append (String.format ("File type ............. %02X      %<,7d  %s%n",
         getFileType (), getFileTypeText ()));
-    //    if (!isForkedFile)
     text.append (
         String.format ("EOF ................... %04X  %<,9d%n", getFileLength ()));
 

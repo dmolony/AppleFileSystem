@@ -97,9 +97,8 @@ public class BlockReader
   BlockReader (BlockReader original)
   // ---------------------------------------------------------------------------------//
   {
-    dataRecord = original.dataRecord.copyBuffer ();
-
-    this.name = original.name;
+    dataRecord = original.dataRecord;       //.copyBuffer ();
+    name = original.name;
   }
 
   // ---------------------------------------------------------------------------------//

@@ -222,7 +222,7 @@ public class CatalogEntryPascal extends CatalogEntry
   public String toString ()
   // ---------------------------------------------------------------------------------//
   {
-    StringBuilder text = new StringBuilder ();
+    StringBuilder text = new StringBuilder (super.toString ());
 
     if (slot == 0)
     {
@@ -237,7 +237,7 @@ public class CatalogEntryPascal extends CatalogEntry
     }
     else
     {
-      text.append ("---- Catalog Entry ----\n");
+      //      text.append ("---- Catalog Entry ----\n");
       text.append (String.format ("File name ............. %s%n", fileName));
       text.append (String.format ("First block ........... %d%n", firstBlock));
       text.append (String.format ("Last block ............ %d%n", lastBlock));

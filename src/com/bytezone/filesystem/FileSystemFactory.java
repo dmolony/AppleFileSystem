@@ -54,11 +54,10 @@ public class FileSystemFactory
 
     if (debug)
     {
-      Buffer dataRecord = blockReader.getDiskBuffer ();
+      Buffer diskBuffer = blockReader.getDiskBuffer ();
       System.out.println ("-----------------------------------------------------");
-      //      System.out.printf ("Checking: %s%n", blockReader.getPath ());
-      System.out.printf ("Length  : %,d%n", dataRecord.length ());
-      System.out.println (Utility.format (dataRecord.data (), dataRecord.offset (), 100));
+      System.out.printf ("Length  : %,d%n", diskBuffer.length ());
+      System.out.println (Utility.format (diskBuffer.data (), diskBuffer.offset (), 100));
       System.out.println ("-----------------------------------------------------");
     }
 
@@ -66,6 +65,7 @@ public class FileSystemFactory
     {
       header2img = new Header2img (blockReader);
       Buffer diskBuffer = blockReader.getDiskBuffer ();
+      // create a new Buffer without the 2img header
       blockReader = new BlockReader (blockReader.getName (), diskBuffer.data (),
           diskBuffer.offset () + header2img.offset, header2img.originalLength);
     }
@@ -93,8 +93,6 @@ public class FileSystemFactory
       getZip (blockReader);
     if (fileSystems.size () == 0)
       getGZip (blockReader);
-    //    if (fileSystems.size () == 0)
-    //      get2img (blockReader);
     if (fileSystems.size () == 0)
       getUnidos (blockReader);
     if (fileSystems.size () == 0)
@@ -197,7 +195,7 @@ public class FileSystemFactory
           if (fs.getTotalCatalogBlocks () > 0)
           {
             fsList.add (fs);
-            if (fs.getTotalCatalogBlocks () >= 15)        // can't get better than this
+            if (fs.getTotalCatalogBlocks () >= 15)        // best possible result
               break;
           }
         }

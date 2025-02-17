@@ -2,6 +2,8 @@ package com.bytezone.filesystem;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 
 import com.bytezone.utility.Utility;
@@ -16,7 +18,6 @@ class CatalogEntryProdos extends CatalogEntry
   private static final DateTimeFormatter tf = DateTimeFormatter.ofPattern ("H:mm");
   private static final String NO_DATE = "<NO DATE>";
 
-  //  String fileName;
   int fileType;
   boolean isLocked;
 
@@ -25,7 +26,7 @@ class CatalogEntryProdos extends CatalogEntry
   int blocksUsed;
   int eof;
   int auxType;
-  int headerPtr;              // catalog sector containing the file count
+  int headerPtr;              // block number of the directory header
 
   int version;
   int minVersion;
@@ -38,6 +39,7 @@ class CatalogEntryProdos extends CatalogEntry
 
   String fileTypeText;
   String storageTypeText;
+  List<String> blockChainText;
 
   // ---------------------------------------------------------------------------------//
   CatalogEntryProdos (AppleBlock catalogBlock, int slot)
@@ -47,6 +49,7 @@ class CatalogEntryProdos extends CatalogEntry
 
     read ();
 
+    buildBlockChain ();
   }
 
   // ---------------------------------------------------------------------------------//
@@ -76,7 +79,7 @@ class CatalogEntryProdos extends CatalogEntry
     modified = Utility.getAppleDate (buffer, ptr + 0x21);
     headerPtr = Utility.unsignedShort (buffer, ptr + 0x25);
 
-    isLocked = (access & 0x01) != 0;
+    isLocked = (access & 0xC2) == 0;
 
     fileTypeText = ProdosConstants.fileTypes[fileType];
     storageTypeText = ProdosConstants.storageTypes[storageType];
@@ -93,7 +96,30 @@ class CatalogEntryProdos extends CatalogEntry
   void write ()
   // ---------------------------------------------------------------------------------//
   {
+    int ptr = 4 + slot * ProdosConstants.ENTRY_SIZE;
 
+    byte[] buffer = catalogBlock.getBuffer ();
+
+    int nameLength = fileName.length ();
+    buffer[ptr] = (byte) ((storageType << 4) | (nameLength & 0x0F));
+
+    int namePtr = ptr + 1;
+    for (int i = 0; i < nameLength; i++)
+      buffer[namePtr++] = (byte) fileName.charAt (i);
+
+    buffer[ptr + 0x10] = (byte) fileType;
+    Utility.writeShort (buffer, ptr + 0x11, keyPtr);
+    Utility.writeShort (buffer, ptr + 0x13, blocksUsed);
+    Utility.writeTriple (buffer, ptr + 0x15, eof);
+
+    Utility.putAppleDate (buffer, ptr + 0x18, created);
+    buffer[ptr + 0x1C] = (byte) version;
+    buffer[ptr + 0x1D] = (byte) minVersion;
+    buffer[ptr + 0x1E] = (byte) access;
+
+    Utility.writeShort (buffer, ptr + 0x1F, auxType);
+    Utility.putAppleDate (buffer, ptr + 0x21, modified);
+    Utility.writeShort (buffer, ptr + 0x25, headerPtr);
   }
 
   // ---------------------------------------------------------------------------------//
@@ -108,7 +134,7 @@ class CatalogEntryProdos extends CatalogEntry
     buffer[ptr] = 0;              // deleted
     catalogBlock.markDirty ();
 
-    // reduce total files in header
+    // reduce total files in header block
     AppleFileSystem fs = catalogBlock.getFileSystem ();
     AppleBlock headerBlock = fs.getBlock (headerPtr);
 
@@ -121,6 +147,34 @@ class CatalogEntryProdos extends CatalogEntry
   }
 
   // ---------------------------------------------------------------------------------//
+  private void buildBlockChain ()
+  // ---------------------------------------------------------------------------------//
+  {
+    blockChainText = new ArrayList<> ();
+
+    // build chain of catalog blocks
+    int prevBlock = Utility.unsignedShort (buffer, 0);
+    FsProdos fs = (FsProdos) catalogBlock.getFileSystem ();
+    StringBuilder chain = new StringBuilder ();
+
+    while (prevBlock != 0)
+    {
+      chain.append (String.format ("--> %04X ", prevBlock));
+      byte[] prevBuffer = fs.getBlock (prevBlock).getBuffer ();
+      prevBlock = Utility.unsignedShort (prevBuffer, 0);
+    }
+
+    int max = 36;
+    while (chain.length () > max)
+    {
+      blockChainText.add (chain.substring (0, max));
+      chain.delete (0, max);
+    }
+
+    blockChainText.add (chain.toString ());
+  }
+
+  // ---------------------------------------------------------------------------------//
   @Override
   public String toString ()
   // ---------------------------------------------------------------------------------//
@@ -129,14 +183,19 @@ class CatalogEntryProdos extends CatalogEntry
 
     String message = eof == 0 ? message = "<-- zero" : "";
 
-    //    text.append ("---- Catalog entry ----\n");
     text.append (String.format ("Storage type .......... %02X               %s%n",
         storageType, storageTypeText));
-    //    text.append (String.format ("File name ............. %s%n", fileName));
-    text.append (String.format ("File type ............. %02X      %<,7d  %s%n", fileType,
+    text.append (String.format ("File type ............. %02X    %<,9d  %s%n", fileType,
         fileTypeText));
-    text.append (String.format ("Key ptr ............... %04X    %<,7d%n", keyPtr));
-    text.append (String.format ("Blocks used ........... %04X    %<,7d%n", blocksUsed));
+
+    text.append (String.format ("Block ................. %04X             %s%n",
+        catalogBlock.getBlockNo (), blockChainText.get (0)));
+    if (blockChainText.size () > 1)
+      for (int i = 1; i < blockChainText.size (); i++)
+        text.append (String.format ("%40s %s%n", "", blockChainText.get (i)));
+
+    text.append (String.format ("Key ptr ............... %04X%n", keyPtr));
+    text.append (String.format ("Blocks used ........... %04X  %<,9d%n", blocksUsed));
     text.append (
         String.format ("EOF ................... %06X %<,8d  %s%n", eof, message));
     text.append (
@@ -145,10 +204,10 @@ class CatalogEntryProdos extends CatalogEntry
         String.format ("Modified .............. %9s %-5s%n", dateModified, timeModified));
     text.append (String.format ("Version ............... %d%n", version));
     text.append (String.format ("Min version ........... %d%n", minVersion));
-    text.append (String.format ("Access ................ %02X      %<7d  %s%n", access,
+    text.append (String.format ("Access ................ %02X    %<9d  %s%n", access,
         Utility.getAccessText (access)));
-    text.append (String.format ("Auxtype ............... %04X    %<,7d%n", auxType));
-    text.append (String.format ("Header ptr ............ %04X    %<,7d%n", headerPtr));
+    text.append (String.format ("Auxtype ............... %04X  %<,9d%n", auxType));
+    text.append (String.format ("VDH/SDH ptr ........... %04X  %<,9d%n", headerPtr));
 
     return Utility.rtrim (text);
   }

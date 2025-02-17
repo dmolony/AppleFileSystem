@@ -413,7 +413,7 @@ public class Utility
     if (buffer[offset] == 0 && buffer[offset + 1] == 00)
       return Optional.empty ();
 
-    int date = unsignedInt (buffer, offset);     // reverses bytes
+    int date = unsignedInt (buffer, offset);      // reverses bytes
     int year = (date & 0xFE00) >>> 9;             // 7 bits (no sign extension)
     int month = (date & 0x01E0) >> 5;             // 4 bits
     int day = date & 0x001F;                      // 5 bits
