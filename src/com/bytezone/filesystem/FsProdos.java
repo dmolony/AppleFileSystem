@@ -34,22 +34,25 @@ public class FsProdos extends AbstractFileSystem
     // Create a FileProdos or FolderProdos for each catalog entry. Each one creates
     // its own CatalogEntryProdos. When a FolderProdos is created, it reads its
     // own catalog and repeats the process.
-    readCatalog ();
+    readCatalog (this, directoryHeader.catalogBlocks);
 
     volumeBitMap = createVolumeBitMap ();
     freeBlocks = volumeBitMap.cardinality ();
 
-    if (isDosMaster)                                    // found DOS.3.3 file
-      isDosMaster = checkDosMaster ();
+    //    if (file.getFileType () == ProdosConstants.FILE_TYPE_SYS
+    //        && file.getFileName ().equals ("DOS.3.3"))
+    //      isDosMaster = true;                             // possibly
+    //    if (isDosMaster)                                    // found DOS.3.3 file
+    //      isDosMaster = checkDosMaster ();
   }
 
   // ---------------------------------------------------------------------------------//
-  private void readCatalog ()
+  void readCatalog (AppleContainer container, List<AppleBlock> catalogBlocks)
   // ---------------------------------------------------------------------------------//
   {
     FileProdos file = null;
 
-    for (AppleBlock catalogBlock : directoryHeader.catalogBlocks)
+    for (AppleBlock catalogBlock : catalogBlocks)
     {
       byte[] buffer = catalogBlock.getBuffer ();
       int ptr = 4;
@@ -63,31 +66,26 @@ public class FsProdos extends AbstractFileSystem
           case ProdosConstants.SEEDLING:
           case ProdosConstants.SAPLING:
           case ProdosConstants.TREE:
-            file = new FileProdos (this, this, catalogBlock, i);
-            addFile (file);
-
+            file = new FileProdos (this, container, catalogBlock, i);
+            container.addFile (file);
             if (file.getFileType () == ProdosConstants.FILE_TYPE_LBR)
               addEmbeddedFileSystem (file, 0);
-
-            if (file.getFileType () == ProdosConstants.FILE_TYPE_SYS
-                && file.getFileName ().equals ("DOS.3.3"))
-              isDosMaster = true;                             // possibly
 
             break;
 
           case ProdosConstants.PASCAL_ON_PROFILE:
-            file = new FileProdos (this, this, catalogBlock, i);
-            addFile (file);
+            file = new FileProdos (this, container, catalogBlock, i);
+            container.addFile (file);
             addEmbeddedFileSystem (file, 1024);       // fs starts 2 blocks in
             break;
 
           case ProdosConstants.GSOS_EXTENDED_FILE:
-            addFile (new FileProdos (this, this, catalogBlock, i));
+            container.addFile (new FileProdos (this, container, catalogBlock, i));
             break;
 
           case ProdosConstants.SUBDIRECTORY:
-            FolderProdos folder = new FolderProdos (this, this, catalogBlock, i);
-            addFile (folder);
+            FolderProdos folder = new FolderProdos (this, container, catalogBlock, i);
+            container.addFile (folder);
             break;
 
           case ProdosConstants.SUBDIRECTORY_HEADER:

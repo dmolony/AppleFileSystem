@@ -246,7 +246,7 @@ public class FileProdos extends AbstractAppleFile implements AppleForkedFile
       case ProdosConstants.FILE_TYPE_PNT:
       case ProdosConstants.FILE_TYPE_PIC:
       case ProdosConstants.FILE_TYPE_FOT:
-        return String.format ("A=$%4X", getAuxType ());
+        return String.format ("A=$%04X", getAuxType ());
     }
 
     return "";

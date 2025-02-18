@@ -52,7 +52,8 @@ class FolderProdos extends AbstractAppleFile implements AppleContainer
     // the data blocks for a folder are the 1:n blocks containing its catalog file list
     dataBlocks.addAll (directoryEntry.catalogBlocks);
 
-    readCatalog ();
+    fs.readCatalog (this, directoryEntry.catalogBlocks);
+    //    readCatalog ();
 
     isFolder = true;
   }
@@ -85,8 +86,8 @@ class FolderProdos extends AbstractAppleFile implements AppleContainer
     for (AppleBlock catalogBlock : directoryEntry.catalogBlocks)
     {
       byte[] buffer = catalogBlock.getBuffer ();
-
       int ptr = 4;
+
       for (int i = 0; i < ProdosConstants.ENTRIES_PER_BLOCK; i++)
       {
         int blockType = (buffer[ptr] & 0xF0) >>> 4;

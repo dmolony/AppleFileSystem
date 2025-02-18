@@ -72,6 +72,7 @@ public class FileBinary2 extends AbstractAppleFile
     headerBlock = fs.getBlock (headerBlockNo, BlockType.FS_DATA);
     headerBlock.setBlockSubType ("BIN2 HDR");
     headerBlock.setFileOwner (this);
+
     byte[] buffer = headerBlock.getBuffer ();
 
     accessCode = buffer[3] & 0xFF;
@@ -79,6 +80,7 @@ public class FileBinary2 extends AbstractAppleFile
     auxType = Utility.unsignedShort (buffer, 5);
     storageType = buffer[7] & 0xFF;
     blocks = Utility.unsignedShort (buffer, 8);
+
     modDate = Utility.unsignedShort (buffer, 10);
     modTime = Utility.unsignedShort (buffer, 12);
 
@@ -171,6 +173,14 @@ public class FileBinary2 extends AbstractAppleFile
   // ---------------------------------------------------------------------------------//
   {
     return fileType;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
+  public int getFileLength ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return eof;
   }
 
   // ---------------------------------------------------------------------------------//
@@ -288,23 +298,6 @@ public class FileBinary2 extends AbstractAppleFile
   }
 
   // ---------------------------------------------------------------------------------//
-  //  @Override
-  //  public byte[] read ()
-  //  // ---------------------------------------------------------------------------------//
-  //  {
-  //    String suffix = Utility.getSuffix (getParentFileSystem ().getFileName ());
-  //    if (suffix.equals ("bqy") && squeezeName != null)
-  //    {
-  //      Squeeze squeeze = new Squeeze ();
-  //      byte[] buffer = getParentFileSystem ().readBlocks (dataBlocks);
-  //
-  //      return squeeze.unSqueeze (buffer);
-  //    }
-  //
-  //    return parentFileSystem.readBlocks (dataBlocks);
-  //  }
-
-  // ---------------------------------------------------------------------------------//
   @Override
   public Buffer getFileBuffer ()
   // ---------------------------------------------------------------------------------//
@@ -313,7 +306,8 @@ public class FileBinary2 extends AbstractAppleFile
       return fileBuffer;
 
     String suffix = Utility.getSuffix (getParentFileSystem ().getFileName ());
-    if (suffix.equals ("bqy") && squeezeName != null)
+
+    if (suffix.equals ("bqy") && !squeezeName.isEmpty ())
     {
       Squeeze squeeze = new Squeeze ();
       byte[] buffer = getParentFileSystem ().readBlocks (dataBlocks);
@@ -325,6 +319,7 @@ public class FileBinary2 extends AbstractAppleFile
 
     byte[] buffer = parentFileSystem.readBlocks (dataBlocks);
     fileBuffer = new Buffer (buffer, 0, buffer.length);
+
     return fileBuffer;
   }
 
@@ -344,21 +339,24 @@ public class FileBinary2 extends AbstractAppleFile
   {
     StringBuilder text = new StringBuilder (super.toString ());
 
-    text.append ("--- Binary II Header --\n");
+    text.append ("\n--- Binary II Header --\n");
     text.append (String.format ("Header block .......... %02X%n", headerBlockNo));
     text.append (String.format ("Access code ........... %02X%n", accessCode));
     text.append (String.format ("File type ............. %02X        %s%n", fileType,
         fileTypeText));
+
     text.append (String.format ("Aux type .............. %04X%n", auxType));
     text.append (String.format ("Storage type .......... %02X  %s%n", storageType,
         ProdosConstants.storageTypes[storageType]));
     text.append (String.format ("File size x 512 ....... %02X      %<,7d%n", blocks));
+
     text.append (String.format ("Mod date .............. %04X    %s%n", modDate,
         modified.isPresent () ? modified.get () : ""));
     text.append (String.format ("Mod time .............. %04X%n", modTime));
     text.append (String.format ("Create date ........... %04X    %s%n", createDate,
         created.isPresent () ? created.get () : ""));
     text.append (String.format ("Create time ........... %04X%n", createTime));
+
     text.append (String.format ("EOF ................... %06X  %<,7d%n", eof));
     text.append (String.format ("File name ............. %s%n", fileName));
     text.append (String.format ("Squeeze name .......... %s%n", squeezeName));
@@ -378,12 +376,14 @@ public class FileBinary2 extends AbstractAppleFile
     text.append (String.format ("Native file type ...... %04X%n", nativeFileType));
     text.append (String.format ("Phantom file .......... %02X%n", phantomFile));
 
-    String message =
-        !squeezeName.isEmpty () && !isCompressed () ? "  <-- should be true" : "";
     text.append (String.format ("Data flags ............ %02X %s%n", dataFlags,
         getFlagsText (dataFlags)));
+
+    String message =
+        !squeezeName.isEmpty () && !isCompressed () ? "  <-- should be true" : "";
     text.append (
         String.format ("  compressed? ......... %s%s%n", isCompressed (), message));
+
     text.append (String.format ("  encrypted? .......... %s%n", isEncrypted ()));
     text.append (String.format ("  sparse? ............. %s%n", isSparse ()));
     text.append (String.format ("Bin2 version .......... %02X%n", version));

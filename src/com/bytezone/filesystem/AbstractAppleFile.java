@@ -17,11 +17,6 @@ public abstract class AbstractAppleFile implements AppleFile
   protected boolean isForkedFile;             // FileProdos or FileNuFX with fork(s)
   protected boolean isFork;                   // Data or Resource fork
 
-  //  protected String fileName;
-  //  protected int fileType;
-  //  protected String fileTypeText;
-  //  protected boolean isLocked;
-
   protected String errorMessage = "";
   protected List<AppleBlock> dataBlocks = new ArrayList<> ();
   protected Buffer fileBuffer;
@@ -32,22 +27,6 @@ public abstract class AbstractAppleFile implements AppleFile
   {
     this.parentFileSystem = parentFileSystem;
   }
-
-  // ---------------------------------------------------------------------------------//
-  //  @Override
-  //  public String getFileName ()
-  //  // ---------------------------------------------------------------------------------//
-  //  {
-  //    return fileName;
-  //  }
-
-  // ---------------------------------------------------------------------------------//
-  //  @Override
-  //  public boolean isLocked ()
-  //  // ---------------------------------------------------------------------------------//
-  //  {
-  //    return isLocked;
-  //  }
 
   // ---------------------------------------------------------------------------------//
   @Override
