@@ -1,6 +1,8 @@
 package com.bytezone.test;
 
+// -----------------------------------------------------------------------------------//
 public class Tester
+// -----------------------------------------------------------------------------------//
 {
   String base = System.getProperty ("user.home") + "/Documents/Examples/";
   String adi = base + "Apple Disk Images/";
@@ -76,5 +78,4 @@ public class Tester
       base + "Nibble89disks.zip",                    // 44: zip error
       wiz4 + "Version A/wiz4_d1.dsk",                // 45: wiz4
   };
-
 }

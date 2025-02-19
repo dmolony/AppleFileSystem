@@ -13,7 +13,6 @@ import com.bytezone.filesystem.FileSystemFactory;
 public class TestRead extends Tester
 // -----------------------------------------------------------------------------------//
 {
-
   // ---------------------------------------------------------------------------------//
   TestRead ()
   // ---------------------------------------------------------------------------------//
@@ -21,10 +20,10 @@ public class TestRead extends Tester
     FileSystemFactory factory = new FileSystemFactory ();
 
     int index = 10;
-    for (int fileNo = index; fileNo <= index; fileNo++)
-    //    for (int fileNo = 0; fileNo < fileNames.length; fileNo++)
+    //    for (int fileNo = index; fileNo <= index; fileNo++)
+    for (int fileNo = 0; fileNo < fileNames.length; fileNo++)
     {
-      System.out.printf ("%d %s%n", fileNo, fileNames[fileNo].substring (base.length ()));
+      //      System.out.printf ("%d %s%n", fileNo, fileNames[fileNo].substring (base.length ()));
 
       AppleFileSystem fs = factory.getFileSystem (Path.of (fileNames[fileNo]));
 
@@ -34,20 +33,24 @@ public class TestRead extends Tester
         continue;
       }
 
-      //      if (fileNo == index && true)
-      //      {
-      //        System.out.println ();
-      //        System.out.println (fs.catalog ());
-      //        System.out.println ();
-      //
-      //        AppleFile file = fs.getFiles ().get (10);
-      //      }
+      System.out.printf ("%2d  %s  %s%n", fileNo, line (fs),
+          fileNames[fileNo].substring (base.length ()));
 
-      //      System.out.println ();
-      System.out.println (fs.getBlockReader ());
-      System.out.println ();
-      listFiles (fs, 0);
+      for (AppleFileSystem fs2 : fs.getFileSystems ())
+        System.out.printf ("    %s%n", line (fs2));
+
+      for (AppleFile file : fs.getFiles ())
+        if (file.hasEmbeddedFileSystem ())
+          System.out.printf ("    %s%n", line (file.getEmbeddedFileSystem ()));
     }
+  }
+
+  // ---------------------------------------------------------------------------------//
+  private String line (AppleFileSystem fs)
+  // ---------------------------------------------------------------------------------//
+  {
+    return String.format ("%-6s  %2d %,5d", fs.getFileSystemType (),
+        fs.getFileSystems ().size (), fs.getFiles ().size ());
   }
 
   // ---------------------------------------------------------------------------------//

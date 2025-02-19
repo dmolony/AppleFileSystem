@@ -31,7 +31,7 @@ public abstract class FileDos extends AbstractAppleFile
   protected void setLength ()
   // ---------------------------------------------------------------------------------//
   {
-    if (getFileType () == 4)                              // binary
+    if (getFileType () == 4 || getFileType () == 0x40)          // binary
     {
       if (dataBlocks.size () > 0)
       {

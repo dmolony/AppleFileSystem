@@ -7,15 +7,19 @@ import com.bytezone.utility.Utility;
 public class FileDos4 extends FileDos
 // -----------------------------------------------------------------------------------//
 {
+  static final int ENTRY_SIZE = 0x23;
+  static final int HEADER_SIZE = 0x0B;
+
   CatalogEntryDos4 catalogEntry;
 
   // ---------------------------------------------------------------------------------//
-  FileDos4 (FsDos4 fs, AppleBlock catalogSector, int ptr, int slot)
+  FileDos4 (FsDos4 fs, AppleBlock catalogSector, int slot)
   // ---------------------------------------------------------------------------------//
   {
     super (fs);
 
     byte[] buffer = catalogSector.getBuffer ();
+    int ptr = HEADER_SIZE + slot * ENTRY_SIZE;
 
     int nextTrack = buffer[ptr] & 0xFF;
     int nextSector = buffer[ptr + 1] & 0xFF;
@@ -99,7 +103,7 @@ public class FileDos4 extends FileDos
         getLoadAddress () == 0 ? "" : String.format ("$%4X", getLoadAddress ());
 
     String lengthText =
-        getFileLength () == 0 ? "" : String.format ("$%4X  %<,6d", getFileLength ());
+        getFileLength () == 0 ? "" : String.format ("$%4X %<,7d", getFileLength ());
 
     String message = "";
     String lockedFlag = (isLocked ()) ? "*" : " ";

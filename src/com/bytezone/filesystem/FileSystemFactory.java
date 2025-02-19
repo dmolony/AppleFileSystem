@@ -65,9 +65,10 @@ public class FileSystemFactory
     {
       header2img = new Header2img (blockReader);
       Buffer diskBuffer = blockReader.getDiskBuffer ();
+
       // create a new Buffer without the 2img header
       blockReader = new BlockReader (blockReader.getName (), diskBuffer.data (),
-          diskBuffer.offset () + header2img.offset, header2img.originalLength);
+          diskBuffer.offset () + header2img.offset, header2img.length);
     }
 
     getDos33 (blockReader);

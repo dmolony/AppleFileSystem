@@ -70,8 +70,8 @@ class FsDos4 extends FsDos
       AppleBlock catalogSector = getSector (track, sector, BlockType.FS_DATA);
       if (catalogSector == null)
         return;
-      catalogSector.setBlockSubType ("CATALOG");
 
+      catalogSector.setBlockSubType ("CATALOG");
       buffer = catalogSector.getBuffer ();
 
       int ptr = 11;
@@ -88,7 +88,7 @@ class FsDos4 extends FsDos
         {
           try
           {
-            FileDos4 file = new FileDos4 (this, catalogSector, ptr, slot);
+            FileDos4 file = new FileDos4 (this, catalogSector, slot);
             addFile (file);
           }
           catch (FileFormatException e)
@@ -101,6 +101,7 @@ class FsDos4 extends FsDos
         }
 
         ptr += ENTRY_SIZE;
+        ++slot;
       }
       ++catalogBlocks;
     }

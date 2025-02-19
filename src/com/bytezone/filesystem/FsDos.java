@@ -65,7 +65,7 @@ public class FsDos extends AbstractFileSystem
       case 0x08 -> "S";
       case 0x10 -> "R";
       case 0x20 -> "B";
-      case 0x40 -> "B";
+      case 0x40 -> "L";
       default -> "?";                       // should never happen
     };
   }
