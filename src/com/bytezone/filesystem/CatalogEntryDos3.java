@@ -6,16 +6,11 @@ import com.bytezone.utility.Utility;
 public class CatalogEntryDos3 extends CatalogEntryDos
 // -----------------------------------------------------------------------------------//
 {
-  int firstTrack;
-  int firstSector;
-
   // ---------------------------------------------------------------------------------//
   public CatalogEntryDos3 (AppleBlock catalogBlock, int slot)
   // ---------------------------------------------------------------------------------//
   {
     super (catalogBlock, slot);
-
-    read ();
   }
 
   // ---------------------------------------------------------------------------------//
@@ -23,17 +18,12 @@ public class CatalogEntryDos3 extends CatalogEntryDos
   void read ()
   // ---------------------------------------------------------------------------------//
   {
+    super.readCommon ();
+
     int ptr = HEADER_SIZE + slot * ENTRY_SIZE;
 
-    firstTrack = buffer[ptr] & 0xFF;
-    firstSector = buffer[ptr + 1] & 0xFF;
-
-    fileType = buffer[ptr + 2] & 0x7F;
-    isLocked = (buffer[ptr + 2] & 0x80) != 0;
     fileName = Utility.string (buffer, ptr + 3, 30).trim ();
-
-    isNameValid = checkName (fileName);                   // check for invalid characters
-    sectorCount = Utility.unsignedShort (buffer, ptr + 33);
+    checkName ();                   // check for invalid characters
   }
 
   // ---------------------------------------------------------------------------------//
@@ -46,6 +36,7 @@ public class CatalogEntryDos3 extends CatalogEntryDos
     buffer[ptr] = (byte) firstTrack;
     buffer[ptr + 1] = (byte) firstSector;
     buffer[ptr + 2] = (byte) (fileType | (isLocked ? 0x80 : 0x00));
+
     Utility.writeString (String.format ("%-30s", fileName), buffer, ptr + 3);
     Utility.writeShort (buffer, ptr + 33, sectorCount);
 

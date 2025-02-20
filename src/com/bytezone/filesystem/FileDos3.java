@@ -7,28 +7,27 @@ import com.bytezone.utility.Utility;
 public class FileDos3 extends FileDos
 // -----------------------------------------------------------------------------------//
 {
-  CatalogEntryDos3 catalogEntry;
-
   // ---------------------------------------------------------------------------------//
-  FileDos3 (FsDos3 fs, AppleBlock catalogBlock, int ptr, int slot)
+  FileDos3 (FsDos3 fs, AppleBlock catalogBlock, int slot)
   // ---------------------------------------------------------------------------------//
   {
     super (fs);
 
     byte[] buffer = catalogBlock.getBuffer ();
+    int ptr = HEADER_SIZE + slot * ENTRY_SIZE;
 
     int nextTrack = buffer[ptr] & 0xFF;
     int nextSector = buffer[ptr + 1] & 0xFF;
 
     catalogEntry = new CatalogEntryDos3 (catalogBlock, slot);
 
-    isNameValid = catalogEntry.isNameValid;
-    sectorCount = catalogEntry.sectorCount;
+    //    isNameValid = catalogEntry.isNameValid;
+    //    sectorCount = catalogEntry.sectorCount;
 
     String blockSubType = fs.getBlockSubTypeText (getFileType ());
 
     // build lists of index and data sectors
-    int sectorsLeft = sectorCount;
+    int sectorsLeft = catalogEntry.sectorCount;
     loop: while (nextTrack != 0)
     {
       AppleBlock tsSector = fs.getSector (nextTrack, nextSector, BlockType.FS_DATA);
@@ -112,30 +111,6 @@ public class FileDos3 extends FileDos
         lockedFlag, getFileTypeText (), getSectorCount () % 1000, getFileName (),
         addressText, lengthText, getTotalIndexSectors (), getTotalDataSectors (),
         message.trim ());
-  }
-
-  // ---------------------------------------------------------------------------------//
-  @Override
-  public String getFileName ()
-  // ---------------------------------------------------------------------------------//
-  {
-    return catalogEntry.fileName;
-  }
-
-  // ---------------------------------------------------------------------------------//
-  @Override
-  public boolean isLocked ()
-  // ---------------------------------------------------------------------------------//
-  {
-    return catalogEntry.isLocked;
-  }
-
-  // ---------------------------------------------------------------------------------//
-  @Override
-  public int getFileType ()
-  // ---------------------------------------------------------------------------------//
-  {
-    return catalogEntry.fileType;
   }
 
   // ---------------------------------------------------------------------------------//

@@ -9,10 +9,14 @@ public abstract class CatalogEntryDos extends CatalogEntry
   static final int ENTRY_SIZE = 0x23;
   static final int HEADER_SIZE = 0x0B;
 
+  int firstTrack;
+  int firstSector;
+
   int fileType;
   boolean isLocked;
-  String fileName;
   int sectorCount;
+
+  String fileName;
   boolean isNameValid;
 
   // ---------------------------------------------------------------------------------//
@@ -20,17 +24,35 @@ public abstract class CatalogEntryDos extends CatalogEntry
   // ---------------------------------------------------------------------------------//
   {
     super (catalogBlock, slot);
+
+    read ();
   }
 
   // ---------------------------------------------------------------------------------//
-  protected boolean checkName (String name)
+  protected void readCommon ()
   // ---------------------------------------------------------------------------------//
   {
-    for (byte b : name.getBytes ())
-      if (b == (byte) 0x88)
-        return false;
+    int ptr = HEADER_SIZE + slot * ENTRY_SIZE;
 
-    return true;
+    firstTrack = buffer[ptr] & 0xFF;
+    firstSector = buffer[ptr + 1] & 0xFF;
+
+    isLocked = (buffer[ptr + 2] & 0x80) != 0;
+    fileType = buffer[ptr + 2] & 0x7F;
+    sectorCount = Utility.unsignedShort (buffer, ptr + 33);
+  }
+
+  // ---------------------------------------------------------------------------------//
+  protected void checkName ()
+  // ---------------------------------------------------------------------------------//
+  {
+    isNameValid = false;
+
+    for (byte b : fileName.getBytes ())
+      if (b == (byte) 0x88)
+        return;
+
+    isNameValid = true;
   }
 
   // ---------------------------------------------------------------------------------//
@@ -41,13 +63,7 @@ public abstract class CatalogEntryDos extends CatalogEntry
     StringBuilder text = new StringBuilder (super.toString ());
 
     text.append (String.format ("Locked ................ %s%n", isLocked));
-    //    text.append (String.format ("Catalog sector ........ %02X / %02X%n",
-    //        catalogEntryBlock.getTrackNo (), catalogEntryBlock.getSectorNo ()));
-    //    text.append (String.format ("Catalog entry ......... %d%n", catalogEntryIndex));
     text.append (String.format ("Sectors ............... %04X  %<,5d%n", sectorCount));
-    //    text.append (String.format ("File length ........... %04X  %<,5d%n", eof));
-    //    text.append (String.format ("Load address .......... %04X  %<,5d%n", loadAddress));
-    //    text.append (String.format ("Text file gaps ........ %04X  %<,5d%n", textFileGaps));
 
     return Utility.rtrim (text);
   }

@@ -533,7 +533,9 @@ public class Utility
         val[i] = tmp / 16 * 10 + tmp % 16;
       }
 
-      return LocalDateTime.of (val[3] + 2000, val[5], val[4], val[2], val[1], val[0]);
+      val[3] += val[3] >= 70 ? 1900 : 2000;       // add century
+
+      return LocalDateTime.of (val[3], val[5], val[4], val[2], val[1], val[0]);
     }
     catch (DateTimeException e)
     {
@@ -542,6 +544,23 @@ public class Utility
     catch (NumberFormatException e2)
     {
       return null;
+    }
+  }
+
+  // ---------------------------------------------------------------------------------//
+  public static void writeDos4LocalDateTime (byte[] buffer, int offset,
+      LocalDateTime date)
+  // ---------------------------------------------------------------------------------//
+  {
+    int[] val = new int[] { date.getSecond (), date.getMinute (), date.getHour (),
+        date.getYear (), date.getDayOfMonth (), date.getMonthValue () };
+
+    val[3] %= 100;                      // remove century
+
+    for (int i = 0; i < 6; i++)
+    {
+      int tmp = (val[i] / 10) * 16 + val[i] % 10;
+      buffer[offset++] = (byte) tmp;
     }
   }
 

@@ -64,7 +64,7 @@ class FsDos4 extends FsDos
       if (track == 0)
         break;
 
-      track &= 0x3F;
+      track &= 0x3F;            // remove deleted (0x80) and track zero (0x40) flags
       sector &= 0x1F;
 
       AppleBlock catalogSector = getSector (track, sector, BlockType.FS_DATA);
@@ -74,7 +74,7 @@ class FsDos4 extends FsDos
       catalogSector.setBlockSubType ("CATALOG");
       buffer = catalogSector.getBuffer ();
 
-      int ptr = 11;
+      int ptr = HEADER_SIZE;
       int slot = 0;
 
       while (ptr < buffer.length && buffer[ptr] != 0)

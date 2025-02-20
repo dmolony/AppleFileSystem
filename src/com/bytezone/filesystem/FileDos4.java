@@ -7,11 +7,6 @@ import com.bytezone.utility.Utility;
 public class FileDos4 extends FileDos
 // -----------------------------------------------------------------------------------//
 {
-  static final int ENTRY_SIZE = 0x23;
-  static final int HEADER_SIZE = 0x0B;
-
-  CatalogEntryDos4 catalogEntry;
-
   // ---------------------------------------------------------------------------------//
   FileDos4 (FsDos4 fs, AppleBlock catalogSector, int slot)
   // ---------------------------------------------------------------------------------//
@@ -26,17 +21,17 @@ public class FileDos4 extends FileDos
 
     catalogEntry = new CatalogEntryDos4 (catalogSector, slot);
 
-    isNameValid = catalogEntry.isNameValid;
-    sectorCount = catalogEntry.sectorCount;
+    //    isNameValid = catalogEntry.isNameValid;
+    //    sectorCount = catalogEntry.sectorCount;
 
     String blockSubType = fs.getBlockSubTypeText (catalogEntry.fileType);
 
     // build lists of index and data sectors
-    int sectorsLeft = sectorCount;
-    loop: while (nextTrack != 0)
+    int sectorsLeft = catalogEntry.sectorCount;
+    loop: while (nextTrack != 0)    // 0x40 = track zero
     {
-      nextTrack &= 0x3F;
-      nextSector &= 0x1F;
+      nextTrack &= 0x3F;            // 0x80 = deleted(?), 0x40 = track zero
+      nextSector &= 0x1F;           // 0 : 31
 
       AppleBlock tsSector = fs.getSector (nextTrack, nextSector, BlockType.FS_DATA);
       if (tsSector == null)
@@ -119,32 +114,8 @@ public class FileDos4 extends FileDos
 
     return String.format ("%1s  %1s  %03d  %-24.24s  %-15.15s  %-5s  %-13s %3d %3d   %s",
         lockedFlag, getFileTypeText (), getSectorCount () % 1000, getFileName (),
-        catalogEntry.getModified1 (), addressText, lengthText, getTotalIndexSectors (),
-        getTotalDataSectors (), message.trim ());
-  }
-
-  // ---------------------------------------------------------------------------------//
-  @Override
-  public String getFileName ()
-  // ---------------------------------------------------------------------------------//
-  {
-    return catalogEntry.fileName;
-  }
-
-  // ---------------------------------------------------------------------------------//
-  @Override
-  public boolean isLocked ()
-  // ---------------------------------------------------------------------------------//
-  {
-    return catalogEntry.isLocked;
-  }
-
-  // ---------------------------------------------------------------------------------//
-  @Override
-  public int getFileType ()
-  // ---------------------------------------------------------------------------------//
-  {
-    return catalogEntry.fileType;
+        ((CatalogEntryDos4) catalogEntry).getModified1 (), addressText, lengthText,
+        getTotalIndexSectors (), getTotalDataSectors (), message.trim ());
   }
 
   // ---------------------------------------------------------------------------------//

@@ -63,8 +63,8 @@ public class FsDos3 extends FsDos
       catalogSectors.add (catalogSector);
 
       buffer = catalogSector.getBuffer ();
-      int ptr = 11;
-      int index = 0;
+      int ptr = HEADER_SIZE;
+      int slot = 0;
 
       while (ptr < buffer.length && buffer[ptr] != 0)
       {
@@ -81,9 +81,9 @@ public class FsDos3 extends FsDos
           try
           {
             //            FileDos3 file = new FileDos3 (this, buffer, ptr, index);
-            FileDos3 file = new FileDos3 (this, catalogSector, ptr, index);
+            FileDos3 file = new FileDos3 (this, catalogSector, slot);
             file.catalogEntryBlock = catalogSector;
-            file.catalogEntryIndex = index;
+            file.catalogEntryIndex = slot;
             addFile (file);
           }
           catch (FileFormatException e)
@@ -97,7 +97,7 @@ public class FsDos3 extends FsDos
           }
 
         ptr += ENTRY_SIZE;
-        index++;
+        slot++;
       }
     }
 

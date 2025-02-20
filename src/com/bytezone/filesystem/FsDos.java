@@ -18,6 +18,7 @@ public class FsDos extends AbstractFileSystem
       DateTimeFormatter.ofPattern ("dd-LLL-yy HH:mm:ss", US);
 
   static final int ENTRY_SIZE = 35;
+  static final int HEADER_SIZE = 0x0B;
 
   protected int dosVersion;
   protected int volumeNumber;
@@ -65,7 +66,7 @@ public class FsDos extends AbstractFileSystem
       case 0x08 -> "S";
       case 0x10 -> "R";
       case 0x20 -> "B";
-      case 0x40 -> "L";
+      case 0x40 -> "L";                     // Dos 4 uses this
       default -> "?";                       // should never happen
     };
   }
@@ -83,7 +84,7 @@ public class FsDos extends AbstractFileSystem
       case 0x08 -> "S";
       case 0x10 -> "R";
       case 0x20 -> "B";
-      case 0x40 -> "B";
+      case 0x40 -> "L";
       default -> "?";                       // should never happen
     };
   }

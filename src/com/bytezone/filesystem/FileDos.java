@@ -9,16 +9,19 @@ import com.bytezone.utility.Utility;
 public abstract class FileDos extends AbstractAppleFile
 // -----------------------------------------------------------------------------------//
 {
-  protected int sectorCount;
+  static final int ENTRY_SIZE = 0x23;
+  static final int HEADER_SIZE = 0x0B;
+
   protected int eof;
   protected int loadAddress;
   protected int textFileGaps;       // total sparse file empty data sectors
 
   protected List<AppleBlock> indexBlocks = new ArrayList<> ();
-  protected boolean isNameValid;
 
   protected AppleBlock catalogEntryBlock;
   protected int catalogEntryIndex;
+
+  protected CatalogEntryDos catalogEntry;
 
   // ---------------------------------------------------------------------------------//
   FileDos (FsDos fs)
@@ -31,7 +34,7 @@ public abstract class FileDos extends AbstractAppleFile
   protected void setLength ()
   // ---------------------------------------------------------------------------------//
   {
-    if (getFileType () == 4 || getFileType () == 0x40)          // binary
+    if (getFileType () == 0x04 || getFileType () == 0x40)          // binary
     {
       if (dataBlocks.size () > 0)
       {
@@ -91,7 +94,7 @@ public abstract class FileDos extends AbstractAppleFile
   public int getSectorCount ()
   // ---------------------------------------------------------------------------------//
   {
-    return sectorCount;
+    return catalogEntry.sectorCount;
   }
 
   // ---------------------------------------------------------------------------------//
@@ -108,6 +111,30 @@ public abstract class FileDos extends AbstractAppleFile
     return indexBlocks.size ();
   }
 
+  // ---------------------------------------------------------------------------------//
+  @Override
+  public String getFileName ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return catalogEntry.fileName;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
+  public boolean isLocked ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return catalogEntry.isLocked;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
+  public int getFileType ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return catalogEntry.fileType;
+  }
+
   // attempt to weed out the catalog entries that are just labels
   // ---------------------------------------------------------------------------------//
   @Override
@@ -118,7 +145,7 @@ public abstract class FileDos extends AbstractAppleFile
     if (getFileType () == 2 && eof <= 3 && getFileName ().startsWith ("  "))
       return false;
 
-    return isNameValid && dataBlocks.size () > 0;
+    return catalogEntry.isNameValid && dataBlocks.size () > 0;
   }
 
   // ---------------------------------------------------------------------------------//
@@ -143,7 +170,8 @@ public abstract class FileDos extends AbstractAppleFile
     text.append (String.format ("Catalog sector ........ %02X / %02X%n",
         catalogEntryBlock.getTrackNo (), catalogEntryBlock.getSectorNo ()));
     text.append (String.format ("Catalog entry ......... %d%n", catalogEntryIndex));
-    text.append (String.format ("Sectors ............... %04X  %<,5d%n", sectorCount));
+    text.append (String.format ("Sectors ............... %04X  %<,5d%n",
+        catalogEntry.sectorCount));
     text.append (String.format ("File length ........... %04X  %<,5d%n", eof));
     text.append (String.format ("Load address .......... %04X  %<,5d%n", loadAddress));
     text.append (String.format ("Text file gaps ........ %04X  %<,5d%n", textFileGaps));

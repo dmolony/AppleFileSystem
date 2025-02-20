@@ -25,8 +25,6 @@ public class CatalogEntryDos4 extends CatalogEntryDos
   // ---------------------------------------------------------------------------------//
   {
     super (catalogBlock, slot);
-
-    read ();
   }
 
   // ---------------------------------------------------------------------------------//
@@ -34,18 +32,17 @@ public class CatalogEntryDos4 extends CatalogEntryDos
   void read ()
   // ---------------------------------------------------------------------------------//
   {
+    super.readCommon ();
+
     int ptr = HEADER_SIZE + slot * ENTRY_SIZE;
 
     deleted = (buffer[ptr] & 0x80) != 0;
     tsListZero = (buffer[ptr] & 0x40) != 0;
 
-    isLocked = (buffer[ptr + 2] & 0x80) != 0;
-    fileType = buffer[ptr + 2] & 0x7F;
-
     fileName = Utility.string (buffer, ptr + 3, 24).trim ();
-    isNameValid = checkName (fileName);                 // check for invalid characters
+    checkName ();                 // check for invalid characters
+
     modified = Utility.getDos4LocalDateTime (buffer, ptr + 27);
-    sectorCount = Utility.unsignedShort (buffer, ptr + 33);
   }
 
   // ---------------------------------------------------------------------------------//
@@ -53,7 +50,17 @@ public class CatalogEntryDos4 extends CatalogEntryDos
   void write ()
   // ---------------------------------------------------------------------------------//
   {
+    int ptr = HEADER_SIZE + slot * ENTRY_SIZE;
 
+    buffer[ptr] = (byte) firstTrack;
+    buffer[ptr + 1] = (byte) firstSector;
+    buffer[ptr + 2] = (byte) (fileType | (isLocked ? 0x80 : 0x00));
+
+    Utility.writeString (String.format ("%-24s", fileName), buffer, ptr + 3);
+    Utility.writeDos4LocalDateTime (buffer, ptr + 27, modified);
+    Utility.writeShort (buffer, ptr + 33, sectorCount);
+
+    catalogBlock.markDirty ();
   }
 
   // ---------------------------------------------------------------------------------//
@@ -61,19 +68,7 @@ public class CatalogEntryDos4 extends CatalogEntryDos
   void delete ()
   // ---------------------------------------------------------------------------------//
   {
-
-  }
-
-  // ---------------------------------------------------------------------------------//
-  @Override
-  protected boolean checkName (String name)
-  // ---------------------------------------------------------------------------------//
-  {
-    for (byte b : name.getBytes ())
-      if (b == (byte) 0x88)
-        return false;
-
-    return true;
+    firstTrack &= 0x80;
   }
 
   // ---------------------------------------------------------------------------------//
