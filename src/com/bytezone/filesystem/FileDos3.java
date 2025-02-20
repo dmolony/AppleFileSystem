@@ -21,9 +21,6 @@ public class FileDos3 extends FileDos
 
     catalogEntry = new CatalogEntryDos3 (catalogBlock, slot);
 
-    //    isNameValid = catalogEntry.isNameValid;
-    //    sectorCount = catalogEntry.sectorCount;
-
     String blockSubType = fs.getBlockSubTypeText (getFileType ());
 
     // build lists of index and data sectors

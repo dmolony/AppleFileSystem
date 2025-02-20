@@ -21,9 +21,6 @@ public class FileDos4 extends FileDos
 
     catalogEntry = new CatalogEntryDos4 (catalogSector, slot);
 
-    //    isNameValid = catalogEntry.isNameValid;
-    //    sectorCount = catalogEntry.sectorCount;
-
     String blockSubType = fs.getBlockSubTypeText (catalogEntry.fileType);
 
     // build lists of index and data sectors

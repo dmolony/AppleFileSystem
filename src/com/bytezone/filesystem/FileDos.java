@@ -18,9 +18,6 @@ public abstract class FileDos extends AbstractAppleFile
 
   protected List<AppleBlock> indexBlocks = new ArrayList<> ();
 
-  protected AppleBlock catalogEntryBlock;
-  protected int catalogEntryIndex;
-
   protected CatalogEntryDos catalogEntry;
 
   // ---------------------------------------------------------------------------------//
@@ -88,6 +85,20 @@ public abstract class FileDos extends AbstractAppleFile
   // ---------------------------------------------------------------------------------//
   {
     return loadAddress;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  AppleBlock getCatalogBlock ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return catalogEntry.catalogBlock;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  int getCatalogSlot ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return catalogEntry.slot;
   }
 
   // ---------------------------------------------------------------------------------//
@@ -166,10 +177,12 @@ public abstract class FileDos extends AbstractAppleFile
   {
     StringBuilder text = new StringBuilder (super.toString ());
 
+    AppleBlock catalogEntryBlock = catalogEntry.catalogBlock;
+
     text.append (String.format ("Locked ................ %s%n", isLocked ()));
     text.append (String.format ("Catalog sector ........ %02X / %02X%n",
         catalogEntryBlock.getTrackNo (), catalogEntryBlock.getSectorNo ()));
-    text.append (String.format ("Catalog entry ......... %d%n", catalogEntryIndex));
+    text.append (String.format ("Catalog entry ......... %d%n", catalogEntry.slot));
     text.append (String.format ("Sectors ............... %04X  %<,5d%n",
         catalogEntry.sectorCount));
     text.append (String.format ("File length ........... %04X  %<,5d%n", eof));

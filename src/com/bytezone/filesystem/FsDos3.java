@@ -82,8 +82,8 @@ public class FsDos3 extends FsDos
           {
             //            FileDos3 file = new FileDos3 (this, buffer, ptr, index);
             FileDos3 file = new FileDos3 (this, catalogSector, slot);
-            file.catalogEntryBlock = catalogSector;
-            file.catalogEntryIndex = slot;
+            //            file.catalogEntryBlock = catalogSector;
+            //            file.catalogEntryIndex = slot;
             addFile (file);
           }
           catch (FileFormatException e)
@@ -173,10 +173,12 @@ public class FsDos3 extends FsDos
     if (file.getParentFileSystem () != this)
       throw new InvalidParentFileSystemException ("file not part of this File System");
 
+    FileDos3 fileDos3 = (FileDos3) file;
+
     // mark file as deleted in the catalog
-    AppleBlock catalogSector = ((FileDos3) file).catalogEntryBlock;
+    AppleBlock catalogSector = fileDos3.getCatalogBlock ();
     byte[] buffer = catalogSector.getBuffer ();
-    int ptr = 11 + ((FileDos3) file).catalogEntryIndex * ENTRY_SIZE;
+    int ptr = HEADER_SIZE + fileDos3.getCatalogSlot () * ENTRY_SIZE;
     buffer[ptr + 0x20] = buffer[ptr];
     buffer[ptr] = (byte) 0xFF;            // deleted file
     catalogSector.markDirty ();
