@@ -19,25 +19,22 @@ public class FsCpm extends AbstractFileSystem
   {
     super (blockReader, FileSystemType.CPM);
 
-    assert getTotalCatalogBlocks () == 0;
-
     int catalogBlocks = 0;
-
     int firstBlock = 0;
     int maxBlocks = 0;
-    int size = 0;
+    int blockAddressSize = 0;
 
     if (getDiskBuffer ().length () == 143_360)
     {
-      firstBlock = 12;        // track 3 x (4 blocks per track)
-      maxBlocks = 2;          // 2 blocks (half a track)
-      size = 8;               // 8 bits per block address
+      firstBlock = 12;            // track 3 x (4 blocks per track)
+      maxBlocks = 2;              // 2 blocks (half a track)
+      blockAddressSize = 8;       // 8 bits per block address
     }
     else if (getDiskBuffer ().length () == 819_200)
     {
-      firstBlock = 16;        // track 4 x (4 blocks per track)
-      maxBlocks = 8;          // 8 blocks (2 full tracks)
-      size = 16;              // 16 bits per block address
+      firstBlock = 16;            // track 4 x (4 blocks per track)
+      maxBlocks = 8;              // 8 blocks (2 full tracks)
+      blockAddressSize = 16;      // 16 bits per block address
     }
 
     OUT: for (int i = 0; i < maxBlocks; i++)
@@ -46,9 +43,9 @@ public class FsCpm extends AbstractFileSystem
       block.setBlockSubType ("CATALOG");
       byte[] buffer = block.getBuffer ();
 
-      for (int j = 0; j < buffer.length; j += 32)
+      for (int ptr = 0; ptr < buffer.length; ptr += 32)
       {
-        int b1 = buffer[j] & 0xFF;          // user number
+        int b1 = buffer[ptr] & 0xFF;        // user number
         if (b1 == EMPTY_BYTE_VALUE)         // deleted file??
           continue;
 
@@ -56,12 +53,12 @@ public class FsCpm extends AbstractFileSystem
           //          throw new FileFormatException ("CPM: bad user number: " + b1);
           break OUT;
 
-        int b2 = buffer[j + 1] & 0xFF;      // first letter of filename
+        int b2 = buffer[ptr + 1] & 0xFF;      // first letter of filename
         if (b2 <= 32 || (b2 > 126 && b2 != EMPTY_BYTE_VALUE))
           //          throw new FileFormatException ("CPM: bad name value");
           break OUT;
 
-        fileEntries.add (new CatalogEntryCpm (buffer, j, size));
+        fileEntries.add (new CatalogEntryCpm (buffer, ptr, blockAddressSize));
       }
 
       ++catalogBlocks;
@@ -77,9 +74,6 @@ public class FsCpm extends AbstractFileSystem
 
     for (CatalogEntryCpm fileEntryCpm : fileEntries)
     {
-      //      System.out.println (fileEntryCpm);
-      //      System.out.println ();
-
       if (fileEntryCpm.getExtentNo () == 0 && shortList.size () > 0)
       {
         files.add (new FileCpm (this, shortList));

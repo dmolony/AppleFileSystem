@@ -158,12 +158,12 @@ public abstract class AbstractAppleFile implements AppleFile
   }
 
   // ---------------------------------------------------------------------------------//
-  @Override
-  public void delete ()
-  // ---------------------------------------------------------------------------------//
-  {
-    getParentFileSystem ().deleteFile (this);
-  }
+  //  @Override
+  //  public void delete ()
+  //  // ---------------------------------------------------------------------------------//
+  //  {
+  //    getParentFileSystem ().deleteFile (this);
+  //  }
 
   // ---------------------------------------------------------------------------------//
   @Override

@@ -18,7 +18,7 @@ public class FsPascal extends AbstractFileSystem
       DateTimeFormatter.ofLocalizedDate (FormatStyle.SHORT);
 
   private static final int CATALOG_ENTRY_SIZE = 26;
-  private CatalogEntryPascal[] fileEntries;
+  private CatalogEntryPascal[] catalogEntries;
 
   private List<AppleBlock> catalogBlocks = new ArrayList<> ();
   private byte[] catalogBuffer;
@@ -52,12 +52,12 @@ public class FsPascal extends AbstractFileSystem
 
     // read all potential catalog entries (78 in 4 blocks)
     int maxEntries = totalCatalogBlocks * getBlockSize () / CATALOG_ENTRY_SIZE;
-    fileEntries = new CatalogEntryPascal[maxEntries];
+    catalogEntries = new CatalogEntryPascal[maxEntries];
 
     for (int i = 0; i < maxEntries; i++)
-      fileEntries[i] = new CatalogEntryPascal (catalogBlocks, catalogBuffer, i);
+      catalogEntries[i] = new CatalogEntryPascal (catalogBlocks, catalogBuffer, i);
 
-    CatalogEntryPascal volumeEntry = fileEntries[0];
+    CatalogEntryPascal volumeEntry = catalogEntries[0];
     freeBlocks = volumeEntry.totalBlocks - firstFileBlock;
 
     volumeBitMap = new BitSet (volumeEntry.totalBlocks);    // initially all off (used)
@@ -66,7 +66,7 @@ public class FsPascal extends AbstractFileSystem
     // process each file in the catalog (skip the volume entry)
     for (int i = 1, count = 0; count < volumeEntry.totalFiles; i++)
     {
-      CatalogEntryPascal catalogEntry = fileEntries[i];
+      CatalogEntryPascal catalogEntry = catalogEntries[i];
 
       if (catalogEntry.firstBlock == 0)
         continue;
@@ -76,7 +76,7 @@ public class FsPascal extends AbstractFileSystem
       //      if (catalogEntry.fileType == 2)                           // Code
       //        addFile (new FilePascalCode (this, catalogEntry, i));
       //      else
-      addFile (new FilePascal (this, catalogEntry, i));
+      addFile (new FilePascal (this, catalogEntry));
     }
 
     if (debug)
@@ -119,21 +119,21 @@ public class FsPascal extends AbstractFileSystem
   public int getVolumeTotalBlocks ()
   // ---------------------------------------------------------------------------------//
   {
-    return fileEntries[0].totalBlocks;
+    return catalogEntries[0].totalBlocks;
   }
 
   // ---------------------------------------------------------------------------------//
   public String getVolumeName ()
   // ---------------------------------------------------------------------------------//
   {
-    return fileEntries[0].volumeName;
+    return catalogEntries[0].volumeName;
   }
 
   // ---------------------------------------------------------------------------------//
   public LocalDate getDate ()
   // ---------------------------------------------------------------------------------//
   {
-    return fileEntries[0].volumeDate;
+    return catalogEntries[0].volumeDate;
   }
 
   // ---------------------------------------------------------------------------------//
@@ -150,22 +150,22 @@ public class FsPascal extends AbstractFileSystem
   // ---------------------------------------------------------------------------------//
   {
     int count = 0;
-    CatalogEntryPascal volumeEntry = fileEntries[0];
+    CatalogEntryPascal volumeEntry = catalogEntries[0];
     int nextBlock = volumeEntry.lastCatalogBlock;         // where to store the next file
 
-    for (int i = 1; i < fileEntries.length; i++)          // skip volume header
+    for (int i = 1; i < catalogEntries.length; i++)          // skip volume header
     {
       if (count++ == volumeEntry.totalFiles)
         break;
 
-      if (fileEntries[i].firstBlock == 0)                 // found a gap
+      if (catalogEntries[i].firstBlock == 0)                 // found a gap
       {
         if (debug)
           System.out.printf ("Crunching slot %d%n", i);
         moveFile (findNextSlot (i), i, nextBlock);        // fill the gap
       }
 
-      nextBlock += fileEntries[i].length ();              // now has valid data
+      nextBlock += catalogEntries[i].length ();              // now has valid data
     }
 
     writeCatalogBlocks ();                   // move catalog buffers to disk buffer
@@ -184,7 +184,7 @@ public class FsPascal extends AbstractFileSystem
     {
       System.out.printf ("Moving slot %d (%s) to slot %d%n", slotFrom,
           file.getFileName (), slotTo);
-      CatalogEntryPascal from = fileEntries[slotFrom];
+      CatalogEntryPascal from = catalogEntries[slotFrom];
       System.out.printf ("  Blocks %3d:%3d -> %3d:%3d%n", from.firstBlock,
           from.lastBlock - 1, nextDataBlock, nextDataBlock + oldBlocks.size () - 1);
     }
@@ -217,14 +217,14 @@ public class FsPascal extends AbstractFileSystem
     oldBlocks.addAll (newBlocks);
 
     // move catalog data to new slot
-    fileEntries[slotTo].copyFileEntry (fileEntries[slotFrom], nextDataBlock);
+    catalogEntries[slotTo].copyFileEntry (catalogEntries[slotFrom], nextDataBlock);
 
     // mark old slot as unused
-    fileEntries[slotFrom].clearFileEntry ();
+    catalogEntries[slotFrom].clearFileEntry ();
 
     // update catalog buffer
-    fileEntries[slotFrom].write ();
-    fileEntries[slotTo].write ();
+    catalogEntries[slotFrom].write ();
+    catalogEntries[slotTo].write ();
 
     if (debug)
     {
@@ -238,7 +238,7 @@ public class FsPascal extends AbstractFileSystem
   private FilePascal findFile (int slot)
   // ---------------------------------------------------------------------------------//
   {
-    CatalogEntryPascal fileEntry = fileEntries[slot];
+    CatalogEntryPascal fileEntry = catalogEntries[slot];
 
     for (AppleFile file : files)
       if (file.getFileName ().equals (fileEntry.fileName))
@@ -253,8 +253,8 @@ public class FsPascal extends AbstractFileSystem
   private int findSlot (FilePascal file)
   // ---------------------------------------------------------------------------------//
   {
-    for (int i = 1; i < fileEntries.length; i++)
-      if (fileEntries[i].fileName.equals (file.getFileName ()))
+    for (int i = 1; i < catalogEntries.length; i++)
+      if (catalogEntries[i].fileName.equals (file.getFileName ()))
         return i;
 
     System.out.println (file.getFileName () + " not found");
@@ -266,7 +266,7 @@ public class FsPascal extends AbstractFileSystem
   private int findNextSlot (int from)
   // ---------------------------------------------------------------------------------//
   {
-    while (fileEntries[from].firstBlock == 0)
+    while (catalogEntries[from].firstBlock == 0)
       ++from;
 
     return from;
@@ -288,8 +288,8 @@ public class FsPascal extends AbstractFileSystem
     for (AppleBlock block : file.getBlocks ())
       volumeBitMap.set (block.getBlockNo ());               // on = free
 
-    fileEntries[0].clearFileEntry ();
-    fileEntries[findSlot (file)].clearFileEntry ();
+    catalogEntries[0].clearFileEntry ();
+    catalogEntries[findSlot (file)].clearFileEntry ();
 
     files.remove (file);
 
@@ -321,12 +321,12 @@ public class FsPascal extends AbstractFileSystem
   // ---------------------------------------------------------------------------------//
   {
     int count = 0;
-    int max = fileEntries[0].totalFiles;
+    int max = catalogEntries[0].totalFiles;
 
     for (int i = 0; count < max; i++)
     {
-      System.out.println (fileEntries[i].getLine ());
-      if (fileEntries[i].firstBlock > 0)
+      System.out.println (catalogEntries[i].getLine ());
+      if (catalogEntries[i].firstBlock > 0)
         ++count;
     }
   }
@@ -340,7 +340,7 @@ public class FsPascal extends AbstractFileSystem
 
     String line = "----   ---------------   ----   --------  -------   ----   ----";
 
-    CatalogEntryPascal volumeEntry = fileEntries[0];
+    CatalogEntryPascal volumeEntry = catalogEntries[0];
     String date = getDate () == null ? "--" : getDate ().format (dtf);
 
     text.append (String.format ("Volume : %s%n", getVolumeName ()));
@@ -372,7 +372,7 @@ public class FsPascal extends AbstractFileSystem
   {
     StringBuilder text = new StringBuilder (super.toString ());
 
-    text.append (fileEntries[0]);
+    text.append (catalogEntries[0]);
     //    text.append ("\n\n");
 
     return Utility.rtrim (text);

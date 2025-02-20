@@ -1,6 +1,8 @@
 package com.bytezone.filesystem;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 import com.bytezone.filesystem.AppleBlock.BlockType;
 import com.bytezone.utility.Utility;
@@ -12,6 +14,7 @@ class FsDos4 extends FsDos
   private static final String underline =
       "- --- ---  ------------------------  ---------------  -----"
           + "  -------------  -- ---  -------------------\n";
+
   private int vtocStructureBlock;
   private int buildNumber;
   private char ramDos;
@@ -21,94 +24,109 @@ class FsDos4 extends FsDos
   private int volumeLibrary;
   private LocalDateTime vtocTime;
 
+  List<AppleBlock> catalogSectors = new ArrayList<> ();
+
   // ---------------------------------------------------------------------------------//
   FsDos4 (BlockReader blockReader)
   // ---------------------------------------------------------------------------------//
   {
     super (blockReader, FileSystemType.DOS4);
 
-    int catalogBlocks = 0;
-
     AppleBlock vtoc = getSector (17, 0, BlockType.FS_DATA);
+    if (vtoc == null)
+      throw new FileFormatException ("Dos: Invalid VTOC");
+
     vtoc.setBlockSubType ("VTOC");
+
     byte[] buffer = vtoc.getBuffer ();
 
-    createVolumeBitMap (buffer);
+    int track = buffer[1] & 0xFF;
+    int sector = buffer[2] & 0xFF;
 
-    int version = buffer[3] & 0xFF;
-    if (version < 65 || version > 69)         // 0x41 .. 0x45
-      return;
+    dosVersion = buffer[3] & 0xFF;
+    if (dosVersion < 0x41 || dosVersion > 0x45)
+      throw new FileFormatException (
+          String.format ("Dos: version byte invalid: %02X", dosVersion));
 
     vtocStructureBlock = buffer[0] & 0xFF;
-    dosVersion = buffer[3] & 0xFF;
     buildNumber = buffer[4] & 0xFF;
     ramDos = (char) (buffer[5] & 0x7F);
     volumeNumber = buffer[6] & 0xFF;
     volumeType = (char) (buffer[7] & 0x7F);
     volumeName = Utility.string (buffer, 8, 24);
+
     initTime = Utility.getDos4LocalDateTime (buffer, 32);
     maxTSpairs = buffer[39] & 0xFF;
     volumeLibrary = Utility.unsignedShort (buffer, 40);
     vtocTime = Utility.getDos4LocalDateTime (buffer, 42);
+
     lastTrackAllocated = buffer[48] & 0xFF;
     direction = buffer[49];
     tracksPerDisk = buffer[52] & 0xFF;
     sectorsPerTrack = buffer[53] & 0xFF;
     bytesPerSector = Utility.unsignedShort (buffer, 54);
 
-    while (true)
+    createVolumeBitMap (buffer);
+
+    while (track > 0)           // track needs zero flag for loop to work
     {
-      int track = buffer[1] & 0xFF;
-      int sector = buffer[2] & 0xFF;
-
-      if (track == 0)
-        break;
-
       track &= 0x3F;            // remove deleted (0x80) and track zero (0x40) flags
       sector &= 0x1F;
 
       AppleBlock catalogSector = getSector (track, sector, BlockType.FS_DATA);
+
       if (catalogSector == null)
-        return;
+        throw new FileFormatException ("Dos: Invalid catalog sector");
+      if (checkDuplicate (catalogSectors, catalogSector))
+        throw new FileFormatException ("Dos: Duplicate catalog sector (looping)");
 
       catalogSector.setBlockSubType ("CATALOG");
+      catalogSectors.add (catalogSector);
+
+      readCatalogBlock (catalogSector);
+
       buffer = catalogSector.getBuffer ();
-
-      int ptr = HEADER_SIZE;
-      int slot = 0;
-
-      while (ptr < buffer.length && buffer[ptr] != 0)
-      {
-        if ((buffer[ptr] & 0x80) != 0)        // deleted file
-        {
-          String fileName = Utility.string (buffer, ptr + 3, 24).trim ();
-          deletedFiles.add (fileName);
-        }
-        else
-        {
-          try
-          {
-            FileDos4 file = new FileDos4 (this, catalogSector, slot);
-            addFile (file);
-          }
-          catch (FileFormatException e)
-          {
-            System.out.println (e);
-            String fileName = Utility.string (buffer, ptr + 3, 24).trim ();
-            failedFiles.add (fileName);
-            break;
-          }
-        }
-
-        ptr += ENTRY_SIZE;
-        ++slot;
-      }
-      ++catalogBlocks;
+      track = buffer[1] & 0xFF;
+      sector = buffer[2] & 0xFF;
     }
 
-    setTotalCatalogBlocks (catalogBlocks);
+    setTotalCatalogBlocks (catalogSectors.size ());
+
     if (volumeType == 'B')
       flagDosSectors ();
+  }
+
+  // ---------------------------------------------------------------------------------//
+  private void readCatalogBlock (AppleBlock catalogSector)
+  // ---------------------------------------------------------------------------------//
+  {
+    byte[] buffer = catalogSector.getBuffer ();
+
+    int ptr = HEADER_SIZE;
+    int slot = 0;
+
+    while (ptr < buffer.length && buffer[ptr] != 0)
+    {
+      if ((buffer[ptr] & 0x80) != 0)         // deleted file
+      {
+        String fileName = Utility.string (buffer, ptr + 3, 24).trim ();
+        addDeletedFile (buffer, ptr, fileName);
+      }
+      else
+        try
+        {
+          FileDos4 file = new FileDos4 (this, catalogSector, slot);
+          addFile (file);
+        }
+        catch (FileFormatException e)
+        {
+          String fileName = Utility.string (buffer, ptr + 3, 24).trim ();
+          addFailedFile (buffer, ptr, fileName);
+        }
+
+      ptr += ENTRY_SIZE;
+      slot++;
+    }
   }
 
   // ---------------------------------------------------------------------------------//
@@ -119,40 +137,10 @@ class FsDos4 extends FsDos
     StringBuilder text = new StringBuilder ();
 
     text.append (String.format ("Volume : %03d  %s%n%n", volumeNumber, volumeName));
-
     text.append ("L Typ Len  Name                      Modified         Addr"
         + "   Length         TS DAT  Comment\n");
-    text.append (underline);
 
-    for (AppleFile file : getFiles ())
-    {
-      text.append (file.getCatalogLine ());
-      text.append ("\n");
-    }
-
-    int totalSectors = getTotalBlocks ();
-    int freeSectors = getTotalFreeBlocks ();
-
-    text.append (underline);
-    text.append (String.format (
-        "           Free sectors: %3d    " + "Used sectors: %3d    Total sectors: %3d",
-        freeSectors, totalSectors - freeSectors, totalSectors));
-
-    if (deletedFiles.size () > 0)
-    {
-      text.append ("\n\nDeleted files\n");
-      text.append ("-------------\n");
-      for (String name : deletedFiles)
-        text.append (String.format ("%s%n", name));
-    }
-
-    if (failedFiles.size () > 0)
-    {
-      text.append ("\n\nFailed files\n");
-      text.append ("------------\n");
-      for (String name : failedFiles)
-        text.append (String.format ("%s%n", name));
-    }
+    super.addCatalogLines (text, underline);
 
     return Utility.rtrim (text);
   }

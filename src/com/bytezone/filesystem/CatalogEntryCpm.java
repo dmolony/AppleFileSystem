@@ -29,7 +29,7 @@ public class CatalogEntryCpm implements Iterable<Integer>
   private final int extentNo;
 
   // ---------------------------------------------------------------------------------//
-  CatalogEntryCpm (byte[] buffer, int ptr, int size)
+  CatalogEntryCpm (byte[] buffer, int ptr, int blockAddressSize)
   // ---------------------------------------------------------------------------------//
   {
     userNumber = buffer[ptr] & 0xFF;
@@ -55,7 +55,7 @@ public class CatalogEntryCpm implements Iterable<Integer>
 
     extentNo = (extentCounterLo & 0x1F) | ((extentCounterHi & 0x3F) << 5);
 
-    if (size == 8)
+    if (blockAddressSize == 8)
       addDataBlocks8 (buffer, ptr + 16);
     else
       addDataBlocks16 (buffer, ptr + 16);

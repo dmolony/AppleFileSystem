@@ -40,6 +40,18 @@ public class FsDos extends AbstractFileSystem
   }
 
   // ---------------------------------------------------------------------------------//
+  protected boolean checkDuplicate (List<AppleBlock> catalogSectors,
+      AppleBlock testSector)
+  // ---------------------------------------------------------------------------------//
+  {
+    for (AppleBlock catalogSector : catalogSectors)
+      if (catalogSector.getBlockNo () == testSector.getBlockNo ())
+        return true;
+
+    return false;
+  }
+
+  // ---------------------------------------------------------------------------------//
   public int getTracksPerDisk ()
   // ---------------------------------------------------------------------------------//
   {
@@ -162,6 +174,69 @@ public class FsDos extends AbstractFileSystem
         block.setBlockSubType ("DOS");
       }
     }
+  }
+
+  // ---------------------------------------------------------------------------------//
+  protected void addDeletedFile (byte[] buffer, int ptr, String fileName)
+  // ---------------------------------------------------------------------------------//
+  {
+    int sectorCount = Utility.unsignedShort (buffer, ptr + 33);
+    int fileType = buffer[ptr + 2] & 0x7F;
+    boolean isLocked = (buffer[ptr + 2] & 0x80) != 0;
+
+    deletedFiles.add (String.format ("%s  %s  %03d  %s", isLocked ? "*" : " ",
+        getFileTypeText (fileType), sectorCount, fileName));
+  }
+
+  // ---------------------------------------------------------------------------------//
+  protected void addFailedFile (byte[] buffer, int ptr, String fileName)
+  // ---------------------------------------------------------------------------------//
+  {
+    int sectorCount = Utility.unsignedShort (buffer, ptr + 33);
+    int fileType = buffer[ptr + 2] & 0x7F;
+    boolean isLocked = (buffer[ptr + 2] & 0x80) != 0;
+
+    failedFiles.add (String.format ("%s  %s  %03d  %s", isLocked ? "*" : " ",
+        getFileTypeText (fileType), sectorCount, fileName));
+  }
+
+  // ---------------------------------------------------------------------------------//
+  protected StringBuilder addCatalogLines (StringBuilder text, String underline)
+  // ---------------------------------------------------------------------------------//
+  {
+    text.append (underline);
+
+    for (AppleFile file : getFiles ())
+    {
+      text.append (file.getCatalogLine ());
+      text.append ("\n");
+    }
+
+    int totalSectors = getTotalBlocks ();
+    int freeSectors = getTotalFreeBlocks ();
+
+    text.append (underline);
+    text.append (String.format (
+        "           Free sectors: %3d    " + "Used sectors: %3d    Total sectors: %3d",
+        freeSectors, totalSectors - freeSectors, totalSectors));
+
+    if (deletedFiles.size () > 0)
+    {
+      text.append ("\n\nDeleted files\n");
+      text.append ("-------------\n");
+      for (String name : deletedFiles)
+        text.append (String.format ("%s%n", name));
+    }
+
+    if (failedFiles.size () > 0)
+    {
+      text.append ("\n\nFailed files\n");
+      text.append ("------------\n");
+      for (String name : failedFiles)
+        text.append (String.format ("%s%n", name));
+    }
+
+    return text;
   }
 
   // ---------------------------------------------------------------------------------//

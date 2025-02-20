@@ -161,6 +161,7 @@ abstract class AbstractFileSystem implements AppleFileSystem
     return volumeBitMap == null ? false : volumeBitMap.get (block.getBlockNo ());
   }
 
+  // cleans all blocks marked as free
   // ---------------------------------------------------------------------------------//
   @Override
   public void cleanDisk ()
@@ -312,7 +313,7 @@ abstract class AbstractFileSystem implements AppleFileSystem
   public void putFile (AppleFile file)
   // ---------------------------------------------------------------------------------//
   {
-    System.out.println ("AbstractFileSystem.putFile() not written yet");
+    System.out.println ("putFile() not implemented in " + fileSystemType);
   }
 
   // ---------------------------------------------------------------------------------//
@@ -320,7 +321,8 @@ abstract class AbstractFileSystem implements AppleFileSystem
   public void deleteFile (AppleFile file)
   // ---------------------------------------------------------------------------------//
   {
-    throw new UnsupportedOperationException ("deleteFile() not implemented");
+    throw new UnsupportedOperationException (
+        "deleteFile() not implemented in " + fileSystemType);
   }
 
   // ---------------------------------------------------------------------------------//
@@ -357,7 +359,7 @@ abstract class AbstractFileSystem implements AppleFileSystem
     return factory;
   }
 
-  // Called when an AppleFile should contain a FileSystem (LIB, PAR, FileZip etc)
+  // Called when an AppleFile contains a FileSystem (LIB, PAR, FileZip etc)
   // ---------------------------------------------------------------------------------//
   protected AppleFileSystem addEmbeddedFileSystem (AppleFile file, int offset)
   // ---------------------------------------------------------------------------------//

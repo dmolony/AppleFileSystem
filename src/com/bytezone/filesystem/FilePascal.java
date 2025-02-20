@@ -19,16 +19,14 @@ public class FilePascal extends AbstractAppleFile
       { "Volume", "Bad ", "Code", "Text", "Info", "Data", "Graf", "Foto", "SecureDir" };
 
   CatalogEntryPascal catalogEntry;
-  int slot;
 
   // ---------------------------------------------------------------------------------//
-  FilePascal (FsPascal fs, CatalogEntryPascal catalogEntry, int slot)
+  FilePascal (FsPascal fs, CatalogEntryPascal catalogEntry)
   // ---------------------------------------------------------------------------------//
   {
     super (fs);
 
     this.catalogEntry = catalogEntry;
-    this.slot = slot;
 
     for (int i = catalogEntry.firstBlock; i < catalogEntry.lastBlock; i++)
     {

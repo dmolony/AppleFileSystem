@@ -57,14 +57,14 @@ public class TestWrite extends Tester
       ++count;
       if (count == 1 || count == 6)
       {
-
         System.out.printf ("%s %s %s%n", indent.substring (0, depth * 2),
             file.getFileName (), file.isForkedFile () ? "*** Forked ***" : "");
 
         if (file.isFolder ())
           deleteFiles ((AppleContainer) file, depth + 1);
 
-        file.delete ();
+        AppleFileSystem fs = file.getParentFileSystem ();
+        fs.deleteFile (file);
       }
     }
   }

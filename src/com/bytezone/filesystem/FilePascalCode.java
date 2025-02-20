@@ -20,10 +20,10 @@ public class FilePascalCode extends FilePascal implements AppleContainer
   String comment;
 
   // ---------------------------------------------------------------------------------//
-  FilePascalCode (FsPascal fs, CatalogEntryPascal catalogEntry, int slot)
+  FilePascalCode (FsPascal fs, CatalogEntryPascal catalogEntry)
   // ---------------------------------------------------------------------------------//
   {
-    super (fs, catalogEntry, slot);
+    super (fs, catalogEntry);
 
     AppleBlock block = fs.getBlock (getFirstBlock ());
     byte[] buffer = block.getBuffer ();          // code catalog
