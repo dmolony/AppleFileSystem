@@ -36,7 +36,7 @@ public class FsDos3 extends FsDos
     dosVersion = buffer[0x03] & 0xFF;
     if (dosVersion < 0x01 || dosVersion > 0x03)
       throw new FileFormatException (
-          String.format ("Dos: version byte invalid: %02X", dosVersion));
+          String.format ("Dos3: version byte invalid: %02X", dosVersion));
 
     volumeNumber = buffer[0x06] & 0xFF;
     maxTSpairs = buffer[0x27] & 0xFF;
@@ -79,7 +79,6 @@ public class FsDos3 extends FsDos
     byte[] buffer = catalogSector.getBuffer ();
 
     int ptr = HEADER_SIZE;
-    int slot = 0;
 
     while (ptr < buffer.length && buffer[ptr] != 0)
     {
@@ -91,7 +90,7 @@ public class FsDos3 extends FsDos
       else
         try
         {
-          FileDos3 file = new FileDos3 (this, catalogSector, slot);
+          FileDos3 file = new FileDos3 (this, catalogSector, ptr);
           addFile (file);
         }
         catch (FileFormatException e)
@@ -101,7 +100,6 @@ public class FsDos3 extends FsDos
         }
 
       ptr += ENTRY_SIZE;
-      slot++;
     }
   }
 

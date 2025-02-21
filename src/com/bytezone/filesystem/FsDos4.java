@@ -26,11 +26,16 @@ class FsDos4 extends FsDos
 
   List<AppleBlock> catalogSectors = new ArrayList<> ();
 
+  boolean debug = false;
+
   // ---------------------------------------------------------------------------------//
   FsDos4 (BlockReader blockReader)
   // ---------------------------------------------------------------------------------//
   {
     super (blockReader, FileSystemType.DOS4);
+
+    if (debug)
+      System.out.println (blockReader);
 
     AppleBlock vtoc = getSector (17, 0, BlockType.FS_DATA);
     if (vtoc == null)
@@ -40,31 +45,37 @@ class FsDos4 extends FsDos
 
     byte[] buffer = vtoc.getBuffer ();
 
+    if (debug)
+      vtoc.dump ();
+
     int track = buffer[1] & 0xFF;
     int sector = buffer[2] & 0xFF;
 
     dosVersion = buffer[3] & 0xFF;
-    if (dosVersion < 0x41 || dosVersion > 0x45)
+    if ((dosVersion < 0x41 || dosVersion > 0x45) && !debug)
       throw new FileFormatException (
-          String.format ("Dos: version byte invalid: %02X", dosVersion));
+          String.format ("Dos4: version byte invalid: %02X", dosVersion));
 
     vtocStructureBlock = buffer[0] & 0xFF;
-    buildNumber = buffer[4] & 0xFF;
-    ramDos = (char) (buffer[5] & 0x7F);
-    volumeNumber = buffer[6] & 0xFF;
-    volumeType = (char) (buffer[7] & 0x7F);
-    volumeName = Utility.string (buffer, 8, 24);
+    buildNumber = buffer[0x04] & 0xFF;
+    ramDos = (char) (buffer[0x05] & 0x7F);
+    volumeNumber = buffer[0x06] & 0xFF;
+    volumeType = (char) (buffer[0x07] & 0x7F);
+    volumeName = Utility.string (buffer, 0x08, 24);
 
-    initTime = Utility.getDos4LocalDateTime (buffer, 32);
-    maxTSpairs = buffer[39] & 0xFF;
-    volumeLibrary = Utility.unsignedShort (buffer, 40);
-    vtocTime = Utility.getDos4LocalDateTime (buffer, 42);
+    initTime = Utility.getDos4LocalDateTime (buffer, 0x20);
+    maxTSpairs = buffer[0x27] & 0xFF;
+    volumeLibrary = Utility.unsignedShort (buffer, 0x28);
+    vtocTime = Utility.getDos4LocalDateTime (buffer, 0x2A);
 
-    lastTrackAllocated = buffer[48] & 0xFF;
-    direction = buffer[49];
-    tracksPerDisk = buffer[52] & 0xFF;
-    sectorsPerTrack = buffer[53] & 0xFF;
-    bytesPerSector = Utility.unsignedShort (buffer, 54);
+    lastTrackAllocated = buffer[0x30] & 0xFF;
+    direction = buffer[0x31];
+    tracksPerDisk = buffer[0x34] & 0xFF;          // overwrite blockReader
+    sectorsPerTrack = buffer[0x35] & 0xFF;
+    bytesPerSector = Utility.unsignedShort (buffer, 0x36);
+
+    if (debug)
+      System.out.println (this);
 
     createVolumeBitMap (buffer);
 
@@ -103,7 +114,6 @@ class FsDos4 extends FsDos
     byte[] buffer = catalogSector.getBuffer ();
 
     int ptr = HEADER_SIZE;
-    int slot = 0;
 
     while (ptr < buffer.length && buffer[ptr] != 0)
     {
@@ -115,7 +125,7 @@ class FsDos4 extends FsDos
       else
         try
         {
-          FileDos4 file = new FileDos4 (this, catalogSector, slot);
+          FileDos4 file = new FileDos4 (this, catalogSector, ptr);
           addFile (file);
         }
         catch (FileFormatException e)
@@ -125,7 +135,6 @@ class FsDos4 extends FsDos
         }
 
       ptr += ENTRY_SIZE;
-      slot++;
     }
   }
 
@@ -177,16 +186,23 @@ class FsDos4 extends FsDos
     StringBuilder text = new StringBuilder (super.toString ());
 
     text.append ("\n\n----- DOS4 Header -----\n");
-    text.append (String.format ("VTOC structure block .. %02X%n", vtocStructureBlock));
-    text.append (String.format ("Build number .......... %02X%n", buildNumber));
     text.append (
-        String.format ("RAM DOS ............... %s  %s%n", ramDos, getRamTypeText ()));
-    text.append (String.format ("Volume type ........... %s  %s%n", volumeType,
-        getVolumeTypeText ()));
+        String.format ("VTOC structure block .. %02X      %<,9d%n", vtocStructureBlock));
+    text.append (
+        String.format ("Build number .......... %02X      %<,9d%n", buildNumber));
+    text.append (String.format ("RAM DOS ............... %s                  %s%n",
+        ramDos, getRamTypeText ()));
+    text.append (String.format ("Volume type ........... %s                  %s%n",
+        volumeType, getVolumeTypeText ()));
     text.append (String.format ("Volume name ........... %s%n", volumeName));
-    text.append (String.format ("Volume library ........ %04X%n", volumeLibrary));
-    text.append (String.format ("Initialised ........... %s%n", initTime.format (sdf)));
-    text.append (String.format ("Modified .............. %s%n", vtocTime.format (sdf)));
+    text.append (
+        String.format ("Volume library ........ %04X    %<,9d%n", volumeLibrary));
+    text.append (
+        String.format ("Tracks per disk ....... %02X      %<,9d%n", tracksPerDisk));
+    if (initTime != null)
+      text.append (String.format ("Initialised ........... %s%n", initTime.format (sdf)));
+    if (vtocTime != null)
+      text.append (String.format ("Modified .............. %s%n", vtocTime.format (sdf)));
 
     return Utility.rtrim (text);
   }

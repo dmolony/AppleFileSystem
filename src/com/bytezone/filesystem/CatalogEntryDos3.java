@@ -56,7 +56,7 @@ public class CatalogEntryDos3 extends CatalogEntryDos
   public String toString ()
   // ---------------------------------------------------------------------------------//
   {
-    StringBuilder text = new StringBuilder (super.toString ());
+    StringBuilder text = new StringBuilder ();
 
     text.append ("\n");
     text.append (String.format ("First track/sector ..... %02X / %02X%n", firstTrack,

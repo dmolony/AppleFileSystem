@@ -8,13 +8,13 @@ public class FileDos3 extends FileDos
 // -----------------------------------------------------------------------------------//
 {
   // ---------------------------------------------------------------------------------//
-  FileDos3 (FsDos3 fs, AppleBlock catalogBlock, int slot)
+  FileDos3 (FsDos3 fs, AppleBlock catalogBlock, int ptr)
   // ---------------------------------------------------------------------------------//
   {
     super (fs);
 
     byte[] buffer = catalogBlock.getBuffer ();
-    int ptr = HEADER_SIZE + slot * ENTRY_SIZE;
+    int slot = (ptr - HEADER_SIZE) / ENTRY_SIZE;
 
     int nextTrack = buffer[ptr] & 0xFF;
     int nextSector = buffer[ptr + 1] & 0xFF;
@@ -40,7 +40,6 @@ public class FileDos3 extends FileDos
         break;
 
       byte[] sectorBuffer = tsSector.getBuffer ();
-
       int sectorOffset = Utility.unsignedShort (sectorBuffer, 5);   // 0/122/244/366 etc
 
       for (int i = 12; i < 256; i += 2)
@@ -76,7 +75,7 @@ public class FileDos3 extends FileDos
       nextSector = sectorBuffer[2] & 0xFF;
     }
 
-    setLength ();
+    setFileLength ();
   }
 
   // ---------------------------------------------------------------------------------//

@@ -255,20 +255,18 @@ public class Utility
   }
 
   // ---------------------------------------------------------------------------------//
-  public static String string (byte[] buffer, int ptr, int nameLength)
+  public static String string (byte[] buffer, int ptr, int length)
   // ---------------------------------------------------------------------------------//
   {
     StringBuilder text = new StringBuilder ();
-    for (int i = 0; i < nameLength; i++)
+    for (int i = 0; i < length; i++)
     {
       int c = buffer[ptr + i] & 0x7F;
       if (c < 32)
-        c += 64;
-      //      if (c >= 32)
+        c += 64;                        // make ctrl characters visible
       text.append ((char) c);
-      //      else
-      //        text.append (".");
     }
+
     return text.toString ();
   }
 
@@ -320,11 +318,22 @@ public class Utility
   public static String rtrim (StringBuilder text)
   // ---------------------------------------------------------------------------------//
   {
-    if (text.length () > 0)
-      while (text.charAt (text.length () - 1) == '\n')
-        text.deleteCharAt (text.length () - 1);
+    while (text.length () > 0 && text.charAt (text.length () - 1) == '\n')
+      text.deleteCharAt (text.length () - 1);
 
     return text.toString ();
+  }
+
+  // ---------------------------------------------------------------------------------//
+  public static int getApplesoftLoadAddress (byte[] buffer)
+  // ---------------------------------------------------------------------------------//
+  {
+    int nextLine = Utility.unsignedShort (buffer, 2);
+    int ptr = 5;
+    while (buffer[++ptr] != 0)          // find end of first line
+      ;
+
+    return nextLine - ptr;
   }
 
   // ---------------------------------------------------------------------------------//
@@ -339,6 +348,12 @@ public class Utility
       text.append ("rename, ");
     if ((access & 0x20) != 0)
       text.append ("changed, ");
+    if ((access & 0x10) != 0)
+      text.append ("16?, ");
+    if ((access & 0x08) != 0)
+      text.append ("8?, ");
+    if ((access & 0x04) != 0)
+      text.append ("4?, ");
     if ((access & 0x02) != 0)
       text.append ("write, ");
     if ((access & 0x01) != 0)
@@ -363,7 +378,6 @@ public class Utility
     while (buffer[ptr++] != 0)
       ++length;
 
-    //    return new String (buffer, offset, length);
     return string (buffer, offset, length);
   }
 
@@ -386,10 +400,11 @@ public class Utility
       if (minute > 59)
         minute = 0;
 
-      if (year < 70)
-        year += 2000;
-      else
-        year += 1900;
+      year += year < 70 ? 2000 : 1900;
+      //      if (year < 70)
+      //        year += 2000;
+      //      else
+      //        year += 1900;
 
       try
       {

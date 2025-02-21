@@ -28,29 +28,42 @@ public abstract class FileDos extends AbstractAppleFile
   }
 
   // ---------------------------------------------------------------------------------//
-  protected void setLength ()
+  protected void setFileLength ()
   // ---------------------------------------------------------------------------------//
   {
-    if (getFileType () == 0x04 || getFileType () == 0x40)          // binary
+    if (dataBlocks.size () == 0)
     {
-      if (dataBlocks.size () > 0)
-      {
-        byte[] buffer = dataBlocks.get (0).getBuffer ();
+      eof = 0;
+      return;
+    }
+
+    byte[] buffer = dataBlocks.get (0).getBuffer ();
+
+    switch (getFileType ())
+    {
+      case 0x04:                      // binary
+      case 0x40:                      // Dos4 binary (L)
         loadAddress = Utility.unsignedShort (buffer, 0);
         eof = Utility.unsignedShort (buffer, 2);
-      }
-    }
-    else if (getFileType () == 1 || getFileType () == 2)    // integer basic or applesoft
-    {
-      if (dataBlocks.size () > 0)
-      {
-        byte[] buffer = dataBlocks.get (0).getBuffer ();
+        break;
+
+      case 0x01:                      // integer basic
         eof = Utility.unsignedShort (buffer, 0);
-        // could calculate the address from the line numbers
-      }
+        break;
+
+      case 0x02:                      // applesoft
+        eof = Utility.unsignedShort (buffer, 0);
+        if (eof > 5)
+        {
+          loadAddress = Utility.getApplesoftLoadAddress (buffer);
+          if (loadAddress == 0x800)           // no point displaying the default
+            loadAddress = 0;
+        }
+        break;
+
+      default:
+        eof = dataBlocks.size () * getParentFileSystem ().getBlockSize ();
     }
-    else
-      eof = dataBlocks.size () * getParentFileSystem ().getBlockSize ();
   }
 
   // ---------------------------------------------------------------------------------//
@@ -182,12 +195,13 @@ public abstract class FileDos extends AbstractAppleFile
     text.append (String.format ("Locked ................ %s%n", isLocked ()));
     text.append (String.format ("Catalog sector ........ %02X / %02X%n",
         catalogEntryBlock.getTrackNo (), catalogEntryBlock.getSectorNo ()));
-    text.append (String.format ("Catalog entry ......... %d%n", catalogEntry.slot));
-    text.append (String.format ("Sectors ............... %04X  %<,5d%n",
+    text.append (String.format ("Locked ................ %s%n", catalogEntry.isLocked));
+    text.append (String.format ("Catalog slot .......... %d%n", catalogEntry.slot));
+    text.append (String.format ("Sectors ............... %04X    %<,9d%n",
         catalogEntry.sectorCount));
-    text.append (String.format ("File length ........... %04X  %<,5d%n", eof));
-    text.append (String.format ("Load address .......... %04X  %<,5d%n", loadAddress));
-    text.append (String.format ("Text file gaps ........ %04X  %<,5d%n", textFileGaps));
+    text.append (String.format ("File length ........... %04X    %<,9d%n", eof));
+    text.append (String.format ("Load address .......... %04X    %<,9d%n", loadAddress));
+    text.append (String.format ("Text file gaps ........ %04X    %<,9d%n", textFileGaps));
 
     return Utility.rtrim (text);
   }

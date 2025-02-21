@@ -246,17 +246,30 @@ public class FsDos extends AbstractFileSystem
   {
     StringBuilder text = new StringBuilder (super.toString ());
 
+    String dosVersionText = switch (dosVersion)
+    {
+      case 1 -> "3.1";
+      case 2 -> "3.2";
+      case 3 -> "3.3";
+      case 0x41 -> "4.1";
+      default -> "??";
+    };
+
     text.append (String.format ("----- DOS Header ------%n"));
-    text.append (String.format ("Dos version ........... %02X%n", dosVersion));
-    text.append (String.format ("Volume number ......... %02X  %<,7d%n", volumeNumber));
-    text.append (String.format ("Max TS pairs .......... %02X  %<,7d%n", maxTSpairs));
+    text.append (String.format ("Dos version ........... %02X                 %s%n",
+        dosVersion, dosVersionText));
     text.append (
-        String.format ("Last track allocated .. %02X  %<,7d%n", lastTrackAllocated));
-    text.append (String.format ("Direction ............. %02X  %<,7d%n", direction));
-    text.append (String.format ("Tracks per disk ....... %02X  %<,7d%n", tracksPerDisk));
+        String.format ("Volume number ......... %02X      %<,9d%n", volumeNumber));
+    text.append (String.format ("Max TS pairs .......... %02X      %<,9d%n", maxTSpairs));
     text.append (
-        String.format ("Sectors per track ..... %02X  %<,7d%n", sectorsPerTrack));
-    text.append (String.format ("Bytes per sector ...... %03X  %<,6d%n", bytesPerSector));
+        String.format ("Last track allocated .. %02X      %<,9d%n", lastTrackAllocated));
+    text.append (String.format ("Direction ............. %02X      %<,9d%n", direction));
+    text.append (
+        String.format ("Tracks per disk ....... %02X      %<,9d%n", tracksPerDisk));
+    text.append (
+        String.format ("Sectors per track ..... %02X      %<,9d%n", sectorsPerTrack));
+    text.append (
+        String.format ("Bytes per sector ...... %04X    %<,9d%n", bytesPerSector));
 
     return Utility.rtrim (text);
   }

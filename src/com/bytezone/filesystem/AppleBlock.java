@@ -40,6 +40,8 @@ public interface AppleBlock         // this could be renamed to Address
 
   Object getUserData ();
 
+  void dump ();
+
   public enum BlockType
   {
     EMPTY, FS_DATA, FILE_DATA, ORPHAN

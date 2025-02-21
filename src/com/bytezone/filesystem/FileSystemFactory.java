@@ -13,9 +13,13 @@ import com.bytezone.utility.Utility;
 public class FileSystemFactory
 // -----------------------------------------------------------------------------------//
 {
-  private static final int SECTOR_13_SIZE = 116_480;
-  private static final int SECTOR_16_SIZE = 143_360;
-  private static final int SECTOR_32_SIZE = 286_720;
+  private static final int SECTOR_35_13_SIZE = 116_480;
+  private static final int SECTOR_35_16_SIZE = 143_360;
+  private static final int SECTOR_35_32_SIZE = 286_720;
+  private static final int SECTOR_40_16_SIZE = 163_840;
+  private static final int SECTOR_40_32_SIZE = 327_680;
+  private static final int SECTOR_48_16_SIZE = 196_608;
+  private static final int SECTOR_48_32_SIZE = 393_216;
   private static final int UNIDOS_SIZE = 819_200;
   private static final int CPAM_SIZE = 819_200;
 
@@ -55,10 +59,10 @@ public class FileSystemFactory
     if (debug)
     {
       Buffer diskBuffer = blockReader.getDiskBuffer ();
-      System.out.println ("-----------------------------------------------------");
+      System.out.println ("-------------------------------------------------------");
       System.out.printf ("Length  : %,d%n", diskBuffer.length ());
       System.out.println (Utility.format (diskBuffer.data (), diskBuffer.offset (), 100));
-      System.out.println ("-----------------------------------------------------");
+      System.out.println ("-------------------------------------------------------");
     }
 
     if (blockReader.isMagic (0, Fs2img.TWO_IMG))
@@ -152,7 +156,7 @@ public class FileSystemFactory
   private void getDos31 (BlockReader blockReader)
   // ---------------------------------------------------------------------------------//
   {
-    if (blockReader.getDiskBuffer ().length () == SECTOR_13_SIZE)
+    if (blockReader.getDiskBuffer ().length () == SECTOR_35_13_SIZE)
     {
       try
       {
@@ -181,7 +185,7 @@ public class FileSystemFactory
 
     List<FsDos3> fsList = new ArrayList<> (2);
 
-    if (blockReader.getDiskBuffer ().length () == SECTOR_16_SIZE)
+    if (blockReader.getDiskBuffer ().length () == SECTOR_35_16_SIZE)
       for (int i = 0; i < 2; i++)
         try
         {
@@ -232,27 +236,38 @@ public class FileSystemFactory
   private void getDos4 (BlockReader blockReader)
   // ---------------------------------------------------------------------------------//
   {
-    if (blockReader.getDiskBuffer ().length () == SECTOR_16_SIZE
-        || blockReader.getDiskBuffer ().length () == SECTOR_32_SIZE)
-      try
-      {
-        BlockReader dos4Reader = new BlockReader (blockReader);
+    try
+    {
+      BlockReader dos4Reader = new BlockReader (blockReader);
 
-        if (blockReader.getDiskBuffer ().length () == SECTOR_16_SIZE)
+      switch (blockReader.getDiskBuffer ().length ())
+      {
+        case SECTOR_35_16_SIZE:
+        case SECTOR_40_16_SIZE:
+        case SECTOR_48_16_SIZE:
           dos4Reader.setParameters (256, AddressType.SECTOR, 0, 16);
-        else
+          break;
+
+        case SECTOR_35_32_SIZE:
+        case SECTOR_40_32_SIZE:
+        case SECTOR_48_32_SIZE:
           dos4Reader.setParameters (256, AddressType.SECTOR, 0, 32);
+          break;
 
-        FsDos4 fs = new FsDos4 (dos4Reader);
+        default:
+          return;
+      }
 
-        if (fs.getTotalCatalogBlocks () > 0)
-          fileSystems.add (fs);
-      }
-      catch (FileFormatException e)
-      {
-        if (debug)
-          System.out.println (e);
-      }
+      FsDos4 fs = new FsDos4 (dos4Reader);
+
+      if (fs.getTotalCatalogBlocks () > 0)
+        fileSystems.add (fs);
+    }
+    catch (FileFormatException e)
+    {
+      if (debug)
+        System.out.println (e);
+    }
   }
 
   // ---------------------------------------------------------------------------------//
@@ -282,7 +297,7 @@ public class FileSystemFactory
   // ---------------------------------------------------------------------------------//
   {
     // should check for common HD sizes
-    if (blockReader.getDiskBuffer ().length () >= SECTOR_16_SIZE)
+    if (blockReader.getDiskBuffer ().length () >= SECTOR_35_16_SIZE)
       for (int i = 0; i < 2; i++)
         try
         {
@@ -311,7 +326,7 @@ public class FileSystemFactory
   // ---------------------------------------------------------------------------------//
   {
     // should check for common HD sizes
-    if (blockReader.getDiskBuffer ().length () >= SECTOR_16_SIZE)
+    if (blockReader.getDiskBuffer ().length () >= SECTOR_35_16_SIZE)
       for (int i = 0; i < 2; i++)
         try
         {
@@ -341,7 +356,7 @@ public class FileSystemFactory
   private void getCpm (BlockReader blockReader)
   // ---------------------------------------------------------------------------------//
   {
-    if (blockReader.getDiskBuffer ().length () == SECTOR_16_SIZE)
+    if (blockReader.getDiskBuffer ().length () == SECTOR_35_16_SIZE)
       try
       {
         BlockReader cpmReader = new BlockReader (blockReader);

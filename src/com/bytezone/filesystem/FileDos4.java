@@ -8,18 +8,18 @@ public class FileDos4 extends FileDos
 // -----------------------------------------------------------------------------------//
 {
   // ---------------------------------------------------------------------------------//
-  FileDos4 (FsDos4 fs, AppleBlock catalogSector, int slot)
+  FileDos4 (FsDos4 fs, AppleBlock catalogBlock, int ptr)
   // ---------------------------------------------------------------------------------//
   {
     super (fs);
 
-    byte[] buffer = catalogSector.getBuffer ();
-    int ptr = HEADER_SIZE + slot * ENTRY_SIZE;
+    byte[] buffer = catalogBlock.getBuffer ();
+    int slot = (ptr - HEADER_SIZE) / ENTRY_SIZE;
 
     int nextTrack = buffer[ptr] & 0xFF;
     int nextSector = buffer[ptr + 1] & 0xFF;
 
-    catalogEntry = new CatalogEntryDos4 (catalogSector, slot);
+    catalogEntry = new CatalogEntryDos4 (catalogBlock, slot);
 
     String blockSubType = fs.getBlockSubTypeText (catalogEntry.fileType);
 
@@ -38,19 +38,22 @@ public class FileDos4 extends FileDos
       tsSector.setFileOwner (this);
 
       indexBlocks.add (tsSector);
-      --sectorsLeft;
+
+      if (--sectorsLeft <= 0)
+        break;
 
       byte[] sectorBuffer = tsSector.getBuffer ();
       int sectorOffset = Utility.unsignedShort (sectorBuffer, 5);   // 0/122/244/366 etc
 
       for (int i = 12; i < 256; i += 2)
       {
-        int fileTrack = sectorBuffer[i] & 0xFF;
-        int fileSector = sectorBuffer[i + 1] & 0xFF;
-        boolean zero = (fileTrack & 0x40) != 0;
-        fileTrack &= 0x3F;
+        int track = sectorBuffer[i] & 0xFF;
+        int sector = sectorBuffer[i + 1] & 0xFF;
 
-        if (fileTrack == 0 && !zero && fileSector == 0)     // invalid address
+        boolean zero = (track & 0x40) != 0;
+        track &= 0x3F;                                      // remove flags
+
+        if (track == 0 && !zero && sector == 0)             // invalid address
         {
           if (getFileType () != 0x00)                       // not a text file
             break loop;
@@ -60,11 +63,10 @@ public class FileDos4 extends FileDos
         }
         else
         {
-          AppleBlock dataSector =
-              fs.getSector (fileTrack, fileSector, BlockType.FILE_DATA);
+          AppleBlock dataSector = fs.getSector (track, sector, BlockType.FILE_DATA);
           if (dataSector == null)
-            throw new FileFormatException (String
-                .format ("Invalid data sector : %02X %02X%n", fileTrack, fileSector));
+            throw new FileFormatException (
+                String.format ("Invalid data sector : %02X %02X%n", track, sector));
 
           dataSector.setBlockSubType (blockSubType);
           dataSector.setFileOwner (this);
@@ -81,7 +83,7 @@ public class FileDos4 extends FileDos
       nextSector = sectorBuffer[2] & 0xFF;
     }
 
-    setLength ();
+    setFileLength ();
   }
 
   // ---------------------------------------------------------------------------------//

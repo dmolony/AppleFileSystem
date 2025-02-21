@@ -90,7 +90,7 @@ public class CatalogEntryDos4 extends CatalogEntryDos
   public String toString ()
   // ---------------------------------------------------------------------------------//
   {
-    StringBuilder text = new StringBuilder (super.toString ());
+    StringBuilder text = new StringBuilder ();
 
     text.append (String.format ("%nZero flag ............. %s%n", tsListZero));
     text.append (String.format ("Modified .............. %s%n", getModified2 ()));

@@ -49,22 +49,9 @@ public abstract class CatalogEntryDos extends CatalogEntry
     isNameValid = false;
 
     for (byte b : fileName.getBytes ())
-      if (b == (byte) 0x88)
+      if ((b & 0x80) != 0)
         return;
 
     isNameValid = true;
-  }
-
-  // ---------------------------------------------------------------------------------//
-  @Override
-  public String toString ()
-  // ---------------------------------------------------------------------------------//
-  {
-    StringBuilder text = new StringBuilder (super.toString ());
-
-    text.append (String.format ("Locked ................ %s%n", isLocked));
-    text.append (String.format ("Sectors ............... %04X  %<,5d%n", sectorCount));
-
-    return Utility.rtrim (text);
   }
 }

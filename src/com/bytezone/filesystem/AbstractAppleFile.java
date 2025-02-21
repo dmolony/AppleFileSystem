@@ -193,14 +193,6 @@ public abstract class AbstractAppleFile implements AppleFile
   }
 
   // ---------------------------------------------------------------------------------//
-  //  @Override
-  //  public int getFileType ()
-  //  // ---------------------------------------------------------------------------------//
-  //  {
-  //    return fileType;
-  //  }
-
-  // ---------------------------------------------------------------------------------//
   @Override
   public ForkType getForkType ()
   // ---------------------------------------------------------------------------------//
@@ -208,14 +200,6 @@ public abstract class AbstractAppleFile implements AppleFile
     throw new UnsupportedOperationException (
         "getForkType() not implemented in " + getFileName ());
   }
-
-  // ---------------------------------------------------------------------------------//
-  //  @Override
-  //  public String getFileTypeText ()
-  //  // ---------------------------------------------------------------------------------//
-  //  {
-  //    return fileTypeText;
-  //  }
 
   // ---------------------------------------------------------------------------------//
   @Override
@@ -246,10 +230,10 @@ public abstract class AbstractAppleFile implements AppleFile
     if (embeddedFileSystem != null)
       text.append (String.format ("Embedded FS type ...... %s%n",
           embeddedFileSystem.getFileSystemType ()));
-    text.append (String.format ("File type ............. %02X      %<,7d  %s%n",
+    text.append (String.format ("File type ............. %02X      %<,9d  %s%n",
         getFileType (), getFileTypeText ()));
     text.append (
-        String.format ("EOF ................... %04X  %<,9d%n", getFileLength ()));
+        String.format ("EOF ................... %06X  %<,9d%n", getFileLength ()));
 
     return text.toString ();
   }
