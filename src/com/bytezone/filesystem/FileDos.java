@@ -37,7 +37,7 @@ public abstract class FileDos extends AbstractAppleFile
       return;
     }
 
-    // NB - only get the buffer for the specified files (a sparse text file may fail)
+    // NB - only get the buffer for the specified files (a sparse text file may NPE)
 
     switch (getFileType ())
     {
