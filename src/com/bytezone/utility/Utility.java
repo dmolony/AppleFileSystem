@@ -330,8 +330,10 @@ public class Utility
   {
     int nextLine = Utility.unsignedShort (buffer, 2);
     int ptr = 5;
-    while (buffer[++ptr] != 0)          // find end of first line
-      ;
+
+    while (ptr < buffer.length)
+      if (buffer[ptr++] == 0)          // find end of first line
+        break;
 
     return nextLine - ptr;
   }

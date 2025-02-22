@@ -37,21 +37,24 @@ public abstract class FileDos extends AbstractAppleFile
       return;
     }
 
-    byte[] buffer = dataBlocks.get (0).getBuffer ();
+    // NB - only get the buffer for the specified files (a sparse text file may fail)
 
     switch (getFileType ())
     {
       case 0x04:                      // binary
       case 0x40:                      // Dos4 binary (L)
+        byte[] buffer = dataBlocks.get (0).getBuffer ();
         loadAddress = Utility.unsignedShort (buffer, 0);
         eof = Utility.unsignedShort (buffer, 2);
         break;
 
       case 0x01:                      // integer basic
+        buffer = dataBlocks.get (0).getBuffer ();
         eof = Utility.unsignedShort (buffer, 0);
         break;
 
       case 0x02:                      // applesoft
+        buffer = dataBlocks.get (0).getBuffer ();
         eof = Utility.unsignedShort (buffer, 0);
         if (eof > 5)
         {
