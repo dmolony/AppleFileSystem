@@ -37,35 +37,39 @@ public abstract class FileDos extends AbstractAppleFile
       return;
     }
 
-    // NB - only get the buffer for the specified files (a sparse text file may NPE)
+    // NB - don't get the buffer for text files - a sparse text file may NPE
 
     switch (getFileType ())
     {
-      case 0x04:                      // binary
-      case 0x40:                      // Dos4 binary (L)
-        byte[] buffer = dataBlocks.get (0).getBuffer ();
-        loadAddress = Utility.unsignedShort (buffer, 0);
-        eof = Utility.unsignedShort (buffer, 2);
+      case FsDos.FILE_TYPE_TEXT:
+        eof = dataBlocks.size () * getParentFileSystem ().getBlockSize ();
         break;
 
-      case 0x01:                      // integer basic
-        buffer = dataBlocks.get (0).getBuffer ();
+      case FsDos.FILE_TYPE_INTEGER_BASIC:
+        byte[] buffer = dataBlocks.get (0).getBuffer ();
         eof = Utility.unsignedShort (buffer, 0);
         break;
 
-      case 0x02:                      // applesoft
+      case FsDos.FILE_TYPE_APPLESOFT:
         buffer = dataBlocks.get (0).getBuffer ();
         eof = Utility.unsignedShort (buffer, 0);
         if (eof > 5)
         {
           loadAddress = Utility.getApplesoftLoadAddress (buffer);
-          if (loadAddress == 0x800)           // no point displaying the default
+          if (loadAddress == 0x800)           // don't display the default
             loadAddress = 0;
         }
         break;
 
+      case FsDos.FILE_TYPE_BINARY:
+      case FsDos.FILE_TYPE_BINARY_L:          // Dos4 uses this
+        buffer = dataBlocks.get (0).getBuffer ();
+        loadAddress = Utility.unsignedShort (buffer, 0);
+        eof = Utility.unsignedShort (buffer, 2);
+        break;
+
       default:
-        eof = dataBlocks.size () * getParentFileSystem ().getBlockSize ();
+        System.out.println ("Unexpected file type: " + getFileType ());
     }
   }
 

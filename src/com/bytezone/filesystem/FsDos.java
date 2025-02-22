@@ -17,6 +17,12 @@ public class FsDos extends AbstractFileSystem
   protected static final DateTimeFormatter sdf =
       DateTimeFormatter.ofPattern ("dd-LLL-yy HH:mm:ss", US);
 
+  public static final int FILE_TYPE_TEXT = 0x00;
+  public static final int FILE_TYPE_INTEGER_BASIC = 0x01;
+  public static final int FILE_TYPE_APPLESOFT = 0x02;
+  public static final int FILE_TYPE_BINARY = 0x04;
+  public static final int FILE_TYPE_BINARY_L = 0x40;
+
   static final int ENTRY_SIZE = 35;
   static final int HEADER_SIZE = 0x0B;
 
@@ -71,14 +77,14 @@ public class FsDos extends AbstractFileSystem
   {
     return switch (fileType)
     {
-      case 0x00 -> "T";
-      case 0x01 -> "I";
-      case 0x02 -> "A";
-      case 0x04 -> "B";
+      case FILE_TYPE_TEXT -> "T";
+      case FILE_TYPE_INTEGER_BASIC -> "I";
+      case FILE_TYPE_APPLESOFT -> "A";
+      case FILE_TYPE_BINARY -> "B";
       case 0x08 -> "S";
       case 0x10 -> "R";
       case 0x20 -> "B";
-      case 0x40 -> "L";                     // Dos 4 uses this
+      case FILE_TYPE_BINARY_L -> "L";       // Dos 4 uses this
       default -> "?";                       // should never happen
     };
   }
@@ -89,14 +95,14 @@ public class FsDos extends AbstractFileSystem
   {
     return switch (fileType)
     {
-      case 0x00 -> "TEXT";
-      case 0x01 -> "INT BASIC";
-      case 0x02 -> "APPLESOFT";
-      case 0x04 -> "BINARY";
+      case FILE_TYPE_TEXT -> "TEXT";
+      case FILE_TYPE_INTEGER_BASIC -> "INT BASIC";
+      case FILE_TYPE_APPLESOFT -> "APPLESOFT";
+      case FILE_TYPE_BINARY -> "BINARY";
       case 0x08 -> "S";
       case 0x10 -> "R";
       case 0x20 -> "B";
-      case 0x40 -> "L";
+      case FILE_TYPE_BINARY_L -> "L";
       default -> "?";                       // should never happen
     };
   }
