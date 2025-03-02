@@ -17,7 +17,7 @@ class File2img extends AbstractAppleFile
 
   // ---------------------------------------------------------------------------------//
   @Override
-  public List<AppleBlock> getBlocks ()
+  public List<AppleBlock> getDataBlocks ()
   // ---------------------------------------------------------------------------------//
   {
     return dataBlocks;

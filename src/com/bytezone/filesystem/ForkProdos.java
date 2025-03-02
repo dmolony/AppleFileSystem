@@ -24,7 +24,6 @@ public class ForkProdos extends AbstractAppleFile
   final ForkType forkType;
 
   final int storageType;
-  //  final String storageTypeText;
   final int size;
   final int eof;
   final int keyPtr;
@@ -56,8 +55,6 @@ public class ForkProdos extends AbstractAppleFile
     this.keyPtr = keyPtr;
     this.size = size;
     this.eof = eof;
-
-    //    storageTypeText = ProdosConstants.storageTypes[storageType];
 
     List<Integer> blockNumbers = new ArrayList<> ();
     AppleBlock dataBlock = parentFileSystem.getBlock (keyPtr, BlockType.FS_DATA);
@@ -219,7 +216,7 @@ public class ForkProdos extends AbstractAppleFile
 
   // ---------------------------------------------------------------------------------//
   @Override
-  public List<AppleBlock> getBlocks ()
+  public List<AppleBlock> getAllBlocks ()
   // ---------------------------------------------------------------------------------//
   {
     List<AppleBlock> blocks = new ArrayList<AppleBlock> (dataBlocks);
@@ -369,7 +366,8 @@ public class ForkProdos extends AbstractAppleFile
     if (eof == 0)
       message = "<-- zero";
 
-    String nulls = nullBlocks == 0 ? "" : String.format (" (%d nulls)", nullBlocks);
+    String nulls =
+        nullBlocks == 0 ? "" : String.format (" (%,d null blocks)", nullBlocks);
 
     text.append (
         String.format ("Index blocks .......... %04X    %<,7d%n", indexBlocks.size ()));

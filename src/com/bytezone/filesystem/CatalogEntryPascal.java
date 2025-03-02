@@ -127,7 +127,29 @@ public class CatalogEntryPascal extends CatalogEntry
   void delete ()
   // ---------------------------------------------------------------------------------//
   {
+    clear ();
+  }
 
+  // ---------------------------------------------------------------------------------//
+  void clear ()
+  // ---------------------------------------------------------------------------------//
+  {
+    if (slot == 0)
+    {
+      --totalFiles;           // adjust header
+    }
+    else
+    {
+      firstBlock = 0;
+      lastBlock = 0;
+      fileType = 0;
+      fileName = "";
+      wildCard = 0;
+      bytesUsedInLastBlock = 0;
+      fileDate = null;
+    }
+
+    write ();
   }
 
   // file size in blocks
@@ -152,28 +174,6 @@ public class CatalogEntryPascal extends CatalogEntry
     wildCard = copy.wildCard;
     bytesUsedInLastBlock = copy.bytesUsedInLastBlock;
     fileDate = copy.fileDate;
-  }
-
-  // ---------------------------------------------------------------------------------//
-  void clearFileEntry ()
-  // ---------------------------------------------------------------------------------//
-  {
-    if (slot == 0)
-    {
-      --totalFiles;           // adjust header
-    }
-    else
-    {
-      firstBlock = 0;
-      lastBlock = 0;
-      fileType = 0;
-      fileName = "";
-      wildCard = 0;
-      bytesUsedInLastBlock = 0;
-      fileDate = null;
-    }
-
-    write ();
   }
 
   // ---------------------------------------------------------------------------------//

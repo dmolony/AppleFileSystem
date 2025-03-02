@@ -354,7 +354,7 @@ public class FileNuFX extends AbstractAppleFile implements AppleFilePath, AppleF
 
   // ---------------------------------------------------------------------------------//
   @Override
-  public List<AppleBlock> getBlocks ()
+  public List<AppleBlock> getDataBlocks ()
   // ---------------------------------------------------------------------------------//
   {
     return null;

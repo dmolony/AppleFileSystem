@@ -70,7 +70,17 @@ abstract class AbstractFileSystem implements AppleFileSystem
   public AppleBlock allocate ()
   // ---------------------------------------------------------------------------------//
   {
-    throw new UnsupportedOperationException ("allocate() not implemented");
+    throw new UnsupportedOperationException (
+        "allocate() not implemented in " + fileSystemType);
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
+  public void sort ()
+  // ---------------------------------------------------------------------------------//
+  {
+    throw new UnsupportedOperationException (
+        "sort () not implemented in " + fileSystemType);
   }
 
   // ---------------------------------------------------------------------------------//
@@ -314,15 +324,6 @@ abstract class AbstractFileSystem implements AppleFileSystem
   // ---------------------------------------------------------------------------------//
   {
     System.out.println ("putFile() not implemented in " + fileSystemType);
-  }
-
-  // ---------------------------------------------------------------------------------//
-  @Override
-  public void deleteFile (AppleFile file)
-  // ---------------------------------------------------------------------------------//
-  {
-    throw new UnsupportedOperationException (
-        "deleteFile() not implemented in " + fileSystemType);
   }
 
   // ---------------------------------------------------------------------------------//

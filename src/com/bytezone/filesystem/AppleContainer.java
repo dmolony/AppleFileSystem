@@ -20,4 +20,6 @@ public interface AppleContainer
   public String getCatalogText ();
 
   public String getPath ();
+
+  public void sort ();
 }

@@ -53,15 +53,18 @@ public abstract class FileDos extends AbstractAppleFile
       case FsDos.FILE_TYPE_APPLESOFT:
         buffer = dataBlocks.get (0).getBuffer ();
         eof = Utility.unsignedShort (buffer, 0);
-        if (eof > 5)
+        if (eof > 6)
         {
           loadAddress = Utility.getApplesoftLoadAddress (buffer);
-          if (loadAddress == 0x800)           // don't display the default
+          if (loadAddress == 0x801)           // don't display the default
             loadAddress = 0;
         }
         break;
 
       case FsDos.FILE_TYPE_BINARY:
+      case FsDos.FILE_TYPE_R:                 // Dos Toolkit APA and HRCG
+        //      case FsDos.FILE_TYPE_S:                 // fuck nose
+      case FsDos.FILE_TYPE_BINARY_B:
       case FsDos.FILE_TYPE_BINARY_L:          // Dos4 uses this
         buffer = dataBlocks.get (0).getBuffer ();
         loadAddress = Utility.unsignedShort (buffer, 0);
@@ -91,11 +94,12 @@ public abstract class FileDos extends AbstractAppleFile
 
   // ---------------------------------------------------------------------------------//
   @Override
-  public List<AppleBlock> getBlocks ()
+  public List<AppleBlock> getAllBlocks ()
   // ---------------------------------------------------------------------------------//
   {
     List<AppleBlock> blocks = new ArrayList<AppleBlock> (dataBlocks);
     blocks.addAll (indexBlocks);
+    blocks.add (catalogEntry.catalogBlock);
 
     return blocks;
   }
@@ -188,6 +192,25 @@ public abstract class FileDos extends AbstractAppleFile
         return false;
 
     return true;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  public int getTextFileGaps ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return textFileGaps;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
+  public void delete (boolean force)
+  // ---------------------------------------------------------------------------------//
+  {
+    if (isLocked () && !force)
+      throw new FileLockedException (String.format ("%s is locked", getFileName ()));
+
+    catalogEntry.delete ();
+    ((FsDos) parentFileSystem).remove (this, force);
   }
 
   // ---------------------------------------------------------------------------------//

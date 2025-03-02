@@ -5,6 +5,7 @@ import java.nio.file.Path;
 import com.bytezone.filesystem.AppleContainer;
 import com.bytezone.filesystem.AppleFile;
 import com.bytezone.filesystem.AppleFileSystem;
+import com.bytezone.filesystem.FileLockedException;
 import com.bytezone.filesystem.FileSystemFactory;
 
 // -----------------------------------------------------------------------------------//
@@ -19,7 +20,7 @@ public class TestWrite extends Tester
   {
     FileSystemFactory factory = new FileSystemFactory ();
 
-    AppleFileSystem fs = factory.getFileSystem (Path.of (fileNames[14]));
+    AppleFileSystem fs = factory.getFileSystem (Path.of (fileNames[1]));
     if (fs == null)
     {
       System.out.println ("disk not found");
@@ -47,15 +48,15 @@ public class TestWrite extends Tester
     {
       //      if (file.getFileName ().equals ("PRODOS"))
       //        continue;
-      //      if (file.getFileName ().equals ("HELLO"))
-      //        continue;
+      if (file.getFileName ().equals ("HELLO"))
+        continue;
       //      if (file.getFileName ().equals ("SYSTEM.CHARSET"))
       //        continue;
       //      if (file.getFileName ().equals ("SYSTEM.PASCAL"))
       //        continue;
 
-      ++count;
-      if (count == 1 || count == 6)
+      //      ++count;
+      //      if (count == 1 || count == 6)
       {
         System.out.printf ("%s %s %s%n", indent.substring (0, depth * 2),
             file.getFileName (), file.isForkedFile () ? "*** Forked ***" : "");
@@ -63,8 +64,14 @@ public class TestWrite extends Tester
         if (file.isFolder ())
           deleteFiles ((AppleContainer) file, depth + 1);
 
-        AppleFileSystem fs = file.getParentFileSystem ();
-        fs.deleteFile (file);
+        try
+        {
+          file.delete (true);
+        }
+        catch (FileLockedException e)
+        {
+          System.out.printf ("Locked file: %s%n", file.getFileName ());
+        }
       }
     }
   }

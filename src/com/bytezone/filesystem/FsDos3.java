@@ -118,32 +118,4 @@ public class FsDos3 extends FsDos
 
     return Utility.rtrim (text);
   }
-
-  // ---------------------------------------------------------------------------------//
-  @Override
-  public void deleteFile (AppleFile file)
-  // ---------------------------------------------------------------------------------//
-  {
-    if (file.getParentFileSystem () != this)
-      throw new InvalidParentFileSystemException ("file not part of this File System");
-
-    FileDos3 fileDos3 = (FileDos3) file;
-
-    // mark file as deleted in the catalog
-    AppleBlock catalogSector = fileDos3.getCatalogBlock ();
-    byte[] buffer = catalogSector.getBuffer ();
-    int ptr = HEADER_SIZE + fileDos3.getCatalogSlot () * ENTRY_SIZE;
-    buffer[ptr + 0x20] = buffer[ptr];
-    buffer[ptr] = (byte) 0xFF;            // deleted file
-    catalogSector.markDirty ();
-
-    // mark file's sectors as free in the vtoc
-    for (AppleBlock block : file.getBlocks ())      // index and data blocks
-      volumeBitMap.set (block.getBlockNo ());
-
-    AppleBlock vtoc = getSector (17, 0);
-    buffer = vtoc.getBuffer ();
-    writeVolumeBitMap (buffer);
-    vtoc.markDirty ();
-  }
 }

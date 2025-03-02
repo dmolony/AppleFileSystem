@@ -329,13 +329,12 @@ public class Utility
   // ---------------------------------------------------------------------------------//
   {
     int nextLine = Utility.unsignedShort (buffer, 2);
-    int ptr = 5;
+    int ptr = 6;            // skip load address, next line number, this line number
 
-    while (ptr < buffer.length)
-      if (buffer[ptr++] == 0)          // find end of first line
-        break;
+    while (ptr < buffer.length && buffer[ptr] != 0)
+      ++ptr;
 
-    return nextLine - ptr;
+    return nextLine - ptr + 1;
   }
 
   // ---------------------------------------------------------------------------------//

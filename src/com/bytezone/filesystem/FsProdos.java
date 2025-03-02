@@ -252,8 +252,7 @@ public class FsProdos extends AbstractFileSystem
   }
 
   // ---------------------------------------------------------------------------------//
-  @Override
-  public void deleteFile (AppleFile appleFile)
+  void deleteFile (AppleFile appleFile)
   // ---------------------------------------------------------------------------------//
   {
     if (appleFile.getParentFileSystem () != this)
@@ -276,10 +275,10 @@ public class FsProdos extends AbstractFileSystem
     fileProdos.catalogEntry.delete ();
 
     // create list of blocks to free
-    List<AppleBlock> freeBlocks = new ArrayList<> (appleFile.getBlocks ());
+    List<AppleBlock> freeBlocks = new ArrayList<> (appleFile.getDataBlocks ());
     if (appleFile.isForkedFile ())
       for (AppleFile file : fileProdos.forks)
-        freeBlocks.addAll (file.getBlocks ());
+        freeBlocks.addAll (file.getDataBlocks ());
 
     // mark blocks as free in the vtoc
     int count = 0;

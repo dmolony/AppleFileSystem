@@ -40,7 +40,9 @@ public interface AppleFile
 
   public int getTotalBlocks ();                     // in data+index blocks
 
-  public List<AppleBlock> getBlocks ();             // dataBlocks + indexBlocks
+  public List<AppleBlock> getDataBlocks ();         // dataBlocks only
+
+  public List<AppleBlock> getAllBlocks ();          // dataBlocks + indexBlocks
 
   public String getCatalogLine ();
 
@@ -52,7 +54,7 @@ public interface AppleFile
 
   public void write (byte[] buffer);
 
-  //  public void delete ();
+  public void delete (boolean force);
 
   public String getErrorMessage ();                 // if file can't be read
 

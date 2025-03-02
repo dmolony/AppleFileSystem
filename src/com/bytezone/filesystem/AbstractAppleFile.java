@@ -186,7 +186,16 @@ public abstract class AbstractAppleFile implements AppleFile
   // assumes no index blocks
   // ---------------------------------------------------------------------------------//
   @Override
-  public List<AppleBlock> getBlocks ()
+  public List<AppleBlock> getAllBlocks ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return dataBlocks;
+  }
+
+  // assumes no index blocks
+  // ---------------------------------------------------------------------------------//
+  @Override
+  public List<AppleBlock> getDataBlocks ()
   // ---------------------------------------------------------------------------------//
   {
     return dataBlocks;
@@ -199,6 +208,15 @@ public abstract class AbstractAppleFile implements AppleFile
   {
     throw new UnsupportedOperationException (
         "getForkType() not implemented in " + getFileName ());
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
+  public void delete (boolean force)
+  // ---------------------------------------------------------------------------------//
+  {
+    throw new UnsupportedOperationException (
+        "deleteFile() not implemented in " + getFileName ());
   }
 
   // ---------------------------------------------------------------------------------//

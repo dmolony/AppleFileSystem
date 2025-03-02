@@ -31,24 +31,30 @@ public class CatalogEntryDos3 extends CatalogEntryDos
   void write ()
   // ---------------------------------------------------------------------------------//
   {
+    super.writeCommon ();
+
     int ptr = HEADER_SIZE + slot * ENTRY_SIZE;
 
-    buffer[ptr] = (byte) firstTrack;
-    buffer[ptr + 1] = (byte) firstSector;
-    buffer[ptr + 2] = (byte) (fileType | (isLocked ? 0x80 : 0x00));
-
     Utility.writeString (String.format ("%-30s", fileName), buffer, ptr + 3);
-    Utility.writeShort (buffer, ptr + 33, sectorCount);
 
     catalogBlock.markDirty ();
   }
 
+  // mark file as deleted in the catalog
   // ---------------------------------------------------------------------------------//
   @Override
   void delete ()
   // ---------------------------------------------------------------------------------//
   {
+    int ptr = HEADER_SIZE + slot * ENTRY_SIZE;
 
+    AppleBlock catalogSector = getCatalogBlock ();
+    byte[] buffer = catalogSector.getBuffer ();
+
+    buffer[ptr + 0x20] = buffer[ptr];     // move first track number to end of filename
+    buffer[ptr] = (byte) 0xFF;            // deleted file
+
+    catalogSector.markDirty ();
   }
 
   // ---------------------------------------------------------------------------------//

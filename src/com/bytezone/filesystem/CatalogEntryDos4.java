@@ -68,7 +68,20 @@ public class CatalogEntryDos4 extends CatalogEntryDos
   void delete ()
   // ---------------------------------------------------------------------------------//
   {
+    int ptr = HEADER_SIZE + slot * ENTRY_SIZE;
+
+    AppleBlock catalogSector = getCatalogBlock ();
+    byte[] buffer = catalogSector.getBuffer ();
+
+    // update the access byte?
+    // update the modified date?
+
     firstTrack &= 0x80;
+    buffer[ptr] = (byte) firstTrack;
+
+    catalogSector.markDirty ();
+
+    System.out.println ("Write me");
   }
 
   // ---------------------------------------------------------------------------------//

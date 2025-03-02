@@ -21,6 +21,9 @@ public class FsDos extends AbstractFileSystem
   public static final int FILE_TYPE_INTEGER_BASIC = 0x01;
   public static final int FILE_TYPE_APPLESOFT = 0x02;
   public static final int FILE_TYPE_BINARY = 0x04;
+  public static final int FILE_TYPE_S = 0x08;
+  public static final int FILE_TYPE_R = 0x10;
+  public static final int FILE_TYPE_BINARY_B = 0x20;
   public static final int FILE_TYPE_BINARY_L = 0x40;
 
   static final int ENTRY_SIZE = 35;
@@ -81,9 +84,9 @@ public class FsDos extends AbstractFileSystem
       case FILE_TYPE_INTEGER_BASIC -> "I";
       case FILE_TYPE_APPLESOFT -> "A";
       case FILE_TYPE_BINARY -> "B";
-      case 0x08 -> "S";
-      case 0x10 -> "R";
-      case 0x20 -> "B";
+      case FILE_TYPE_S -> "S";
+      case FILE_TYPE_R -> "R";
+      case FILE_TYPE_BINARY_B -> "B";
       case FILE_TYPE_BINARY_L -> "L";       // Dos 4 uses this
       default -> "?";                       // should never happen
     };
@@ -99,9 +102,9 @@ public class FsDos extends AbstractFileSystem
       case FILE_TYPE_INTEGER_BASIC -> "INT BASIC";
       case FILE_TYPE_APPLESOFT -> "APPLESOFT";
       case FILE_TYPE_BINARY -> "BINARY";
-      case 0x08 -> "S";
-      case 0x10 -> "R";
-      case 0x20 -> "B";
+      case FILE_TYPE_S -> "S";
+      case FILE_TYPE_R -> "R";
+      case FILE_TYPE_BINARY_B -> "B";
       case FILE_TYPE_BINARY_L -> "L";
       default -> "?";                       // should never happen
     };
@@ -204,6 +207,49 @@ public class FsDos extends AbstractFileSystem
 
     failedFiles.add (String.format ("%s  %s  %03d  %s", isLocked ? "*" : " ",
         getFileTypeText (fileType), sectorCount, fileName));
+  }
+
+  // ---------------------------------------------------------------------------------//
+  void remove (FileDos file, boolean force)
+  // ---------------------------------------------------------------------------------//
+  {
+    if (file.getParentFileSystem () != this)
+      throw new InvalidParentFileSystemException ("file not part of this File System");
+
+    if (file.isLocked () && !force)
+      throw new FileLockedException (String.format ("%s is locked", file.getFileName ()));
+
+    // mark file's sectors as free in the vtoc
+    for (AppleBlock block : file.getDataBlocks ())      // index and data blocks
+      volumeBitMap.set (block.getBlockNo ());
+    freeBlocks = volumeBitMap.cardinality ();
+
+    AppleBlock vtoc = getSector (17, 0);
+    byte[] buffer = vtoc.getBuffer ();
+    writeVolumeBitMap (buffer);
+    vtoc.markDirty ();
+
+    files.remove (file);
+    deletedFiles.add (file.getFileName ());
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
+  public void cleanDisk ()
+  // ---------------------------------------------------------------------------------//
+  {
+    super.cleanDisk ();
+
+    direction = 1;
+    lastTrackAllocated = 0x11;
+
+    AppleBlock vtoc = getSector (17, 0);
+    byte[] buffer = vtoc.getBuffer ();
+
+    buffer[0x30] = (byte) lastTrackAllocated;
+    buffer[0x31] = direction;
+
+    vtoc.markDirty ();
   }
 
   // ---------------------------------------------------------------------------------//

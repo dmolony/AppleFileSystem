@@ -104,10 +104,30 @@ public class FileProdos extends AbstractAppleFile implements AppleForkedFile
 
   // ---------------------------------------------------------------------------------//
   @Override
-  public List<AppleBlock> getBlocks ()
+  public List<AppleBlock> getDataBlocks ()
   // ---------------------------------------------------------------------------------//
   {
-    return isForkedFile ? dataBlocks : dataFork.getBlocks ();
+    return isForkedFile ? dataBlocks : dataFork.getDataBlocks ();
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
+  public List<AppleBlock> getAllBlocks ()
+  // ---------------------------------------------------------------------------------//
+  {
+    List<AppleBlock> blocks = new ArrayList<> ();
+    blocks.add (catalogEntry.catalogBlock);
+
+    if (isForkedFile)
+    {
+      blocks.addAll (dataBlocks);                   // the fork index block
+      for (AppleFile fork : forks)
+        blocks.addAll (fork.getAllBlocks ());
+    }
+    else
+      blocks.addAll (dataFork.getAllBlocks ());
+
+    return blocks;
   }
 
   // ---------------------------------------------------------------------------------//
@@ -123,6 +143,13 @@ public class FileProdos extends AbstractAppleFile implements AppleForkedFile
   // ---------------------------------------------------------------------------------//
   {
     return catalogEntry.auxType;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  public int getStorageType ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return catalogEntry.storageType;
   }
 
   // ---------------------------------------------------------------------------------//

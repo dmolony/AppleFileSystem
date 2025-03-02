@@ -243,6 +243,15 @@ public class FilePascalSegment extends AbstractAppleFile implements AppleContain
 
   // ---------------------------------------------------------------------------------//
   @Override
+  public void sort ()
+  // ---------------------------------------------------------------------------------//
+  {
+    throw new UnsupportedOperationException (
+        "sort () not implemented in FilePascalSegment");
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
   public String toString ()
   // ---------------------------------------------------------------------------------//
   {

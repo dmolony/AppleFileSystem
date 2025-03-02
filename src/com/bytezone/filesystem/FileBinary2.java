@@ -222,7 +222,7 @@ public class FileBinary2 extends AbstractAppleFile
 
   // ---------------------------------------------------------------------------------//
   @Override
-  public List<AppleBlock> getBlocks ()
+  public List<AppleBlock> getDataBlocks ()
   // ---------------------------------------------------------------------------------//
   {
     List<AppleBlock> blocks = new ArrayList<AppleBlock> (dataBlocks);

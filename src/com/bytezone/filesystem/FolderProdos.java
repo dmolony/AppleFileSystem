@@ -144,6 +144,17 @@ class FolderProdos extends AbstractAppleFile implements AppleContainer
 
   // ---------------------------------------------------------------------------------//
   @Override
+  public List<AppleBlock> getAllBlocks ()
+  // ---------------------------------------------------------------------------------//
+  {
+    List<AppleBlock> blocks = new ArrayList<AppleBlock> (dataBlocks);
+    blocks.add (catalogEntry.catalogBlock);
+
+    return blocks;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
   public String getFileName ()
   // ---------------------------------------------------------------------------------//
   {
@@ -301,6 +312,14 @@ class FolderProdos extends AbstractAppleFile implements AppleContainer
             freeBlocks, totalBlocks - freeBlocks, totalBlocks));
 
     return text.toString ();
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
+  public void sort ()
+  // ---------------------------------------------------------------------------------//
+  {
+    throw new UnsupportedOperationException ("sort () not implemented in FolderProdos");
   }
 
   // ---------------------------------------------------------------------------------//

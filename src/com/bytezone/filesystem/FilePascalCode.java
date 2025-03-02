@@ -174,6 +174,14 @@ public class FilePascalCode extends FilePascal implements AppleContainer
 
   // ---------------------------------------------------------------------------------//
   @Override
+  public void sort ()
+  // ---------------------------------------------------------------------------------//
+  {
+    throw new UnsupportedOperationException ("sort () not implemented in FilePascalCode");
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
   public String toString ()
   // ---------------------------------------------------------------------------------//
   {

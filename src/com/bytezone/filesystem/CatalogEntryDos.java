@@ -43,6 +43,22 @@ public abstract class CatalogEntryDos extends CatalogEntry
   }
 
   // ---------------------------------------------------------------------------------//
+  protected void writeCommon ()
+  // ---------------------------------------------------------------------------------//
+  {
+    int ptr = HEADER_SIZE + slot * ENTRY_SIZE;
+
+    buffer[ptr] = (byte) firstTrack;
+    buffer[ptr + 1] = (byte) firstSector;
+
+    buffer[ptr + 2] = (byte) fileType;
+    if (isLocked)
+      buffer[ptr + 2] |= 0x80;
+
+    Utility.writeShort (buffer, ptr + 33, sectorCount);
+  }
+
+  // ---------------------------------------------------------------------------------//
   protected void checkName ()
   // ---------------------------------------------------------------------------------//
   {

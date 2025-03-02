@@ -121,6 +121,14 @@ public class Folder extends AbstractAppleFile implements AppleContainer
 
   // ---------------------------------------------------------------------------------//
   @Override
+  public void sort ()
+  // ---------------------------------------------------------------------------------//
+  {
+    throw new UnsupportedOperationException ("sort () not implemented in Folder");
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
   public String getCatalogText ()
   // ---------------------------------------------------------------------------------//
   {

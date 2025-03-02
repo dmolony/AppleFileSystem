@@ -1,13 +1,13 @@
 package com.bytezone.filesystem;
 
-// -----------------------------------------------------------------------------------//
-public class InvalidParentFileSystemException extends RuntimeException
-// -----------------------------------------------------------------------------------//
+//-----------------------------------------------------------------------------------//
+public class FileLockedException extends RuntimeException
+//-----------------------------------------------------------------------------------//
 {
   String message;
 
   // ---------------------------------------------------------------------------------//
-  public InvalidParentFileSystemException (String string)
+  public FileLockedException (String string)
   // ---------------------------------------------------------------------------------//
   {
     this.message = string;
