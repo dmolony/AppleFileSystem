@@ -172,7 +172,7 @@ public class FileProdos extends AbstractAppleFile implements AppleForkedFile
   // ---------------------------------------------------------------------------------//
   {
     if (isForkedFile ())
-      return super.getFileBuffer ();
+      return super.getFileBuffer ();        // what is this doing?
 
     return dataFork.getFileBuffer ();
   }
@@ -209,6 +209,16 @@ public class FileProdos extends AbstractAppleFile implements AppleForkedFile
   // ---------------------------------------------------------------------------------//
   {
     return forks;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  public List<TextBlock> getTextBlocks ()
+  // ---------------------------------------------------------------------------------//
+  {
+    if (isForkedFile)
+      return null;                          // might need to do more than this
+
+    return dataFork.getTextBlocks ();
   }
 
   // ---------------------------------------------------------------------------------//

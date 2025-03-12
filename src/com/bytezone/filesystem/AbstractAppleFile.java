@@ -115,9 +115,10 @@ public abstract class AbstractAppleFile implements AppleFile
   public boolean hasData ()
   // ---------------------------------------------------------------------------------//
   {
-    Buffer dataRecord = getFileBuffer ();
+    //    Buffer dataRecord = getFileBuffer ();
 
-    return dataRecord.data () != null && dataRecord.length () > 0;
+    //    return dataRecord.data () != null && dataRecord.length () > 0;
+    return dataBlocks.size () > 0;
   }
 
   // ---------------------------------------------------------------------------------//

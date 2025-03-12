@@ -22,7 +22,7 @@ public class FsDos extends AbstractFileSystem
   public static final int FILE_TYPE_APPLESOFT = 0x02;
   public static final int FILE_TYPE_BINARY = 0x04;
   public static final int FILE_TYPE_S = 0x08;
-  public static final int FILE_TYPE_R = 0x10;
+  public static final int FILE_TYPE_RELOCATABLE = 0x10;
   public static final int FILE_TYPE_BINARY_B = 0x20;
   public static final int FILE_TYPE_BINARY_L = 0x40;
 
@@ -85,7 +85,7 @@ public class FsDos extends AbstractFileSystem
       case FILE_TYPE_APPLESOFT -> "A";
       case FILE_TYPE_BINARY -> "B";
       case FILE_TYPE_S -> "S";
-      case FILE_TYPE_R -> "R";
+      case FILE_TYPE_RELOCATABLE -> "R";
       case FILE_TYPE_BINARY_B -> "B";
       case FILE_TYPE_BINARY_L -> "L";       // Dos 4 uses this
       default -> "?";                       // should never happen
@@ -103,7 +103,7 @@ public class FsDos extends AbstractFileSystem
       case FILE_TYPE_APPLESOFT -> "APPLESOFT";
       case FILE_TYPE_BINARY -> "BINARY";
       case FILE_TYPE_S -> "S";
-      case FILE_TYPE_R -> "R";
+      case FILE_TYPE_RELOCATABLE -> "R";
       case FILE_TYPE_BINARY_B -> "B";
       case FILE_TYPE_BINARY_L -> "L";
       default -> "?";                       // should never happen

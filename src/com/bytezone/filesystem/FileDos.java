@@ -62,7 +62,7 @@ public abstract class FileDos extends AbstractAppleFile
         break;
 
       case FsDos.FILE_TYPE_BINARY:
-      case FsDos.FILE_TYPE_R:                 // Dos Toolkit APA and HRCG
+      case FsDos.FILE_TYPE_RELOCATABLE:       // Applesoft Toolkit APA and HRCG
         //      case FsDos.FILE_TYPE_S:                 // fuck nose
       case FsDos.FILE_TYPE_BINARY_B:
       case FsDos.FILE_TYPE_BINARY_L:          // Dos4 uses this

@@ -32,6 +32,8 @@ public class ForkProdos extends AbstractAppleFile
   private AppleBlock masterIndexBlock;
   private final List<AppleBlock> indexBlocks = new ArrayList<> ();
 
+  private final List<TextBlock> textBlocks = new ArrayList<> ();
+
   // All ForkProdos files have a single FileProdos parent. Forks are also AppleFiles,
   // but only the DATA and RESOURCE forks are treated as standalone files. Normal
   // prodos files simply use a ForkProdos for their data (as the code to read them 
@@ -97,13 +99,25 @@ public class ForkProdos extends AbstractAppleFile
           break;
       }
 
-    // remove trailing empty blocks
+    // remove trailing empty block numbers
     while (blockNumbers.size () > 0 && blockNumbers.get (blockNumbers.size () - 1) == 0)
       blockNumbers.remove (blockNumbers.size () - 1);
 
+    if (parentFile.getFileType () == ProdosConstants.FILE_TYPE_TEXT
+        && (forkType == null || forkType == ForkType.DATA))
+      processTextFile (blockNumbers);
+    else
+      processNonTextFile (blockNumbers);
+  }
+
+  // ---------------------------------------------------------------------------------//
+  private void processNonTextFile (List<Integer> blockNumbers)
+  // ---------------------------------------------------------------------------------//
+  {
+    // fill dataBlocks
     for (Integer blockNo : blockNumbers)
     {
-      if (blockNo == 0)
+      if (blockNo == 0)             // shouldn't be possible
       {
         dataBlocks.add (null);
         nullBlocks++;
@@ -114,6 +128,52 @@ public class ForkProdos extends AbstractAppleFile
         block.setFileOwner (this);
         dataBlocks.add (block);
       }
+    }
+  }
+
+  // ---------------------------------------------------------------------------------//
+  private void processTextFile (List<Integer> blockNumbers)
+  // ---------------------------------------------------------------------------------//
+  {
+    // collect contiguous blocks into TextBlocks
+    List<AppleBlock> dataBlocks = new ArrayList<> ();
+    int logicalBlockNo = 0;
+    int startBlock = -1;
+    int aux = parentFile.getAuxType ();
+
+    for (Integer blockNo : blockNumbers)
+    //    for (AppleBlock block : appleFile.getDataBlocks ())
+    {
+      if (blockNo == 0)
+      {
+        if (dataBlocks.size () > 0)
+        {
+          TextBlock textBlock = new TextBlock (parentFileSystem,
+              new ArrayList<> (dataBlocks), startBlock, aux);
+          textBlocks.add (textBlock);
+          dataBlocks.clear ();
+        }
+      }
+      else
+      {
+        if (dataBlocks.size () == 0)
+          startBlock = logicalBlockNo;
+
+        AppleBlock block = parentFileSystem.getBlock (blockNo, BlockType.FILE_DATA);
+        block.setFileOwner (this);
+
+        dataBlocks.add (block);
+        this.dataBlocks.add (block);
+      }
+
+      ++logicalBlockNo;
+    }
+
+    if (dataBlocks.size () > 0)
+    {
+      TextBlock textBlock =
+          new TextBlock (parentFileSystem, new ArrayList<> (dataBlocks), startBlock, aux);
+      textBlocks.add (textBlock);
     }
   }
 
@@ -145,7 +205,6 @@ public class ForkProdos extends AbstractAppleFile
       {
         AppleBlock dataBlock = parentFileSystem.getBlock (blockNo, BlockType.FILE_DATA);
         blockNumbers.add (dataBlock == null ? 0 : blockNo);
-        // should throw error
       }
       else
         blockNumbers.add (0);
@@ -200,6 +259,7 @@ public class ForkProdos extends AbstractAppleFile
 
       if (data.length < eof)
       {
+        assert false;
         // see TOTAL.REPLAY/X/COLUMNS/COL2P/COLUMNS.MGEMS
         System.out.printf ("Buffer not long enough in %s%n", parentFile.getPath ());
         System.out.printf ("EOF: %06X, buffer length: %06X%n", eof, data.length);
@@ -246,6 +306,13 @@ public class ForkProdos extends AbstractAppleFile
   // ---------------------------------------------------------------------------------//
   {
     return parentFile.getFileType ();
+  }
+
+  // ---------------------------------------------------------------------------------//
+  public List<TextBlock> getTextBlocks ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return textBlocks;
   }
 
   // ---------------------------------------------------------------------------------//
