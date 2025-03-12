@@ -103,9 +103,13 @@ public class ForkProdos extends AbstractAppleFile
     while (blockNumbers.size () > 0 && blockNumbers.get (blockNumbers.size () - 1) == 0)
       blockNumbers.remove (blockNumbers.size () - 1);
 
-    if (parentFile.getFileType () == ProdosConstants.FILE_TYPE_TEXT
-        && (forkType == null || forkType == ForkType.DATA))
-      processTextFile (blockNumbers);
+    boolean directAccessFile =        //
+        parentFile.getFileType () == ProdosConstants.FILE_TYPE_TEXT   // text file
+            && parentFile.getAuxType () > 0                           // with reclen > 0
+            && forkType != ForkType.RESOURCE;                         // but not resource
+
+    if (directAccessFile)
+      processDirectAccessFile (blockNumbers);
     else
       processNonTextFile (blockNumbers);
   }
@@ -116,65 +120,62 @@ public class ForkProdos extends AbstractAppleFile
   {
     // fill dataBlocks
     for (Integer blockNo : blockNumbers)
-    {
-      if (blockNo == 0)             // shouldn't be possible
-      {
-        dataBlocks.add (null);
-        nullBlocks++;
-      }
-      else
-      {
-        AppleBlock block = parentFileSystem.getBlock (blockNo, BlockType.FILE_DATA);
-        block.setFileOwner (this);
-        dataBlocks.add (block);
-      }
-    }
+      processBlock (blockNo);
   }
 
   // ---------------------------------------------------------------------------------//
-  private void processTextFile (List<Integer> blockNumbers)
+  private void processDirectAccessFile (List<Integer> blockNumbers)
   // ---------------------------------------------------------------------------------//
   {
-    // collect contiguous blocks into TextBlocks
-    List<AppleBlock> dataBlocks = new ArrayList<> ();
-    int logicalBlockNo = 0;
+    // collect contiguous data blocks into TextBlocks
+    List<AppleBlock> contiguousBlocks = new ArrayList<> ();      // temporary storage
     int startBlock = -1;
     int aux = parentFile.getAuxType ();
 
+    int logicalBlockNo = 0;                         // block # within the file
+
     for (Integer blockNo : blockNumbers)
-    //    for (AppleBlock block : appleFile.getDataBlocks ())
     {
       if (blockNo == 0)
       {
-        if (dataBlocks.size () > 0)
+        if (contiguousBlocks.size () > 0)
         {
-          TextBlock textBlock = new TextBlock (parentFileSystem,
-              new ArrayList<> (dataBlocks), startBlock, aux);
+          TextBlock textBlock =
+              new TextBlock (parentFileSystem, contiguousBlocks, startBlock, aux);
           textBlocks.add (textBlock);
-          dataBlocks.clear ();
+          contiguousBlocks = new ArrayList<> ();      // ready for a new island
         }
       }
       else
       {
-        if (dataBlocks.size () == 0)
+        if (contiguousBlocks.size () == 0)            // this is the start of an island
           startBlock = logicalBlockNo;
 
-        AppleBlock block = parentFileSystem.getBlock (blockNo, BlockType.FILE_DATA);
-        block.setFileOwner (this);
-
-        dataBlocks.add (block);
-        this.dataBlocks.add (block);
+        AppleBlock dataBlock = processBlock (blockNo);      // non-text file processing
+        contiguousBlocks.add (dataBlock);
       }
 
       ++logicalBlockNo;
     }
 
-    if (dataBlocks.size () > 0)
+    assert contiguousBlocks.size () > 0;
+    if (contiguousBlocks.size () > 0)           // should always be true
     {
       TextBlock textBlock =
-          new TextBlock (parentFileSystem, new ArrayList<> (dataBlocks), startBlock, aux);
+          new TextBlock (parentFileSystem, contiguousBlocks, startBlock, aux);
       textBlocks.add (textBlock);
     }
+  }
+
+  // ---------------------------------------------------------------------------------//
+  private AppleBlock processBlock (int blockNo)
+  // ---------------------------------------------------------------------------------//
+  {
+    AppleBlock dataBlock = parentFileSystem.getBlock (blockNo, BlockType.FILE_DATA);
+    dataBlock.setFileOwner (this);
+    dataBlocks.add (dataBlock);
+
+    return dataBlock;
   }
 
   // ---------------------------------------------------------------------------------//
