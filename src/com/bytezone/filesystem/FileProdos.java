@@ -212,7 +212,7 @@ public class FileProdos extends AbstractAppleFile implements AppleForkedFile
   }
 
   // ---------------------------------------------------------------------------------//
-  public List<TextBlock> getTextBlocks ()
+  public List<TextBlockProdos> getTextBlocks ()
   // ---------------------------------------------------------------------------------//
   {
     if (isForkedFile)

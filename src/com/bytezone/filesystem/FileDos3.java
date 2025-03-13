@@ -76,6 +76,9 @@ public class FileDos3 extends FileDos
     }
 
     setFileLength ();
+
+    if (textFileGaps > 0)
+      processDirectAccessFile (dataBlocks);
   }
 
   // ---------------------------------------------------------------------------------//

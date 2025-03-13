@@ -32,7 +32,7 @@ public class ForkProdos extends AbstractAppleFile
   private AppleBlock masterIndexBlock;
   private final List<AppleBlock> indexBlocks = new ArrayList<> ();
 
-  private final List<TextBlock> textBlocks = new ArrayList<> ();
+  private final List<TextBlockProdos> textBlocks = new ArrayList<> ();
 
   // All ForkProdos files have a single FileProdos parent. Forks are also AppleFiles,
   // but only the DATA and RESOURCE forks are treated as standalone files. Normal
@@ -140,8 +140,8 @@ public class ForkProdos extends AbstractAppleFile
       {
         if (contiguousBlocks.size () > 0)
         {
-          TextBlock textBlock =
-              new TextBlock (parentFileSystem, contiguousBlocks, startBlock, aux);
+          TextBlockProdos textBlock =
+              new TextBlockProdos (parentFileSystem, contiguousBlocks, startBlock, aux);
           textBlocks.add (textBlock);
           contiguousBlocks = new ArrayList<> ();      // ready for a new island
         }
@@ -161,8 +161,8 @@ public class ForkProdos extends AbstractAppleFile
     assert contiguousBlocks.size () > 0;
     if (contiguousBlocks.size () > 0)           // should always be true
     {
-      TextBlock textBlock =
-          new TextBlock (parentFileSystem, contiguousBlocks, startBlock, aux);
+      TextBlockProdos textBlock =
+          new TextBlockProdos (parentFileSystem, contiguousBlocks, startBlock, aux);
       textBlocks.add (textBlock);
     }
   }
@@ -310,7 +310,7 @@ public class ForkProdos extends AbstractAppleFile
   }
 
   // ---------------------------------------------------------------------------------//
-  public List<TextBlock> getTextBlocks ()
+  public List<TextBlockProdos> getTextBlocks ()
   // ---------------------------------------------------------------------------------//
   {
     return textBlocks;

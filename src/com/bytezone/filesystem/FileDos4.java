@@ -84,6 +84,9 @@ public class FileDos4 extends FileDos
     }
 
     setFileLength ();
+
+    if (textFileGaps > 0)
+      processDirectAccessFile (dataBlocks);
   }
 
   // ---------------------------------------------------------------------------------//

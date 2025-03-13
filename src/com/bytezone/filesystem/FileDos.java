@@ -17,6 +17,7 @@ public abstract class FileDos extends AbstractAppleFile
   protected int textFileGaps;       // total sparse file empty data sectors
 
   protected List<AppleBlock> indexBlocks = new ArrayList<> ();
+  private final List<TextBlockDos> textBlocks = new ArrayList<> ();
 
   protected CatalogEntryDos catalogEntry;
 
@@ -37,7 +38,8 @@ public abstract class FileDos extends AbstractAppleFile
       return;
     }
 
-    // NB - don't get the buffer for text files - a sparse text file may NPE
+    // NB - don't get the first block's buffer for text files
+    //    - a sparse text file may NPE
 
     switch (getFileType ())
     {
@@ -77,6 +79,52 @@ public abstract class FileDos extends AbstractAppleFile
   }
 
   // ---------------------------------------------------------------------------------//
+  void processDirectAccessFile (List<AppleBlock> dataBlocks)
+  // ---------------------------------------------------------------------------------//
+  {
+    // collect contiguous data blocks into TextBlocks
+    List<AppleBlock> contiguousBlocks = new ArrayList<> ();      // temporary storage
+    int startBlock = -1;
+    //    int aux = parentFile.getAuxType ();
+
+    int logicalBlockNo = 0;                         // block # within the file
+
+    for (AppleBlock dataBlock : dataBlocks)
+    {
+      if (dataBlock == null)
+      {
+        if (contiguousBlocks.size () > 0)
+        {
+          TextBlockDos textBlock =
+              new TextBlockDos ((parentFileSystem), contiguousBlocks, startBlock);
+          textBlocks.add (textBlock);
+          contiguousBlocks = new ArrayList<> ();      // ready for a new island
+        }
+      }
+      else
+      {
+        if (contiguousBlocks.size () == 0)            // this is the start of an island
+          startBlock = logicalBlockNo;
+
+        contiguousBlocks.add (dataBlock);
+      }
+
+      ++logicalBlockNo;
+    }
+
+    assert contiguousBlocks.size () > 0;
+    if (contiguousBlocks.size () > 0)           // should always be true
+    {
+      TextBlockDos textBlock =
+          new TextBlockDos ((parentFileSystem), contiguousBlocks, startBlock);
+      textBlocks.add (textBlock);
+    }
+
+    //    for (TextBlockDos textBlock : textBlocks)
+    //      System.out.println (textBlock);
+  }
+
+  // ---------------------------------------------------------------------------------//
   @Override
   public int getFileLength ()                       // in bytes (eof)
   // ---------------------------------------------------------------------------------//
@@ -92,6 +140,8 @@ public abstract class FileDos extends AbstractAppleFile
     return indexBlocks.size () + dataBlocks.size () - textFileGaps;
   }
 
+  // This is used by the disk display to highlight the blocks that are relevant to
+  // this file.
   // ---------------------------------------------------------------------------------//
   @Override
   public List<AppleBlock> getAllBlocks ()
@@ -168,6 +218,13 @@ public abstract class FileDos extends AbstractAppleFile
   // ---------------------------------------------------------------------------------//
   {
     return catalogEntry.fileType;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  public List<TextBlockDos> getTextBlocks ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return textBlocks;
   }
 
   // attempt to weed out the catalog entries that are just labels
