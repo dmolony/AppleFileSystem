@@ -1,14 +1,14 @@
 package com.bytezone.filesystem;
 
-import java.util.ArrayList;
 import java.util.List;
+
+import com.bytezone.utility.Utility;
 
 // -----------------------------------------------------------------------------------//
 public class TextBlockDos extends TextBlock
 // -----------------------------------------------------------------------------------//
 {
-
-  private List<Record> records = new ArrayList<> ();
+  private int gcd;
 
   // ---------------------------------------------------------------------------------//
   public TextBlockDos (AppleFileSystem fs, List<AppleBlock> blocks, int startBlockNo)
@@ -16,66 +16,55 @@ public class TextBlockDos extends TextBlock
   {
     super (fs, blocks, startBlockNo);
 
-    int blockSize = fs.getBlockSize ();
-    firstLogicalByte = startBlockNo * blockSize;
+    firstLogicalByte = startBlockNo * fs.getBlockSize ();
 
-    //    System.out.println (getText ());
+    buildRecords ();
   }
 
   // ---------------------------------------------------------------------------------//
-  @Override
-  public String getText ()
+  private void buildRecords ()
   // ---------------------------------------------------------------------------------//
   {
-    StringBuilder text = new StringBuilder ();
-
     getBuffer ();
-    //    System.out.println (Utility.format (buffer));
 
+    int ptr = 0;
     boolean inData = false;
-    int logicalPtr = firstLogicalByte;
-    int recordStart = -1;
+    int startPtr = -1;
 
-    for (int i = 0; i < buffer.length; i++)
+    while (ptr < buffer.length)
     {
-      if (buffer[i] == 0x00)
+      if (buffer[ptr] == 0)
       {
         if (inData)
         {
           inData = false;
-          Record record = new Record (recordStart, i - recordStart);
-          records.add (record);
+          records.add (new TextRecord (startPtr, ptr - startPtr));
         }
       }
-      else
+      else if (!inData)
       {
-        if (!inData)
-        {
-          inData = true;
-          recordStart = i;
-          //          System.out.printf ("%06X : ", logicalPtr);
-          text.append (String.format ("%06X : ", logicalPtr));
-        }
-
-        //        System.out.print ((char) (buffer[i] & 0x7F));
-        text.append ((char) (buffer[i] & 0x7F));
+        inData = true;
+        startPtr = ptr;
       }
 
-      ++logicalPtr;
+      ptr++;
     }
 
     if (inData)
+      records.add (new TextRecord (startPtr, ptr - startPtr));
+
+    for (TextRecord record : records)
     {
-      Record rec = new Record (recordStart, buffer.length - recordStart);
-      records.add (rec);
+      ptr = record.offset () + firstLogicalByte;
+      gcd = gcd == 0 ? ptr : Utility.gcd (gcd, ptr);
     }
+  }
 
-    //    System.out.println ();
-
-    //    for (Record record : records)
-    //      System.out.println (record);
-
-    return text.toString ();
+  // ---------------------------------------------------------------------------------//
+  public int getProbableRecordLength ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return gcd;
   }
 
   // ---------------------------------------------------------------------------------//
@@ -85,13 +74,8 @@ public class TextBlockDos extends TextBlock
   {
     StringBuilder text = new StringBuilder (super.toString ());
 
-    text.append (String.format ("Total records ............ %,7d%n", records.size ()));
+    text.append (String.format ("Probable record length ... %,7d%n%n", gcd));
 
     return text.toString ();
   }
-
-  record Record (int offset, int length)
-  {
-  };
-
 }

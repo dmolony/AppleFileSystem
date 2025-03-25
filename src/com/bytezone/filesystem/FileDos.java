@@ -15,9 +15,10 @@ public abstract class FileDos extends AbstractAppleFile
   protected int eof;
   protected int loadAddress;
   protected int textFileGaps;       // total sparse file empty data sectors
+  protected int zerosInFirstBlock;
 
   protected List<AppleBlock> indexBlocks = new ArrayList<> ();
-  private final List<TextBlockDos> textBlocks = new ArrayList<> ();
+  private final List<TextBlock> textBlocks = new ArrayList<> ();
 
   protected CatalogEntryDos catalogEntry;
 
@@ -45,6 +46,7 @@ public abstract class FileDos extends AbstractAppleFile
     {
       case FsDos.FILE_TYPE_TEXT:
         eof = dataBlocks.size () * getParentFileSystem ().getBlockSize ();
+        zerosInFirstBlock = countZeros ();
         break;
 
       case FsDos.FILE_TYPE_INTEGER_BASIC:
@@ -79,13 +81,29 @@ public abstract class FileDos extends AbstractAppleFile
   }
 
   // ---------------------------------------------------------------------------------//
+  private int countZeros ()
+  // ---------------------------------------------------------------------------------//
+  {
+    if (dataBlocks.get (0) == null)
+      return 256;
+
+    byte[] buffer = dataBlocks.get (0).getBuffer ();
+    int zeros = 0;
+
+    for (int i = 0; i < 256; i++)
+      if (buffer[i] == 0)
+        zeros++;
+
+    return zeros;
+  }
+
+  // ---------------------------------------------------------------------------------//
   void processDirectAccessFile (List<AppleBlock> dataBlocks)
   // ---------------------------------------------------------------------------------//
   {
     // collect contiguous data blocks into TextBlocks
     List<AppleBlock> contiguousBlocks = new ArrayList<> ();      // temporary storage
     int startBlock = -1;
-    //    int aux = parentFile.getAuxType ();
 
     int logicalBlockNo = 0;                         // block # within the file
 
@@ -113,15 +131,12 @@ public abstract class FileDos extends AbstractAppleFile
     }
 
     assert contiguousBlocks.size () > 0;
-    if (contiguousBlocks.size () > 0)           // should always be true
+    if (contiguousBlocks.size () > 0)                 // should always be true
     {
       TextBlockDos textBlock =
           new TextBlockDos ((parentFileSystem), contiguousBlocks, startBlock);
       textBlocks.add (textBlock);
     }
-
-    //    for (TextBlockDos textBlock : textBlocks)
-    //      System.out.println (textBlock);
   }
 
   // ---------------------------------------------------------------------------------//
@@ -221,10 +236,17 @@ public abstract class FileDos extends AbstractAppleFile
   }
 
   // ---------------------------------------------------------------------------------//
-  public List<TextBlockDos> getTextBlocks ()
+  public List<TextBlock> getTextBlocks ()
   // ---------------------------------------------------------------------------------//
   {
     return textBlocks;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  public int getTotalTextBlocks ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return textBlocks.size ();
   }
 
   // attempt to weed out the catalog entries that are just labels

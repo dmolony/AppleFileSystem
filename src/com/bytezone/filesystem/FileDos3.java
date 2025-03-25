@@ -49,7 +49,7 @@ public class FileDos3 extends FileDos
 
         if (track == 0 && sector == 0)            // invalid address
         {
-          if (getFileType () != 0x00)             // not a text file
+          if (getFileType () != FsDos.FILE_TYPE_TEXT)
             break loop;
 
           dataBlocks.add (null);                  // must be a sparse file
@@ -77,7 +77,7 @@ public class FileDos3 extends FileDos
 
     setFileLength ();
 
-    if (textFileGaps > 0)
+    if (textFileGaps > 0 || zerosInFirstBlock > 0)
       processDirectAccessFile (dataBlocks);
   }
 

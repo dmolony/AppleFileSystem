@@ -1,17 +1,23 @@
 package com.bytezone.filesystem;
 
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
+import com.bytezone.filesystem.TextBlock.TextRecord;
+
 // -----------------------------------------------------------------------------------//
-public class TextBlock
+public class TextBlock implements Iterable<TextRecord>
 // -----------------------------------------------------------------------------------//
 {
   protected AppleFileSystem fs;
   protected List<AppleBlock> blocks;      // an island of data blocks within the file
-  protected int startBlockNo;             // block number within the file
+  protected int startBlockNo;             // first block number in the island
 
   protected byte[] buffer;
   protected int firstLogicalByte;
+
+  protected List<TextRecord> records = new ArrayList<> ();
 
   // ---------------------------------------------------------------------------------//
   public TextBlock (AppleFileSystem fs, List<AppleBlock> blocks, int startBlockNo)
@@ -40,11 +46,23 @@ public class TextBlock
   }
 
   // ---------------------------------------------------------------------------------//
-  public String getText ()
+  public int getTotalRecords ()
   // ---------------------------------------------------------------------------------//
   {
-    return "override me";
+    return records.size ();
   }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
+  public Iterator<TextRecord> iterator ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return records.iterator ();
+  }
+
+  public record TextRecord (int offset, int length)
+  {
+  };
 
   // ---------------------------------------------------------------------------------//
   @Override
@@ -55,8 +73,12 @@ public class TextBlock
 
     text.append (
         String.format ("File system .............. %s%n", fs.getFileSystemType ()));
-    text.append (String.format ("Block size ............... %,7d%n", fs.getBlockSize ()));
-    text.append (String.format ("First logical byte ....... %,7d%n", firstLogicalByte));
+    text.append (
+        String.format ("Total records ............ %04X  %<,9d%n", records.size ()));
+    text.append (
+        String.format ("Block size ............... %04X  %<,9d%n", fs.getBlockSize ()));
+    text.append (
+        String.format ("First logical byte ....... %04X  %<,9d%n", firstLogicalByte));
 
     return text.toString ();
   }

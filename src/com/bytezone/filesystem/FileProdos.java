@@ -216,9 +216,19 @@ public class FileProdos extends AbstractAppleFile implements AppleForkedFile
   // ---------------------------------------------------------------------------------//
   {
     if (isForkedFile)
-      return null;                          // might need to do more than this
+      return null;
 
     return dataFork.getTextBlocks ();
+  }
+
+  // ---------------------------------------------------------------------------------//
+  public int getTotalTextBlocks ()
+  // ---------------------------------------------------------------------------------//
+  {
+    if (isForkedFile)
+      return 0;
+
+    return dataFork.getTotalBlocks ();
   }
 
   // ---------------------------------------------------------------------------------//

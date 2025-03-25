@@ -10,11 +10,8 @@ public class TextBlockProdos extends TextBlock
 // -----------------------------------------------------------------------------------//
 {
   private int recordLength;             // aux
-
-  private int firstLogicalRecordNo;     // first complete record number
+  private int firstLogicalRecordNo;     // first possible record number
   private int offsetToFirstRecord;      // skip incomplete record if present
-  private int maxRecords;               // possible # full records in this island
-  private int totalRecords;             // # full records in this island with data
 
   // ---------------------------------------------------------------------------------//
   public TextBlockProdos (FsProdos fs, List<AppleBlock> blocks, int startBlockNo,
@@ -25,73 +22,36 @@ public class TextBlockProdos extends TextBlock
 
     this.recordLength = recordLength;
 
-    int blockSize = fs.getBlockSize ();
+    firstLogicalByte = startBlockNo * fs.getBlockSize ();
 
-    firstLogicalByte = startBlockNo * blockSize;
     int skipped = firstLogicalByte % recordLength;
-
     offsetToFirstRecord = skipped == 0 ? 0 : recordLength - skipped;
     firstLogicalRecordNo = (firstLogicalByte + offsetToFirstRecord) / recordLength;
 
-    int dataSize = blocks.size () * blockSize - offsetToFirstRecord;
-    maxRecords = dataSize / recordLength + 1;    // allow for partly filled record at the end
-
-    // NB: if a full record would normally require an extra (partial) block, but the
-    //     actual record fitted in at the end of the current block, then the actual
-    //     records will be 1 more than calculated.
-    // EG: if reclen is 500 (less than 1 block), then a single block could fit two
-    //     records if the second record is 12 bytes or less.
+    buildRecords ();
   }
 
   // ---------------------------------------------------------------------------------//
-  @Override
-  public String getText ()
+  private void buildRecords ()
   // ---------------------------------------------------------------------------------//
   {
-    StringBuilder text = new StringBuilder ();
-
+    int ptr = offsetToFirstRecord;
     getBuffer ();
 
-    int ptr = offsetToFirstRecord;
-    int recordNo = firstLogicalRecordNo;
-    boolean showTextOffsets = true;
-    int blockSize = fs.getBlockSize ();
-
-    int firstLogicalByte = startBlockNo * blockSize;
-
-    // check each full record in the island
-
-    for (int i = 0; i < maxRecords; i++)
+    while (ptr < buffer.length)
     {
-      if (ptr >= buffer.length)
-        break;
-
-      if (buffer[ptr] != 0)
+      if (buffer[ptr] != 0)                         // a valid record
       {
-        if (showTextOffsets)
-          text.append (String.format ("%,10d %,9d  ", firstLogicalByte + ptr, recordNo));
+        int ptr2 = ptr + recordLength;              // last byte + 1
 
-        ++totalRecords;
+        while (buffer[--ptr2] == 0)                 // not in data
+          ;
 
-        int ptr2 = ptr;
-        int max = ptr + recordLength;
-
-        while (ptr2 < max)
-        {
-          int val = buffer[ptr2++] & 0x7F;                   // strip hi-order bit
-
-          if (val == 0)
-            break;
-
-          text.append ((char) val);
-        }
+        records.add (new TextRecord (ptr, ptr2 - ptr + 1));
       }
 
-      ptr += recordLength;
-      recordNo++;
+      ptr += recordLength;                          // next record
     }
-
-    return text.toString ();
   }
 
   // ---------------------------------------------------------------------------------//
@@ -101,18 +61,12 @@ public class TextBlockProdos extends TextBlock
   {
     StringBuilder text = new StringBuilder (super.toString ());
 
-    int skipped = firstLogicalByte % recordLength;
-    int dataSize = blocks.size () * fs.getBlockSize () - offsetToFirstRecord;
-
-    text.append (String.format ("Record length ............ %,6d%n", recordLength));
-    text.append (String.format ("Skipped .................. %,6d%n", skipped));
     text.append (
-        String.format ("Offset to first record ... %,6d%n", offsetToFirstRecord));
+        String.format ("Record length ............ %04X  %<,9d%n", recordLength));
     text.append (
-        String.format ("First logical record ..... %,6d%n", firstLogicalRecordNo));
-    text.append (String.format ("Data size ................ %,6d%n", dataSize));
-    text.append (String.format ("Max records .............. %,6d%n%n", maxRecords));
-    text.append (String.format ("Total records ............ %,6d%n%n", totalRecords));
+        String.format ("Offset to first record ... %04X  %<,9d%n", offsetToFirstRecord));
+    text.append (
+        String.format ("First logical record # ... %04X  %<,9d%n", firstLogicalRecordNo));
 
     return text.toString ();
   }
