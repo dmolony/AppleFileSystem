@@ -44,10 +44,10 @@ public class TextBlockProdos extends TextBlock
       {
         int ptr2 = ptr;
 
-        while (buffer[ptr2++] != 0)                 // in data
+        while (buffer[++ptr2] != 0)                 // in data
           ;
 
-        records.add (new TextRecord (ptr, ptr2 - ptr + 1));
+        records.add (new TextRecord (ptr, ptr2 - ptr));
       }
 
       ptr += recordLength;                          // next record
