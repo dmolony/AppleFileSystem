@@ -42,9 +42,9 @@ public class TextBlockProdos extends TextBlock
     {
       if (buffer[ptr] != 0)                         // a valid record
       {
-        int ptr2 = ptr + recordLength;              // last byte + 1
+        int ptr2 = ptr;
 
-        while (buffer[--ptr2] == 0)                 // not in data
+        while (buffer[ptr2++] != 0)                 // in data
           ;
 
         records.add (new TextRecord (ptr, ptr2 - ptr + 1));

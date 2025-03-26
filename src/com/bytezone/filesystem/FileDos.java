@@ -3,6 +3,7 @@ package com.bytezone.filesystem;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.bytezone.filesystem.TextBlock.TextRecord;
 import com.bytezone.utility.Utility;
 
 // -----------------------------------------------------------------------------------//
@@ -21,6 +22,7 @@ public abstract class FileDos extends AbstractAppleFile
   private final List<TextBlock> textBlocks = new ArrayList<> ();
 
   protected CatalogEntryDos catalogEntry;
+  protected int gcd;
 
   // ---------------------------------------------------------------------------------//
   FileDos (FsDos fs)
@@ -137,6 +139,16 @@ public abstract class FileDos extends AbstractAppleFile
           new TextBlockDos ((parentFileSystem), contiguousBlocks, startBlock);
       textBlocks.add (textBlock);
     }
+
+    for (TextBlock textBlock : textBlocks)
+      for (TextRecord record : textBlock)
+      {
+        int ptr = record.offset () + textBlock.firstLogicalByte;
+        gcd = gcd == 0 ? ptr : Utility.gcd (gcd, ptr);
+      }
+
+    if (gcd > 1000)
+      System.out.printf ("Unlikely looking gcd: %d%n", gcd);
   }
 
   // ---------------------------------------------------------------------------------//
@@ -145,6 +157,13 @@ public abstract class FileDos extends AbstractAppleFile
   // ---------------------------------------------------------------------------------//
   {
     return eof;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  public int getProbableRecordLength ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return gcd;
   }
 
   // ---------------------------------------------------------------------------------//
@@ -311,6 +330,7 @@ public abstract class FileDos extends AbstractAppleFile
     text.append (String.format ("File length ........... %04X    %<,9d%n", eof));
     text.append (String.format ("Load address .......... %04X    %<,9d%n", loadAddress));
     text.append (String.format ("Text file gaps ........ %04X    %<,9d%n", textFileGaps));
+    text.append (String.format ("Probable reclen ....... %04X    %<,9d%n", gcd));
 
     return Utility.rtrim (text);
   }
