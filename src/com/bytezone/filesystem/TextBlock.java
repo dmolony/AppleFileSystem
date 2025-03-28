@@ -16,7 +16,7 @@ public class TextBlock implements Iterable<TextRecord>
   protected int startBlockNo;             // first block number in the island
 
   protected byte[] buffer;
-  protected int firstLogicalByte;
+  protected int firstByteNumber;
 
   protected List<TextRecord> records = new ArrayList<> ();
 
@@ -29,6 +29,8 @@ public class TextBlock implements Iterable<TextRecord>
     this.appleFile = appleFile;
     this.blocks = blocks;
     this.startBlockNo = startBlockNo;
+
+    firstByteNumber = startBlockNo * fs.getBlockSize ();
   }
 
   // ---------------------------------------------------------------------------------//
@@ -45,7 +47,7 @@ public class TextBlock implements Iterable<TextRecord>
   public int getStartByte ()
   // ---------------------------------------------------------------------------------//
   {
-    return firstLogicalByte;
+    return firstByteNumber;
   }
 
   // ---------------------------------------------------------------------------------//
@@ -83,7 +85,7 @@ public class TextBlock implements Iterable<TextRecord>
     text.append (
         String.format ("Block size ............... %04X  %<,9d%n", fs.getBlockSize ()));
     text.append (
-        String.format ("First logical byte ....... %04X  %<,9d%n", firstLogicalByte));
+        String.format ("First logical byte ....... %04X  %<,9d%n", firstByteNumber));
 
     return text.toString ();
   }

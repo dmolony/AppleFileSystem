@@ -13,8 +13,6 @@ public class TextBlockDos extends TextBlock
   {
     super (fs, appleFile, blocks, startBlockNo);
 
-    firstLogicalByte = startBlockNo * fs.getBlockSize ();
-
     buildRecords ();
   }
 
@@ -25,8 +23,8 @@ public class TextBlockDos extends TextBlock
     getBuffer ();
 
     int ptr = 0;
-    boolean inData = false;
     int startPtr = -1;
+    boolean inData = false;
 
     while (ptr < buffer.length)
     {

@@ -22,7 +22,7 @@ public abstract class FileDos extends AbstractAppleFile
   private final List<TextBlock> textBlocks = new ArrayList<> ();
 
   protected CatalogEntryDos catalogEntry;
-  protected int gcd;
+  protected int recordLength;
 
   // ---------------------------------------------------------------------------------//
   FileDos (FsDos fs)
@@ -143,12 +143,9 @@ public abstract class FileDos extends AbstractAppleFile
     for (TextBlock textBlock : textBlocks)
       for (TextRecord record : textBlock)
       {
-        int ptr = record.offset () + textBlock.firstLogicalByte;
-        gcd = gcd == 0 ? ptr : Utility.gcd (gcd, ptr);
+        int ptr = record.offset () + textBlock.firstByteNumber;
+        recordLength = recordLength == 0 ? ptr : Utility.gcd (recordLength, ptr);
       }
-
-    if (gcd > 1000)
-      System.out.printf ("Unlikely looking gcd: %d%n", gcd);
   }
 
   // ---------------------------------------------------------------------------------//
@@ -163,7 +160,7 @@ public abstract class FileDos extends AbstractAppleFile
   public int getProbableRecordLength ()
   // ---------------------------------------------------------------------------------//
   {
-    return gcd;
+    return recordLength;
   }
 
   // ---------------------------------------------------------------------------------//
@@ -330,7 +327,7 @@ public abstract class FileDos extends AbstractAppleFile
     text.append (String.format ("File length ........... %04X    %<,9d%n", eof));
     text.append (String.format ("Load address .......... %04X    %<,9d%n", loadAddress));
     text.append (String.format ("Text file gaps ........ %04X    %<,9d%n", textFileGaps));
-    text.append (String.format ("Probable reclen ....... %04X    %<,9d%n", gcd));
+    text.append (String.format ("Probable reclen ....... %04X    %<,9d%n", recordLength));
 
     return Utility.rtrim (text);
   }

@@ -22,11 +22,9 @@ public class TextBlockProdos extends TextBlock
 
     this.recordLength = recordLength;
 
-    firstLogicalByte = startBlockNo * fs.getBlockSize ();
-
-    int skipped = firstLogicalByte % recordLength;
+    int skipped = firstByteNumber % recordLength;
     offsetToFirstRecord = skipped == 0 ? 0 : recordLength - skipped;
-    firstLogicalRecordNo = (firstLogicalByte + offsetToFirstRecord) / recordLength;
+    firstLogicalRecordNo = (firstByteNumber + offsetToFirstRecord) / recordLength;
 
     buildRecords ();
   }

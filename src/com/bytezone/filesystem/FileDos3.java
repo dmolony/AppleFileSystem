@@ -97,8 +97,8 @@ public class FileDos3 extends FileDos
     String message = "";
     String lockedFlag = (isLocked ()) ? "*" : " ";
 
-    if (gcd > 0)
-      message = String.format ("Reclen = %,d ?", gcd);
+    if (recordLength > 0)
+      message = String.format ("Reclen = %,d ?", recordLength);
 
     if (getSectorCount () != actualSize)
       message = "** Bad size **";
