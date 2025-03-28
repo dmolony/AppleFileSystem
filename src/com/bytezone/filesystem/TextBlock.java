@@ -11,6 +11,7 @@ public class TextBlock implements Iterable<TextRecord>
 // -----------------------------------------------------------------------------------//
 {
   protected AppleFileSystem fs;
+  protected AppleFile appleFile;
   protected List<AppleBlock> blocks;      // an island of data blocks within the file
   protected int startBlockNo;             // first block number in the island
 
@@ -20,10 +21,12 @@ public class TextBlock implements Iterable<TextRecord>
   protected List<TextRecord> records = new ArrayList<> ();
 
   // ---------------------------------------------------------------------------------//
-  public TextBlock (AppleFileSystem fs, List<AppleBlock> blocks, int startBlockNo)
+  public TextBlock (AppleFileSystem fs, AppleFile appleFile, List<AppleBlock> blocks,
+      int startBlockNo)
   // ---------------------------------------------------------------------------------//
   {
     this.fs = fs;
+    this.appleFile = appleFile;
     this.blocks = blocks;
     this.startBlockNo = startBlockNo;
   }
@@ -73,6 +76,8 @@ public class TextBlock implements Iterable<TextRecord>
 
     text.append (
         String.format ("File system .............. %s%n", fs.getFileSystemType ()));
+    text.append (
+        String.format ("File ..................... %s%n", appleFile.getFileName ()));
     text.append (
         String.format ("Total records ............ %04X  %<,9d%n", records.size ()));
     text.append (

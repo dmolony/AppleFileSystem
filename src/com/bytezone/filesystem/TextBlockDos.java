@@ -7,10 +7,11 @@ public class TextBlockDos extends TextBlock
 // -----------------------------------------------------------------------------------//
 {
   // ---------------------------------------------------------------------------------//
-  public TextBlockDos (AppleFileSystem fs, List<AppleBlock> blocks, int startBlockNo)
+  public TextBlockDos (AppleFileSystem fs, AppleFile appleFile, List<AppleBlock> blocks,
+      int startBlockNo)
   // ---------------------------------------------------------------------------------//
   {
-    super (fs, blocks, startBlockNo);
+    super (fs, appleFile, blocks, startBlockNo);
 
     firstLogicalByte = startBlockNo * fs.getBlockSize ();
 

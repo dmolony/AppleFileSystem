@@ -97,14 +97,17 @@ public class FileDos3 extends FileDos
     String message = "";
     String lockedFlag = (isLocked ()) ? "*" : " ";
 
+    if (gcd > 0)
+      message = String.format ("Reclen = %,d ?", gcd);
+
     if (getSectorCount () != actualSize)
       message = "** Bad size **";
 
     if (getSectorCount () > 999)
       message += " - Reported " + getSectorCount ();
 
-    if (textFileGaps > 0)
-      message += String.format ("gaps %,d", textFileGaps);
+    //    if (textFileGaps > 0)
+    //      message += String.format ("gaps %,d", textFileGaps);
 
     return String.format ("%1s  %1s  %03d  %-30.30s  %-5s  %-13s %3d %3d   %s",
         lockedFlag, getFileTypeText (), getSectorCount () % 1000, getFileName (),

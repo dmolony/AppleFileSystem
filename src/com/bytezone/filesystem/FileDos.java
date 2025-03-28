@@ -116,7 +116,7 @@ public abstract class FileDos extends AbstractAppleFile
         if (contiguousBlocks.size () > 0)
         {
           TextBlockDos textBlock =
-              new TextBlockDos ((parentFileSystem), contiguousBlocks, startBlock);
+              new TextBlockDos (parentFileSystem, this, contiguousBlocks, startBlock);
           textBlocks.add (textBlock);
           contiguousBlocks = new ArrayList<> ();      // ready for a new island
         }
@@ -136,7 +136,7 @@ public abstract class FileDos extends AbstractAppleFile
     if (contiguousBlocks.size () > 0)                 // should always be true
     {
       TextBlockDos textBlock =
-          new TextBlockDos ((parentFileSystem), contiguousBlocks, startBlock);
+          new TextBlockDos (parentFileSystem, this, contiguousBlocks, startBlock);
       textBlocks.add (textBlock);
     }
 

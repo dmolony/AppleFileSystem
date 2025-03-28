@@ -14,11 +14,11 @@ public class TextBlockProdos extends TextBlock
   private int offsetToFirstRecord;      // skip incomplete record if present
 
   // ---------------------------------------------------------------------------------//
-  public TextBlockProdos (FsProdos fs, List<AppleBlock> blocks, int startBlockNo,
-      int recordLength)
+  public TextBlockProdos (FsProdos fs, AppleFile appleFile, List<AppleBlock> blocks,
+      int startBlockNo, int recordLength)
   // ---------------------------------------------------------------------------------//
   {
-    super (fs, blocks, startBlockNo);
+    super (fs, appleFile, blocks, startBlockNo);
 
     this.recordLength = recordLength;
 
@@ -35,8 +35,8 @@ public class TextBlockProdos extends TextBlock
   private void buildRecords ()
   // ---------------------------------------------------------------------------------//
   {
-    int ptr = offsetToFirstRecord;
     getBuffer ();
+    int ptr = offsetToFirstRecord;
 
     while (ptr < buffer.length)
     {
@@ -44,7 +44,7 @@ public class TextBlockProdos extends TextBlock
       {
         int ptr2 = ptr;
 
-        while (buffer[++ptr2] != 0)                 // in data
+        while (++ptr2 < buffer.length && buffer[ptr2] != 0)         // in data
           ;
 
         records.add (new TextRecord (ptr, ptr2 - ptr));

@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Locale;
 
 import com.bytezone.filesystem.AppleBlock.BlockType;
+import com.bytezone.filesystem.TextBlock.TextRecord;
 import com.bytezone.utility.Utility;
 
 // -----------------------------------------------------------------------------------//
@@ -106,11 +107,13 @@ public class ForkProdos extends AbstractAppleFile
     boolean directAccessFile =        //
         parentFile.getFileType () == ProdosConstants.FILE_TYPE_TEXT   // text file
             && parentFile.getAuxType () > 0                           // with reclen > 0
+            && parentFile.getAuxType () < 2000                        // but not stupid
             && forkType != ForkType.RESOURCE;                         // but not resource
 
     if (directAccessFile)
       processDirectAccessFile (blockNumbers);
-    else
+
+    if (textBlocks.size () == 0)
       processNonTextFile (blockNumbers);
   }
 
@@ -140,8 +143,8 @@ public class ForkProdos extends AbstractAppleFile
       {
         if (contiguousBlocks.size () > 0)
         {
-          TextBlockProdos textBlock =
-              new TextBlockProdos (parentFileSystem, contiguousBlocks, startBlock, aux);
+          TextBlockProdos textBlock = new TextBlockProdos (parentFileSystem, this,
+              contiguousBlocks, startBlock, aux);
           textBlocks.add (textBlock);
           contiguousBlocks = new ArrayList<> ();      // ready for a new island
         }
@@ -162,9 +165,49 @@ public class ForkProdos extends AbstractAppleFile
     if (contiguousBlocks.size () > 0)           // should always be true
     {
       TextBlockProdos textBlock =
-          new TextBlockProdos (parentFileSystem, contiguousBlocks, startBlock, aux);
+          new TextBlockProdos (parentFileSystem, this, contiguousBlocks, startBlock, aux);
       textBlocks.add (textBlock);
     }
+
+    if (textBlocks.size () == 1 && !verifyTextBlocks ())
+      textBlocks.clear ();
+  }
+
+  // ---------------------------------------------------------------------------------//
+  private boolean verifyTextBlocks ()
+  // ---------------------------------------------------------------------------------//
+  {
+    //    System.out.printf ("%s  %,d%n", getFileName (), getAuxType ());
+    //    System.out.printf ("Total blocks: %d%n", textBlocks.size ());
+
+    int passed = 0;
+    int failed = 0;
+    int aux = getAuxType ();
+
+    for (TextBlock textBlock : textBlocks)
+    {
+      byte[] buffer = textBlock.getBuffer ();
+      for (TextRecord record : textBlock)
+      {
+        int ptr = record.offset () + aux - 1;
+        if (ptr >= buffer.length)
+          ptr = buffer.length - 1;
+
+        if (buffer[ptr] == 0)
+          ++passed;
+        else
+          ++failed;
+        int ratio = record.length () / aux;
+        //        System.out.printf ("Ratio: %d%n", ratio);
+        if (ratio > 5)
+          return false;
+      }
+    }
+
+    //    System.out.printf ("Passed: %,5d%n", passed);
+    //    System.out.printf ("Failed: %,5d%n", failed);
+
+    return passed > failed;
   }
 
   // ---------------------------------------------------------------------------------//
