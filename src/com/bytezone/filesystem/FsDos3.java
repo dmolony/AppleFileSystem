@@ -11,7 +11,7 @@ public class FsDos3 extends FsDos
 // -----------------------------------------------------------------------------------//
 {
   private static final String underline =
-      "- --- ---  ------------------------------  -----  -------------"
+      "- --- ---  ------------------------------  -----  --------------"
           + "  -- ---  -------------------\n";
 
   List<AppleBlock> catalogSectors = new ArrayList<> ();
@@ -112,7 +112,7 @@ public class FsDos3 extends FsDos
 
     text.append (String.format ("Volume : %03d%n%n", volumeNumber));
     text.append ("L Typ Len  Name                            Addr"
-        + "   Length         TS DAT  Comment\n");
+        + "   Length          TS DAT  Comment\n");
 
     super.addCatalogLines (text, underline);
 

@@ -100,7 +100,7 @@ public class FileDos4 extends FileDos
         getLoadAddress () == 0 ? "" : String.format ("$%4X", getLoadAddress ());
 
     String lengthText =
-        getFileLength () == 0 ? "" : String.format ("$%4X %<,7d", getFileLength ());
+        getFileLength () == 0 ? "" : String.format ("$%5X %<,7d", getFileLength ());
 
     String message = "";
     String lockedFlag = (isLocked ()) ? "*" : " ";
@@ -114,7 +114,7 @@ public class FileDos4 extends FileDos
     if (textFileGaps > 0)
       message += String.format ("gaps %,d", textFileGaps);
 
-    return String.format ("%1s  %1s  %03d  %-24.24s  %-15.15s  %-5s  %-13s %3d %3d   %s",
+    return String.format ("%1s  %1s  %03d  %-24.24s  %-15.15s  %-5s  %-14s %3d %3d   %s",
         lockedFlag, getFileTypeText (), getSectorCount () % 1000, getFileName (),
         ((CatalogEntryDos4) catalogEntry).getModified1 (), addressText, lengthText,
         getTotalIndexSectors (), getTotalDataSectors (), message.trim ());

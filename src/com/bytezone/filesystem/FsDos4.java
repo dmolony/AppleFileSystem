@@ -13,7 +13,7 @@ class FsDos4 extends FsDos
 {
   private static final String underline =
       "- --- ---  ------------------------  ---------------  -----"
-          + "  -------------  -- ---  -------------------\n";
+          + "  --------------  -- ---  -------------------\n";
 
   private int vtocStructureBlock;
   private int buildNumber;
@@ -147,7 +147,7 @@ class FsDos4 extends FsDos
 
     text.append (String.format ("Volume : %03d  %s%n%n", volumeNumber, volumeName));
     text.append ("L Typ Len  Name                      Modified         Addr"
-        + "   Length         TS DAT  Comment\n");
+        + "   Length          TS DAT  Comment\n");
 
     super.addCatalogLines (text, underline);
 

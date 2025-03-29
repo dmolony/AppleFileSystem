@@ -92,7 +92,7 @@ public class FileDos3 extends FileDos
         getLoadAddress () == 0 ? "" : String.format ("$%4X", getLoadAddress ());
 
     String lengthText =
-        getFileLength () == 0 ? "" : String.format ("$%4X  %<,6d", getFileLength ());
+        getFileLength () == 0 ? "" : String.format ("$%5X %<,7d", getFileLength ());
 
     String message = "";
     String lockedFlag = (isLocked ()) ? "*" : " ";
@@ -109,10 +109,9 @@ public class FileDos3 extends FileDos
     //    if (textFileGaps > 0)
     //      message += String.format ("gaps %,d", textFileGaps);
 
-    return String.format ("%1s  %1s  %03d  %-30.30s  %-5s  %-13s %3d %3d   %s",
-        lockedFlag, getFileTypeText (), getSectorCount () % 1000, getFileName (),
-        addressText, lengthText, getTotalIndexSectors (), getTotalDataSectors (),
-        message.trim ());
+    return String.format ("%1s  %1s  %03d  %-30.30s  %-5s  %-14s %3d %3d  %s", lockedFlag,
+        getFileTypeText (), getSectorCount () % 1000, getFileName (), addressText,
+        lengthText, getTotalIndexSectors (), getTotalDataSectors (), message.trim ());
   }
 
   // ---------------------------------------------------------------------------------//
