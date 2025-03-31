@@ -69,6 +69,8 @@ public interface AppleFileSystem extends AppleContainer
 
   void setHeader2img (Header2img header2img);
 
+  void setHeaderDiskCopy (HeaderDiskCopy headerDiskCopy);
+
   void setErrorMessage (String errorMessage);    // if file can't be read
 
   String getErrorMessage ();                     // if file can't be read

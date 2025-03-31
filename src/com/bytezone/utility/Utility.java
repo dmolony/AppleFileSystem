@@ -118,6 +118,22 @@ public class Utility
   }
 
   // ---------------------------------------------------------------------------------//
+  public static int unsignedShortBigEndian (byte[] buffer, int ptr)
+  // ---------------------------------------------------------------------------------//
+  {
+    try
+    {
+      return (buffer[ptr + 1] & 0xFF) | (buffer[ptr] & 0xFF) << 8;
+    }
+    catch (ArrayIndexOutOfBoundsException e)
+    {
+      System.out.printf ("Index out of range (unsignedShortBigEndian): %d > %d%n", ptr,
+          buffer.length);
+      return 0;
+    }
+  }
+
+  // ---------------------------------------------------------------------------------//
   public static int unsignedIntBigEndian (byte[] buffer, int ptr)
   // ---------------------------------------------------------------------------------//
   {

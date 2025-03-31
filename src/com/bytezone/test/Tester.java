@@ -29,6 +29,7 @@ public class Tester
   String fva = base + "FVA/Fantavision/";
   String dosm = base + "DosMaster/";
   String wiz4 = base + "Wizardry/wizardry_IV/";
+  String orca = base + "ORCA/1/";
 
   String[] fileNames = {                             //
       base + "dos/Assembler.dsk",                    // 0: 3.3 intl 0
@@ -77,5 +78,6 @@ public class Tester
       dosm + "Testing/Vol010.dsk",                   // 43: looping dos
       base + "Nibble89disks.zip",                    // 44: zip error
       wiz4 + "Version A/wiz4_d1.dsk",                // 45: wiz4
+      orca + "ORCAM 1.img",                          // 46: diskcopy
   };
 }

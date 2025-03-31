@@ -23,12 +23,16 @@ public class FileSystemFactory
   private static final int UNIDOS_SIZE = 819_200;
   private static final int CPAM_SIZE = 819_200;
 
+  private static byte[] diskCopySize400 = { 0x00, 0x06, 0x40, 0x00 };
+  private static byte[] diskCopySize800 = { 0x00, 0x0C, (byte) 0x80, 0x00 };
+
   private List<AppleFileSystem> fileSystems;
   private List<String> errorMessages;
 
   private boolean debug = false;
 
   private Header2img header2img;
+  private HeaderDiskCopy headerDiskCopy;
 
   // ---------------------------------------------------------------------------------//
   public AppleFileSystem getFileSystem (Path path)
@@ -75,6 +79,19 @@ public class FileSystemFactory
           diskBuffer.offset () + header2img.offset, header2img.length);
     }
 
+    if (blockReader.isMagic (0x40, diskCopySize800)
+        || blockReader.isMagic (0x40, diskCopySize400))
+    {
+      headerDiskCopy = new HeaderDiskCopy (blockReader);
+      if (headerDiskCopy.getId () == 0x100)
+      {
+        // create a new Buffer without the DiskCopy header
+        Buffer diskBuffer = blockReader.getDiskBuffer ();
+        blockReader = new BlockReader (blockReader.getName (), diskBuffer.data (),
+            diskBuffer.offset () + 0x54, headerDiskCopy.getDataSize ());
+      }
+    }
+
     getDos33 (blockReader);
 
     if (fileSystems.size () == 0)
@@ -101,11 +118,17 @@ public class FileSystemFactory
     if (fileSystems.size () == 0)
       getUnidos (blockReader);
     if (fileSystems.size () == 0)
+      getDiskCopy (blockReader);
+    if (fileSystems.size () == 0)
       getWoz (blockReader);
 
     if (header2img != null)
       for (AppleFileSystem fs : fileSystems)
         fs.setHeader2img (header2img);
+
+    if (headerDiskCopy != null)
+      for (AppleFileSystem fs : fileSystems)
+        fs.setHeaderDiskCopy (headerDiskCopy);
 
     switch (fileSystems.size ())
     {
@@ -416,6 +439,28 @@ public class FileSystemFactory
       if (debug)
         System.out.println (e);
     }
+  }
+
+  // ---------------------------------------------------------------------------------//
+  private void getDiskCopy (BlockReader blockReader)
+  // ---------------------------------------------------------------------------------//
+  {
+    if (blockReader.isMagic (0x40, null))
+      try
+      {
+        BlockReader lbrReader = new BlockReader (blockReader);
+        lbrReader.setParameters (512, AddressType.BLOCK, 0, 0);
+
+        //      FsLbr fs = new FsLbr (lbrReader);
+
+        //      if (fs.getTotalCatalogBlocks () > 0)
+        //        fileSystems.add (fs);
+      }
+      catch (FileFormatException e)
+      {
+        if (debug)
+          System.out.println (e);
+      }
   }
 
   // ---------------------------------------------------------------------------------//

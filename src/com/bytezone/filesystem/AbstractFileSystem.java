@@ -34,6 +34,7 @@ abstract class AbstractFileSystem implements AppleFileSystem
   protected BitSet volumeBitMap;
 
   protected Header2img header2img;
+  protected HeaderDiskCopy headerDiskCopy;
 
   // ---------------------------------------------------------------------------------//
   AbstractFileSystem (BlockReader blockReader, FileSystemType fileSystemType)
@@ -521,6 +522,14 @@ abstract class AbstractFileSystem implements AppleFileSystem
 
   // ---------------------------------------------------------------------------------//
   @Override
+  public void setHeaderDiskCopy (HeaderDiskCopy headerDiskCopy)
+  // ---------------------------------------------------------------------------------//
+  {
+    this.headerDiskCopy = headerDiskCopy;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
   public String toString ()
   // ---------------------------------------------------------------------------------//
   {
@@ -533,6 +542,13 @@ abstract class AbstractFileSystem implements AppleFileSystem
     {
       text.append ("----- Header 2img -----\n");
       text.append (header2img);
+      text.append ("\n\n");
+    }
+
+    if (headerDiskCopy != null)
+    {
+      text.append ("--- Header DiskCopy ---\n");
+      text.append (headerDiskCopy);
       text.append ("\n\n");
     }
 
