@@ -31,9 +31,6 @@ public class FileSystemFactory
 
   private boolean debug = false;
 
-  private Header2img header2img;
-  private HeaderDiskCopy headerDiskCopy;
-
   // ---------------------------------------------------------------------------------//
   public AppleFileSystem getFileSystem (Path path)
   // ---------------------------------------------------------------------------------//
@@ -68,6 +65,9 @@ public class FileSystemFactory
       System.out.println (Utility.format (diskBuffer.data (), diskBuffer.offset (), 100));
       System.out.println ("-------------------------------------------------------");
     }
+
+    Header2img header2img = null;
+    HeaderDiskCopy headerDiskCopy = null;
 
     if (blockReader.isMagic (0, Fs2img.TWO_IMG))
     {
