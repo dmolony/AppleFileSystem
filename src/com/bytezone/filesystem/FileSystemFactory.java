@@ -70,15 +70,15 @@ public class FileSystemFactory
 
     if (blockReader.isMagic (0, Fs2img.TWO_IMG))
     {
-      diskHeader = new Header2img (blockReader);
+      diskHeader = new DiskHeader2img (blockReader);
       blockReader = diskHeader.getBlockReader ();
     }
 
     if (blockReader.isMagic (0x40, diskCopySize800)
         || blockReader.isMagic (0x40, diskCopySize400))
     {
-      diskHeader = new HeaderDiskCopy (blockReader);
-      if (((HeaderDiskCopy) diskHeader).getId () == 0x100)
+      diskHeader = new DiskHeaderDiskCopy (blockReader);
+      if (((DiskHeaderDiskCopy) diskHeader).getId () == 0x100)
         blockReader = diskHeader.getBlockReader ();
       else
         diskHeader = null;

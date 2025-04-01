@@ -4,7 +4,7 @@ import com.bytezone.filesystem.AppleFileSystem.FileSystemType;
 import com.bytezone.utility.Utility;
 
 // -----------------------------------------------------------------------------------//
-public class Header2img extends DiskHeader
+public class DiskHeader2img extends DiskHeader
 // -----------------------------------------------------------------------------------//
 {
   static final byte[] TWO_IMG_MAGIC = { 0x32, 0x49, 0x4D, 0x47 };
@@ -38,7 +38,7 @@ public class Header2img extends DiskHeader
   private int volumeNumber;
 
   // ---------------------------------------------------------------------------------//
-  public Header2img (BlockReader blockReader)
+  public DiskHeader2img (BlockReader blockReader)
   // ---------------------------------------------------------------------------------//
   {
     super (blockReader, DiskHeaderType.TWO_IMG);

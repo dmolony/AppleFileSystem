@@ -5,7 +5,7 @@ import com.bytezone.utility.Utility;
 // https://www.discferret.com/wiki/Apple_DiskCopy_4.2
 // Apple II File Type Notes $E0/0005 (macintosh)
 // -----------------------------------------------------------------------------------//
-public class HeaderDiskCopy extends DiskHeader
+public class DiskHeaderDiskCopy extends DiskHeader
 // -----------------------------------------------------------------------------------//
 {
   private static String[] formatTypes =
@@ -21,7 +21,7 @@ public class HeaderDiskCopy extends DiskHeader
   private final int id;             // should be 0x0100
 
   // ---------------------------------------------------------------------------------//
-  public HeaderDiskCopy (BlockReader blockReader)
+  public DiskHeaderDiskCopy (BlockReader blockReader)
   // ---------------------------------------------------------------------------------//
   {
     super (blockReader, DiskHeaderType.DISK_COPY);
