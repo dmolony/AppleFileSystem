@@ -68,7 +68,7 @@ public class FileSystemFactory
 
     DiskHeader diskHeader = null;
 
-    if (blockReader.isMagic (0, Fs2img.TWO_IMG))
+    if (blockReader.isMagic (0, DiskHeader2img.TWO_IMG_MAGIC))
     {
       diskHeader = new DiskHeader2img (blockReader);
       blockReader = diskHeader.getBlockReader ();

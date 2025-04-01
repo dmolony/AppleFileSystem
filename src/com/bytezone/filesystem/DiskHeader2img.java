@@ -1,6 +1,5 @@
 package com.bytezone.filesystem;
 
-import com.bytezone.filesystem.AppleFileSystem.FileSystemType;
 import com.bytezone.utility.Utility;
 
 // -----------------------------------------------------------------------------------//
@@ -9,8 +8,8 @@ public class DiskHeader2img extends DiskHeader
 {
   static final byte[] TWO_IMG_MAGIC = { 0x32, 0x49, 0x4D, 0x47 };
   private static String[] twoIMGFormats = { "Dos", "Prodos", "NIB" };
-  private static FileSystemType[] fileSystemTypes =
-      { FileSystemType.DOS3, FileSystemType.PRODOS, FileSystemType.NIB };
+  //  private static FileSystemType[] fileSystemTypes =
+  //      { FileSystemType.DOS3, FileSystemType.PRODOS, FileSystemType.NIB };
   private static String[] creatorCodes =
       { "!nfc", "B2TR", "CTKG", "ShIm", "WOOF", "XGS!", "CdrP" };
   private static String[] creatorNames = { "ASIMOV2", "Bernie ][ the Rescue", "Catakig",
@@ -31,7 +30,7 @@ public class DiskHeader2img extends DiskHeader
   private int creatorDataLength;
   private String comment;
 
-  private String displayMessage = "";
+  //  private String displayMessage = "";
 
   private boolean locked;
   private boolean hasDosVolumeNumber;
@@ -107,8 +106,8 @@ public class DiskHeader2img extends DiskHeader
         getCreator (creator)));
     text.append (String.format ("Header size ........... %d%n", headerSize));
     text.append (String.format ("Version ............... %d%n", version));
-    text.append (String.format ("Format ................ %d  %s  %s%n", format,
-        twoIMGFormats[format], displayMessage));
+    text.append (String.format ("Format ................ %d  %s%n", format,
+        twoIMGFormats[format]));
     text.append (String.format ("Flags ................. %08X%n", flags));
     text.append (String.format ("  locked .............. %s%n", locked));
     text.append (String.format ("  has Dos Volume no ... %s%n", hasDosVolumeNumber));
