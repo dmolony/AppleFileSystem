@@ -66,30 +66,22 @@ public class FileSystemFactory
       System.out.println ("-------------------------------------------------------");
     }
 
-    Header2img header2img = null;
-    HeaderDiskCopy headerDiskCopy = null;
+    DiskHeader diskHeader = null;
 
     if (blockReader.isMagic (0, Fs2img.TWO_IMG))
     {
-      header2img = new Header2img (blockReader);
-      Buffer diskBuffer = blockReader.getDiskBuffer ();
-
-      // create a new Buffer without the 2img header
-      blockReader = new BlockReader (blockReader.getName (), diskBuffer.data (),
-          diskBuffer.offset () + header2img.offset, header2img.length);
+      diskHeader = new Header2img (blockReader);
+      blockReader = diskHeader.getBlockReader ();
     }
 
     if (blockReader.isMagic (0x40, diskCopySize800)
         || blockReader.isMagic (0x40, diskCopySize400))
     {
-      headerDiskCopy = new HeaderDiskCopy (blockReader);
-      if (headerDiskCopy.getId () == 0x100)
-      {
-        // create a new Buffer without the DiskCopy header
-        Buffer diskBuffer = blockReader.getDiskBuffer ();
-        blockReader = new BlockReader (blockReader.getName (), diskBuffer.data (),
-            diskBuffer.offset () + 0x54, headerDiskCopy.getDataSize ());
-      }
+      diskHeader = new HeaderDiskCopy (blockReader);
+      if (((HeaderDiskCopy) diskHeader).getId () == 0x100)
+        blockReader = diskHeader.getBlockReader ();
+      else
+        diskHeader = null;
     }
 
     getDos33 (blockReader);
@@ -101,7 +93,7 @@ public class FileSystemFactory
     getPascal (blockReader);
     getCpm (blockReader);
 
-    if (fileSystems.size () == 0)         // these filesystems cannot be hybrids
+    if (fileSystems.size () == 0)         // these file systems cannot be hybrids
       getDos31 (blockReader);
     if (fileSystems.size () == 0)
       getCpm2 (blockReader);
@@ -118,17 +110,11 @@ public class FileSystemFactory
     if (fileSystems.size () == 0)
       getUnidos (blockReader);
     if (fileSystems.size () == 0)
-      getDiskCopy (blockReader);
-    if (fileSystems.size () == 0)
       getWoz (blockReader);
 
-    if (header2img != null)
+    if (diskHeader != null)
       for (AppleFileSystem fs : fileSystems)
-        fs.setHeader2img (header2img);
-
-    if (headerDiskCopy != null)
-      for (AppleFileSystem fs : fileSystems)
-        fs.setHeaderDiskCopy (headerDiskCopy);
+        fs.setHeader (diskHeader);
 
     switch (fileSystems.size ())
     {
@@ -439,28 +425,6 @@ public class FileSystemFactory
       if (debug)
         System.out.println (e);
     }
-  }
-
-  // ---------------------------------------------------------------------------------//
-  private void getDiskCopy (BlockReader blockReader)
-  // ---------------------------------------------------------------------------------//
-  {
-    if (blockReader.isMagic (0x40, null))
-      try
-      {
-        BlockReader lbrReader = new BlockReader (blockReader);
-        lbrReader.setParameters (512, AddressType.BLOCK, 0, 0);
-
-        //      FsLbr fs = new FsLbr (lbrReader);
-
-        //      if (fs.getTotalCatalogBlocks () > 0)
-        //        fileSystems.add (fs);
-      }
-      catch (FileFormatException e)
-      {
-        if (debug)
-          System.out.println (e);
-      }
   }
 
   // ---------------------------------------------------------------------------------//

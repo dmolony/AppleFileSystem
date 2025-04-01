@@ -69,7 +69,11 @@ public class FsProdos extends AbstractFileSystem
             file = new FileProdos (this, container, catalogBlock, i);
             container.addFile (file);
             if (file.getFileType () == ProdosConstants.FILE_TYPE_LBR)
+            {
+              if (file.getAuxType () == 0x0130)
+                System.out.println ("Possible 2mg file " + file.getFileName ());
               addEmbeddedFileSystem (file, 0);
+            }
 
             break;
 

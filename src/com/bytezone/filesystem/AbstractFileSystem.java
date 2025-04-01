@@ -33,8 +33,8 @@ abstract class AbstractFileSystem implements AppleFileSystem
   private byte[] empty = new byte[1024];
   protected BitSet volumeBitMap;
 
-  protected Header2img header2img;
-  protected HeaderDiskCopy headerDiskCopy;
+  protected DiskHeader diskHeader;
+  //  protected HeaderDiskCopy headerDiskCopy;
 
   // ---------------------------------------------------------------------------------//
   AbstractFileSystem (BlockReader blockReader, FileSystemType fileSystemType)
@@ -513,19 +513,19 @@ abstract class AbstractFileSystem implements AppleFileSystem
   }
 
   // ---------------------------------------------------------------------------------//
-  @Override
-  public void setHeader2img (Header2img header2img)
-  // ---------------------------------------------------------------------------------//
-  {
-    this.header2img = header2img;
-  }
+  //  @Override
+  //  public void setHeader2img (Header2img header2img)
+  //  // ---------------------------------------------------------------------------------//
+  //  {
+  //    this.header2img = header2img;
+  //  }
 
   // ---------------------------------------------------------------------------------//
   @Override
-  public void setHeaderDiskCopy (HeaderDiskCopy headerDiskCopy)
+  public void setHeader (DiskHeader diskHeader)
   // ---------------------------------------------------------------------------------//
   {
-    this.headerDiskCopy = headerDiskCopy;
+    this.diskHeader = diskHeader;
   }
 
   // ---------------------------------------------------------------------------------//
@@ -538,19 +538,19 @@ abstract class AbstractFileSystem implements AppleFileSystem
 
     StringBuilder text = new StringBuilder ();
 
-    if (header2img != null)
+    if (diskHeader != null)
     {
-      text.append ("----- Header 2img -----\n");
-      text.append (header2img);
+      text.append ("----- Disk Header -----\n");
+      text.append (diskHeader);
       text.append ("\n\n");
     }
 
-    if (headerDiskCopy != null)
-    {
-      text.append ("--- Header DiskCopy ---\n");
-      text.append (headerDiskCopy);
-      text.append ("\n\n");
-    }
+    //    if (headerDiskCopy != null)
+    //    {
+    //      text.append ("--- Header DiskCopy ---\n");
+    //      text.append (headerDiskCopy);
+    //      text.append ("\n\n");
+    //    }
 
     text.append ("----- File System -----\n");
     text.append (String.format ("File name ............. %s%n", getFileName ()));

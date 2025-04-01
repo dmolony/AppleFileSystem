@@ -4,10 +4,10 @@ import com.bytezone.filesystem.AppleFileSystem.FileSystemType;
 import com.bytezone.utility.Utility;
 
 // -----------------------------------------------------------------------------------//
-public class Header2img
+public class Header2img extends DiskHeader
 // -----------------------------------------------------------------------------------//
 {
-  static final byte[] TWO_IMG = { 0x32, 0x49, 0x4D, 0x47 };
+  static final byte[] TWO_IMG_MAGIC = { 0x32, 0x49, 0x4D, 0x47 };
   private static String[] twoIMGFormats = { "Dos", "Prodos", "NIB" };
   private static FileSystemType[] fileSystemTypes =
       { FileSystemType.DOS3, FileSystemType.PRODOS, FileSystemType.NIB };
@@ -41,10 +41,12 @@ public class Header2img
   public Header2img (BlockReader blockReader)
   // ---------------------------------------------------------------------------------//
   {
+    super (blockReader, DiskHeaderType.TWO_IMG);
+
     byte[] buffer = blockReader.getDiskBuffer ().data ();
     int diskOffset = blockReader.getDiskBuffer ().offset ();
 
-    assert blockReader.isMagic (0, TWO_IMG);
+    assert blockReader.isMagic (0, TWO_IMG_MAGIC);
 
     creator = new String (buffer, diskOffset + 4, 4);
     headerSize = Utility.unsignedShort (buffer, diskOffset + 8);
@@ -71,6 +73,17 @@ public class Header2img
   }
 
   // ---------------------------------------------------------------------------------//
+  @Override
+  public BlockReader getBlockReader ()
+  // ---------------------------------------------------------------------------------//
+  {
+    Buffer diskBuffer = blockReader.getDiskBuffer ();
+
+    return new BlockReader (blockReader.getName (), diskBuffer.data (),
+        diskBuffer.offset () + offset, length);
+  }
+
+  // ---------------------------------------------------------------------------------//
   private String getCreator (String code)
   // ---------------------------------------------------------------------------------//
   {
@@ -86,11 +99,10 @@ public class Header2img
   public String toString ()
   // ---------------------------------------------------------------------------------//
   {
-    StringBuilder text = new StringBuilder ();
+    StringBuilder text = new StringBuilder (super.toString ());
 
     String message = originalLength == 0 ? "   <-- wrong!" : "";
 
-    // text.append (String.format ("File system type ...... %s%n", getFileSystemType ()));
     text.append (String.format ("Creator ............... %s  %s%n", creator,
         getCreator (creator)));
     text.append (String.format ("Header size ........... %d%n", headerSize));
