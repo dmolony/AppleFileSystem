@@ -14,18 +14,17 @@ public class FileDos4 extends FileDos
     super (fs);
 
     byte[] buffer = catalogBlock.getBuffer ();
+
     int slot = (ptr - HEADER_SIZE) / ENTRY_SIZE;
+    catalogEntry = new CatalogEntryDos4 (catalogBlock, slot);
+    String blockSubType = fs.getBlockSubTypeText (getFileType ());
 
     int nextTrack = buffer[ptr] & 0xFF;
     int nextSector = buffer[ptr + 1] & 0xFF;
 
-    catalogEntry = new CatalogEntryDos4 (catalogBlock, slot);
-
-    String blockSubType = fs.getBlockSubTypeText (catalogEntry.fileType);
-
     // build lists of index and data sectors
     int sectorsLeft = catalogEntry.sectorCount;
-    loop: while (nextTrack != 0)    // 0x40 = track zero
+    outer_loop: while (nextTrack != 0)                // 0x40 = track zero
     {
       nextTrack &= 0x3F;            // 0x80 = deleted(?), 0x40 = track zero
       nextSector &= 0x1F;           // 0 : 31
@@ -45,7 +44,7 @@ public class FileDos4 extends FileDos
       byte[] sectorBuffer = tsSector.getBuffer ();
       int sectorOffset = Utility.unsignedShort (sectorBuffer, 5);   // 0/122/244/366 etc
 
-      for (int i = 12; i < 256; i += 2)
+      for (int i = 12; i < sectorBuffer.length; i += 2)
       {
         int track = sectorBuffer[i] & 0xFF;
         int sector = sectorBuffer[i + 1] & 0xFF;
@@ -56,7 +55,7 @@ public class FileDos4 extends FileDos
         if (track == 0 && !zero && sector == 0)             // invalid address
         {
           if (getFileType () != 0x00)                       // not a text file
-            break loop;
+            break outer_loop;
 
           dataBlocks.add (null);                            // must be a sparse file
           ++textFileGaps;
@@ -95,9 +94,10 @@ public class FileDos4 extends FileDos
   // ---------------------------------------------------------------------------------//
   {
     int actualSize = getTotalIndexSectors () + getTotalDataSectors ();
+    int loadAddress = getLoadAddress ();
 
-    String addressText =
-        getLoadAddress () == 0 ? "" : String.format ("$%4X", getLoadAddress ());
+    String addressText = loadAddress == 0 || loadAddress == 0x801 ? ""
+        : String.format ("$%4X", loadAddress);
 
     String lengthText =
         getFileLength () == 0 ? "" : String.format ("$%5X %<,7d", getFileLength ());
@@ -110,9 +110,6 @@ public class FileDos4 extends FileDos
 
     if (getSectorCount () > 999)
       message += "Reported " + getSectorCount ();
-
-    if (textFileGaps > 0)
-      message += String.format ("gaps %,d", textFileGaps);
 
     return String.format ("%1s  %1s  %03d  %-24.24s  %-15.15s  %-5s  %-14s %3d %3d   %s",
         lockedFlag, getFileTypeText (), getSectorCount () % 1000, getFileName (),

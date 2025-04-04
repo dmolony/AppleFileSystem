@@ -62,8 +62,8 @@ public abstract class FileDos extends AbstractAppleFile
         if (eof > 6)
         {
           loadAddress = Utility.getApplesoftLoadAddress (buffer);
-          if (loadAddress == 0x801)           // don't display the default
-            loadAddress = 0;
+          //          if (loadAddress == 0x801)           // don't display the default
+          //            loadAddress = 0;
         }
         break;
 
@@ -86,13 +86,15 @@ public abstract class FileDos extends AbstractAppleFile
   private int countZeros ()
   // ---------------------------------------------------------------------------------//
   {
+    int max = parentFileSystem.getBlockSize ();
+
     if (dataBlocks.get (0) == null)
-      return 256;
+      return max;
 
     byte[] buffer = dataBlocks.get (0).getBuffer ();
     int zeros = 0;
 
-    for (int i = 0; i < 256; i++)
+    for (int i = 0; i < max; i++)
       if (buffer[i] == 0)
         zeros++;
 

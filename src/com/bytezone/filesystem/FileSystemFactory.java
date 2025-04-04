@@ -23,9 +23,6 @@ public class FileSystemFactory
   private static final int UNIDOS_SIZE = 819_200;
   private static final int CPAM_SIZE = 819_200;
 
-  private static byte[] diskCopySize400 = { 0x00, 0x06, 0x40, 0x00 };
-  private static byte[] diskCopySize800 = { 0x00, 0x0C, (byte) 0x80, 0x00 };
-
   private List<AppleFileSystem> fileSystems;
   private List<String> errorMessages;
 
@@ -68,20 +65,15 @@ public class FileSystemFactory
 
     DiskHeader diskHeader = null;
 
-    if (blockReader.isMagic (0, DiskHeader2img.TWO_IMG_MAGIC))
+    if (DiskHeader2img.isValid (blockReader))
     {
       diskHeader = new DiskHeader2img (blockReader);
       blockReader = diskHeader.getBlockReader ();
     }
-
-    if (blockReader.isMagic (0x40, diskCopySize800)
-        || blockReader.isMagic (0x40, diskCopySize400))
+    else if (DiskHeaderDiskCopy.isValid (blockReader))
     {
       diskHeader = new DiskHeaderDiskCopy (blockReader);
-      if (((DiskHeaderDiskCopy) diskHeader).getId () == 0x100)
-        blockReader = diskHeader.getBlockReader ();
-      else
-        diskHeader = null;
+      blockReader = diskHeader.getBlockReader ();
     }
 
     getDos33 (blockReader);

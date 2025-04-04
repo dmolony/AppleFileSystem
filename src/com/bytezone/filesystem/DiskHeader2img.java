@@ -72,6 +72,13 @@ public class DiskHeader2img extends DiskHeader
   }
 
   // ---------------------------------------------------------------------------------//
+  public static boolean isValid (BlockReader blockReader)
+  // ---------------------------------------------------------------------------------//
+  {
+    return blockReader.isMagic (0, TWO_IMG_MAGIC);
+  }
+
+  // ---------------------------------------------------------------------------------//
   @Override
   public BlockReader getBlockReader ()
   // ---------------------------------------------------------------------------------//
