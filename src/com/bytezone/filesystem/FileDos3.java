@@ -46,13 +46,15 @@ public class FileDos3 extends FileDos
         int track = sectorBuffer[i] & 0xFF;
         int sector = sectorBuffer[i + 1] & 0xFF;
 
-        if (track == 0 && sector == 0)            // invalid address
+        if (track == 0 && sector == 0)                  // invalid address
         {
-          if (getFileType () != FsDos.FILE_TYPE_TEXT)
+          if (getFileType () == FsDos.FILE_TYPE_TEXT)
+          {
+            dataBlocks.add (null);                      // must be a sparse file
+            ++textFileGaps;
+          }
+          else
             break outer_loop;
-
-          dataBlocks.add (null);                  // must be a sparse file
-          ++textFileGaps;
         }
         else
         {
@@ -76,8 +78,8 @@ public class FileDos3 extends FileDos
 
     setFileLength ();
 
-    if (textFileGaps > 0 || zerosInFirstBlock > 0)
-      processDirectAccessFile (dataBlocks);
+    //    if (textFileGaps > 0 || zerosInFirstBlock > 0)
+    //      processDirectAccessFile (dataBlocks);
   }
 
   // ---------------------------------------------------------------------------------//

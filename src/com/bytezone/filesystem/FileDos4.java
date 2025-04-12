@@ -54,11 +54,13 @@ public class FileDos4 extends FileDos
 
         if (track == 0 && !zero && sector == 0)             // invalid address
         {
-          if (getFileType () != 0x00)                       // not a text file
+          if (getFileType () == FsDos.FILE_TYPE_TEXT)
+          {
+            dataBlocks.add (null);                          // must be a sparse file
+            ++textFileGaps;
+          }
+          else
             break outer_loop;
-
-          dataBlocks.add (null);                            // must be a sparse file
-          ++textFileGaps;
         }
         else
         {
@@ -84,8 +86,8 @@ public class FileDos4 extends FileDos
 
     setFileLength ();
 
-    if (textFileGaps > 0 || zerosInFirstBlock > 0)
-      processDirectAccessFile (dataBlocks);
+    //    if (textFileGaps > 0 || zerosInFirstBlock > 0)
+    //      processDirectAccessFile (dataBlocks);
   }
 
   // ---------------------------------------------------------------------------------//

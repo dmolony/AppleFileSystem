@@ -24,6 +24,8 @@ public interface AppleFile
 
   public boolean isValidFile ();              // reject DOS catalog nonsense files
 
+  public boolean isRandomAccess ();
+
   public ForkType getForkType ();
 
   public boolean isContainer ();

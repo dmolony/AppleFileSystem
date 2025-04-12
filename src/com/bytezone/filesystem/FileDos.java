@@ -47,8 +47,8 @@ public abstract class FileDos extends AbstractAppleFile
     switch (getFileType ())
     {
       case FsDos.FILE_TYPE_TEXT:
-        eof = dataBlocks.size () * getParentFileSystem ().getBlockSize ();
-        zerosInFirstBlock = countZeros ();
+        eof = getTextFileEof ();
+        zerosInFirstBlock = countZerosInFirstBlock ();
         break;
 
       case FsDos.FILE_TYPE_INTEGER_BASIC:
@@ -60,11 +60,7 @@ public abstract class FileDos extends AbstractAppleFile
         buffer = dataBlocks.get (0).getBuffer ();
         eof = Utility.unsignedShort (buffer, 0);
         if (eof > 6)
-        {
           loadAddress = Utility.getApplesoftLoadAddress (buffer);
-          //          if (loadAddress == 0x801)           // don't display the default
-          //            loadAddress = 0;
-        }
         break;
 
       case FsDos.FILE_TYPE_BINARY:
@@ -80,10 +76,31 @@ public abstract class FileDos extends AbstractAppleFile
       default:
         System.out.println ("Unexpected file type: " + getFileType ());
     }
+
+    if (textFileGaps > 0 || zerosInFirstBlock > 0)
+      processDirectAccessFile (dataBlocks);
+  }
+
+  // set eof for text files (size of file in bytes)
+  // ---------------------------------------------------------------------------------//
+  private int getTextFileEof ()
+  // ---------------------------------------------------------------------------------//
+  {
+    AppleBlock dataBlock = dataBlocks.get (dataBlocks.size () - 1);
+    byte[] buffer = dataBlock.getBuffer ();
+
+    int blockSize = parentFileSystem.getBlockSize ();
+    int ptr = blockSize;
+    int eof = dataBlocks.size () * blockSize;
+
+    while (--ptr >= 0 && buffer[ptr] == 0)
+      --eof;
+
+    return eof;
   }
 
   // ---------------------------------------------------------------------------------//
-  private int countZeros ()
+  private int countZerosInFirstBlock ()
   // ---------------------------------------------------------------------------------//
   {
     int max = parentFileSystem.getBlockSize ();
@@ -93,6 +110,9 @@ public abstract class FileDos extends AbstractAppleFile
 
     byte[] buffer = dataBlocks.get (0).getBuffer ();
     int zeros = 0;
+
+    if (max > eof)
+      max = eof;
 
     for (int i = 0; i < max; i++)
       if (buffer[i] == 0)
@@ -109,7 +129,7 @@ public abstract class FileDos extends AbstractAppleFile
     List<AppleBlock> contiguousBlocks = new ArrayList<> ();      // temporary storage
     int startBlock = -1;
 
-    int logicalBlockNo = 0;                         // block # within the file
+    int logicalBlockNo = 0;                           // block # within the file
 
     for (AppleBlock dataBlock : dataBlocks)
     {
@@ -156,6 +176,14 @@ public abstract class FileDos extends AbstractAppleFile
   // ---------------------------------------------------------------------------------//
   {
     return eof;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
+  public boolean isRandomAccess ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return recordLength > 0;
   }
 
   // ---------------------------------------------------------------------------------//
