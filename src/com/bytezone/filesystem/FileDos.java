@@ -48,9 +48,7 @@ public abstract class FileDos extends AbstractAppleFile
     {
       case FsDos.FILE_TYPE_TEXT:
         eof = getTextFileEof ();
-        //        zerosInFirstBlock = countZerosInFirstBlock ();
-
-        if (textFileGaps > 0 || zerosInFirstBlock ())
+        if (textFileGaps > 0 || fileContainsZero ())      // random-access file
           createTextBlocks (dataBlocks);
         break;
 
@@ -86,13 +84,16 @@ public abstract class FileDos extends AbstractAppleFile
   private int getTextFileEof ()
   // ---------------------------------------------------------------------------------//
   {
+    // get last block
     AppleBlock dataBlock = dataBlocks.get (dataBlocks.size () - 1);
     byte[] buffer = dataBlock.getBuffer ();
 
+    // set eof to maximum possible
     int blockSize = parentFileSystem.getBlockSize ();
     int ptr = blockSize;
     int eof = dataBlocks.size () * blockSize;
 
+    // decrement eof for each trailing zero
     while (--ptr >= 0 && buffer[ptr] == 0)
       --eof;
 
@@ -100,14 +101,13 @@ public abstract class FileDos extends AbstractAppleFile
   }
 
   // ---------------------------------------------------------------------------------//
-  private boolean zerosInFirstBlock ()
+  private boolean fileContainsZero ()
   // ---------------------------------------------------------------------------------//
   {
-    if (dataBlocks.get (0) == null)
-      return true;
-
-    int max = Math.min (parentFileSystem.getBlockSize (), eof);
-    byte[] buffer = dataBlocks.get (0).getBuffer ();
+    // test entire buffer (in case reclen > block size)
+    Buffer fileBuffer = getFileBuffer ();
+    byte[] buffer = fileBuffer.data ();
+    int max = fileBuffer.max ();
 
     for (int i = 0; i < max; i++)
       if (buffer[i] == 0)
@@ -116,6 +116,7 @@ public abstract class FileDos extends AbstractAppleFile
     return false;
   }
 
+  // file is random-access
   // ---------------------------------------------------------------------------------//
   void createTextBlocks (List<AppleBlock> dataBlocks)
   // ---------------------------------------------------------------------------------//
@@ -157,6 +158,7 @@ public abstract class FileDos extends AbstractAppleFile
       textBlocks.add (textBlock);
     }
 
+    // calculate likely record length
     for (TextBlock textBlock : textBlocks)
       for (TextRecord record : textBlock)
       {
@@ -315,11 +317,11 @@ public abstract class FileDos extends AbstractAppleFile
   }
 
   // ---------------------------------------------------------------------------------//
-  public int getTextFileGaps ()
-  // ---------------------------------------------------------------------------------//
-  {
-    return textFileGaps;
-  }
+  //  public int getTextFileGaps ()
+  //  // ---------------------------------------------------------------------------------//
+  //  {
+  //    return textFileGaps;
+  //  }
 
   // ---------------------------------------------------------------------------------//
   @Override
@@ -349,7 +351,6 @@ public abstract class FileDos extends AbstractAppleFile
     text.append (String.format ("Catalog slot .......... %d%n", catalogEntry.slot));
     text.append (String.format ("Sectors ............... %04X    %<,9d%n",
         catalogEntry.sectorCount));
-    //    text.append (String.format ("File length ........... %04X    %<,9d%n", eof));
     text.append (String.format ("Load address .......... %04X    %<,9d%n", loadAddress));
 
     if (isRandomAccess ())
@@ -359,7 +360,7 @@ public abstract class FileDos extends AbstractAppleFile
       text.append (
           String.format ("Text blocks ........... %04X    %<,9d%n", textBlocks.size ()));
       text.append (
-          String.format ("Probable reclen ....... %04X    %<,9d%n", recordLength));
+          String.format ("Possible reclen ....... %04X    %<,9d%n", recordLength));
     }
 
     return Utility.rtrim (text);

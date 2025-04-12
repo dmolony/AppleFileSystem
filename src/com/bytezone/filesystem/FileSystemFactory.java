@@ -63,17 +63,28 @@ public class FileSystemFactory
       System.out.println ("-------------------------------------------------------");
     }
 
-    DiskHeader diskHeader = null;
+    // keep checking for disk headers until there are none
+    List<DiskHeader> diskHeaders = new ArrayList<> ();
 
-    if (DiskHeader2img.isValid (blockReader))
+    while (true)
     {
-      diskHeader = new DiskHeader2img (blockReader);
-      blockReader = diskHeader.getBlockReader ();
-    }
-    else if (DiskHeaderDiskCopy.isValid (blockReader))
-    {
-      diskHeader = new DiskHeaderDiskCopy (blockReader);
-      blockReader = diskHeader.getBlockReader ();
+      if (DiskHeader2img.isValid (blockReader))
+      {
+        DiskHeader diskHeader = new DiskHeader2img (blockReader);
+        blockReader = diskHeader.getBlockReader ();
+        diskHeaders.add (diskHeader);
+        continue;
+      }
+
+      if (DiskHeaderDiskCopy.isValid (blockReader))
+      {
+        DiskHeader diskHeader = new DiskHeaderDiskCopy (blockReader);
+        blockReader = diskHeader.getBlockReader ();
+        diskHeaders.add (diskHeader);
+        continue;
+      }
+
+      break;
     }
 
     getDos33 (blockReader);
@@ -104,9 +115,9 @@ public class FileSystemFactory
     if (fileSystems.size () == 0)
       getWoz (blockReader);
 
-    if (diskHeader != null)
+    if (diskHeaders.size () > 0)
       for (AppleFileSystem fs : fileSystems)
-        fs.setHeader (diskHeader);
+        fs.setDiskHeaders (diskHeaders);
 
     switch (fileSystems.size ())
     {

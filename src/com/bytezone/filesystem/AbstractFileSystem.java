@@ -33,7 +33,7 @@ abstract class AbstractFileSystem implements AppleFileSystem
   private byte[] empty = new byte[1024];
   protected BitSet volumeBitMap;
 
-  protected DiskHeader diskHeader;
+  protected List<DiskHeader> diskHeaders;
   //  protected HeaderDiskCopy headerDiskCopy;
 
   // ---------------------------------------------------------------------------------//
@@ -513,19 +513,11 @@ abstract class AbstractFileSystem implements AppleFileSystem
   }
 
   // ---------------------------------------------------------------------------------//
-  //  @Override
-  //  public void setHeader2img (Header2img header2img)
-  //  // ---------------------------------------------------------------------------------//
-  //  {
-  //    this.header2img = header2img;
-  //  }
-
-  // ---------------------------------------------------------------------------------//
   @Override
-  public void setHeader (DiskHeader diskHeader)
+  public void setDiskHeaders (List<DiskHeader> diskHeaders)
   // ---------------------------------------------------------------------------------//
   {
-    this.diskHeader = diskHeader;
+    this.diskHeaders = diskHeaders;
   }
 
   // ---------------------------------------------------------------------------------//
@@ -538,7 +530,7 @@ abstract class AbstractFileSystem implements AppleFileSystem
 
     StringBuilder text = new StringBuilder ();
 
-    if (diskHeader != null)
+    for (DiskHeader diskHeader : diskHeaders)
     {
       text.append ("----- Disk Header -----\n");
       text.append (diskHeader);
