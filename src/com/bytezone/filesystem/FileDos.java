@@ -16,7 +16,7 @@ public abstract class FileDos extends AbstractAppleFile
   protected int eof;
   protected int loadAddress;
   protected int textFileGaps;       // total sparse file empty data sectors
-  protected int zerosInFirstBlock;
+  //  protected int zerosInFirstBlock;
 
   protected List<AppleBlock> indexBlocks = new ArrayList<> ();
   private final List<TextBlock> textBlocks = new ArrayList<> ();
@@ -48,7 +48,10 @@ public abstract class FileDos extends AbstractAppleFile
     {
       case FsDos.FILE_TYPE_TEXT:
         eof = getTextFileEof ();
-        zerosInFirstBlock = countZerosInFirstBlock ();
+        //        zerosInFirstBlock = countZerosInFirstBlock ();
+
+        if (textFileGaps > 0 || zerosInFirstBlock ())
+          createTextBlocks (dataBlocks);
         break;
 
       case FsDos.FILE_TYPE_INTEGER_BASIC:
@@ -76,9 +79,6 @@ public abstract class FileDos extends AbstractAppleFile
       default:
         System.out.println ("Unexpected file type: " + getFileType ());
     }
-
-    if (textFileGaps > 0 || zerosInFirstBlock > 0)
-      processDirectAccessFile (dataBlocks);
   }
 
   // set eof for text files (size of file in bytes)
@@ -100,29 +100,24 @@ public abstract class FileDos extends AbstractAppleFile
   }
 
   // ---------------------------------------------------------------------------------//
-  private int countZerosInFirstBlock ()
+  private boolean zerosInFirstBlock ()
   // ---------------------------------------------------------------------------------//
   {
-    int max = parentFileSystem.getBlockSize ();
-
     if (dataBlocks.get (0) == null)
-      return max;
+      return true;
 
+    int max = Math.min (parentFileSystem.getBlockSize (), eof);
     byte[] buffer = dataBlocks.get (0).getBuffer ();
-    int zeros = 0;
-
-    if (max > eof)
-      max = eof;
 
     for (int i = 0; i < max; i++)
       if (buffer[i] == 0)
-        zeros++;
+        return true;
 
-    return zeros;
+    return false;
   }
 
   // ---------------------------------------------------------------------------------//
-  void processDirectAccessFile (List<AppleBlock> dataBlocks)
+  void createTextBlocks (List<AppleBlock> dataBlocks)
   // ---------------------------------------------------------------------------------//
   {
     // collect contiguous data blocks into TextBlocks
@@ -183,7 +178,7 @@ public abstract class FileDos extends AbstractAppleFile
   public boolean isRandomAccess ()
   // ---------------------------------------------------------------------------------//
   {
-    return recordLength > 0;
+    return textBlocks.size () > 0;
   }
 
   // ---------------------------------------------------------------------------------//
@@ -354,10 +349,18 @@ public abstract class FileDos extends AbstractAppleFile
     text.append (String.format ("Catalog slot .......... %d%n", catalogEntry.slot));
     text.append (String.format ("Sectors ............... %04X    %<,9d%n",
         catalogEntry.sectorCount));
-    text.append (String.format ("File length ........... %04X    %<,9d%n", eof));
+    //    text.append (String.format ("File length ........... %04X    %<,9d%n", eof));
     text.append (String.format ("Load address .......... %04X    %<,9d%n", loadAddress));
-    text.append (String.format ("Text file gaps ........ %04X    %<,9d%n", textFileGaps));
-    text.append (String.format ("Probable reclen ....... %04X    %<,9d%n", recordLength));
+
+    if (isRandomAccess ())
+    {
+      text.append (
+          String.format ("Text file gaps ........ %04X    %<,9d%n", textFileGaps));
+      text.append (
+          String.format ("Text blocks ........... %04X    %<,9d%n", textBlocks.size ()));
+      text.append (
+          String.format ("Probable reclen ....... %04X    %<,9d%n", recordLength));
+    }
 
     return Utility.rtrim (text);
   }

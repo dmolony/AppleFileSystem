@@ -137,7 +137,7 @@ public abstract class AbstractAppleFile implements AppleFile
     if (fileBuffer == null)
     {
       byte[] data = parentFileSystem.readBlocks (dataBlocks);
-      fileBuffer = new Buffer (data, 0, data.length);
+      fileBuffer = new Buffer (data, 0, getFileLength ());
     }
 
     return fileBuffer;
