@@ -234,7 +234,7 @@ public class FsProdos extends AbstractFileSystem
   {
     StringBuilder text = new StringBuilder ();
 
-    text.append (String.format ("%s%n%n", getPath ()));
+    text.append (String.format ("%s\n\n", getPath ()));
 
     text.append (" NAME           TYPE  BLOCKS  "
         + "MODIFIED         CREATED          ENDFILE SUBTYPE" + "\n\n");
@@ -249,7 +249,7 @@ public class FsProdos extends AbstractFileSystem
     int freeBlocks = getTotalFreeBlocks ();
 
     text.append (
-        String.format ("%nBLOCKS FREE:%5d     BLOCKS USED:%5d     TOTAL BLOCKS:%5d%n",
+        String.format ("%nBLOCKS FREE:%5d     BLOCKS USED:%5d     TOTAL BLOCKS:%5d\n",
             freeBlocks, totalBlocks - freeBlocks, totalBlocks));
 
     return text.toString ();

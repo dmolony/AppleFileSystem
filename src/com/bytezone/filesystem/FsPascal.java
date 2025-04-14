@@ -347,9 +347,9 @@ public class FsPascal extends AbstractFileSystem
     CatalogEntryPascal volumeEntry = catalogEntries[0];
     String date = getDate () == null ? "--" : getDate ().format (dtf);
 
-    text.append (String.format ("Volume : %s%n", getVolumeName ()));
-    text.append (String.format ("Date   : %s%n", date));
-    text.append (String.format ("Files  : %s%n%n", volumeEntry.totalFiles));
+    text.append (String.format ("Volume : %s\n", getVolumeName ()));
+    text.append (String.format ("Date   : %s\n", date));
+    text.append (String.format ("Files  : %s\n\n", volumeEntry.totalFiles));
     text.append ("Blks   Name              Type     Date     Length   Frst   Last\n");
     text.append (line);
     text.append ("\n");

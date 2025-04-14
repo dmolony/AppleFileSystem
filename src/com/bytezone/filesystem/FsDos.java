@@ -277,7 +277,7 @@ public class FsDos extends AbstractFileSystem
       text.append ("\n\nDeleted files\n");
       text.append ("-------------\n");
       for (String name : deletedFiles)
-        text.append (String.format ("%s%n", name));
+        text.append (String.format ("%s\n", name));
     }
 
     if (failedFiles.size () > 0)
@@ -285,7 +285,7 @@ public class FsDos extends AbstractFileSystem
       text.append ("\n\nFailed files\n");
       text.append ("------------\n");
       for (String name : failedFiles)
-        text.append (String.format ("%s%n", name));
+        text.append (String.format ("%s\n", name));
     }
 
     return text;

@@ -16,7 +16,6 @@ public abstract class FileDos extends AbstractAppleFile
   protected int eof;
   protected int loadAddress;
   protected int textFileGaps;       // total sparse file empty data sectors
-  //  protected int zerosInFirstBlock;
 
   protected List<AppleBlock> indexBlocks = new ArrayList<> ();
   private final List<TextBlock> textBlocks = new ArrayList<> ();
@@ -100,6 +99,7 @@ public abstract class FileDos extends AbstractAppleFile
     return eof;
   }
 
+  // NB zardax files seem to use 0 as eof
   // ---------------------------------------------------------------------------------//
   private boolean fileContainsZero ()
   // ---------------------------------------------------------------------------------//
@@ -317,13 +317,6 @@ public abstract class FileDos extends AbstractAppleFile
 
     return true;
   }
-
-  // ---------------------------------------------------------------------------------//
-  //  public int getTextFileGaps ()
-  //  // ---------------------------------------------------------------------------------//
-  //  {
-  //    return textFileGaps;
-  //  }
 
   // ---------------------------------------------------------------------------------//
   @Override

@@ -526,14 +526,16 @@ public class BlockReader
   {
     StringBuilder text = new StringBuilder ();
 
-    text.append ("File system offset .... %,d%n".formatted (dataRecord.offset ()));
-    text.append ("File system length .... %,d%n".formatted (dataRecord.length ()));
+    text.append (
+        "File system offset ....   %04X  %<,9d%n".formatted (dataRecord.offset ()));
+    text.append (
+        "File system length .... %06X  %<,9d%n".formatted (dataRecord.length ()));
     text.append ("Address type .......... %s%n".formatted (addressType));
-    text.append ("Total blocks .......... %,d  (%<04X)%n".formatted (totalBlocks));
-    text.append ("Bytes per block ....... %d%n".formatted (bytesPerBlock));
-    text.append ("Blocks per track ...... %d%n".formatted (blocksPerTrack));
-    text.append ("Interleave ............ %d".formatted (interleave));
+    text.append ("Total blocks ..........   %04X  %<,9d%n".formatted (totalBlocks));
+    text.append ("Bytes per block .......   %04X  %<,9d%n".formatted (bytesPerBlock));
+    text.append ("Blocks per track ......     %02X  %<,9d%n".formatted (blocksPerTrack));
+    text.append ("Interleave ............     %02X  %<,9d".formatted (interleave));
 
-    return text.toString ();
+    return Utility.rtrim (text);
   }
 }
