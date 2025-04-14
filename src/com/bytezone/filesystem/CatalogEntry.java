@@ -73,12 +73,12 @@ public abstract class CatalogEntry
     text.append ("---- Catalog entry ----\n");
 
     if (catalogBlock != null)
-      text.append (String.format ("Catalog block ......... %04X    %<,7d%n",
+      text.append (String.format ("Catalog block .........   %04X  %<,9d%n",
           catalogBlock.getBlockNo ()));
     else
       text.append (String.format ("Catalog blocks ........ %s   %n", blockList));
 
-    text.append (String.format ("Catalog slot .......... %d%n", slot));
+    text.append (String.format ("Catalog slot ..........     %02X  %<,9d%n", slot));
     text.append (String.format ("File name ............. %s%n%n", fileName));
 
     return text.toString ();

@@ -115,9 +115,8 @@ public class FileSystemFactory
     if (fileSystems.size () == 0)
       getWoz (blockReader);
 
-    if (diskHeaders.size () > 0)
-      for (AppleFileSystem fs : fileSystems)
-        fs.setDiskHeaders (diskHeaders);
+    for (AppleFileSystem fs : fileSystems)
+      fs.setDiskHeaders (diskHeaders);
 
     switch (fileSystems.size ())
     {

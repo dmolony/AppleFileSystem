@@ -34,7 +34,6 @@ abstract class AbstractFileSystem implements AppleFileSystem
   protected BitSet volumeBitMap;
 
   protected List<DiskHeader> diskHeaders;
-  //  protected HeaderDiskCopy headerDiskCopy;
 
   // ---------------------------------------------------------------------------------//
   AbstractFileSystem (BlockReader blockReader, FileSystemType fileSystemType)
@@ -536,13 +535,6 @@ abstract class AbstractFileSystem implements AppleFileSystem
       text.append (diskHeader);
       text.append ("\n\n");
     }
-
-    //    if (headerDiskCopy != null)
-    //    {
-    //      text.append ("--- Header DiskCopy ---\n");
-    //      text.append (headerDiskCopy);
-    //      text.append ("\n\n");
-    //    }
 
     text.append ("----- File System -----\n");
     text.append (String.format ("File name ............. %s%n", getFileName ()));

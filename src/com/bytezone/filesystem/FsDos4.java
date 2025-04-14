@@ -145,7 +145,7 @@ class FsDos4 extends FsDos
   {
     StringBuilder text = new StringBuilder ();
 
-    text.append (String.format ("Volume : %03d  %s%n%n", volumeNumber, volumeName));
+    text.append (String.format ("Volume : %03d  %s\n\n", volumeNumber, volumeName));
     text.append ("L Typ Len  Name                      Modified         Addr"
         + "   Length          TS DAT  Comment\n");
 

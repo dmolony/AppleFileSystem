@@ -144,37 +144,41 @@ class DirectoryHeaderProdos
       message = folderType == 0x75 ? "" : "<-- should be $75";
     }
 
-    text.append (String.format ("Storage type .......... %02X  %s%n", storageType,
-        storageTypeText));
+    text.append (String.format ("Storage type ..........     %02X             %s%n",
+        storageType, storageTypeText));
     text.append (String.format ("File name ............. %s%n", fileName));
-    text.append (String.format ("Reserved .............. $%02X              %s%n",
+    text.append (String.format ("Reserved ..............     $%02X            %s%n",
         folderType, message));
     text.append (String.format ("Reserved .............. %s%n", reserved));
     text.append (
         String.format ("Created ............... %9s %-5s%n", dateCreated, timeCreated));
-    text.append (String.format ("Version ............... %d%n", version));
-    text.append (String.format ("Min version ........... %d%n", minVersion));
-    text.append (String.format ("Access ................ %02X    %<9d  %s%n", access,
+    text.append (String.format ("Version ...............     %02X  %<,9d%n", version));
+    text.append (String.format ("Min version ...........     %02X  %<,9d%n", minVersion));
+    text.append (String.format ("Access ................     %02X  %<9d  %s%n", access,
         Utility.getAccessText (access)));
-    text.append (String.format ("Entry length .......... %d%n", entryLength));
-    text.append (String.format ("Entries per block ..... %d%n", entriesPerBlock));
-    text.append (String.format ("File count ............ %d%n", fileCount));
-    text.append (String.format ("Catalog blocks ........ %d%n%n", catalogBlocks.size ()));
+    text.append (
+        String.format ("Entry length ..........     %02X  %<,9d%n", entryLength));
+    text.append (
+        String.format ("Entries per block .....     %02X  %<,9d%n", entriesPerBlock));
+    text.append (String.format ("File count ............     %02X  %<,9d%n", fileCount));
+    text.append (String.format ("Catalog blocks ........     %02X  %<,9d%n%n",
+        catalogBlocks.size ()));
 
     if (storageType == 0x0F)
     {
-      text.append (String.format ("Bitmap pointer ........ %04X  %<,9d%n", keyPtr));
-      text.append (String.format ("Total blocks .......... %04X  %<,9d%n", totalBlocks));
+      text.append (String.format ("Bitmap pointer ........   %04X  %<,9d%n", keyPtr));
+      text.append (
+          String.format ("Total blocks ..........   %04X  %<,9d%n", totalBlocks));
     }
     else
     {
       text.append (String.format (
-          "Parent pointer ........ %04X  %<,9d  (parent Directory Header block)%n",
+          "Parent pointer ........   %04X  %<,9d  (parent Directory Header block)%n",
           keyPtr));
       text.append (String.format (
-          "Parent entry .......... %02X      %<,7d  (slot in catalog)%n", parentEntry));
+          "Parent entry ..........     %02X  %<,9d  (slot in catalog)%n", parentEntry));
       text.append (String.format (
-          "Parent entry length ... %02X      %<,7d  (always 0x27)%n", parentEntryLength));
+          "Parent entry length ...     %02X  %<,9d  (always 0x27)%n", parentEntryLength));
     }
 
     return text.toString ();

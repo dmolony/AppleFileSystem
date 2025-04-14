@@ -28,7 +28,7 @@ public class ForkProdos extends AbstractAppleFile
   final int size;
   final int eof;
   final int keyPtr;
-  //  private int nullBlocks;
+  private int textFileGaps;
 
   private AppleBlock masterIndexBlock;
   private final List<AppleBlock> indexBlocks = new ArrayList<> ();
@@ -102,15 +102,16 @@ public class ForkProdos extends AbstractAppleFile
 
     // remove trailing empty block numbers
     while (blockNumbers.size () > 0 && blockNumbers.get (blockNumbers.size () - 1) == 0)
+    {
       blockNumbers.remove (blockNumbers.size () - 1);
+      --textFileGaps;
+    }
 
-    boolean directAccessFile =        //
-        parentFile.getFileType () == ProdosConstants.FILE_TYPE_TEXT   // text file
-            && parentFile.getAuxType () > 0                           // with reclen > 0
-            && parentFile.getAuxType () < 2000                        // but not stupid
-            && forkType != ForkType.RESOURCE;                         // but not resource
-
-    if (directAccessFile)
+    if (getFileType () == ProdosConstants.FILE_TYPE_TEXT      // text file
+        && forkType != ForkType.RESOURCE                      // but not resource fork
+        && parentFile.getAuxType () > 0                       // with reclen > 0
+        && parentFile.getAuxType () < 2000                    // but not stupid
+        && (textFileGaps > 0 || fileContainsZero ()))         // random-access file
       processDirectAccessFile (blockNumbers);
 
     if (textBlocks.size () == 0)
@@ -173,6 +174,7 @@ public class ForkProdos extends AbstractAppleFile
       textBlocks.clear ();
   }
 
+  // this may not be required
   // ---------------------------------------------------------------------------------//
   private boolean verifyTextBlocks ()
   // ---------------------------------------------------------------------------------//
@@ -251,7 +253,10 @@ public class ForkProdos extends AbstractAppleFile
         blockNumbers.add (dataBlock == null ? 0 : blockNo);
       }
       else
+      {
         blockNumbers.add (0);
+        ++textFileGaps;
+      }
     }
 
     return blockNumbers;
@@ -285,10 +290,35 @@ public class ForkProdos extends AbstractAppleFile
         blockNumbers.add (dataBlock == null ? 0 : blockNo);
       }
       else
+      {
         blockNumbers.add (0);
+        textFileGaps += 256;
+      }
     }
 
     return blockNumbers;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  private boolean fileContainsZero ()
+  // ---------------------------------------------------------------------------------//
+  {
+    assert textFileGaps == 0;
+
+    // test entire buffer (in case reclen > block size)
+    Buffer fileBuffer = getFileBuffer ();
+
+    System.out.println (fileBuffer);
+    System.out.println (eof);
+
+    byte[] buffer = fileBuffer.data ();
+    int max = fileBuffer.max ();
+
+    for (int i = fileBuffer.offset (); i < max; i++)
+      if (buffer[i] == 0)
+        return true;
+
+    return false;
   }
 
   // ---------------------------------------------------------------------------------//
@@ -350,6 +380,14 @@ public class ForkProdos extends AbstractAppleFile
   // ---------------------------------------------------------------------------------//
   {
     return parentFile.getFileType ();
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
+  public boolean isRandomAccess ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return textBlocks.size () > 0;
   }
 
   // ---------------------------------------------------------------------------------//
@@ -473,26 +511,27 @@ public class ForkProdos extends AbstractAppleFile
           String.format ("File name ............. %s%n", parentFile.getFileName ()));
       text.append (String.format ("File system type ...... %s%n%n",
           parentFileSystem.fileSystemType));
-      text.append (String.format ("Storage type .......... %02X  %s%n", storageType,
-          ProdosConstants.storageTypes[storageType]));
-      text.append (String.format ("Key ptr ............... %04X    %<,7d%n", keyPtr));
-      text.append (String.format ("Size (blocks) ......... %04X    %<,7d%n%n", size));
+      text.append (String.format ("Storage type ..........     %02X          %s%n",
+          storageType, ProdosConstants.storageTypes[storageType]));
+      text.append (String.format ("Key ptr ...............   %04X  %<,9d%n", keyPtr));
+      text.append (String.format ("Size (blocks) .........   %04X  %<,9d%n%n", size));
+      text.append (
+          String.format ("Text file gaps ........ %04X    %<,7d%n%n", textFileGaps));
     }
 
-    String message =
-        dataBlocks.size () * 512 < eof ? message = "<-- past data blocks" : "";
+    String message = (dataBlocks.size () + textFileGaps) * 512 < eof
+        ? message = "<-- past data blocks" : "";
     if (eof == 0)
       message = "<-- zero";
 
-    //    String nulls =
-    //        nullBlocks == 0 ? "" : String.format (" (%,d null blocks)", nullBlocks);
-
     text.append (
-        String.format ("Index blocks .......... %04X    %<,7d%n", indexBlocks.size ()));
+        String.format ("Index blocks ..........   %04X  %<,9d%n", indexBlocks.size ()));
     text.append (
-        String.format ("Data blocks ........... %04X    %<,7d%n", dataBlocks.size ()));
+        String.format ("Data blocks ...........   %04X  %<,9d%n", dataBlocks.size ()));
     text.append (
-        String.format ("EOF ................... %06X  %<,7d  %s%n", eof, message));
+        String.format ("EOF ................... %06X  %<,9d  %s%n", eof, message));
+    text.append (
+        String.format ("Text file gaps ........   %04X  %<,9d%n%n", textFileGaps));
 
     return Utility.rtrim (text);
   }

@@ -104,12 +104,14 @@ public abstract class FileDos extends AbstractAppleFile
   private boolean fileContainsZero ()
   // ---------------------------------------------------------------------------------//
   {
+    assert textFileGaps == 0;
+
     // test entire buffer (in case reclen > block size)
     Buffer fileBuffer = getFileBuffer ();
     byte[] buffer = fileBuffer.data ();
     int max = fileBuffer.max ();
 
-    for (int i = 0; i < max; i++)
+    for (int i = fileBuffer.offset (); i < max; i++)
       if (buffer[i] == 0)
         return true;
 
