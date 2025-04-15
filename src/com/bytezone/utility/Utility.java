@@ -605,6 +605,14 @@ public class Utility
   }
 
   // ---------------------------------------------------------------------------------//
+  static String makeLabel (String label)
+  // ---------------------------------------------------------------------------------//
+  {
+    int len = label.length ();
+    return label + " " + dots.substring (0, 22 - len);
+  }
+
+  // ---------------------------------------------------------------------------------//
   static String formatMeta (String label, int size, int value)
   // ---------------------------------------------------------------------------------//
   {
@@ -616,9 +624,22 @@ public class Utility
       default -> String.format ("%08X  %<,9d", value);
     };
 
-    int len = label.length ();
+    return String.format ("%s %s", makeLabel (label), out);
+  }
 
-    return String.format ("%s %s %s", label, dots.substring (0, 22 - len), out);
+  // ---------------------------------------------------------------------------------//
+  public static void formatMeta (StringBuilder text, String label, String value)
+  // ---------------------------------------------------------------------------------//
+  {
+    text.append (String.format ("%s %18.18s %s\n", makeLabel (label), "", value));
+  }
+
+  // ---------------------------------------------------------------------------------//
+  public static void formatMeta (StringBuilder text, String label, char value1,
+      String value2)
+  // ---------------------------------------------------------------------------------//
+  {
+    text.append (String.format ("%s %-18.18s %s\n", makeLabel (label), value1, value2));
   }
 
   // ---------------------------------------------------------------------------------//
@@ -626,27 +647,6 @@ public class Utility
   // ---------------------------------------------------------------------------------//
   {
     text.append (formatMeta (label, size, value));
-    text.append ("\n");
-  }
-
-  // ---------------------------------------------------------------------------------//
-  public static void formatMeta (StringBuilder text, String label, String value)
-  // ---------------------------------------------------------------------------------//
-  {
-    int len = label.length ();
-    text.append (String.format ("%s %s %18.18s %s", label, dots.substring (0, 22 - len),
-        "", value));
-    text.append ("\n");
-  }
-
-  // ---------------------------------------------------------------------------------//
-  public static void formatMeta (StringBuilder text, String label, char value,
-      String value2)
-  // ---------------------------------------------------------------------------------//
-  {
-    int len = label.length ();
-    text.append (String.format ("%s %s %-18.18s %s", label, dots.substring (0, 22 - len),
-        value, value2));
     text.append ("\n");
   }
 

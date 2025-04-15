@@ -340,24 +340,24 @@ public class FileBinary2 extends AbstractAppleFile
     StringBuilder text = new StringBuilder (super.toString ());
 
     text.append ("\n--- Binary II Header --\n");
-    text.append (String.format ("Header block .......... %02X%n", headerBlockNo));
-    text.append (String.format ("Access code ........... %02X%n", accessCode));
-    text.append (String.format ("File type ............. %02X        %s%n", fileType,
-        fileTypeText));
+    Utility.formatMeta (text, "Header block", 2, headerBlockNo);
+    Utility.formatMeta (text, "Access code", 2, accessCode);
+    Utility.formatMeta (text, "File type", 2, fileType, fileTypeText);
 
-    text.append (String.format ("Aux type .............. %04X%n", auxType));
-    text.append (String.format ("Storage type .......... %02X  %s%n", storageType,
-        ProdosConstants.storageTypes[storageType]));
-    text.append (String.format ("File size x 512 ....... %02X      %<,7d%n", blocks));
+    Utility.formatMeta (text, "Aux type", 4, auxType);
+    Utility.formatMeta (text, "Storage type", 2, storageType,
+        ProdosConstants.storageTypes[storageType]);
+    Utility.formatMeta (text, "File size x 512", 2, blocks);
 
-    text.append (String.format ("Mod date .............. %04X    %s%n", modDate,
-        modified.isPresent () ? modified.get () : ""));
-    text.append (String.format ("Mod time .............. %04X%n", modTime));
-    text.append (String.format ("Create date ........... %04X    %s%n", createDate,
-        created.isPresent () ? created.get () : ""));
-    text.append (String.format ("Create time ........... %04X%n", createTime));
+    Utility.formatMeta (text, "Mod date", 4, modDate,
+        modified.isPresent () ? modified.get ().toString () : "");
+    Utility.formatMeta (text, "Mod time", 4, modTime);
+    Utility.formatMeta (text, "Create date", 4, createDate,
+        created.isPresent () ? created.get ().toString () : "");
+    Utility.formatMeta (text, "Create time", 4, createTime);
 
-    text.append (String.format ("EOF ................... %06X  %<,7d%n", eof));
+    Utility.formatMeta (text, "EOF", 6, eof);
+    //    text.append (String.format ("EOF ................... %06X  %<,7d%n", eof));
     text.append (String.format ("File name ............. %s%n", fileName));
     text.append (String.format ("Squeeze name .......... %s%n", squeezeName));
     text.append (String.format ("Native name ........... %s%n", nativeName));

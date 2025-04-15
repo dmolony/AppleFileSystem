@@ -377,7 +377,6 @@ public class FsPascal extends AbstractFileSystem
     StringBuilder text = new StringBuilder (super.toString ());
 
     text.append (catalogEntries[0]);
-    //    text.append ("\n\n");
 
     return Utility.rtrim (text);
   }

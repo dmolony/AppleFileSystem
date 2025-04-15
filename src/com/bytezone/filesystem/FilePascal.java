@@ -152,7 +152,6 @@ public class FilePascal extends AbstractAppleFile
 
     text.append ("\n");
     text.append (catalogEntry);
-    //    text.append ("\n\n");
 
     return Utility.rtrim (text);
   }
