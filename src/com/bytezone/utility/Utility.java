@@ -13,6 +13,7 @@ import java.util.Optional;
 public class Utility
 // -----------------------------------------------------------------------------------//
 {
+  private static final String dots = "....................";
   private static String[] hex =
       { "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "A", "B", "C", "D", "E", "F" };
   private static final int MAX_SHORT = 0xFFFF;
@@ -601,6 +602,63 @@ public class Utility
       int tmp = (val[i] / 10) * 16 + val[i] % 10;
       buffer[offset++] = (byte) tmp;
     }
+  }
+
+  // ---------------------------------------------------------------------------------//
+  static String formatMeta (String label, int size, int value)
+  // ---------------------------------------------------------------------------------//
+  {
+    String out = switch (size)
+    {
+      case 2 -> String.format ("    %02X  %<,9d", value);
+      case 4 -> String.format ("  %04X  %<,9d", value);
+      case 6 -> String.format ("%06X  %<,9d", value);
+      default -> String.format ("%08X  %<,9d", value);
+    };
+
+    int len = label.length ();
+
+    return String.format ("%s %s %s", label, dots.substring (0, 22 - len), out);
+  }
+
+  // ---------------------------------------------------------------------------------//
+  public static void formatMeta (StringBuilder text, String label, int size, int value)
+  // ---------------------------------------------------------------------------------//
+  {
+    text.append (formatMeta (label, size, value));
+    text.append ("\n");
+  }
+
+  // ---------------------------------------------------------------------------------//
+  public static void formatMeta (StringBuilder text, String label, String value)
+  // ---------------------------------------------------------------------------------//
+  {
+    int len = label.length ();
+    text.append (String.format ("%s %s %18.18s %s", label, dots.substring (0, 22 - len),
+        "", value));
+    text.append ("\n");
+  }
+
+  // ---------------------------------------------------------------------------------//
+  public static void formatMeta (StringBuilder text, String label, char value,
+      String value2)
+  // ---------------------------------------------------------------------------------//
+  {
+    int len = label.length ();
+    text.append (String.format ("%s %s %-18.18s %s", label, dots.substring (0, 22 - len),
+        value, value2));
+    text.append ("\n");
+  }
+
+  // ---------------------------------------------------------------------------------//
+  public static void formatMeta (StringBuilder text, String label, int size, int value,
+      String message)
+  // ---------------------------------------------------------------------------------//
+  {
+    text.append (formatMeta (label, size, value));
+    text.append ("  ");
+    text.append (message);
+    text.append ("\n");
   }
 
   // ---------------------------------------------------------------------------------//

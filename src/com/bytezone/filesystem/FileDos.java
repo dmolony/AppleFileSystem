@@ -339,23 +339,18 @@ public abstract class FileDos extends AbstractAppleFile
 
     AppleBlock catalogEntryBlock = catalogEntry.catalogBlock;
 
-    text.append (String.format ("Locked ................ %s%n", isLocked ()));
-    text.append (String.format ("Catalog sector ........ %02X / %02X%n",
-        catalogEntryBlock.getTrackNo (), catalogEntryBlock.getSectorNo ()));
-    text.append (String.format ("Locked ................ %s%n", catalogEntry.isLocked));
-    text.append (String.format ("Catalog slot .......... %d%n", catalogEntry.slot));
-    text.append (String.format ("Sectors ............... %04X    %<,9d%n",
-        catalogEntry.sectorCount));
-    text.append (String.format ("Load address .......... %04X    %<,9d%n", loadAddress));
+    Utility.formatMeta (text, "Locked", catalogEntry.isLocked ? "true" : "false");
+    Utility.formatMeta (text, "Catalog track", 2, catalogEntryBlock.getTrackNo ());
+    Utility.formatMeta (text, "Catalog sector", 2, catalogEntryBlock.getSectorNo ());
+    Utility.formatMeta (text, "Catalog slot #", 2, catalogEntry.slot);
+    Utility.formatMeta (text, "Sectors", 4, catalogEntry.sectorCount);
+    Utility.formatMeta (text, "Load address", 4, loadAddress);
 
     if (isRandomAccess ())
     {
-      text.append (
-          String.format ("Text file gaps ........ %04X    %<,9d%n", textFileGaps));
-      text.append (
-          String.format ("Text blocks ........... %04X    %<,9d%n", textBlocks.size ()));
-      text.append (
-          String.format ("Possible reclen ....... %04X    %<,9d%n", recordLength));
+      Utility.formatMeta (text, "Text file gaps", 4, textFileGaps);
+      Utility.formatMeta (text, "Text blocks", 4, textBlocks.size ());
+      Utility.formatMeta (text, "Possible reclen", 4, recordLength);
     }
 
     return Utility.rtrim (text);

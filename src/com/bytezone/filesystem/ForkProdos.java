@@ -333,7 +333,7 @@ public class ForkProdos extends AbstractAppleFile
 
       if (data.length < eof)
       {
-        assert false;
+        //        assert false;
         // see TOTAL.REPLAY/X/COLUMNS/COL2P/COLUMNS.MGEMS
         System.out.printf ("Buffer not long enough in %s%n", parentFile.getPath ());
         System.out.printf ("EOF: %06X, buffer length: %06X%n", eof, data.length);
@@ -519,8 +519,9 @@ public class ForkProdos extends AbstractAppleFile
           String.format ("Text file gaps ........ %04X    %<,7d%n%n", textFileGaps));
     }
 
-    String message = (dataBlocks.size () + textFileGaps) * 512 < eof
-        ? message = "<-- past data blocks" : "";
+    int dataSize = (dataBlocks.size () + textFileGaps) * 512;
+    String message = dataSize < eof
+        ? message = String.format ("<-- past data blocks (%,d)", dataSize) : "";
     if (eof == 0)
       message = "<-- zero";
 

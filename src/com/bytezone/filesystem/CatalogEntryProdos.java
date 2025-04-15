@@ -175,39 +175,49 @@ class CatalogEntryProdos extends CatalogEntry
   }
 
   // ---------------------------------------------------------------------------------//
+  private String dateBytes (int offset)
+  // ---------------------------------------------------------------------------------//
+  {
+    int ptr = 4 + slot * ProdosConstants.ENTRY_SIZE + offset;
+    StringBuilder text = new StringBuilder ();
+
+    for (int i = 0; i < 4; i++)
+      text.append (String.format ("%02X ", buffer[ptr + i]));
+
+    return text.toString ();
+  }
+
+  // ---------------------------------------------------------------------------------//
   @Override
   public String toString ()
   // ---------------------------------------------------------------------------------//
   {
     StringBuilder text = new StringBuilder (super.toString ());
 
-    String message = eof == 0 ? message = "<-- zero" : "";
+    Utility.formatMeta (text, "Storage type", 2, storageType, storageTypeText);
+    Utility.formatMeta (text, "File type", 2, fileType, fileTypeText);
 
-    text.append (String.format ("Storage type ..........     %02X             %s%n",
-        storageType, storageTypeText));
-    text.append (String.format ("File type .............     %02X  %<,9d  %s%n", fileType,
-        fileTypeText));
-
-    text.append (String.format ("Block .................   %04X             %s%n",
-        catalogBlock.getBlockNo (), blockChainText.get (0)));
+    Utility.formatMeta (text, "Block", 4, catalogBlock.getBlockNo (),
+        blockChainText.get (0));
     if (blockChainText.size () > 1)
       for (int i = 1; i < blockChainText.size (); i++)
         text.append (String.format ("%40s %s%n", "", blockChainText.get (i)));
 
-    text.append (String.format ("Key ptr ...............   %04X  %<,9d%n", keyPtr));
-    text.append (String.format ("Blocks used ...........   %04X  %<,9d%n", blocksUsed));
-    text.append (
-        String.format ("EOF ................... %06X  %<,9d  %s%n", eof, message));
-    text.append (
-        String.format ("Created ............... %9s %-5s%n", dateCreated, timeCreated));
-    text.append (
-        String.format ("Modified .............. %9s %-5s%n", dateModified, timeModified));
-    text.append (String.format ("Version ...............     %02X  %<,9d%n", version));
-    text.append (String.format ("Min version ...........     %02X  %<,9d%n", minVersion));
-    text.append (String.format ("Access ................     %02X  %<,9d  %s%n", access,
-        Utility.getAccessText (access)));
-    text.append (String.format ("Auxtype ...............   %04X  %<,9d%n", auxType));
-    text.append (String.format ("VDH/SDH ptr ...........   %04X  %<,9d%n", headerPtr));
+    Utility.formatMeta (text, "Key ptr", 4, keyPtr);
+    Utility.formatMeta (text, "Blocks used", 4, blocksUsed);
+    Utility.formatMeta (text, "EOF", 6, eof, eof == 0 ? "<-- zero" : "");
+
+    text.append (String.format ("Created ............... %-18s %9s %-5s%n",
+        dateBytes (0x18), dateCreated, timeCreated));
+    text.append (String.format ("Modified .............. %-18s %9s %-5s%n",
+        dateBytes (0x21), dateModified, timeModified));
+
+    Utility.formatMeta (text, "Version", 2, version);
+    Utility.formatMeta (text, "Min version", 2, minVersion);
+
+    Utility.formatMeta (text, "Access", 2, access, Utility.getAccessText (access));
+    Utility.formatMeta (text, "Auxtype", 4, auxType);
+    Utility.formatMeta (text, "VDH/SDH ptr", 4, headerPtr);
 
     return Utility.rtrim (text);
   }

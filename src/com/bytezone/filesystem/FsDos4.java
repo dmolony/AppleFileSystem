@@ -186,23 +186,15 @@ class FsDos4 extends FsDos
     StringBuilder text = new StringBuilder (super.toString ());
 
     text.append ("\n\n----- DOS4 Header -----\n");
-    text.append (
-        String.format ("VTOC structure block .. %02X      %<,9d%n", vtocStructureBlock));
-    text.append (
-        String.format ("Build number .......... %02X      %<,9d%n", buildNumber));
-    text.append (String.format ("RAM DOS ............... %s                  %s%n",
-        ramDos, getRamTypeText ()));
-    text.append (String.format ("Volume type ........... %s                  %s%n",
-        volumeType, getVolumeTypeText ()));
-    text.append (String.format ("Volume name ........... %s%n", volumeName));
-    text.append (
-        String.format ("Volume library ........ %04X    %<,9d%n", volumeLibrary));
-    text.append (
-        String.format ("Tracks per disk ....... %02X      %<,9d%n", tracksPerDisk));
-    if (initTime != null)
-      text.append (String.format ("Initialised ........... %s%n", initTime.format (sdf)));
-    if (vtocTime != null)
-      text.append (String.format ("Modified .............. %s%n", vtocTime.format (sdf)));
+    Utility.formatMeta (text, "VTOC structure block", 2, vtocStructureBlock);
+    Utility.formatMeta (text, "Build number", 2, buildNumber);
+    Utility.formatMeta (text, "RAM DOS", ramDos, getRamTypeText ());
+    Utility.formatMeta (text, "Volume type", volumeType, getVolumeTypeText ());
+    Utility.formatMeta (text, "Volume name", volumeName);
+    Utility.formatMeta (text, "Volume library", 4, volumeLibrary);
+    Utility.formatMeta (text, "Tracks per disk", 2, tracksPerDisk);
+    Utility.formatMeta (text, "Initialised", initTime.format (sdf));
+    Utility.formatMeta (text, "Modified", vtocTime.format (sdf));
 
     return Utility.rtrim (text);
   }

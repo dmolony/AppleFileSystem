@@ -307,21 +307,15 @@ public class FsDos extends AbstractFileSystem
       default -> "??";
     };
 
-    text.append (String.format ("----- DOS Header ------%n"));
-    text.append (String.format ("Dos version ........... %02X                 %s%n",
-        dosVersion, dosVersionText));
-    text.append (
-        String.format ("Volume number ......... %02X      %<,9d%n", volumeNumber));
-    text.append (String.format ("Max TS pairs .......... %02X      %<,9d%n", maxTSpairs));
-    text.append (
-        String.format ("Last track allocated .. %02X      %<,9d%n", lastTrackAllocated));
-    text.append (String.format ("Direction ............. %02X      %<,9d%n", direction));
-    text.append (
-        String.format ("Tracks per disk ....... %02X      %<,9d%n", tracksPerDisk));
-    text.append (
-        String.format ("Sectors per track ..... %02X      %<,9d%n", sectorsPerTrack));
-    text.append (
-        String.format ("Bytes per sector ...... %04X    %<,9d%n", bytesPerSector));
+    text.append ("----- DOS Header ------\n");
+    Utility.formatMeta (text, "Dos version", 2, dosVersion, dosVersionText);
+    Utility.formatMeta (text, "Volume number", 2, volumeNumber);
+    Utility.formatMeta (text, "Max TS pairs", 2, maxTSpairs);
+    Utility.formatMeta (text, "Last track allocated", 2, lastTrackAllocated);
+    Utility.formatMeta (text, "Direction", 2, direction);
+    Utility.formatMeta (text, "Tracks per disk", 2, tracksPerDisk);
+    Utility.formatMeta (text, "Sectors per track", 2, sectorsPerTrack);
+    Utility.formatMeta (text, "Bytes per sector", 4, bytesPerSector);
 
     return Utility.rtrim (text);
   }
