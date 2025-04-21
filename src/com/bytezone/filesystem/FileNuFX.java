@@ -536,43 +536,44 @@ public class FileNuFX extends AbstractAppleFile implements AppleFilePath, AppleF
     String decode = Utility.matchFlags (access, accessChars);
 
     if (!getFileName ().equals (getFullFileName ()))
-      text.append (String.format ("Full file name ........ %s%n", getFullFileName ()));
-    text.append (String.format ("Header CRC ............ %04X   %s%n", crc,
-        crcPassed ? "Passed" : "** Failed **"));
-    text.append (String.format ("Attributes ............ %d%n", attributeSectionLength));
-    text.append (String.format ("Version ............... %d%n", version));
-    text.append (String.format ("Threads ............... %d%n%n", totThreads));
-    text.append (String.format ("File sys id ........... %02X     %s%n", fileSystemID,
-        fileSystems[fileSystemID]));
-    text.append (String.format ("Separator ............. %s%n", separator));
-    text.append (String.format ("Access ................ %s  %s%n", bits, decode));
+      Utility.formatMeta (text, "Full file name", getFullFileName ());
+    Utility.formatMeta (text, "Header CRC", 4, crc,
+        crcPassed ? "Passed" : "** Failed **");
+    Utility.formatMeta (text, "Attributes", 2, attributeSectionLength);
+    Utility.formatMeta (text, "Version", 2, version);
+    Utility.formatMeta (text, "Threads", 2, totThreads);
+    Utility.formatMeta (text, "File sys id", 2, fileSystemID, fileSystems[fileSystemID]);
+    Utility.formatMeta (text, "Separator", separator);
+    Utility.formatMeta (text, "Access", bits, decode);
 
     if (storType < 16)
     {
-      text.append (String.format ("File type ............. %02X     %s%n", fileType,
-          fileTypes[fileType]));
-      text.append (String.format ("Aux type .............. %04X%n", auxType));
-      text.append (String.format ("Storage type .......... %02X     %s%n%n", storType,
-          storage[storType]));
+      Utility.formatMeta (text, "File type", 2, fileType, fileTypes[fileType]);
+      Utility.formatMeta (text, "Aux type", 4, auxType);
+      Utility.formatMeta (text, "Storage type", 2, storType, storage[storType]);
+      text.append ("\n");
     }
     else
     {
-      text.append (String.format ("Zero .................. %,d%n", fileType));
-      text.append (String.format ("Total blocks .......... %,d%n", auxType));
-      text.append (String.format ("Block size ............ %,d%n%n", storType));
+      Utility.formatMeta (text, "Zero", 2, fileType);
+      Utility.formatMeta (text, "Total blocks", 2, auxType);
+      Utility.formatMeta (text, "Block size", 2, storType);
+      text.append ("\n");
     }
 
-    text.append (String.format ("Created ............... %s%n", created.format ()));
-    text.append (String.format ("Modified .............. %s%n", modified.format ()));
-    text.append (String.format ("Archived .............. %s%n%n", archived.format ()));
-    text.append (String.format ("Option size ........... %,d%n", optionSize));
-    text.append (String.format ("Filename len .......... %,d%n", fileNameLength));
-    text.append (String.format ("Filename .............. %s%n%n", fileName1));
-    text.append (String.format ("Message threads ....... %s%n", messageThreads));
-    text.append (String.format ("Control threads ....... %s%n", controlThreads));
-    text.append (
-        String.format ("Data threads .......... %s  %s%n", dataThreads, threadKindText));
-    text.append (String.format ("Filename threads ...... %s%n%n", filenameThreads));
+    Utility.formatMeta (text, "Created", created.format ());
+    Utility.formatMeta (text, "Modified", modified.format ());
+    Utility.formatMeta (text, "Archived", archived.format ());
+    text.append ("\n");
+    Utility.formatMeta (text, "Option size", 2, optionSize);
+    Utility.formatMeta (text, "Filename len", 2, fileNameLength);
+    Utility.formatMeta (text, "Filename", fileName1);
+    text.append ("\n");
+    Utility.formatMeta (text, "Message threads", 2, messageThreads);
+    Utility.formatMeta (text, "Control threads", 2, controlThreads);
+    Utility.formatMeta (text, "Data threads", 2, dataThreads, threadKindText);
+    Utility.formatMeta (text, "Filename threads", 2, filenameThreads);
+    text.append ("\n");
 
     for (NuFXThread thread : threads)
     {

@@ -357,37 +357,34 @@ public class FileBinary2 extends AbstractAppleFile
     Utility.formatMeta (text, "Create time", 4, createTime);
 
     Utility.formatMeta (text, "EOF", 6, eof);
-    //    text.append (String.format ("EOF ................... %06X  %<,7d%n", eof));
-    text.append (String.format ("File name ............. %s%n", fileName));
-    text.append (String.format ("Squeeze name .......... %s%n", squeezeName));
-    text.append (String.format ("Native name ........... %s%n", nativeName));
+    Utility.formatMeta (text, "File name", fileName);
+    Utility.formatMeta (text, "Squeeze name", squeezeName);
+    Utility.formatMeta (text, "Native name", nativeName);
 
-    text.append (String.format ("G Aux type ............ %04X  %<d%n", gAuxType));
-    text.append (String.format ("G Access .............. %02X    %<d%n", gAccess));
-    text.append (String.format ("G File type ........... %02X    %<d%n", gFileType));
-    text.append (String.format ("G Storage ............. %02X    %<d%n", gStorage));
-    text.append (String.format ("G File size ........... %04X  %<d%n", gFileSize));
-    text.append (String.format ("G EOF ................. %02X    %<d%n", gEof));
-    text.append (
-        String.format ("Disk space ............ %,d   (all files)%n", diskSpace));
+    Utility.formatMeta (text, "G Aux type", 4, gAuxType);
+    Utility.formatMeta (text, "G Access", 2, gAccess);
+    Utility.formatMeta (text, "G File type", 2, gFileType);
+    Utility.formatMeta (text, "G Storage", 2, gStorage);
+    Utility.formatMeta (text, "G File size", 4, gEof);
+    Utility.formatMeta (text, "G EOF", 2, gFileSize);
 
-    text.append (String.format ("OS type ............... %02X  %s%n", osType,
-        (osType >= 0 && osType < bin2Formats.length) ? bin2Formats[osType] : ""));
-    text.append (String.format ("Native file type ...... %04X%n", nativeFileType));
-    text.append (String.format ("Phantom file .......... %02X%n", phantomFile));
+    Utility.formatMeta (text, "Disk space", 4, diskSpace, "(all files)");
 
-    text.append (String.format ("Data flags ............ %02X %s%n", dataFlags,
-        getFlagsText (dataFlags)));
+    Utility.formatMeta (text, "OS type", 2, osType,
+        (osType >= 0 && osType < bin2Formats.length) ? bin2Formats[osType] : "");
+    Utility.formatMeta (text, "Native file type", 4, nativeFileType);
+    Utility.formatMeta (text, "Phantom file", 2, phantomFile);
+
+    Utility.formatMeta (text, "Data flags", 2, dataFlags, getFlagsText (dataFlags));
 
     String message =
         !squeezeName.isEmpty () && !isCompressed () ? "  <-- should be true" : "";
-    text.append (
-        String.format ("  compressed? ......... %s%s%n", isCompressed (), message));
+    Utility.formatMeta (text, "  compressed?", isCompressed (), message);
 
-    text.append (String.format ("  encrypted? .......... %s%n", isEncrypted ()));
-    text.append (String.format ("  sparse? ............. %s%n", isSparse ()));
-    text.append (String.format ("Bin2 version .......... %02X%n", version));
-    text.append (String.format ("Files following ....... %02X%n", filesFollowing));
+    Utility.formatMeta (text, "  encrypted?", isEncrypted ());
+    Utility.formatMeta (text, "  sparse?", isSparse ());
+    Utility.formatMeta (text, "Bin2 version", 2, version);
+    Utility.formatMeta (text, "Files following", 2, filesFollowing);
 
     return Utility.rtrim (text);
   }

@@ -160,18 +160,19 @@ class NuFXThread
   {
     StringBuilder text = new StringBuilder ();
 
-    text.append (String.format ("  threadClass ......... %d          %s%n", threadClass,
-        threadClassText[threadClass]));
-    text.append (String.format ("  format .............. %d          %s%n", threadFormat,
-        formatText[threadFormat]));
-    text.append (String.format ("  kind ................ %d          %s%n", threadKind,
-        getKindText ()));
-    text.append (String.format ("  crc ................. %04X%n", threadCrc));
-    text.append (String.format ("  uncompressedEOF ..... %08X %<,9d%n", uncompressedEOF));
-    text.append (String.format ("  compressedEOF ....... %08X %<,9d", compressedEOF));
+    Utility.formatMeta (text, "  threadClass", 2, threadClass,
+        threadClassText[threadClass]);
+    Utility.formatMeta (text, "  format", 2, threadFormat, formatText[threadFormat]);
+    Utility.formatMeta (text, "  kind", 2, threadKind, getKindText ());
+    Utility.formatMeta (text, "  crc", 2, threadCrc);
+    Utility.formatMeta (text, "  uncompressedEOF", 8, uncompressedEOF);
+    Utility.formatMeta (text, "  compressedEOF", 8, compressedEOF);
 
     if (threadClass != 2)
-      text.append ("\n  data ................ " + getDataString ());
+    {
+      text.append ("\n");
+      Utility.formatMeta (text, "  data", getDataString ());
+    }
 
     return text.toString ();
   }

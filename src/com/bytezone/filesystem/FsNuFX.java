@@ -146,18 +146,18 @@ class FsNuFX extends AbstractFileSystem
     StringBuilder text = new StringBuilder (super.toString ());
 
     text.append ("----- NuFX Header -----\n");
-    text.append (String.format ("Master CRC ............ %04X   %s%n", crc,
-        crcPassed ? "Passed" : "** Failed **"));
-    text.append (String.format ("Records ............... %,d%n", totalRecords));
-    text.append (String.format ("Created ............... %s%n", created.format ()));
-    text.append (String.format ("Modified .............. %s%n", modified.format ()));
-    text.append (String.format ("Version ............... %,d%n", version));
-    text.append (String.format ("Reserved .............. %08X%n", reserved1));
-    text.append (String.format ("Reserved .............. %08X%n", reserved2));
-    text.append (String.format ("Master EOF ............ %,d%n", eof));
-    text.append (String.format ("Reserved .............. %08X%n", reserved3));
-    text.append (String.format ("Reserved .............. %04X", reserved4));
+    Utility.formatMeta (text, "Master CRC", 4, crc,
+        crcPassed ? "Passed" : "** Failed **");
+    Utility.formatMeta (text, "Records", 2, totalRecords);
+    Utility.formatMeta (text, "Created", created.format ());
+    Utility.formatMeta (text, "Modified", modified.format ());
+    Utility.formatMeta (text, "Version", 2, version);
+    Utility.formatMeta (text, "Reserved", 6, reserved1);
+    Utility.formatMeta (text, "Reserved", 6, reserved2);
+    Utility.formatMeta (text, "Master EOF", 4, eof);
+    Utility.formatMeta (text, "Reserved", 6, reserved3);
+    Utility.formatMeta (text, "Reserved", 4, reserved4);
 
-    return text.toString ();
+    return Utility.rtrim (text);
   }
 }

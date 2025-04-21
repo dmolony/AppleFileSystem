@@ -635,11 +635,42 @@ public class Utility
   }
 
   // ---------------------------------------------------------------------------------//
+  public static void formatMeta (StringBuilder text, String label, char value)
+  // ---------------------------------------------------------------------------------//
+  {
+    text.append (String.format ("%s %-18.18s %s\n", makeLabel (label), "", value));
+  }
+
+  // ---------------------------------------------------------------------------------//
   public static void formatMeta (StringBuilder text, String label, char value1,
       String value2)
   // ---------------------------------------------------------------------------------//
   {
     text.append (String.format ("%s %-18.18s %s\n", makeLabel (label), value1, value2));
+  }
+
+  // ---------------------------------------------------------------------------------//
+  public static void formatMeta (StringBuilder text, String label, String value1,
+      String value2)
+  // ---------------------------------------------------------------------------------//
+  {
+    text.append (String.format ("%s %-18.18s %s\n", makeLabel (label), value1, value2));
+  }
+
+  // ---------------------------------------------------------------------------------//
+  public static void formatMeta (StringBuilder text, String label, boolean value1,
+      String value2)
+  // ---------------------------------------------------------------------------------//
+  {
+    text.append (
+        String.format ("%s %-18.18s %s\n", makeLabel (label), "", value1, value2));
+  }
+
+  // ---------------------------------------------------------------------------------//
+  public static void formatMeta (StringBuilder text, String label, boolean value)
+  // ---------------------------------------------------------------------------------//
+  {
+    text.append (String.format ("%s %-18.18s %s\n", makeLabel (label), "", value));
   }
 
   // ---------------------------------------------------------------------------------//
