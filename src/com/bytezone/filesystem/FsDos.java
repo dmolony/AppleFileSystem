@@ -312,7 +312,7 @@ public class FsDos extends AbstractFileSystem
     Utility.formatMeta (text, "Volume number", 2, volumeNumber);
     Utility.formatMeta (text, "Max TS pairs", 2, maxTSpairs);
     Utility.formatMeta (text, "Last track allocated", 2, lastTrackAllocated);
-    Utility.formatMeta (text, "Direction", 2, direction);
+    Utility.formatMeta (text, "Direction", 2, direction & 0xFF);
     Utility.formatMeta (text, "Tracks per disk", 2, tracksPerDisk);
     Utility.formatMeta (text, "Sectors per track", 2, sectorsPerTrack);
     Utility.formatMeta (text, "Bytes per sector", 4, bytesPerSector);

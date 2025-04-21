@@ -40,9 +40,6 @@ public abstract class FileDos extends AbstractAppleFile
       return;
     }
 
-    // NB - don't get the first block's buffer for text files
-    //    - a sparse text file may NPE
-
     switch (getFileType ())
     {
       case FsDos.FILE_TYPE_TEXT:
@@ -65,7 +62,6 @@ public abstract class FileDos extends AbstractAppleFile
 
       case FsDos.FILE_TYPE_BINARY:
       case FsDos.FILE_TYPE_RELOCATABLE:       // Applesoft Toolkit APA and HRCG
-        //      case FsDos.FILE_TYPE_S:                 // fuck nose
       case FsDos.FILE_TYPE_BINARY_B:
       case FsDos.FILE_TYPE_BINARY_L:          // Dos4 uses this
         buffer = dataBlocks.get (0).getBuffer ();
@@ -73,8 +69,13 @@ public abstract class FileDos extends AbstractAppleFile
         eof = Utility.unsignedShort (buffer, 2);
         break;
 
+      case FsDos.FILE_TYPE_S:                 // AEPRO1.DSK uses this
+        eof = dataBlocks.size () * parentFileSystem.getBlockSize ();
+        break;
+
       default:
-        System.out.println ("Unexpected file type: " + getFileType ());
+        System.out.println (
+            "Unexpected file type: " + getFileType () + " in " + getFileName ());
     }
   }
 
