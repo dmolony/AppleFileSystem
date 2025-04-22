@@ -44,7 +44,13 @@ public abstract class FileDos extends AbstractAppleFile
     {
       case FsDos.FILE_TYPE_TEXT:
         eof = getTextFileEof ();
-        if (textFileGaps > 0 || fileContainsZero ())      // random-access file
+        if (textFileGaps > 0)             // random-access file
+        {
+          createTextBlocks (dataBlocks);
+          break;
+        }
+
+        if (fileContainsZero ())      // random-access file
           createTextBlocks (dataBlocks);
         break;
 
@@ -101,6 +107,8 @@ public abstract class FileDos extends AbstractAppleFile
   }
 
   // NB zardax files seem to use 0 as eof
+  // Some text files on DISASM1.DSK contain a single zero two bytes before eof. They
+  // are all assembler source files, so should not be counted as random-access files.
   // ---------------------------------------------------------------------------------//
   private boolean fileContainsZero ()
   // ---------------------------------------------------------------------------------//
@@ -110,10 +118,31 @@ public abstract class FileDos extends AbstractAppleFile
     // test entire buffer (in case reclen > block size)
     Buffer fileBuffer = getFileBuffer ();
     byte[] buffer = fileBuffer.data ();
-    int max = fileBuffer.max ();
+    int max = fileBuffer.max () - 2;            // avoid the last two bytes
 
     for (int i = fileBuffer.offset (); i < max; i++)
       if (buffer[i] == 0)
+        return true;
+
+    return false;
+  }
+
+  // Some text files on DISASM1.DSK contain a single zero two bytes before eof. They
+  // are all assembler source files, so should not be counted as random-access files.
+  // ---------------------------------------------------------------------------------//
+  private boolean fileContainsTwoZeros ()
+  // ---------------------------------------------------------------------------------//
+  {
+    assert textFileGaps == 0;
+
+    // test (up to) the entire buffer (in case reclen > block size)
+    Buffer fileBuffer = getFileBuffer ();
+    byte[] buffer = fileBuffer.data ();
+    int max = fileBuffer.max ();
+    int totZeros = 0;
+
+    for (int i = fileBuffer.offset (); i < max; i++)
+      if (buffer[i] == 0 && ++totZeros > 1)
         return true;
 
     return false;
