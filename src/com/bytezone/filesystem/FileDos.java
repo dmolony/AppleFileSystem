@@ -44,24 +44,25 @@ public abstract class FileDos extends AbstractAppleFile
     {
       case FsDos.FILE_TYPE_TEXT:
         eof = getTextFileEof ();
+
         if (textFileGaps > 0)             // random-access file
         {
           createTextBlocks (dataBlocks);
           break;
         }
 
-        if (fileContainsZero ())      // random-access file
+        if (fileContainsZero ())          // random-access file
           createTextBlocks (dataBlocks);
         break;
 
       case FsDos.FILE_TYPE_INTEGER_BASIC:
         byte[] buffer = dataBlocks.get (0).getBuffer ();
-        eof = Utility.unsignedShort (buffer, 0);
+        eof = Utility.unsignedShort (buffer, 0) + 2;
         break;
 
       case FsDos.FILE_TYPE_APPLESOFT:
         buffer = dataBlocks.get (0).getBuffer ();
-        eof = Utility.unsignedShort (buffer, 0);
+        eof = Utility.unsignedShort (buffer, 0) + 2;
         if (eof > 6)
           loadAddress = Utility.getApplesoftLoadAddress (buffer);
         break;
@@ -72,7 +73,7 @@ public abstract class FileDos extends AbstractAppleFile
       case FsDos.FILE_TYPE_BINARY_L:          // Dos4 uses this
         buffer = dataBlocks.get (0).getBuffer ();
         loadAddress = Utility.unsignedShort (buffer, 0);
-        eof = Utility.unsignedShort (buffer, 2);
+        eof = Utility.unsignedShort (buffer, 2) + 4;
         break;
 
       case FsDos.FILE_TYPE_S:                 // AEPRO1.DSK uses this
