@@ -107,28 +107,24 @@ public class ForkProdos extends AbstractAppleFile
       --textFileGaps;
     }
 
+    // fill data blocks (cannot call fileContainsZero () until this is done)
+    for (Integer blockNo : blockNumbers)
+    {
+      dataBlock = parentFileSystem.getBlock (blockNo, BlockType.FILE_DATA);
+      dataBlock.setFileOwner (this);
+      dataBlocks.add (dataBlock);
+    }
+
     if (getFileType () == ProdosConstants.FILE_TYPE_TEXT      // text file
         && forkType != ForkType.RESOURCE                      // but not resource fork
         && parentFile.getAuxType () > 0                       // with reclen > 0
         && parentFile.getAuxType () < 2000                    // but not stupid
         && (textFileGaps > 0 || fileContainsZero ()))         // random-access file
-      processDirectAccessFile (blockNumbers);
-
-    if (textBlocks.size () == 0)
-      processNonTextFile (blockNumbers);
+      createTextBlocks (blockNumbers);
   }
 
   // ---------------------------------------------------------------------------------//
-  private void processNonTextFile (List<Integer> blockNumbers)
-  // ---------------------------------------------------------------------------------//
-  {
-    // fill dataBlocks
-    for (Integer blockNo : blockNumbers)
-      processBlock (blockNo);
-  }
-
-  // ---------------------------------------------------------------------------------//
-  private void processDirectAccessFile (List<Integer> blockNumbers)
+  private void createTextBlocks (List<Integer> blockNumbers)
   // ---------------------------------------------------------------------------------//
   {
     // collect contiguous data blocks into TextBlocks
@@ -155,7 +151,8 @@ public class ForkProdos extends AbstractAppleFile
         if (contiguousBlocks.size () == 0)            // this is the start of an island
           startBlock = logicalBlockNo;
 
-        AppleBlock dataBlock = processBlock (blockNo);      // non-text file processing
+        //  AppleBlock dataBlock = processBlock (blockNo);   // non-text file processing
+        AppleBlock dataBlock = parentFileSystem.getBlock (blockNo);
         contiguousBlocks.add (dataBlock);
       }
 
@@ -210,17 +207,6 @@ public class ForkProdos extends AbstractAppleFile
     //    System.out.printf ("Failed: %,5d%n", failed);
 
     return passed > failed;
-  }
-
-  // ---------------------------------------------------------------------------------//
-  private AppleBlock processBlock (int blockNo)
-  // ---------------------------------------------------------------------------------//
-  {
-    AppleBlock dataBlock = parentFileSystem.getBlock (blockNo, BlockType.FILE_DATA);
-    dataBlock.setFileOwner (this);
-    dataBlocks.add (dataBlock);
-
-    return dataBlock;
   }
 
   // ---------------------------------------------------------------------------------//
@@ -307,9 +293,6 @@ public class ForkProdos extends AbstractAppleFile
 
     // test entire buffer (in case reclen > block size)
     Buffer fileBuffer = getFileBuffer ();
-
-    System.out.println (fileBuffer);
-    System.out.println (eof);
 
     byte[] buffer = fileBuffer.data ();
     int max = fileBuffer.max ();
