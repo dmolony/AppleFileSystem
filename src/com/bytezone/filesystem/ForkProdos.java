@@ -117,8 +117,8 @@ public class ForkProdos extends AbstractAppleFile
 
     if (getFileType () == ProdosConstants.FILE_TYPE_TEXT      // text file
         && forkType != ForkType.RESOURCE                      // but not resource fork
-        && parentFile.getAuxType () > 0                       // with reclen > 0
-        && parentFile.getAuxType () < 2000                    // but not stupid
+        && parentFile.getAuxType () > 1                       // with reclen > 1
+        && parentFile.getAuxType () < 1000                    // but not stupid
         && (textFileGaps > 0 || fileContainsZero ()))         // random-access file
       createTextBlocks (blockNumbers);
   }
@@ -132,43 +132,41 @@ public class ForkProdos extends AbstractAppleFile
     int startBlock = -1;
     int aux = parentFile.getAuxType ();
 
-    int logicalBlockNo = 0;                         // block # within the file
+    int logicalBlockNo = 0;                           // block # within the file
 
     for (Integer blockNo : blockNumbers)
     {
-      if (blockNo == 0)
-      {
-        if (contiguousBlocks.size () > 0)
-        {
-          TextBlockProdos textBlock = new TextBlockProdos (parentFileSystem, this,
-              contiguousBlocks, startBlock, aux);
-          textBlocks.add (textBlock);
-          contiguousBlocks = new ArrayList<> ();      // ready for a new island
-        }
-      }
-      else
+      if (blockNo > 0)
       {
         if (contiguousBlocks.size () == 0)            // this is the start of an island
           startBlock = logicalBlockNo;
 
-        //  AppleBlock dataBlock = processBlock (blockNo);   // non-text file processing
-        AppleBlock dataBlock = parentFileSystem.getBlock (blockNo);
-        contiguousBlocks.add (dataBlock);
+        contiguousBlocks.add (parentFileSystem.getBlock (blockNo));
+      }
+      else if (contiguousBlocks.size () > 0)
+      {
+        addNewTextBlock (contiguousBlocks, startBlock, aux);
+        contiguousBlocks = new ArrayList<> ();        // ready for a new island
       }
 
       ++logicalBlockNo;
     }
 
-    assert contiguousBlocks.size () > 0;
-    if (contiguousBlocks.size () > 0)           // should always be true
-    {
-      TextBlockProdos textBlock =
-          new TextBlockProdos (parentFileSystem, this, contiguousBlocks, startBlock, aux);
-      textBlocks.add (textBlock);
-    }
+    addNewTextBlock (contiguousBlocks, startBlock, aux);
 
     if (textBlocks.size () == 1 && !verifyTextBlocks ())
       textBlocks.clear ();
+  }
+
+  // ---------------------------------------------------------------------------------//
+  private void addNewTextBlock (List<AppleBlock> contiguousBlocks, int startBlock,
+      int aux)
+  // ---------------------------------------------------------------------------------//
+  {
+    assert contiguousBlocks.size () > 0;
+    TextBlockProdos textBlock =
+        new TextBlockProdos (parentFileSystem, this, contiguousBlocks, startBlock, aux);
+    textBlocks.add (textBlock);
   }
 
   // this may not be required

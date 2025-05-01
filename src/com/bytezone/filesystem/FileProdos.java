@@ -40,8 +40,11 @@ public class FileProdos extends AbstractAppleFile implements AppleForkedFile
     if (isForkedFile)
       createForks ();
     else
+    {
       dataFork = new ForkProdos (this, null, catalogEntry.keyPtr,
           catalogEntry.storageType, catalogEntry.blocksUsed, catalogEntry.eof);
+      forks.add (dataFork);
+    }
   }
 
   // ---------------------------------------------------------------------------------//
