@@ -59,13 +59,13 @@ public abstract class CatalogEntryDos extends CatalogEntry
   }
 
   // ---------------------------------------------------------------------------------//
-  protected void checkName ()
+  protected void checkName (byte[] buffer, int ptr, int len)
   // ---------------------------------------------------------------------------------//
   {
     isNameValid = false;
 
-    for (byte b : fileName.getBytes ())
-      if ((b & 0x80) != 0)
+    for (int i = 0; i < len; i++)
+      if ((buffer[ptr++] == (byte) 0x88))
         return;
 
     isNameValid = true;

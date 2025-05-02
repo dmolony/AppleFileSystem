@@ -347,7 +347,10 @@ public abstract class FileDos extends AbstractAppleFile
   private boolean stupidName ()
   // ---------------------------------------------------------------------------------//
   {
-    return getFileName ().startsWith ("+=") || getFileName ().startsWith ("[ ");
+    if (getFileName ().startsWith ("+=") || getFileName ().startsWith ("[ "))
+      return true;
+
+    return false;
   }
 
   // ---------------------------------------------------------------------------------//

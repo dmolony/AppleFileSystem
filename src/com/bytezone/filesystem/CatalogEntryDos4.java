@@ -40,7 +40,7 @@ public class CatalogEntryDos4 extends CatalogEntryDos
     tsListZero = (buffer[ptr] & 0x40) != 0;
 
     fileName = Utility.string (buffer, ptr + 3, 24).trim ();
-    checkName ();                 // check for invalid characters
+    checkName (buffer, ptr + 3, 24);                 // check for invalid characters
 
     modified = Utility.getDos4LocalDateTime (buffer, ptr + 27);
   }
