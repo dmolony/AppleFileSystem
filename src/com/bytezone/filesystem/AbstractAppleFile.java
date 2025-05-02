@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.bytezone.filesystem.AppleFileSystem.FileSystemType;
+import com.bytezone.utility.Utility;
 
 // -----------------------------------------------------------------------------------//
 public abstract class AbstractAppleFile implements AppleFile
@@ -179,8 +180,9 @@ public abstract class AbstractAppleFile implements AppleFile
   public int getFileLength ()                         // in bytes (eof)
   // ---------------------------------------------------------------------------------//
   {
-    throw new UnsupportedOperationException (
-        "getFileLength() not implemented in " + getFileName ());
+    return dataBlocks.size () * parentFileSystem.getBlockSize ();
+    //    throw new UnsupportedOperationException (
+    //        "getFileLength() not implemented in " + getFileName ());
   }
 
   // assumes no index blocks
@@ -252,15 +254,13 @@ public abstract class AbstractAppleFile implements AppleFile
     StringBuilder text = new StringBuilder ();
 
     text.append ("-------- File ---------\n");
-    text.append (String.format ("File name ............. %s%n", getFileName ()));
-    text.append (String.format ("File system type ...... %s%n", getFileSystemType ()));
+    Utility.formatMeta (text, "File name", getFileName ());
+    Utility.formatMeta (text, "File system type", getFileSystemType ().toString ());
     if (embeddedFileSystem != null)
-      text.append (String.format ("Embedded FS type ...... %s%n",
-          embeddedFileSystem.getFileSystemType ()));
-    text.append (String.format ("File type .............     %02X  %<,9d  %s%n",
-        getFileType (), getFileTypeText ()));
-    text.append (
-        String.format ("EOF ................... %06X  %<,9d%n", getFileLength ()));
+      Utility.formatMeta (text, "Embedded FS type",
+          embeddedFileSystem.getFileSystemType ().toString ());
+    Utility.formatMeta (text, "File type", 2, getFileType (), getFileTypeText ());
+    Utility.formatMeta (text, "EOF", 6, getFileLength ());
 
     return text.toString ();
   }

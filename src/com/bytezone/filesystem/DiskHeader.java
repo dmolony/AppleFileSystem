@@ -1,5 +1,7 @@
 package com.bytezone.filesystem;
 
+import com.bytezone.utility.Utility;
+
 // -----------------------------------------------------------------------------------//
 public abstract class DiskHeader
 // -----------------------------------------------------------------------------------//
@@ -29,7 +31,7 @@ public abstract class DiskHeader
   {
     StringBuilder text = new StringBuilder ();
 
-    text.append (String.format ("Header type ........... %s%n", diskHeaderType));
+    Utility.formatMeta (text, "Header type", diskHeaderType.toString ());
 
     return text.toString ();
   }

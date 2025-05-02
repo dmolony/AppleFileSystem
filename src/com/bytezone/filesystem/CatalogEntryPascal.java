@@ -28,7 +28,7 @@ public class CatalogEntryPascal extends CatalogEntry
   int firstBlock;
   int lastBlock;
   int fileType;
-  String fileName;
+  //  String fileName;
   int wildCard;
   int bytesUsedInLastBlock;
   LocalDate fileDate;
@@ -227,23 +227,22 @@ public class CatalogEntryPascal extends CatalogEntry
     if (slot == 0)
     {
       text.append ("---- Pascal Header ----\n");
-      text.append (String.format ("Volume name ........... %s%n", volumeName));
-      text.append (String.format ("First catalog block ... %d%n", firstCatalogBlock));
-      text.append (String.format ("First file block ...... %d%n", lastCatalogBlock));
-      text.append (String.format ("Entry type ............ %,d%n", entryType));
-      text.append (String.format ("Total blocks .......... %,d%n", totalBlocks));
-      text.append (String.format ("Total files ........... %,d%n", totalFiles));
-      text.append (String.format ("Date .................. %s", volumeDate));
+      Utility.formatMeta (text, "Volume name", volumeName);
+      Utility.formatMeta (text, "First catalog block", 4, firstCatalogBlock);
+      Utility.formatMeta (text, "First file block", 4, lastCatalogBlock);
+      Utility.formatMeta (text, "Entry type", 4, entryType);
+      Utility.formatMeta (text, "Total blocks", 4, totalBlocks);
+      Utility.formatMeta (text, "Total files", 4, totalFiles);
+      Utility.formatMeta (text, "Date", volumeDate);
     }
     else
     {
       //      text.append ("---- Catalog Entry ----\n");
-      text.append (String.format ("File name ............. %s%n", fileName));
-      text.append (String.format ("First block ........... %d%n", firstBlock));
-      text.append (String.format ("Last block ............ %d%n", lastBlock));
-      text.append (String.format ("Bytes in last block ... %d%n", bytesUsedInLastBlock));
-      text.append (
-          String.format ("Date .................. %s%n%n", fileDateFormatted ()));
+      //      Utility.formatMeta (text, "File name", fileName);
+      Utility.formatMeta (text, "First block", 4, firstBlock);
+      Utility.formatMeta (text, "Last block", 4, lastBlock);
+      Utility.formatMeta (text, "Bytes in last block", 4, bytesUsedInLastBlock);
+      Utility.formatMeta (text, "Date", fileDateFormatted ());
     }
 
     return Utility.rtrim (text);

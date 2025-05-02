@@ -96,16 +96,14 @@ public class DiskHeaderDiskCopy extends DiskHeader
       default -> "???";
     };
 
-    text.append (String.format ("Name .................. %s%n", name));
-    text.append (String.format ("Data size ............. %08X %<,9d%n", dataSize));
-    text.append (String.format ("Tag size .............. %08X %<,9d%n", tagSize));
-    text.append (String.format ("Data checksum ......... %08X %n", dataChecksum));
-    text.append (String.format ("Tag checksum .......... %08X %n", tagChecksum));
-    text.append (String.format ("Disk format ........... %02X        %s%n", diskFormat,
-        formatTypes[diskFormat]));
-    text.append (String.format ("Encoding byte ......... %02X        %s%n", encoding,
-        encodingText));
-    text.append (String.format ("ID .................... %04X%n", id));
+    Utility.formatMeta (text, "Name", name);
+    Utility.formatMeta (text, "Data size", 8, dataSize);
+    Utility.formatMeta (text, "Tag size", 8, tagSize);
+    Utility.formatMeta (text, "Data checksum", 8, dataChecksum);
+    Utility.formatMeta (text, "Tag checksum", 8, tagChecksum);
+    Utility.formatMeta (text, "Disk format", 2, diskFormat, formatTypes[diskFormat]);
+    Utility.formatMeta (text, "Encoding byte", 2, encoding, encodingText);
+    Utility.formatMeta (text, "ID", 4, id);
 
     return Utility.rtrim (text);
   }

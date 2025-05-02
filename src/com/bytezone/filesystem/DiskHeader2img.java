@@ -8,12 +8,11 @@ public class DiskHeader2img extends DiskHeader
 {
   static final byte[] TWO_IMG_MAGIC = { 0x32, 0x49, 0x4D, 0x47 };
   private static String[] twoIMGFormats = { "Dos", "Prodos", "NIB" };
-  //  private static FileSystemType[] fileSystemTypes =
-  //      { FileSystemType.DOS3, FileSystemType.PRODOS, FileSystemType.NIB };
-  private static String[] creatorCodes =
-      { "!nfc", "B2TR", "CTKG", "ShIm", "WOOF", "XGS!", "CdrP" };
-  private static String[] creatorNames = { "ASIMOV2", "Bernie ][ the Rescue", "Catakig",
-      "Sheppy's ImageMaker", "Sweet 16", "XGS", "CiderPress" };
+  private static String[] creatorCodes = { "!nfc", "APSX", "B2TR", "CTKG", "CdrP", "CPII",
+      "pdos", "SHEP", "ShIm", "WOOF", "XGS!" };
+  private static String[] creatorNames =
+      { "ASIMOV2", "?", "Bernie ][ the Rescue", "Catakig", "CiderPress", "CiderPress II",
+          "?", "?", "Sheppy's ImageMaker", "Sweet 16", "XGS" };
 
   private String creator;
   final int offset;
@@ -29,8 +28,6 @@ public class DiskHeader2img extends DiskHeader
   private int creatorDataOffset;
   private int creatorDataLength;
   private String comment;
-
-  //  private String displayMessage = "";
 
   private boolean locked;
   private boolean hasDosVolumeNumber;
@@ -109,25 +106,22 @@ public class DiskHeader2img extends DiskHeader
 
     String message = originalLength == 0 ? "   <-- wrong!" : "";
 
-    text.append (String.format ("Creator ............... %s  %s%n", creator,
-        getCreator (creator)));
-    text.append (String.format ("Header size ........... %d%n", headerSize));
-    text.append (String.format ("Version ............... %d%n", version));
-    text.append (String.format ("Format ................ %d  %s%n", format,
-        twoIMGFormats[format]));
-    text.append (String.format ("Flags ................. %08X%n", flags));
-    text.append (String.format ("  locked .............. %s%n", locked));
-    text.append (String.format ("  has Dos Volume no ... %s%n", hasDosVolumeNumber));
-    text.append (String.format ("  Dos Volume no ....... %d%n", volumeNumber));
-    text.append (String.format ("Blocks ................ %,d%n", prodosBlocks));
-    text.append (String.format ("Data offset ........... %d%n", offset));
-    text.append (
-        String.format ("Data size ............. %,d%s%n", originalLength, message));
-    text.append (String.format ("Comment offset ........ %,d%n", commentOffset));
-    text.append (String.format ("Comment length ........ %,d%n", commentLength));
-    text.append (String.format ("Comment ............... %s%n", comment));
-    text.append (String.format ("Creator Data offset ... %,d%n", creatorDataOffset));
-    text.append (String.format ("Creator Data length ... %,d", creatorDataLength));
+    Utility.formatMeta (text, "Creator", creator, getCreator (creator));
+    Utility.formatMeta (text, "Header size", 2, headerSize);
+    Utility.formatMeta (text, "Version", 2, version);
+    Utility.formatMeta (text, "Format", 2, format, twoIMGFormats[format]);
+    Utility.formatMeta (text, "Flags", 8, flags);
+    Utility.formatMeta (text, "  locked", locked);
+    Utility.formatMeta (text, "  has Dos Volume no", hasDosVolumeNumber);
+    Utility.formatMeta (text, "  Dos Volume no", 4, volumeNumber);
+    Utility.formatMeta (text, "Blocks", 4, prodosBlocks);
+    Utility.formatMeta (text, "Data offset", 4, offset);
+    Utility.formatMeta (text, "Data size", 6, originalLength, message);
+    Utility.formatMeta (text, "Comment offset", 6, commentOffset);
+    Utility.formatMeta (text, "Comment length", 6, commentLength);
+    Utility.formatMeta (text, "Comment", comment);
+    Utility.formatMeta (text, "Creator Data offset", 6, creatorDataOffset);
+    Utility.formatMeta (text, "Creator Data length", 6, creatorDataLength);
 
     return text.toString ();
   }

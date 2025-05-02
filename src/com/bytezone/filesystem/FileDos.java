@@ -332,10 +332,22 @@ public abstract class FileDos extends AbstractAppleFile
   // ---------------------------------------------------------------------------------//
   {
     // Beagle Brothers "applesoft program"
-    if (getFileType () == 2 && eof <= 3 && getFileName ().startsWith ("  "))
+    if (getFileType () == FsDos.FILE_TYPE_APPLESOFT && eof <= 3
+        && getFileName ().startsWith ("  "))
+      return false;
+
+    // Call-apple title files
+    if (getFileType () == FsDos.FILE_TYPE_TEXT && eof == 1 && stupidName ())
       return false;
 
     return catalogEntry.isNameValid && dataBlocks.size () > 0;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  private boolean stupidName ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return getFileName ().startsWith ("+=") || getFileName ().startsWith ("[ ");
   }
 
   // ---------------------------------------------------------------------------------//

@@ -693,6 +693,13 @@ public class Utility
   }
 
   // ---------------------------------------------------------------------------------//
+  public static void formatMeta (StringBuilder text, String label, LocalDate date)
+  // ---------------------------------------------------------------------------------//
+  {
+    text.append (String.format ("%s %-18.18s %s\n", makeLabel (label), "", date));
+  }
+
+  // ---------------------------------------------------------------------------------//
   public static boolean isMagic (byte[] buffer, int ptr, byte[] magic)
   // ---------------------------------------------------------------------------------//
   {
