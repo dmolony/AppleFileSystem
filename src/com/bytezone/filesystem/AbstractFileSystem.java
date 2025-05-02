@@ -34,7 +34,7 @@ abstract class AbstractFileSystem implements AppleFileSystem
   private byte[] empty = new byte[1024];
   protected BitSet volumeBitMap;
 
-  protected List<DiskHeader> diskHeaders;
+  protected List<DiskHeader> diskHeaders = new ArrayList<> ();
 
   // ---------------------------------------------------------------------------------//
   AbstractFileSystem (BlockReader blockReader, FileSystemType fileSystemType)

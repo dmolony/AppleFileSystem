@@ -58,6 +58,14 @@ public class ForkNuFX extends AbstractAppleFile
 
   // ---------------------------------------------------------------------------------//
   @Override
+  public ForkType getForkType ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return forkType;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
   public boolean isLocked ()
   // ---------------------------------------------------------------------------------//
   {
@@ -116,18 +124,19 @@ public class ForkNuFX extends AbstractAppleFile
   {
     StringBuilder text = new StringBuilder ();
 
-    text.append (String.format ("File name ............. %s%n", getFileName ()));
-    text.append (String.format ("Fork type ............. %s%n", forkType));
-    text.append (String.format ("File type ............. %02X  %s%n", getFileType (),
-        getFileTypeText ()));
-    text.append (
-        String.format ("Eof ................... %04X  %<,7d%n", getFileLength ()));
-    text.append (String.format ("Parent ................ %s%n", parentFile.fileName));
-    text.append (
-        String.format ("File system ........... %s%n", fileSystem.fileSystemType));
-    text.append (String.format ("File system id ........ %d%n", getFileSystemId ()));
-    text.append (String.format ("Thread ................ %n%n%s%n", thread.toString ()));
+    Utility.formatMeta (text, "File name", getFileName ());
+    Utility.formatMeta (text, "Fork type", forkType.toString ());
+    Utility.formatMeta (text, "File type", 2, getFileType (), getFileTypeText ());
+    Utility.formatMeta (text, "Eof", 4, getFileLength ());
+    Utility.formatMeta (text, "Parent", parentFile.fileName);
+    Utility.formatMeta (text, "File system", fileSystem.fileSystemType.toString ());
+    Utility.formatMeta (text, "File system id", 2, getFileSystemId ());
 
-    return Utility.rtrim (text);
+    //    text.append ("Thread\n\n");
+    text.append ("\n");
+    text.append (thread.toString ());
+    //    text.append ("\n\n");
+
+    return text.toString ();
   }
 }

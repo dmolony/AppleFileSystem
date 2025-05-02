@@ -164,16 +164,16 @@ class NuFXThread
         threadClassText[threadClass]);
     Utility.formatMeta (text, "  format", 2, threadFormat, formatText[threadFormat]);
     Utility.formatMeta (text, "  kind", 2, threadKind, getKindText ());
-    Utility.formatMeta (text, "  crc", 2, threadCrc);
-    Utility.formatMeta (text, "  uncompressedEOF", 8, uncompressedEOF);
-    Utility.formatMeta (text, "  compressedEOF", 8, compressedEOF);
+    Utility.formatMeta (text, "  crc", 4, threadCrc);
+    Utility.formatMeta (text, "  uncompressedEOF", 6, uncompressedEOF);
+    Utility.formatMeta (text, "  compressedEOF", 6, compressedEOF);
 
-    if (threadClass != 2)
+    if (threadClass != CLASS_DATA)
     {
-      text.append ("\n");
+      //      text.append ("\n");
       Utility.formatMeta (text, "  data", getDataString ());
     }
 
-    return text.toString ();
+    return Utility.rtrim (text);
   }
 }

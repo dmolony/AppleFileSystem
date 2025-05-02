@@ -168,19 +168,13 @@ public abstract class AbstractAppleFile implements AppleFile
   }
 
   // ---------------------------------------------------------------------------------//
-  //  @Override
-  //  public void delete ()
-  //  // ---------------------------------------------------------------------------------//
-  //  {
-  //    getParentFileSystem ().deleteFile (this);
-  //  }
-
-  // ---------------------------------------------------------------------------------//
   @Override
   public int getFileLength ()                         // in bytes (eof)
   // ---------------------------------------------------------------------------------//
   {
+    // Override this if the file knows better
     return dataBlocks.size () * parentFileSystem.getBlockSize ();
+
     //    throw new UnsupportedOperationException (
     //        "getFileLength() not implemented in " + getFileName ());
   }
