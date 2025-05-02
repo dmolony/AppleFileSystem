@@ -49,6 +49,13 @@ public class ForkNuFX extends AbstractAppleFile
   }
 
   // ---------------------------------------------------------------------------------//
+  public int getAuxType ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return parentFile.getAuxType ();
+  }
+
+  // ---------------------------------------------------------------------------------//
   @Override
   public String getFileTypeText ()
   // ---------------------------------------------------------------------------------//
@@ -127,15 +134,14 @@ public class ForkNuFX extends AbstractAppleFile
     Utility.formatMeta (text, "File name", getFileName ());
     Utility.formatMeta (text, "Fork type", forkType.toString ());
     Utility.formatMeta (text, "File type", 2, getFileType (), getFileTypeText ());
+    Utility.formatMeta (text, "Aux", 4, getAuxType ());
     Utility.formatMeta (text, "Eof", 4, getFileLength ());
     Utility.formatMeta (text, "Parent", parentFile.fileName);
     Utility.formatMeta (text, "File system", fileSystem.fileSystemType.toString ());
     Utility.formatMeta (text, "File system id", 2, getFileSystemId ());
 
-    //    text.append ("Thread\n\n");
     text.append ("\n");
     text.append (thread.toString ());
-    //    text.append ("\n\n");
 
     return text.toString ();
   }
