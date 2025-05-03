@@ -385,6 +385,7 @@ public abstract class FileDos extends AbstractAppleFile
 
     AppleBlock catalogEntryBlock = catalogEntry.catalogBlock;
 
+    Utility.formatMeta (text, "Index blocks", 4, indexBlocks.size ());
     Utility.formatMeta (text, "Locked", catalogEntry.isLocked ? "true" : "false");
     Utility.formatMeta (text, "Catalog track", 2, catalogEntryBlock.getTrackNo ());
     Utility.formatMeta (text, "Catalog sector", 2, catalogEntryBlock.getSectorNo ());

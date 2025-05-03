@@ -226,15 +226,13 @@ abstract class AbstractBlock implements AppleBlock
 
     String dos = trackNo >= 0 ? String.format ("(%02X/%02X)", trackNo, sectorNo) : "";
 
-    text.append (String.format ("Block type ............ %s%n",
-        (this instanceof BlockDos) ? "DOS" : "PRD"));
-    text.append (
-        String.format ("Address type .......... %s%n", fileSystem.getAddressType ()));
-    text.append (String.format ("Block no .............. %04X %s%n", blockNo, dos));
-    text.append (String.format ("Block Type ............ %s%n", blockType));
-    text.append (String.format ("Block subtype ......... %s%n", blockSubType));
-    text.append (String.format ("File name ............. %s%n",
-        fileOwner == null ? "" : fileOwner.getFileName ()));
+    Utility.formatMeta (text, "Block type", (this instanceof BlockDos) ? "DOS" : "PRD");
+    Utility.formatMeta (text, "Address type", fileSystem.getAddressType ().toString ());
+    Utility.formatMeta (text, "Block no", 4, blockNo, dos);
+    Utility.formatMeta (text, "Block Type", blockType.toString ());
+    Utility.formatMeta (text, "Block subtype", blockSubType);
+    Utility.formatMeta (text, "File name",
+        fileOwner == null ? "" : fileOwner.getFileName ());
 
     return Utility.rtrim (text);
   }

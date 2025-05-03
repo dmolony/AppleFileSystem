@@ -126,9 +126,9 @@ public class FsCpm extends AbstractFileSystem
     StringBuilder text = new StringBuilder (super.toString ());
 
     text.append ("----- CPM Header ------\n");
-    text.append (String.format ("Entry length .......... %d%n", 32));
-    text.append (String.format ("Entries per block ..... %d%n", getBlockSize () / 32));
-    text.append (String.format ("File count ............ %d", getFiles ().size ()));
+    Utility.formatMeta (text, "Entry length", 2, 32);
+    Utility.formatMeta (text, "Entries per block", 2, getBlockSize () / 32);
+    Utility.formatMeta (text, "File count", 4, getFiles ().size ());
 
     return Utility.rtrim (text);
   }

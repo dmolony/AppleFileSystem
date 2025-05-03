@@ -124,9 +124,6 @@ public abstract class AbstractAppleFile implements AppleFile
   public boolean hasData ()
   // ---------------------------------------------------------------------------------//
   {
-    //    Buffer dataRecord = getFileBuffer ();
-
-    //    return dataRecord.data () != null && dataRecord.length () > 0;
     return dataBlocks.size () > 0;
   }
 
@@ -138,7 +135,7 @@ public abstract class AbstractAppleFile implements AppleFile
     if (fileBuffer == null)
     {
       byte[] data = parentFileSystem.readBlocks (dataBlocks);
-      fileBuffer = new Buffer (data, 0, getFileLength ());
+      fileBuffer = new Buffer (data, 0, getFileLength ());        // use eof if known
     }
 
     return fileBuffer;
@@ -160,23 +157,20 @@ public abstract class AbstractAppleFile implements AppleFile
 
   // ---------------------------------------------------------------------------------//
   @Override
-  public void write (byte[] buffer)
-  // ---------------------------------------------------------------------------------//
-  {
-    throw new UnsupportedOperationException (
-        "write() not implemented in " + getFileName ());
-  }
-
-  // ---------------------------------------------------------------------------------//
-  @Override
   public int getFileLength ()                         // in bytes (eof)
   // ---------------------------------------------------------------------------------//
   {
     // Override this if the file knows better
     return dataBlocks.size () * parentFileSystem.getBlockSize ();
+  }
 
-    //    throw new UnsupportedOperationException (
-    //        "getFileLength() not implemented in " + getFileName ());
+  // ---------------------------------------------------------------------------------//
+  @Override
+  public void write (byte[] buffer)
+  // ---------------------------------------------------------------------------------//
+  {
+    throw new UnsupportedOperationException (
+        "write() not implemented in " + getFileName ());
   }
 
   // assumes no index blocks
@@ -188,16 +182,14 @@ public abstract class AbstractAppleFile implements AppleFile
     return dataBlocks.size ();
   }
 
-  // assumes no index blocks
   // ---------------------------------------------------------------------------------//
   @Override
   public List<AppleBlock> getAllBlocks ()
   // ---------------------------------------------------------------------------------//
   {
-    return dataBlocks;
+    return dataBlocks;                            // assumes no index or catalog blocks
   }
 
-  // assumes no index blocks
   // ---------------------------------------------------------------------------------//
   @Override
   public List<AppleBlock> getDataBlocks ()
@@ -255,6 +247,7 @@ public abstract class AbstractAppleFile implements AppleFile
           embeddedFileSystem.getFileSystemType ().toString ());
     Utility.formatMeta (text, "File type", 2, getFileType (), getFileTypeText ());
     Utility.formatMeta (text, "EOF", 6, getFileLength ());
+    Utility.formatMeta (text, "Data blocks", 4, dataBlocks.size ());
 
     return text.toString ();
   }

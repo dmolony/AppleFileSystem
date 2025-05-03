@@ -104,7 +104,7 @@ public class FileCpm extends AbstractAppleFile
     for (CatalogEntryCpm fileEntry : fileEntries)
     {
       text.append (fileEntry);
-      text.append ("\n\n");
+      text.append ("\n");
     }
 
     return Utility.rtrim (text);

@@ -176,19 +176,19 @@ public class CatalogEntryCpm implements Iterable<Integer>
   {
     StringBuilder text = new StringBuilder ();
 
-    text.append ("------ Catalog entry -------");
-    text.append (String.format ("File name ............. %s%n", fileName));
-    text.append (String.format ("File extension ........ %s%n", fileTypeText));
-    text.append (String.format ("Read only ............. %s%n", readOnly));
-    text.append (String.format ("System file ........... %s%n", systemFile));
-    text.append (String.format ("Archived .............. %s%n", archived));
-    text.append (String.format ("User number ........... %,d%n", userNumber));
-    text.append (String.format ("Extent lo ............. %02X%n", extentCounterLo));
-    text.append (String.format ("Extent hi ............. %02X%n", extentCounterHi));
-    text.append (String.format ("Extent no ............. %,d%n", extentNo));
-    text.append (String.format ("Data blocks ........... %s%n", blocks));
-    text.append (String.format ("Record count .......... %,d%n", recordCount));
-    text.append (String.format ("Byte count ............ %,d", byteCount));
+    text.append ("\n---- Catalog entry ----\n");
+    Utility.formatMeta (text, "File name", fileName);
+    Utility.formatMeta (text, "File extension", fileTypeText);
+    Utility.formatMeta (text, "Read only", readOnly);
+    Utility.formatMeta (text, "System file", systemFile);
+    Utility.formatMeta (text, "Archived", archived);
+    Utility.formatMeta (text, "User number", 2, userNumber);
+    Utility.formatMeta (text, "Extent lo", 2, extentCounterLo);
+    Utility.formatMeta (text, "Extent hi", 2, extentCounterHi);
+    Utility.formatMeta (text, "Extent no", 2, extentNo);
+    //    Utility.formatMeta (text, "Data blocks", blocks.toString ());
+    Utility.formatMeta (text, "Record count", 4, recordCount);
+    Utility.formatMeta (text, "Byte count", 4, byteCount);
 
     return Utility.rtrim (text);
   }
