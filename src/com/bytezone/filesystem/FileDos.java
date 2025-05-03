@@ -1,5 +1,7 @@
 package com.bytezone.filesystem;
 
+import static com.bytezone.utility.Utility.formatMeta;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -385,19 +387,19 @@ public abstract class FileDos extends AbstractAppleFile
 
     AppleBlock catalogEntryBlock = catalogEntry.catalogBlock;
 
-    Utility.formatMeta (text, "Index blocks", 4, indexBlocks.size ());
-    Utility.formatMeta (text, "Locked", catalogEntry.isLocked ? "true" : "false");
-    Utility.formatMeta (text, "Catalog track", 2, catalogEntryBlock.getTrackNo ());
-    Utility.formatMeta (text, "Catalog sector", 2, catalogEntryBlock.getSectorNo ());
-    Utility.formatMeta (text, "Catalog slot #", 2, catalogEntry.slot);
-    Utility.formatMeta (text, "Sectors", 4, catalogEntry.sectorCount);
-    Utility.formatMeta (text, "Load address", 4, loadAddress);
+    formatMeta (text, "Index blocks", 4, indexBlocks.size ());
+    formatMeta (text, "Locked", catalogEntry.isLocked ? "true" : "false");
+    formatMeta (text, "Catalog track", 2, catalogEntryBlock.getTrackNo ());
+    formatMeta (text, "Catalog sector", 2, catalogEntryBlock.getSectorNo ());
+    formatMeta (text, "Catalog slot #", 2, catalogEntry.slot);
+    formatMeta (text, "Sectors", 4, catalogEntry.sectorCount);
+    formatMeta (text, "Load address", 4, loadAddress);
 
     if (isRandomAccess ())
     {
-      Utility.formatMeta (text, "Text file gaps", 4, textFileGaps);
-      Utility.formatMeta (text, "Text blocks", 4, textBlocks.size ());
-      Utility.formatMeta (text, "Possible reclen", 4, recordLength);
+      formatMeta (text, "Text file gaps", 4, textFileGaps);
+      formatMeta (text, "Text blocks", 4, textBlocks.size ());
+      formatMeta (text, "Possible reclen", 4, recordLength);
     }
 
     return Utility.rtrim (text);

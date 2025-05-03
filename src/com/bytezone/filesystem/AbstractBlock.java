@@ -1,5 +1,7 @@
 package com.bytezone.filesystem;
 
+import static com.bytezone.utility.Utility.formatMeta;
+
 import java.util.Objects;
 
 import com.bytezone.filesystem.BlockReader.AddressType;
@@ -226,13 +228,12 @@ abstract class AbstractBlock implements AppleBlock
 
     String dos = trackNo >= 0 ? String.format ("(%02X/%02X)", trackNo, sectorNo) : "";
 
-    Utility.formatMeta (text, "Block type", (this instanceof BlockDos) ? "DOS" : "PRD");
-    Utility.formatMeta (text, "Address type", fileSystem.getAddressType ().toString ());
-    Utility.formatMeta (text, "Block no", 4, blockNo, dos);
-    Utility.formatMeta (text, "Block Type", blockType.toString ());
-    Utility.formatMeta (text, "Block subtype", blockSubType);
-    Utility.formatMeta (text, "File name",
-        fileOwner == null ? "" : fileOwner.getFileName ());
+    formatMeta (text, "Block type", (this instanceof BlockDos) ? "DOS" : "PRD");
+    formatMeta (text, "Address type", fileSystem.getAddressType ().toString ());
+    formatMeta (text, "Block no", 4, blockNo, dos);
+    formatMeta (text, "Block Type", blockType.toString ());
+    formatMeta (text, "Block subtype", blockSubType);
+    formatMeta (text, "File name", fileOwner == null ? "" : fileOwner.getFileName ());
 
     return Utility.rtrim (text);
   }
