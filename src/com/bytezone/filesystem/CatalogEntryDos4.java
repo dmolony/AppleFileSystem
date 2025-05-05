@@ -1,5 +1,7 @@
 package com.bytezone.filesystem;
 
+import static com.bytezone.utility.Utility.formatMeta;
+
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Locale;
@@ -105,8 +107,8 @@ public class CatalogEntryDos4 extends CatalogEntryDos
   {
     StringBuilder text = new StringBuilder ();
 
-    text.append (String.format ("%nZero flag ............. %s%n", tsListZero));
-    text.append (String.format ("Modified .............. %s%n", getModified2 ()));
+    formatMeta (text, "\nZero flag", tsListZero);
+    formatMeta (text, "Modified", getModified2 ());
 
     return text.toString ();
   }

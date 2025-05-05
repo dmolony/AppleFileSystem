@@ -1,8 +1,8 @@
 package com.bytezone.filesystem;
 
-import java.util.List;
+import static com.bytezone.utility.Utility.formatMeta;
 
-import com.bytezone.utility.Utility;
+import java.util.List;
 
 // -----------------------------------------------------------------------------------//
 public abstract class CatalogEntry
@@ -75,12 +75,12 @@ public abstract class CatalogEntry
     text.append ("---- Catalog entry ----\n");
 
     if (catalogBlock != null)
-      Utility.formatMeta (text, "Catalog block", 4, catalogBlock.getBlockNo ());
+      formatMeta (text, "Catalog block", 4, catalogBlock.getBlockNo ());
     else
-      Utility.formatMeta (text, "Catalog blocks", blockList);
+      formatMeta (text, "Catalog blocks", blockList);
 
-    Utility.formatMeta (text, "Catalog slot", 2, slot);
-    Utility.formatMeta (text, "File name", fileName);
+    formatMeta (text, "Catalog slot", 2, slot);
+    formatMeta (text, "File name", fileName);
 
     return text.toString ();
   }

@@ -1,5 +1,7 @@
 package com.bytezone.filesystem;
 
+import static com.bytezone.utility.Utility.formatMeta;
+
 import com.bytezone.utility.Utility;
 
 // -----------------------------------------------------------------------------------//
@@ -64,9 +66,8 @@ public class CatalogEntryDos3 extends CatalogEntryDos
   {
     StringBuilder text = new StringBuilder ();
 
-    text.append ("\n");
-    text.append (String.format ("First track/sector ..... %02X / %02X%n", firstTrack,
-        firstSector));
+    formatMeta (text, "\nFirst track", 2, firstTrack);
+    formatMeta (text, "First sector", 2, firstSector);
 
     return text.toString ();
   }

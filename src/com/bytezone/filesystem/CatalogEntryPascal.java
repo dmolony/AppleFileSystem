@@ -1,5 +1,7 @@
 package com.bytezone.filesystem;
 
+import static com.bytezone.utility.Utility.formatMeta;
+
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
@@ -227,22 +229,20 @@ public class CatalogEntryPascal extends CatalogEntry
     if (slot == 0)
     {
       text.append ("---- Pascal Header ----\n");
-      Utility.formatMeta (text, "Volume name", volumeName);
-      Utility.formatMeta (text, "First catalog block", 4, firstCatalogBlock);
-      Utility.formatMeta (text, "First file block", 4, lastCatalogBlock);
-      Utility.formatMeta (text, "Entry type", 4, entryType);
-      Utility.formatMeta (text, "Total blocks", 4, totalBlocks);
-      Utility.formatMeta (text, "Total files", 4, totalFiles);
-      Utility.formatMeta (text, "Date", volumeDate);
+      formatMeta (text, "Volume name", volumeName);
+      formatMeta (text, "First catalog block", 4, firstCatalogBlock);
+      formatMeta (text, "First file block", 4, lastCatalogBlock);
+      formatMeta (text, "Entry type", 4, entryType);
+      formatMeta (text, "Total blocks", 4, totalBlocks);
+      formatMeta (text, "Total files", 4, totalFiles);
+      formatMeta (text, "Date", volumeDate);
     }
     else
     {
-      //      text.append ("---- Catalog Entry ----\n");
-      //      Utility.formatMeta (text, "File name", fileName);
-      Utility.formatMeta (text, "First block", 4, firstBlock);
-      Utility.formatMeta (text, "Last block", 4, lastBlock);
-      Utility.formatMeta (text, "Bytes in last block", 4, bytesUsedInLastBlock);
-      Utility.formatMeta (text, "Date", fileDateFormatted ());
+      formatMeta (text, "First block", 4, firstBlock);
+      formatMeta (text, "Last block", 4, lastBlock);
+      formatMeta (text, "Bytes in last block", 4, bytesUsedInLastBlock);
+      formatMeta (text, "Date", fileDateFormatted ());
     }
 
     return Utility.rtrim (text);
