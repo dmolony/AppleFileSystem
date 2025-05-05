@@ -131,6 +131,19 @@ class DirectoryHeaderProdos
   }
 
   // ---------------------------------------------------------------------------------//
+  private String dateBytes (int ptr)
+  // ---------------------------------------------------------------------------------//
+  {
+    byte[] buffer = catalogBlocks.get (0).getBuffer ();
+    StringBuilder text = new StringBuilder ();
+
+    for (int i = 0; i < 4; i++)
+      text.append (String.format ("%02X ", buffer[ptr + i]));
+
+    return text.toString ();
+  }
+
+  // ---------------------------------------------------------------------------------//
   @Override
   public String toString ()
   // ---------------------------------------------------------------------------------//
@@ -150,7 +163,7 @@ class DirectoryHeaderProdos
     formatMeta (text, "File name", fileName);
     formatMeta (text, "Reserved", 2, folderType, message);
     formatMeta (text, "Reserved", reserved);
-    formatMeta (text, "Created", dateCreated, timeCreated);
+    formatMeta (text, "Created", dateBytes (0x1C), dateCreated, timeCreated);
     formatMeta (text, "Version", 2, version);
     formatMeta (text, "Min version", 2, minVersion);
     formatMeta (text, "Access", 2, access, Utility.getAccessText (access));
