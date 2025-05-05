@@ -197,27 +197,27 @@ class CatalogEntryProdos extends CatalogEntry
     StringBuilder text = new StringBuilder (super.toString ());
 
     formatMeta (text, "Storage type", 2, storageType, storageTypeText);
-    Utility.formatMeta (text, "File type", 2, fileType, fileTypeText);
+    formatMeta (text, "File type", 2, fileType, fileTypeText);
 
-    Utility.formatMeta (text, "Block", 4, catalogBlock.getBlockNo (),
-        blockChainText.get (0));
+    formatMeta (text, "Block", 4, catalogBlock.getBlockNo (), blockChainText.get (0));
+
     if (blockChainText.size () > 1)
       for (int i = 1; i < blockChainText.size (); i++)
         text.append (String.format ("%40s %s%n", "", blockChainText.get (i)));
 
-    Utility.formatMeta (text, "Key ptr", 4, keyPtr);
-    Utility.formatMeta (text, "Blocks used", 4, blocksUsed);
-    Utility.formatMeta (text, "EOF", 6, eof, eof == 0 ? "<-- zero" : "");
+    formatMeta (text, "Key ptr", 4, keyPtr);
+    formatMeta (text, "Blocks used", 4, blocksUsed);
+    formatMeta (text, "EOF", 6, eof, eof == 0 ? "<-- zero" : "");
 
-    formatMeta (text, "Created", dateBytes (0x18), dateCreated + "  " + timeCreated);
-    formatMeta (text, "Modified", dateBytes (0x21), dateModified + "  " + timeModified);
+    formatMeta (text, "Created", dateBytes (0x18), dateCreated, timeCreated);
+    formatMeta (text, "Modified", dateBytes (0x21), dateModified, timeModified);
 
-    Utility.formatMeta (text, "Version", 2, version);
-    Utility.formatMeta (text, "Min version", 2, minVersion);
+    formatMeta (text, "Version", 2, version);
+    formatMeta (text, "Min version", 2, minVersion);
 
-    Utility.formatMeta (text, "Access", 2, access, Utility.getAccessText (access));
-    Utility.formatMeta (text, "Auxtype", 4, auxType);
-    Utility.formatMeta (text, "VDH/SDH ptr", 4, headerPtr);
+    formatMeta (text, "Access", 2, access, Utility.getAccessText (access));
+    formatMeta (text, "Auxtype", 4, auxType);
+    formatMeta (text, "VDH/SDH ptr", 4, headerPtr);
 
     return Utility.rtrim (text);
   }

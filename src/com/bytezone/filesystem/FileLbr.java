@@ -1,5 +1,7 @@
 package com.bytezone.filesystem;
 
+import static com.bytezone.utility.Utility.formatMeta;
+
 import com.bytezone.filesystem.AppleBlock.BlockType;
 import com.bytezone.utility.Utility;
 
@@ -178,23 +180,22 @@ public class FileLbr extends AbstractAppleFile
   {
     StringBuilder text = new StringBuilder (super.toString ());
 
-    text.append (String.format ("Status ................ %d  %s%n", status,
-        status == 0 ? "Active" : status == 0xFF ? "Unused" : "Deleted"));
-    text.append (String.format ("Extension ............. %s%n", extension));
-    text.append (String.format ("Aternate name ......... %s%n",
-        alternateName == null ? "" : alternateName));
-    text.append (String.format ("Aternate extension .... %s%n",
-        alternateExtension == null ? "" : alternateExtension));
-    text.append (String.format ("Extra text ............ %s%n",
-        extraText == null ? "" : extraText));
-    text.append (String.format ("Index ................. %,d%n", index));
-    text.append (String.format ("Length ................ %,d%n", length));
-    text.append (String.format ("Pad ................... %,d%n", pad));
-    text.append (String.format ("Creation date ......... %,d%n", creationDate));
-    text.append (String.format ("Creation time ......... %,d%n", creationTime));
-    text.append (String.format ("Modified date ......... %,d%n", modifiedDate));
-    text.append (String.format ("Modified time ......... %,d%n", modifiedTime));
-    text.append (String.format ("CRC ................... %04X  %<,d%n", crc));
+    formatMeta (text, "Status", 2, status,
+        status == 0 ? "Active" : status == 0xFF ? "Unused" : "Deleted");
+    formatMeta (text, "Extension ............. %s%n", extension);
+    formatMeta (text, "Aternate name ......... %s%n",
+        alternateName == null ? "" : alternateName);
+    formatMeta (text, "Aternate extension .... %s%n",
+        alternateExtension == null ? "" : alternateExtension);
+    formatMeta (text, "Extra text", extraText == null ? "" : extraText);
+    formatMeta (text, "Index", 4, index);
+    formatMeta (text, "Length", 4, length);
+    formatMeta (text, "Pad", 2, pad);
+    formatMeta (text, "Creation date", 4, creationDate);
+    formatMeta (text, "Creation time", 4, creationTime);
+    formatMeta (text, "Modified date", 4, modifiedDate);
+    formatMeta (text, "Modified time", 4, modifiedTime);
+    formatMeta (text, "CRC", 4, crc);
 
     return Utility.rtrim (text);
   }

@@ -14,6 +14,7 @@ public class Utility
 // -----------------------------------------------------------------------------------//
 {
   private static final String FMT = "%s %21.21s  %s\n";
+  private static final String FMT2 = "%s %21.21s  %s  %s\n";
   private static final String dots = "....................";
   private static String[] hex =
       { "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "A", "B", "C", "D", "E", "F" };
@@ -664,7 +665,7 @@ public class Utility
       String value2, String value3)
   // ---------------------------------------------------------------------------------//
   {
-    text.append (String.format (FMT, makeLabel (label), value1, value2, value3));
+    text.append (String.format (FMT2, makeLabel (label), value1, value2, value3));
   }
 
   // ---------------------------------------------------------------------------------//
