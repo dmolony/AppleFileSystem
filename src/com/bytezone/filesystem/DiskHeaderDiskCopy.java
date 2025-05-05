@@ -1,5 +1,7 @@
 package com.bytezone.filesystem;
 
+import static com.bytezone.utility.Utility.formatMeta;
+
 import com.bytezone.utility.Utility;
 
 // https://www.discferret.com/wiki/Apple_DiskCopy_4.2
@@ -96,14 +98,14 @@ public class DiskHeaderDiskCopy extends DiskHeader
       default -> "???";
     };
 
-    Utility.formatMeta (text, "Name", name);
-    Utility.formatMeta (text, "Data size", 8, dataSize);
-    Utility.formatMeta (text, "Tag size", 8, tagSize);
-    Utility.formatMeta (text, "Data checksum", 8, dataChecksum);
-    Utility.formatMeta (text, "Tag checksum", 8, tagChecksum);
-    Utility.formatMeta (text, "Disk format", 2, diskFormat, formatTypes[diskFormat]);
-    Utility.formatMeta (text, "Encoding byte", 2, encoding, encodingText);
-    Utility.formatMeta (text, "ID", 4, id);
+    formatMeta (text, "Name", name);
+    formatMeta (text, "Data size", 8, dataSize);
+    formatMeta (text, "Tag size", 8, tagSize);
+    formatMeta (text, "Data checksum", 8, dataChecksum);
+    formatMeta (text, "Tag checksum", 8, tagChecksum);
+    formatMeta (text, "Disk format", 2, diskFormat, formatTypes[diskFormat]);
+    formatMeta (text, "Encoding byte", 2, encoding, encodingText);
+    formatMeta (text, "ID", 4, id);
 
     return Utility.rtrim (text);
   }
