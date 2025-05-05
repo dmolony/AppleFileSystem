@@ -1,5 +1,7 @@
 package com.bytezone.filesystem;
 
+import static com.bytezone.utility.Utility.formatMeta;
+
 import com.bytezone.utility.Utility;
 
 // -----------------------------------------------------------------------------------//
@@ -106,22 +108,22 @@ public class DiskHeader2img extends DiskHeader
 
     String message = originalLength == 0 ? "   <-- wrong!" : "";
 
-    Utility.formatMeta (text, "Creator", creator, getCreator (creator));
-    Utility.formatMeta (text, "Header size", 2, headerSize);
-    Utility.formatMeta (text, "Version", 2, version);
-    Utility.formatMeta (text, "Format", 2, format, twoIMGFormats[format]);
-    Utility.formatMeta (text, "Flags", 8, flags);
-    Utility.formatMeta (text, "  locked", locked);
-    Utility.formatMeta (text, "  has Dos Volume no", hasDosVolumeNumber);
-    Utility.formatMeta (text, "  Dos Volume no", 4, volumeNumber);
-    Utility.formatMeta (text, "Blocks", 4, prodosBlocks);
-    Utility.formatMeta (text, "Data offset", 4, offset);
-    Utility.formatMeta (text, "Data size", 6, originalLength, message);
-    Utility.formatMeta (text, "Comment offset", 6, commentOffset);
-    Utility.formatMeta (text, "Comment length", 6, commentLength);
-    Utility.formatMeta (text, "Comment", comment);
-    Utility.formatMeta (text, "Creator Data offset", 6, creatorDataOffset);
-    Utility.formatMeta (text, "Creator Data length", 6, creatorDataLength);
+    formatMeta (text, "Creator", creator, getCreator (creator));
+    formatMeta (text, "Header size", 2, headerSize);
+    formatMeta (text, "Version", 2, version);
+    formatMeta (text, "Format", 2, format, twoIMGFormats[format]);
+    formatMeta (text, "Flags", 8, flags);
+    formatMeta (text, "  locked", locked);
+    formatMeta (text, "  has Dos Volume no", hasDosVolumeNumber);
+    formatMeta (text, "  Dos Volume no", 4, volumeNumber);
+    formatMeta (text, "Blocks", 4, prodosBlocks);
+    formatMeta (text, "Data offset", 4, offset);
+    formatMeta (text, "Data size", 6, originalLength, message);
+    formatMeta (text, "Comment offset", 6, commentOffset);
+    formatMeta (text, "Comment length", 6, commentLength);
+    formatMeta (text, "Comment", comment);
+    formatMeta (text, "Creator Data offset", 6, creatorDataOffset);
+    formatMeta (text, "Creator Data length", 6, creatorDataLength);
 
     return text.toString ();
   }
