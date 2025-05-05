@@ -154,7 +154,7 @@ class FsNuFX extends AbstractFileSystem
     Utility.formatMeta (text, "Version", 2, version);
     Utility.formatMeta (text, "Reserved", 6, reserved1);
     Utility.formatMeta (text, "Reserved", 6, reserved2);
-    Utility.formatMeta (text, "Master EOF", 4, eof);
+    Utility.formatMeta (text, "Master EOF", 6, eof);
     Utility.formatMeta (text, "Reserved", 6, reserved3);
     Utility.formatMeta (text, "Reserved", 4, reserved4);
 

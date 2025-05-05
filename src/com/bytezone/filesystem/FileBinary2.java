@@ -347,7 +347,7 @@ public class FileBinary2 extends AbstractAppleFile
     Utility.formatMeta (text, "Aux type", 4, auxType);
     Utility.formatMeta (text, "Storage type", 2, storageType,
         ProdosConstants.storageTypes[storageType]);
-    Utility.formatMeta (text, "File size x 512", 2, blocks);
+    Utility.formatMeta (text, "File size x 512", 4, blocks);
 
     Utility.formatMeta (text, "Mod date", 4, modDate,
         modified.isPresent () ? modified.get ().toString () : "");

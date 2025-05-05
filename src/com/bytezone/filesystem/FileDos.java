@@ -46,6 +46,8 @@ public abstract class FileDos extends AbstractAppleFile
     {
       case FsDos.FILE_TYPE_TEXT:
         eof = getTextFileEof ();
+        if (eof == 0)
+          break;
 
         if (textFileGaps > 0)             // random-access file
         {
@@ -93,14 +95,24 @@ public abstract class FileDos extends AbstractAppleFile
   private int getTextFileEof ()
   // ---------------------------------------------------------------------------------//
   {
+    // remove any trailing nulls (valid files won't have any)
+    while (dataBlocks.size () > 0 && dataBlocks.get (dataBlocks.size () - 1) == null)
+    {
+      dataBlocks.remove (dataBlocks.size () - 1);
+      --textFileGaps;
+    }
+
+    if (dataBlocks.size () == 0)
+      return 0;
+
     // get last block
     AppleBlock dataBlock = dataBlocks.get (dataBlocks.size () - 1);
     byte[] buffer = dataBlock.getBuffer ();
 
     // set eof to maximum possible
     int blockSize = parentFileSystem.getBlockSize ();
-    int ptr = blockSize;
     int eof = dataBlocks.size () * blockSize;
+    int ptr = blockSize;
 
     // decrement eof for each trailing zero
     while (--ptr >= 0 && buffer[ptr] == 0)

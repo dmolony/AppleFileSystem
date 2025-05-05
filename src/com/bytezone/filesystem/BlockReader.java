@@ -527,7 +527,7 @@ public class BlockReader
     StringBuilder text = new StringBuilder ();
 
     Utility.formatMeta (text, "File system offset", 4, dataRecord.offset ());
-    Utility.formatMeta (text, "File system length", 6, dataRecord.length ());
+    Utility.formatMeta (text, "File system length", 8, dataRecord.length ());
     Utility.formatMeta (text, "Address type", addressType.toString ());
     Utility.formatMeta (text, "Total blocks", 4, totalBlocks);
     Utility.formatMeta (text, "Bytes per block", 4, bytesPerBlock);

@@ -76,6 +76,7 @@ public class FileDos3 extends FileDos
       nextSector = sectorBuffer[2] & 0xFF;
     }
 
+    //    if (dataBlocks.size () - textFileGaps > 0)
     setFileLength ();
   }
 

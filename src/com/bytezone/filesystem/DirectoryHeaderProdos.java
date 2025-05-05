@@ -1,5 +1,7 @@
 package com.bytezone.filesystem;
 
+import static com.bytezone.utility.Utility.formatMeta;
+
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -144,41 +146,29 @@ class DirectoryHeaderProdos
       message = folderType == 0x75 ? "" : "<-- should be $75";
     }
 
-    text.append (String.format ("Storage type ..........     %02X             %s%n",
-        storageType, storageTypeText));
-    text.append (String.format ("File name ............. %s%n", fileName));
-    text.append (String.format ("Reserved ..............     $%02X            %s%n",
-        folderType, message));
-    text.append (String.format ("Reserved .............. %s%n", reserved));
-    text.append (
-        String.format ("Created ............... %9s %-5s%n", dateCreated, timeCreated));
-    text.append (String.format ("Version ...............     %02X  %<,9d%n", version));
-    text.append (String.format ("Min version ...........     %02X  %<,9d%n", minVersion));
-    text.append (String.format ("Access ................     %02X  %<9d  %s%n", access,
-        Utility.getAccessText (access)));
-    text.append (
-        String.format ("Entry length ..........     %02X  %<,9d%n", entryLength));
-    text.append (
-        String.format ("Entries per block .....     %02X  %<,9d%n", entriesPerBlock));
-    text.append (String.format ("File count ............     %02X  %<,9d%n", fileCount));
-    text.append (String.format ("Catalog blocks ........     %02X  %<,9d%n%n",
-        catalogBlocks.size ()));
+    formatMeta (text, "Storage type", 2, storageType, storageTypeText);
+    formatMeta (text, "File name", fileName);
+    formatMeta (text, "Reserved", 2, folderType, message);
+    formatMeta (text, "Reserved", reserved);
+    formatMeta (text, "Created", dateCreated, timeCreated);
+    formatMeta (text, "Version", 2, version);
+    formatMeta (text, "Min version", 2, minVersion);
+    formatMeta (text, "Access", 2, access, Utility.getAccessText (access));
+    formatMeta (text, "Entry length", 2, entryLength);
+    formatMeta (text, "Entries per block", 2, entriesPerBlock);
+    formatMeta (text, "File count", 2, fileCount);
+    formatMeta (text, "Catalog blocks", 2, catalogBlocks.size ());
 
     if (storageType == 0x0F)
     {
-      text.append (String.format ("Bitmap pointer ........   %04X  %<,9d%n", keyPtr));
-      text.append (
-          String.format ("Total blocks ..........   %04X  %<,9d%n", totalBlocks));
+      formatMeta (text, "Bitmap pointer", 4, keyPtr);
+      formatMeta (text, "Total blocks", 4, totalBlocks);
     }
     else
     {
-      text.append (String.format (
-          "Parent pointer ........   %04X  %<,9d  (parent Directory Header block)%n",
-          keyPtr));
-      text.append (String.format (
-          "Parent entry ..........     %02X  %<,9d  (slot in catalog)%n", parentEntry));
-      text.append (String.format (
-          "Parent entry length ...     %02X  %<,9d  (always 0x27)%n", parentEntryLength));
+      formatMeta (text, "Parent pointer", 4, keyPtr, "(parent Directory Header block)");
+      formatMeta (text, "Parent entry", 2, parentEntry, "(slot in catalog)");
+      formatMeta (text, "Parent entry length", 2, parentEntryLength, "(always 0x27)");
     }
 
     return text.toString ();

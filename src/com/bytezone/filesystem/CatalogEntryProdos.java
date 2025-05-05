@@ -1,5 +1,7 @@
 package com.bytezone.filesystem;
 
+import static com.bytezone.utility.Utility.formatMeta;
+
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -194,7 +196,7 @@ class CatalogEntryProdos extends CatalogEntry
   {
     StringBuilder text = new StringBuilder (super.toString ());
 
-    Utility.formatMeta (text, "Storage type", 2, storageType, storageTypeText);
+    formatMeta (text, "Storage type", 2, storageType, storageTypeText);
     Utility.formatMeta (text, "File type", 2, fileType, fileTypeText);
 
     Utility.formatMeta (text, "Block", 4, catalogBlock.getBlockNo (),
@@ -207,10 +209,8 @@ class CatalogEntryProdos extends CatalogEntry
     Utility.formatMeta (text, "Blocks used", 4, blocksUsed);
     Utility.formatMeta (text, "EOF", 6, eof, eof == 0 ? "<-- zero" : "");
 
-    text.append (String.format ("Created ............... %-18s %9s %-5s%n",
-        dateBytes (0x18), dateCreated, timeCreated));
-    text.append (String.format ("Modified .............. %-18s %9s %-5s%n",
-        dateBytes (0x21), dateModified, timeModified));
+    formatMeta (text, "Created", dateBytes (0x18), dateCreated + "  " + timeCreated);
+    formatMeta (text, "Modified", dateBytes (0x21), dateModified + "  " + timeModified);
 
     Utility.formatMeta (text, "Version", 2, version);
     Utility.formatMeta (text, "Min version", 2, minVersion);

@@ -13,6 +13,7 @@ import java.util.Optional;
 public class Utility
 // -----------------------------------------------------------------------------------//
 {
+  private static final String FMT = "%s %21.21s  %s\n";
   private static final String dots = "....................";
   private static String[] hex =
       { "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "A", "B", "C", "D", "E", "F" };
@@ -616,12 +617,13 @@ public class Utility
   static String formatMeta (String label, int size, int value)
   // ---------------------------------------------------------------------------------//
   {
+
     String out = switch (size)
     {
-      case 2 -> String.format ("    %02X  %<,9d", value);
-      case 4 -> String.format ("  %04X  %<,9d", value);
-      case 6 -> String.format ("%06X  %<,9d", value);
-      default -> String.format ("%08X  %<,9d", value);
+      case 2 -> String.format ("      %02X  %<,10d", value);
+      case 4 -> String.format ("    %04X  %<,10d", value);
+      case 6 -> String.format ("  %06X  %<,10d", value);
+      default -> String.format ("%08X  %<,10d", value);
     };
 
     return String.format ("%s %s", makeLabel (label), out);
@@ -631,14 +633,14 @@ public class Utility
   public static void formatMeta (StringBuilder text, String label, String value)
   // ---------------------------------------------------------------------------------//
   {
-    text.append (String.format ("%s %18.18s %s\n", makeLabel (label), "", value));
+    text.append (String.format (FMT, makeLabel (label), "", value));
   }
 
   // ---------------------------------------------------------------------------------//
   public static void formatMeta (StringBuilder text, String label, char value)
   // ---------------------------------------------------------------------------------//
   {
-    text.append (String.format ("%s %-18.18s %s\n", makeLabel (label), "", value));
+    text.append (String.format (FMT, makeLabel (label), "", value));
   }
 
   // ---------------------------------------------------------------------------------//
@@ -646,7 +648,7 @@ public class Utility
       String value2)
   // ---------------------------------------------------------------------------------//
   {
-    text.append (String.format ("%s %-18.18s %s\n", makeLabel (label), value1, value2));
+    text.append (String.format (FMT, makeLabel (label), value1, value2));
   }
 
   // ---------------------------------------------------------------------------------//
@@ -654,7 +656,15 @@ public class Utility
       String value2)
   // ---------------------------------------------------------------------------------//
   {
-    text.append (String.format ("%s %-18.18s %s\n", makeLabel (label), value1, value2));
+    text.append (String.format (FMT, makeLabel (label), value1, value2));
+  }
+
+  // ---------------------------------------------------------------------------------//
+  public static void formatMeta (StringBuilder text, String label, String value1,
+      String value2, String value3)
+  // ---------------------------------------------------------------------------------//
+  {
+    text.append (String.format (FMT, makeLabel (label), value1, value2, value3));
   }
 
   // ---------------------------------------------------------------------------------//
@@ -662,15 +672,14 @@ public class Utility
       String value2)
   // ---------------------------------------------------------------------------------//
   {
-    text.append (
-        String.format ("%s %-18.18s %s\n", makeLabel (label), "", value1, value2));
+    text.append (String.format (FMT, makeLabel (label), "", value1, value2));
   }
 
   // ---------------------------------------------------------------------------------//
   public static void formatMeta (StringBuilder text, String label, boolean value)
   // ---------------------------------------------------------------------------------//
   {
-    text.append (String.format ("%s %-18.18s %s\n", makeLabel (label), "", value));
+    text.append (String.format (FMT, makeLabel (label), "", value));
   }
 
   // ---------------------------------------------------------------------------------//
@@ -687,7 +696,7 @@ public class Utility
   // ---------------------------------------------------------------------------------//
   {
     text.append (formatMeta (label, size, value));
-    text.append ("  ");
+    text.append ("   ");
     text.append (message);
     text.append ("\n");
   }
@@ -696,7 +705,7 @@ public class Utility
   public static void formatMeta (StringBuilder text, String label, LocalDate date)
   // ---------------------------------------------------------------------------------//
   {
-    text.append (String.format ("%s %-18.18s %s\n", makeLabel (label), "", date));
+    text.append (String.format (FMT, makeLabel (label), "", date));
   }
 
   // ---------------------------------------------------------------------------------//
