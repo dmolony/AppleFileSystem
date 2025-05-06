@@ -618,7 +618,6 @@ public class Utility
   static String formatMeta (String label, int size, int value)
   // ---------------------------------------------------------------------------------//
   {
-
     String out = switch (size)
     {
       case 2 -> String.format ("      %02X  %<,10d", value);

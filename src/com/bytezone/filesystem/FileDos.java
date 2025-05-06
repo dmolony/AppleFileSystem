@@ -350,8 +350,8 @@ public abstract class FileDos extends AbstractAppleFile
         && getFileName ().startsWith ("  "))
       return false;
 
-    // Call-apple title files
-    if (getFileType () == FsDos.FILE_TYPE_TEXT && eof == 1 && stupidName ())
+    // empty text files
+    if (getFileType () == FsDos.FILE_TYPE_TEXT && eof == 1)   // && stupidName ())
       return false;
 
     return catalogEntry.isNameValid && dataBlocks.size () > 0;
