@@ -351,20 +351,10 @@ public abstract class FileDos extends AbstractAppleFile
       return false;
 
     // empty text files
-    if (getFileType () == FsDos.FILE_TYPE_TEXT && eof == 1)   // && stupidName ())
+    if (getFileType () == FsDos.FILE_TYPE_TEXT && eof == 1)
       return false;
 
     return catalogEntry.isNameValid && dataBlocks.size () > 0;
-  }
-
-  // ---------------------------------------------------------------------------------//
-  private boolean stupidName ()
-  // ---------------------------------------------------------------------------------//
-  {
-    if (getFileName ().startsWith ("+=") || getFileName ().startsWith ("[ "))
-      return true;
-
-    return false;
   }
 
   // ---------------------------------------------------------------------------------//

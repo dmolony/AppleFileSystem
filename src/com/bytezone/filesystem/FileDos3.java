@@ -100,7 +100,7 @@ public class FileDos3 extends FileDos
     if (recordLength > 0)
       message = String.format ("Reclen = %,d ?", recordLength);
 
-    if (getSectorCount () != actualSize)
+    if (getSectorCount () != actualSize && getTotalDataSectors () > 0)
       message = "** Bad size **";
 
     if (getSectorCount () > 999)

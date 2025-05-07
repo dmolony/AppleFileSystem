@@ -105,7 +105,7 @@ public class FileDos4 extends FileDos
     String message = "";
     String lockedFlag = (isLocked ()) ? "*" : " ";
 
-    if (getSectorCount () != actualSize)
+    if (getSectorCount () != actualSize && getTotalDataSectors () > 0)
       message = "** Bad size **";
 
     if (getSectorCount () > 999)
