@@ -139,7 +139,7 @@ public abstract class FileDos extends AbstractAppleFile
     assert textFileGaps == 0;
 
     // test entire buffer (in case reclen > block size)
-    Buffer fileBuffer = getFileBuffer ();
+    Buffer fileBuffer = getRawFileBuffer ();
     byte[] buffer = fileBuffer.data ();
     int max = fileBuffer.max () - 2;            // avoid the last two bytes
 
@@ -159,7 +159,7 @@ public abstract class FileDos extends AbstractAppleFile
     assert textFileGaps == 0;
 
     // test (up to) the entire buffer (in case reclen > block size)
-    Buffer fileBuffer = getFileBuffer ();
+    Buffer fileBuffer = getRawFileBuffer ();
     byte[] buffer = fileBuffer.data ();
     int max = fileBuffer.max ();
     int totZeros = 0;

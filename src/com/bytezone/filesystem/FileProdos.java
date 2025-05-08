@@ -171,13 +171,13 @@ public class FileProdos extends AbstractAppleFile implements AppleForkedFile
 
   // ---------------------------------------------------------------------------------//
   @Override
-  public Buffer getFileBuffer ()
+  public Buffer getRawFileBuffer ()
   // ---------------------------------------------------------------------------------//
   {
     if (isForkedFile ())
-      return super.getFileBuffer ();        // what is this doing?
+      return super.getRawFileBuffer ();        // what is this doing?
 
-    return dataFork.getFileBuffer ();
+    return dataFork.getRawFileBuffer ();
   }
 
   // ---------------------------------------------------------------------------------//

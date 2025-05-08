@@ -99,7 +99,7 @@ public class ForkNuFX extends AbstractAppleFile
 
   // ---------------------------------------------------------------------------------//
   @Override
-  public Buffer getFileBuffer ()
+  public Buffer getRawFileBuffer ()
   // ---------------------------------------------------------------------------------//
   {
     if (fileBuffer == null)

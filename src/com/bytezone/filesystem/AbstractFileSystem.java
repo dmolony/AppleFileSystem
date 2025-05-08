@@ -366,7 +366,7 @@ abstract class AbstractFileSystem implements AppleFileSystem
   protected AppleFileSystem addEmbeddedFileSystem (AppleFile file, int offset)
   // ---------------------------------------------------------------------------------//
   {
-    Buffer dataRecord = file.getFileBuffer ();
+    Buffer dataRecord = file.getRawFileBuffer ();
 
     BlockReader blockReader = new BlockReader (file.getFileName (), dataRecord.data (),
         dataRecord.offset () + offset, dataRecord.length () - offset);

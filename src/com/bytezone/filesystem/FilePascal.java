@@ -64,12 +64,12 @@ public class FilePascal extends AbstractAppleFile
   //  }
 
   // ---------------------------------------------------------------------------------//
-  @Override
-  public Buffer getFileBuffer ()
-  // ---------------------------------------------------------------------------------//
-  {
-    return getFileBuffer (getFileLength ());
-  }
+  //  @Override
+  //  public Buffer getFileBuffer ()
+  //  // ---------------------------------------------------------------------------------//
+  //  {
+  //    return getFileBuffer (getFileLength ());
+  //  }
 
   // ---------------------------------------------------------------------------------//
   public LocalDate getDate ()

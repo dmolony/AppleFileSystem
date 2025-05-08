@@ -323,7 +323,7 @@ public class FileNuFX extends AbstractAppleFile implements AppleFilePath, AppleF
 
   // ---------------------------------------------------------------------------------//
   @Override
-  public Buffer getFileBuffer ()
+  public Buffer getRawFileBuffer ()
   // ---------------------------------------------------------------------------------//
   {
     if (isForkedFile)
@@ -341,7 +341,7 @@ public class FileNuFX extends AbstractAppleFile implements AppleFilePath, AppleF
         return fileBuffer;
       }
 
-      fileBuffer = dataFork.getFileBuffer ();
+      fileBuffer = dataFork.getRawFileBuffer ();
       return fileBuffer;
     }
     catch (Exception e)

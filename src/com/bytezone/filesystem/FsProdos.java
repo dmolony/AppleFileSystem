@@ -215,7 +215,7 @@ public class FsProdos extends AbstractFileSystem
     //    byte[] fileBuffer = appleFile.read ();
     //    byte[] fileBuffer = dataRecord.data ();
     BlockReader fileReader =
-        new BlockReader (appleFile.getFileName (), appleFile.getFileBuffer ());
+        new BlockReader (appleFile.getFileName (), appleFile.getRawFileBuffer ());
 
     FsDosMaster afs = new FsDosMaster (diskReader, fileReader);
     if (afs != null && afs.getFileSystems ().size () > 0)

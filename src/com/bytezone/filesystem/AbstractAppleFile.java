@@ -127,9 +127,10 @@ public abstract class AbstractAppleFile implements AppleFile
     return dataBlocks.size () > 0;
   }
 
+  // Used to obtain the full buffer based on every data block in full.
   // ---------------------------------------------------------------------------------//
   @Override
-  public Buffer getFileBuffer ()
+  public Buffer getRawFileBuffer ()
   // ---------------------------------------------------------------------------------//
   {
     if (fileBuffer == null)
@@ -142,18 +143,18 @@ public abstract class AbstractAppleFile implements AppleFile
   }
 
   // ---------------------------------------------------------------------------------//
-  @Override
-  public Buffer getFileBuffer (int eof)
-  // ---------------------------------------------------------------------------------//
-  {
-    if (fileBuffer == null)
-    {
-      byte[] data = parentFileSystem.readBlocks (dataBlocks);
-      fileBuffer = new Buffer (data, 0, eof);
-    }
-
-    return fileBuffer;
-  }
+  //  @Override
+  //  public Buffer getFileBuffer (int eof)
+  //  // ---------------------------------------------------------------------------------//
+  //  {
+  //    if (fileBuffer == null)
+  //    {
+  //      byte[] data = parentFileSystem.readBlocks (dataBlocks);
+  //      fileBuffer = new Buffer (data, 0, eof);
+  //    }
+  //
+  //    return fileBuffer;
+  //  }
 
   // ---------------------------------------------------------------------------------//
   @Override

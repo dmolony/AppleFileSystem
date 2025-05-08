@@ -299,7 +299,7 @@ public class FileBinary2 extends AbstractAppleFile
 
   // ---------------------------------------------------------------------------------//
   @Override
-  public Buffer getFileBuffer ()
+  public Buffer getRawFileBuffer ()
   // ---------------------------------------------------------------------------------//
   {
     if (fileBuffer != null)

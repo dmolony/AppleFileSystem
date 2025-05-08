@@ -290,7 +290,7 @@ public class ForkProdos extends AbstractAppleFile
     assert textFileGaps == 0;
 
     // test entire buffer (in case reclen > block size)
-    Buffer fileBuffer = getFileBuffer ();
+    Buffer fileBuffer = getRawFileBuffer ();
 
     byte[] buffer = fileBuffer.data ();
     int max = fileBuffer.max ();
@@ -304,7 +304,7 @@ public class ForkProdos extends AbstractAppleFile
 
   // ---------------------------------------------------------------------------------//
   @Override
-  public Buffer getFileBuffer ()
+  public Buffer getRawFileBuffer ()
   // ---------------------------------------------------------------------------------//
   {
     // maybe this routine should always declare the buffer and pass it to read()
