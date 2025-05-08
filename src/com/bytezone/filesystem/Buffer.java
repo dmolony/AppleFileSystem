@@ -13,7 +13,7 @@ public record Buffer (byte[] data, int offset, int length)
     if (offset + length > data.length)
     {
       throw new java.lang.IllegalArgumentException (
-          String.format ("Invalid Buffer size: %d, %d", offset, length));
+          String.format ("Invalid Buffer size: Offset: %d, Length: %d", offset, length));
     }
   }
 

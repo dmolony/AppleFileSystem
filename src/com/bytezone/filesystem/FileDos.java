@@ -42,6 +42,8 @@ public abstract class FileDos extends AbstractAppleFile
       return;
     }
 
+    int blockSize = parentFileSystem.getBlockSize ();
+
     switch (getFileType ())
     {
       case FsDos.FILE_TYPE_TEXT:
@@ -62,11 +64,15 @@ public abstract class FileDos extends AbstractAppleFile
       case FsDos.FILE_TYPE_INTEGER_BASIC:
         byte[] buffer = dataBlocks.get (0).getBuffer ();
         eof = Utility.unsignedShort (buffer, 0) + 2;
+        if (eof > dataBlocks.size () * blockSize - 2)
+          System.out.println ("bad size in " + getFileName ());
         break;
 
       case FsDos.FILE_TYPE_APPLESOFT:
         buffer = dataBlocks.get (0).getBuffer ();
         eof = Utility.unsignedShort (buffer, 0) + 2;
+        if (eof > dataBlocks.size () * blockSize - 2)
+          System.out.println ("bad size in " + getFileName ());
         if (eof > 6)
           loadAddress = Utility.getApplesoftLoadAddress (buffer);
         break;
@@ -78,6 +84,8 @@ public abstract class FileDos extends AbstractAppleFile
         buffer = dataBlocks.get (0).getBuffer ();
         loadAddress = Utility.unsignedShort (buffer, 0);
         eof = Utility.unsignedShort (buffer, 2) + 4;
+        if (eof > dataBlocks.size () * blockSize - 4)
+          System.out.println ("bad size in " + getFileName ());
         break;
 
       case FsDos.FILE_TYPE_S:                 // AEPRO1.DSK uses this

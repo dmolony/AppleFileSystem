@@ -22,8 +22,7 @@ public class FileDos3 extends FileDos
     int nextTrack = buffer[ptr] & 0xFF;
     int nextSector = buffer[ptr + 1] & 0xFF;
 
-    // build lists of index and data sectors
-    int sectorsLeft = catalogEntry.sectorCount;
+    // build lists of index and data sectors - NB cannot rely on catalogEntry.sectorCount
     outer_loop: while (nextTrack != 0)
     {
       AppleBlock tsSector = fs.getSector (nextTrack, nextSector, BlockType.FS_DATA);
@@ -34,9 +33,6 @@ public class FileDos3 extends FileDos
       tsSector.setFileOwner (this);
 
       indexBlocks.add (tsSector);
-
-      if (--sectorsLeft <= 0)
-        break;
 
       byte[] sectorBuffer = tsSector.getBuffer ();
       int sectorOffset = Utility.unsignedShort (sectorBuffer, 5);   // 0/122/244/366 etc
@@ -67,8 +63,6 @@ public class FileDos3 extends FileDos
           dataSector.setBlockSubType (blockSubType);
 
           dataBlocks.add (dataSector);
-          if (--sectorsLeft <= 0)
-            break outer_loop;
         }
       }
 
@@ -76,7 +70,6 @@ public class FileDos3 extends FileDos
       nextSector = sectorBuffer[2] & 0xFF;
     }
 
-    //    if (dataBlocks.size () - textFileGaps > 0)
     setFileLength ();
   }
 
