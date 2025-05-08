@@ -224,6 +224,44 @@ public abstract class FileDos extends AbstractAppleFile
 
   // ---------------------------------------------------------------------------------//
   @Override
+  public Buffer getFileBuffer ()
+  // ---------------------------------------------------------------------------------//
+  {
+    if (adjustedFileBuffer != null)
+      return adjustedFileBuffer;
+
+    getRawFileBuffer ();
+    byte[] buffer = rawFileBuffer.data ();
+
+    switch (getFileType ())
+    {
+      case FsDos.FILE_TYPE_TEXT:
+        if (isRandomAccess ())
+          throw new UnsupportedOperationException (
+              "getFileBuffer() not supported for random access files " + getFileName ());
+        adjustedFileBuffer = new Buffer (buffer, 0, eof);
+        break;
+
+      case FsDos.FILE_TYPE_INTEGER_BASIC:
+      case FsDos.FILE_TYPE_APPLESOFT, 32:
+        adjustedFileBuffer = new Buffer (buffer, 2, eof);
+        break;
+
+      case FsDos.FILE_TYPE_BINARY, 16, 64:
+        adjustedFileBuffer = new Buffer (buffer, 4, eof);
+        break;
+
+      default:
+    }
+
+    if (adjustedFileBuffer == null)
+      adjustedFileBuffer = rawFileBuffer;
+
+    return adjustedFileBuffer;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
   public int getFileLength ()                       // in bytes (eof)
   // ---------------------------------------------------------------------------------//
   {

@@ -20,7 +20,8 @@ public abstract class AbstractAppleFile implements AppleFile
 
   protected String errorMessage = "";
   protected List<AppleBlock> dataBlocks = new ArrayList<> ();
-  protected Buffer fileBuffer;
+  protected Buffer rawFileBuffer;
+  protected Buffer adjustedFileBuffer;
 
   // ---------------------------------------------------------------------------------//
   AbstractAppleFile (AppleFileSystem parentFileSystem)
@@ -127,34 +128,33 @@ public abstract class AbstractAppleFile implements AppleFile
     return dataBlocks.size () > 0;
   }
 
-  // Used to obtain the full buffer based on every data block in full.
+  // Used to obtain the full buffer using every data block in full. Any adjustments
+  // based on eof or offset can be applied by the FileXXX.
   // ---------------------------------------------------------------------------------//
   @Override
   public Buffer getRawFileBuffer ()
   // ---------------------------------------------------------------------------------//
   {
-    if (fileBuffer == null)
+    if (rawFileBuffer == null)
     {
       byte[] data = parentFileSystem.readBlocks (dataBlocks);
-      fileBuffer = new Buffer (data, 0, data.length);           // do not use eof!
+      rawFileBuffer = new Buffer (data, 0, data.length);           // do not use eof!
     }
 
-    return fileBuffer;
+    return rawFileBuffer;
   }
 
   // ---------------------------------------------------------------------------------//
-  //  @Override
-  //  public Buffer getFileBuffer (int eof)
-  //  // ---------------------------------------------------------------------------------//
-  //  {
-  //    if (fileBuffer == null)
-  //    {
-  //      byte[] data = parentFileSystem.readBlocks (dataBlocks);
-  //      fileBuffer = new Buffer (data, 0, eof);
-  //    }
-  //
-  //    return fileBuffer;
-  //  }
+  @Override
+  public Buffer getFileBuffer ()
+  // ---------------------------------------------------------------------------------//
+  {
+    // Override this if the file knows better
+    if (adjustedFileBuffer == null)
+      adjustedFileBuffer = getRawFileBuffer ();
+
+    return adjustedFileBuffer;
+  }
 
   // ---------------------------------------------------------------------------------//
   @Override

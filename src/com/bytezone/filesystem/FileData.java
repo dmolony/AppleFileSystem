@@ -1,5 +1,7 @@
 package com.bytezone.filesystem;
 
+import static com.bytezone.utility.Utility.formatMeta;
+
 import com.bytezone.utility.Utility;
 
 // -----------------------------------------------------------------------------------//
@@ -21,7 +23,7 @@ class FileData extends AbstractAppleFile
 
     //    fileName = "Raw data";
     //    fileTypeText = "DATA";
-    this.fileBuffer = dataRecord;
+    rawFileBuffer = dataRecord;
   }
 
   // ---------------------------------------------------------------------------------//
@@ -61,7 +63,7 @@ class FileData extends AbstractAppleFile
   public int getFileLength ()                                 // in bytes (eof)
   // ---------------------------------------------------------------------------------//
   {
-    return fileBuffer.length ();
+    return rawFileBuffer.length ();
   }
 
   // ---------------------------------------------------------------------------------//
@@ -69,7 +71,7 @@ class FileData extends AbstractAppleFile
   public int getTotalBlocks ()                            // in blocks
   // ---------------------------------------------------------------------------------//
   {
-    return fileBuffer.length () / 512;
+    return rawFileBuffer.length () / 512;
   }
 
   // ---------------------------------------------------------------------------------//
@@ -79,8 +81,7 @@ class FileData extends AbstractAppleFile
   {
     StringBuilder text = new StringBuilder (super.toString ());
 
-    //    text.append (String.format ("Length ................ %,d", buffer.length));
-    text.append (String.format ("Length ................ %,d", fileBuffer.length ()));
+    formatMeta (text, "Length", 8, rawFileBuffer.length ());
 
     return Utility.rtrim (text);
   }

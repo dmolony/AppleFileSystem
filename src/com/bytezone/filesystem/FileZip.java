@@ -1,5 +1,7 @@
 package com.bytezone.filesystem;
 
+import static com.bytezone.utility.Utility.formatMeta;
+
 import java.nio.file.attribute.FileTime;
 import java.util.zip.ZipEntry;
 
@@ -20,7 +22,7 @@ public class FileZip extends AbstractAppleFile implements AppleFilePath
   {
     super (fs);
 
-    fileBuffer = new Buffer (buffer, 0, buffer.length);
+    rawFileBuffer = new Buffer (buffer, 0, buffer.length);
     this.fileName = fileName;
     this.zipEntry = zipEntry;
   }
@@ -87,7 +89,7 @@ public class FileZip extends AbstractAppleFile implements AppleFilePath
   public int getFileLength ()
   // ---------------------------------------------------------------------------------//
   {
-    return fileBuffer.length ();
+    return rawFileBuffer.length ();
   }
 
   // ---------------------------------------------------------------------------------//
@@ -106,16 +108,15 @@ public class FileZip extends AbstractAppleFile implements AppleFilePath
     byte[] bytes = zipEntry.getExtra ();
     String extra = bytes == null ? "" : "\n" + Utility.format (bytes);
 
-    text.append (
-        String.format ("Compressed size ....... %,d%n", zipEntry.getCompressedSize ()));
-    text.append (String.format ("Size .................. %,d%n", zipEntry.getSize ()));
-    text.append (String.format ("Name .................. %s%n", zipEntry.getName ()));
-    text.append (String.format ("Comment ............... %s%n", comment));
-    text.append (String.format ("CRC ................... %,d%n", zipEntry.getCrc ()));
-    text.append (String.format ("Creation time ......... %s%n", creationTime));
-    text.append (String.format ("Extra ................. %s%n", extra));
-    text.append (String.format ("Method ................ %,d%n", zipEntry.getMethod ()));
-    text.append (String.format ("Is directory .......... %s%n", zipEntry.isDirectory ()));
+    formatMeta (text, "Compressed size", 8, (int) zipEntry.getCompressedSize ());
+    formatMeta (text, "Size", 8, (int) zipEntry.getSize ());
+    formatMeta (text, "Name", zipEntry.getName ());
+    formatMeta (text, "Comment", comment);
+    formatMeta (text, "CRC", 8, (int) zipEntry.getCrc ());
+    formatMeta (text, "Creation time", creationTime);
+    formatMeta (text, "Extra", extra);
+    formatMeta (text, "Method", 2, zipEntry.getMethod ());
+    formatMeta (text, "Is directory", zipEntry.isDirectory ());
 
     return Utility.rtrim (text);
   }

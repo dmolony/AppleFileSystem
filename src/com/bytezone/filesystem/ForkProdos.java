@@ -304,17 +304,16 @@ public class ForkProdos extends AbstractAppleFile
 
   // ---------------------------------------------------------------------------------//
   @Override
-  public Buffer getRawFileBuffer ()
+  public Buffer getFileBuffer ()
   // ---------------------------------------------------------------------------------//
   {
-    // maybe this routine should always declare the buffer and pass it to read()
-    if (fileBuffer == null)
+    if (adjustedFileBuffer == null)
     {
-      byte[] data = parentFileSystem.readBlocks (dataBlocks);
+      getRawFileBuffer ();
+      byte[] data = rawFileBuffer.data ();
 
-      if (data.length < eof)
+      if (rawFileBuffer.length () < eof)
       {
-        //        assert false;
         // see TOTAL.REPLAY/X/COLUMNS/COL2P/COLUMNS.MGEMS
         System.out.printf ("Buffer not long enough in %s%n", parentFile.getPath ());
         System.out.printf ("EOF: %06X, buffer length: %06X%n", eof, data.length);
@@ -323,10 +322,10 @@ public class ForkProdos extends AbstractAppleFile
         data = temp;
       }
 
-      fileBuffer = new Buffer (data, 0, eof == 0 ? data.length : eof);
+      adjustedFileBuffer = new Buffer (data, 0, eof == 0 ? data.length : eof);
     }
 
-    return fileBuffer;
+    return adjustedFileBuffer;
   }
 
   // ---------------------------------------------------------------------------------//

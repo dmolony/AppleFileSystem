@@ -75,6 +75,10 @@ public class FsProdos extends AbstractFileSystem
               addEmbeddedFileSystem (file, 0);
             }
 
+            if (file.getFileType () == ProdosConstants.FILE_TYPE_NON
+                && file.getFileName ().endsWith (".SHK"))
+              addEmbeddedFileSystem (file, 0);
+
             break;
 
           case ProdosConstants.PASCAL_ON_PROFILE:

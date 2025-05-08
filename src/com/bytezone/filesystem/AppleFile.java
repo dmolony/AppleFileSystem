@@ -50,9 +50,9 @@ public interface AppleFile
 
   public boolean hasData ();
 
-  public Buffer getRawFileBuffer ();                   // reads file if required
+  public Buffer getRawFileBuffer ();                // reads file if required
 
-  //  public Buffer getFileBuffer (int eof);            // reads file if required
+  public Buffer getFileBuffer ();                   // override if eof known
 
   public void write (byte[] buffer);
 
