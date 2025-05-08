@@ -389,6 +389,41 @@ public abstract class FileDos extends AbstractAppleFile
   }
 
   // ---------------------------------------------------------------------------------//
+  protected String getAddressText ()
+  // ---------------------------------------------------------------------------------//
+  {
+    int loadAddress = getLoadAddress ();
+    return loadAddress == 0 || loadAddress == 0x801 ? ""
+        : String.format ("$%4X", loadAddress);
+  }
+
+  // ---------------------------------------------------------------------------------//
+  protected String getLengthText ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return getFileLength () == 0 ? "" : String.format ("$%5X %<,7d", getFileLength ());
+  }
+
+  // ---------------------------------------------------------------------------------//
+  protected String getCatalogMessage ()
+  // ---------------------------------------------------------------------------------//
+  {
+    int actualSize = getTotalIndexSectors () + getTotalDataSectors ();
+    String message = "";
+
+    if (recordLength > 0)
+      message = String.format ("Reclen = %,d ?", recordLength);
+
+    if (getSectorCount () != actualSize && getTotalDataSectors () > 0)
+      message = String.format ("Actual size: %03d", actualSize);
+
+    if (getSectorCount () > 999)
+      message += " - Reported " + getSectorCount ();
+
+    return message.trim ();
+  }
+
+  // ---------------------------------------------------------------------------------//
   @Override
   public String toString ()
   // ---------------------------------------------------------------------------------//

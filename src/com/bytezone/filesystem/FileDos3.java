@@ -78,30 +78,16 @@ public class FileDos3 extends FileDos
   public String getCatalogLine ()
   // ---------------------------------------------------------------------------------//
   {
-    int actualSize = getTotalIndexSectors () + getTotalDataSectors ();
-    int loadAddress = getLoadAddress ();
-
-    String addressText = loadAddress == 0 || loadAddress == 0x801 ? ""
-        : String.format ("$%4X", loadAddress);
-
-    String lengthText =
-        getFileLength () == 0 ? "" : String.format ("$%5X %<,7d", getFileLength ());
-
-    String message = "";
-    String lockedFlag = (isLocked ()) ? "*" : " ";
-
-    if (recordLength > 0)
-      message = String.format ("Reclen = %,d ?", recordLength);
-
-    if (getSectorCount () != actualSize && getTotalDataSectors () > 0)
-      message = "** Bad size **";
-
-    if (getSectorCount () > 999)
-      message += " - Reported " + getSectorCount ();
-
-    return String.format ("%1s  %1s  %03d  %-30.30s  %-5s  %-14s %3d %3d  %s", lockedFlag,
-        getFileTypeText (), getSectorCount () % 1000, getFileName (), addressText,
-        lengthText, getTotalIndexSectors (), getTotalDataSectors (), message.trim ());
+    return String.format ("%1s  %1s  %03d  %-30.30s  %-5s  %-14s %3d %3d  %s",
+        isLocked () ? "*" : " ",        //
+        getFileTypeText (),             //
+        getSectorCount () % 1000,       //
+        getFileName (),                 //
+        getAddressText (),              //
+        getLengthText (),               //
+        getTotalIndexSectors (),        //
+        getTotalDataSectors (),         //
+        getCatalogMessage ());
   }
 
   // ---------------------------------------------------------------------------------//
