@@ -6,10 +6,10 @@ import com.bytezone.utility.Utility;
 public class ForkNuFX extends AbstractAppleFile
 // -----------------------------------------------------------------------------------//
 {
-  private FileNuFX parentFile;
-  private FsNuFX fileSystem;
-  private ForkType forkType;
-  private NuFXThread thread;
+  private final FileNuFX parentFile;
+  private final FsNuFX fileSystem;
+  private final ForkType forkType;
+  private final NuFXThread thread;
 
   // ---------------------------------------------------------------------------------//
   ForkNuFX (FileNuFX parentFile, ForkType forkType, NuFXThread thread)

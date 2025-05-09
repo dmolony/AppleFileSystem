@@ -94,38 +94,6 @@ class NuFXThread
   }
 
   // ---------------------------------------------------------------------------------//
-  //  byte[] getDataOld ()
-  //  // ---------------------------------------------------------------------------------//
-  //  {
-  //    switch (threadFormat)
-  //    {
-  //      case 0:             // uncompressed
-  //        return compressedData;
-  //
-  //      case 1:             // Huffman squeeze
-  //        Squeeze squeeze = new Squeeze ();
-  //        return squeeze.unSqueeze (compressedData);
-  //
-  //      case 2:             // Dynamic LZW/1 
-  //        LZW1 lzw1 = new LZW1 (compressedData);
-  //        return lzw1.getData ();
-  //
-  //      case 3:             // Dynamic LZW/2
-  //        int crcLength = threadKind == 1 ? 0 : uncompressedEOF;
-  //        LZW2 lzw2 = new LZW2 (compressedData, threadCrc, crcLength);
-  //        return lzw2.getData ();
-  //
-  //      case 4:             // Unix 12-bit compress
-  //        break;
-  //
-  //      case 5:             // Unix 16-bit compress
-  //        break;
-  //    }
-  //
-  //    return null;
-  //  }
-
-  // ---------------------------------------------------------------------------------//
   String getKindText ()
   // ---------------------------------------------------------------------------------//
   {
@@ -140,14 +108,14 @@ class NuFXThread
   }
 
   // ---------------------------------------------------------------------------------//
-  boolean hasData ()
+  boolean hasDataFork ()
   // ---------------------------------------------------------------------------------//
   {
     return threadClass == CLASS_DATA && threadKind == KIND_DATA_FORK;
   }
 
   // ---------------------------------------------------------------------------------//
-  boolean hasResource ()
+  boolean hasResourceFork ()
   // ---------------------------------------------------------------------------------//
   {
     return threadClass == CLASS_DATA && threadKind == KIND_RESOURCE_FORK;

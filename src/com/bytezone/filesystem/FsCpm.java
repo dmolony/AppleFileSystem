@@ -1,5 +1,7 @@
 package com.bytezone.filesystem;
 
+import static com.bytezone.utility.Utility.formatMeta;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -126,9 +128,9 @@ public class FsCpm extends AbstractFileSystem
     StringBuilder text = new StringBuilder (super.toString ());
 
     text.append ("----- CPM Header ------\n");
-    Utility.formatMeta (text, "Entry length", 2, 32);
-    Utility.formatMeta (text, "Entries per block", 2, getBlockSize () / 32);
-    Utility.formatMeta (text, "File count", 4, getFiles ().size ());
+    formatMeta (text, "Entry length", 2, 32);
+    formatMeta (text, "Entries per block", 2, getBlockSize () / 32);
+    formatMeta (text, "File count", 4, getFiles ().size ());
 
     return Utility.rtrim (text);
   }

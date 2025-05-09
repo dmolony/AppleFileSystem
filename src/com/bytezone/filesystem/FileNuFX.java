@@ -1,6 +1,7 @@
 package com.bytezone.filesystem;
 
 import static com.bytezone.filesystem.ProdosConstants.fileTypes;
+import static com.bytezone.utility.Utility.formatMeta;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -76,8 +77,6 @@ public class FileNuFX extends AbstractAppleFile implements AppleFilePath, AppleF
     access = Utility.unsignedInt (buffer, offset + 18);
 
     fileType = Utility.unsignedInt (buffer, offset + 22);
-    //    fileTypeText = fileTypes[fileType];
-
     auxType = Utility.unsignedInt (buffer, offset + 26);
     storType = Utility.unsignedShort (buffer, offset + 30);
 
@@ -281,7 +280,7 @@ public class FileNuFX extends AbstractAppleFile implements AppleFilePath, AppleF
   // ---------------------------------------------------------------------------------//
   {
     for (NuFXThread thread : threads)
-      if (thread.hasData ())
+      if (thread.hasDataFork ())
         return true;
 
     return false;
@@ -292,34 +291,11 @@ public class FileNuFX extends AbstractAppleFile implements AppleFilePath, AppleF
   // ---------------------------------------------------------------------------------//
   {
     for (NuFXThread thread : threads)
-      if (thread.hasResource ())
+      if (thread.hasResourceFork ())
         return true;
 
     return false;
   }
-
-  // ---------------------------------------------------------------------------------//
-  //  @Override
-  //  public byte[] read ()
-  //  // ---------------------------------------------------------------------------------//
-  //  {
-  //    if (isForkedFile)
-  //      throw new FileFormatException ("Cannot read() a forked file");
-  //
-  //    try           // some nufx files are corrupt
-  //    {
-  //      if (isDiskImage)
-  //        return diskImageThread.getData ();
-  //
-  //      return dataFork.read ();
-  //    }
-  //    catch (Exception e)
-  //    {
-  //      errorMessage = String.format ("Reading file %s failed : %s%n", getFullFileName (),
-  //          e.getMessage ());
-  //      return null;
-  //    }
-  //  }
 
   // ---------------------------------------------------------------------------------//
   @Override
@@ -346,8 +322,8 @@ public class FileNuFX extends AbstractAppleFile implements AppleFilePath, AppleF
     }
     catch (Exception e)
     {
-      errorMessage = String.format ("Reading file %s failed : %s%n", getFullFileName (),
-          e.getMessage ());
+      errorMessage = String.format ("Reading NuFX file %s failed : %s%n",
+          getFullFileName (), e.getMessage ());
       return null;
     }
   }
@@ -444,7 +420,7 @@ public class FileNuFX extends AbstractAppleFile implements AppleFilePath, AppleF
     int size = 0;
 
     for (NuFXThread thread : threads)
-      if (thread.hasData () || thread.hasResource () || thread.hasDisk ())
+      if (thread.hasDataFork () || thread.hasResourceFork () || thread.hasDisk ())
         size += thread.getUncompressedEOF ();
 
     return size;
@@ -457,7 +433,7 @@ public class FileNuFX extends AbstractAppleFile implements AppleFilePath, AppleF
     int size = 0;
 
     for (NuFXThread thread : threads)
-      if (thread.hasData () || thread.hasResource () || thread.hasDisk ())
+      if (thread.hasDataFork () || thread.hasResourceFork () || thread.hasDisk ())
         size += thread.compressedEOF;
 
     return size;
@@ -468,6 +444,7 @@ public class FileNuFX extends AbstractAppleFile implements AppleFilePath, AppleF
   // ---------------------------------------------------------------------------------//
   {
     float pct = 100;
+
     if (getUncompressedSize () > 0)
       pct = getCompressedSize () * 100 / getUncompressedSize ();
 
@@ -479,7 +456,7 @@ public class FileNuFX extends AbstractAppleFile implements AppleFilePath, AppleF
   // ---------------------------------------------------------------------------------//
   {
     for (NuFXThread thread : threads)
-      if (thread.hasData () || thread.hasDisk ())
+      if (thread.hasDataFork () || thread.hasDisk ())
         return thread.threadFormat;
 
     return 0;
@@ -536,43 +513,44 @@ public class FileNuFX extends AbstractAppleFile implements AppleFilePath, AppleF
     String decode = Utility.matchFlags (access, accessChars);
 
     if (!getFileName ().equals (getFullFileName ()))
-      Utility.formatMeta (text, "Full file name", getFullFileName ());
-    Utility.formatMeta (text, "Header CRC", 4, crc,
-        crcPassed ? "Passed" : "** Failed **");
-    Utility.formatMeta (text, "Attributes", 2, attributeSectionLength);
-    Utility.formatMeta (text, "Version", 2, version);
-    Utility.formatMeta (text, "Threads", 2, totThreads);
-    Utility.formatMeta (text, "File sys id", 2, fileSystemID, fileSystems[fileSystemID]);
-    Utility.formatMeta (text, "Separator", separator);
-    Utility.formatMeta (text, "Access", bits, decode);
+      formatMeta (text, "Full file name", getFullFileName ());
+    formatMeta (text, "Header CRC", 4, crc, crcPassed ? "Passed" : "** Failed **");
+    formatMeta (text, "Attributes", 2, attributeSectionLength);
+    formatMeta (text, "Version", 2, version);
+    formatMeta (text, "Threads", 2, totThreads);
+    formatMeta (text, "File sys id", 2, fileSystemID, fileSystems[fileSystemID]);
+    formatMeta (text, "Separator", separator);
+    formatMeta (text, "Access", bits, decode);
 
     if (storType < 16)
     {
-      Utility.formatMeta (text, "File type", 2, fileType, fileTypes[fileType]);
-      Utility.formatMeta (text, "Aux type", 4, auxType);
-      Utility.formatMeta (text, "Storage type", 2, storType, storage[storType]);
+      formatMeta (text, "File type", 2, fileType, fileTypes[fileType]);
+      formatMeta (text, "Aux type", 4, auxType);
+      formatMeta (text, "Storage type", 2, storType, storage[storType]);
       text.append ("\n");
     }
     else
     {
-      Utility.formatMeta (text, "Zero", 2, fileType);
-      Utility.formatMeta (text, "Total blocks", 2, auxType);
-      Utility.formatMeta (text, "Block size", 2, storType);
+      formatMeta (text, "Zero", 2, fileType);
+      formatMeta (text, "Total blocks", 2, auxType);
+      formatMeta (text, "Block size", 2, storType);
       text.append ("\n");
     }
 
-    Utility.formatMeta (text, "Created", created.format ());
-    Utility.formatMeta (text, "Modified", modified.format ());
-    Utility.formatMeta (text, "Archived", archived.format ());
+    formatMeta (text, "Created", created.format ());
+    formatMeta (text, "Modified", modified.format ());
+    formatMeta (text, "Archived", archived.format ());
     text.append ("\n");
-    Utility.formatMeta (text, "Option size", 2, optionSize);
-    Utility.formatMeta (text, "Filename len", 2, fileNameLength);
-    Utility.formatMeta (text, "Filename", fileName1);
+
+    formatMeta (text, "Option size", 2, optionSize);
+    formatMeta (text, "Filename len", 2, fileNameLength);
+    formatMeta (text, "Filename", fileName1);
     text.append ("\n");
-    Utility.formatMeta (text, "Message threads", 2, messageThreads);
-    Utility.formatMeta (text, "Control threads", 2, controlThreads);
-    Utility.formatMeta (text, "Data threads", 2, dataThreads, threadKindText);
-    Utility.formatMeta (text, "Filename threads", 2, filenameThreads);
+
+    formatMeta (text, "Message threads", 2, messageThreads);
+    formatMeta (text, "Control threads", 2, controlThreads);
+    formatMeta (text, "Data threads", 2, dataThreads, threadKindText);
+    formatMeta (text, "Filename threads", 2, filenameThreads);
     text.append ("\n");
 
     for (NuFXThread thread : threads)

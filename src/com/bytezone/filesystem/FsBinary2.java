@@ -12,7 +12,8 @@ public class FsBinary2 extends AbstractFileSystem
   {
     super (blockReader, FileSystemType.BIN2);
 
-    assert blockReader.isMagic (0, BIN2) && blockReader.byteAt (18, (byte) 0x02);
+    if (!blockReader.isMagic (0, BIN2) || !blockReader.byteAt (18, (byte) 0x02))
+      throw new FileFormatException ("File not BIN2 format");
 
     int nextBlockNo = 0;
     FileBinary2 file = null;

@@ -1,5 +1,7 @@
 package com.bytezone.filesystem;
 
+import static com.bytezone.utility.Utility.formatMeta;
+
 import com.bytezone.utility.DateTime;
 import com.bytezone.utility.Utility;
 
@@ -33,10 +35,11 @@ class FsNuFX extends AbstractFileSystem
   {
     super (blockReader, FileSystemType.NUFX);           // reader not used
 
+    if (!blockReader.isMagic (0, NuFile))
+      throw new FileFormatException ("File not NuFX format");
+
     byte[] buffer = blockReader.getDiskBuffer ().data ();
     int diskOffset = blockReader.getDiskBuffer ().offset ();
-
-    assert blockReader.isMagic (0, NuFile);
 
     crc = Utility.unsignedShort (buffer, diskOffset + 6);
     totalRecords = Utility.unsignedInt (buffer, diskOffset + 8);        // no of FileNuFX
@@ -146,17 +149,16 @@ class FsNuFX extends AbstractFileSystem
     StringBuilder text = new StringBuilder (super.toString ());
 
     text.append ("----- NuFX Header -----\n");
-    Utility.formatMeta (text, "Master CRC", 4, crc,
-        crcPassed ? "Passed" : "** Failed **");
-    Utility.formatMeta (text, "Records", 2, totalRecords);
-    Utility.formatMeta (text, "Created", created.format ());
-    Utility.formatMeta (text, "Modified", modified.format ());
-    Utility.formatMeta (text, "Version", 2, version);
-    Utility.formatMeta (text, "Reserved", 6, reserved1);
-    Utility.formatMeta (text, "Reserved", 6, reserved2);
-    Utility.formatMeta (text, "Master EOF", 6, eof);
-    Utility.formatMeta (text, "Reserved", 6, reserved3);
-    Utility.formatMeta (text, "Reserved", 4, reserved4);
+    formatMeta (text, "Master CRC", 4, crc, crcPassed ? "Passed" : "** Failed **");
+    formatMeta (text, "Records", 2, totalRecords);
+    formatMeta (text, "Created", created.format ());
+    formatMeta (text, "Modified", modified.format ());
+    formatMeta (text, "Version", 2, version);
+    formatMeta (text, "Reserved", 6, reserved1);
+    formatMeta (text, "Reserved", 6, reserved2);
+    formatMeta (text, "Master EOF", 6, eof);
+    formatMeta (text, "Reserved", 6, reserved3);
+    formatMeta (text, "Reserved", 4, reserved4);
 
     return Utility.rtrim (text);
   }

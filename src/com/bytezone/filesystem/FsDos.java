@@ -1,5 +1,7 @@
 package com.bytezone.filesystem;
 
+import static com.bytezone.utility.Utility.formatMeta;
+
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.BitSet;
@@ -308,14 +310,14 @@ public class FsDos extends AbstractFileSystem
     };
 
     text.append ("----- DOS Header ------\n");
-    Utility.formatMeta (text, "Dos version", 2, dosVersion, dosVersionText);
-    Utility.formatMeta (text, "Volume number", 2, volumeNumber);
-    Utility.formatMeta (text, "Max TS pairs", 2, maxTSpairs);
-    Utility.formatMeta (text, "Last track allocated", 2, lastTrackAllocated);
-    Utility.formatMeta (text, "Direction", 2, direction & 0xFF);
-    Utility.formatMeta (text, "Tracks per disk", 2, tracksPerDisk);
-    Utility.formatMeta (text, "Sectors per track", 2, sectorsPerTrack);
-    Utility.formatMeta (text, "Bytes per sector", 4, bytesPerSector);
+    formatMeta (text, "Dos version", 2, dosVersion, dosVersionText);
+    formatMeta (text, "Volume number", 2, volumeNumber);
+    formatMeta (text, "Max TS pairs", 2, maxTSpairs);
+    formatMeta (text, "Last track allocated", 2, lastTrackAllocated);
+    formatMeta (text, "Direction", 2, direction & 0xFF);
+    formatMeta (text, "Tracks per disk", 2, tracksPerDisk);
+    formatMeta (text, "Sectors per track", 2, sectorsPerTrack);
+    formatMeta (text, "Bytes per sector", 4, bytesPerSector);
 
     return Utility.rtrim (text);
   }

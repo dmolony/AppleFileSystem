@@ -1,5 +1,7 @@
 package com.bytezone.filesystem;
 
+import static com.bytezone.utility.Utility.formatMeta;
+
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -341,51 +343,51 @@ public class FileBinary2 extends AbstractAppleFile
     StringBuilder text = new StringBuilder (super.toString ());
 
     text.append ("\n--- Binary II Header --\n");
-    Utility.formatMeta (text, "Header block", 2, headerBlockNo);
-    Utility.formatMeta (text, "Access code", 2, accessCode);
-    Utility.formatMeta (text, "File type", 2, fileType, fileTypeText);
+    formatMeta (text, "Header block", 2, headerBlockNo);
+    formatMeta (text, "Access code", 2, accessCode);
+    formatMeta (text, "File type", 2, fileType, fileTypeText);
 
-    Utility.formatMeta (text, "Aux type", 4, auxType);
-    Utility.formatMeta (text, "Storage type", 2, storageType,
+    formatMeta (text, "Aux type", 4, auxType);
+    formatMeta (text, "Storage type", 2, storageType,
         ProdosConstants.storageTypes[storageType]);
-    Utility.formatMeta (text, "File size x 512", 4, blocks);
+    formatMeta (text, "File size x 512", 4, blocks);
 
-    Utility.formatMeta (text, "Mod date", 4, modDate,
+    formatMeta (text, "Mod date", 4, modDate,
         modified.isPresent () ? modified.get ().toString () : "");
-    Utility.formatMeta (text, "Mod time", 4, modTime);
-    Utility.formatMeta (text, "Create date", 4, createDate,
+    formatMeta (text, "Mod time", 4, modTime);
+    formatMeta (text, "Create date", 4, createDate,
         created.isPresent () ? created.get ().toString () : "");
-    Utility.formatMeta (text, "Create time", 4, createTime);
+    formatMeta (text, "Create time", 4, createTime);
 
-    Utility.formatMeta (text, "EOF", 6, eof);
-    Utility.formatMeta (text, "File name", fileName);
-    Utility.formatMeta (text, "Squeeze name", squeezeName);
-    Utility.formatMeta (text, "Native name", nativeName);
+    formatMeta (text, "EOF", 6, eof);
+    formatMeta (text, "File name", fileName);
+    formatMeta (text, "Squeeze name", squeezeName);
+    formatMeta (text, "Native name", nativeName);
 
-    Utility.formatMeta (text, "G Aux type", 4, gAuxType);
-    Utility.formatMeta (text, "G Access", 2, gAccess);
-    Utility.formatMeta (text, "G File type", 2, gFileType);
-    Utility.formatMeta (text, "G Storage", 2, gStorage);
-    Utility.formatMeta (text, "G File size", 4, gEof);
-    Utility.formatMeta (text, "G EOF", 2, gFileSize);
+    formatMeta (text, "G Aux type", 4, gAuxType);
+    formatMeta (text, "G Access", 2, gAccess);
+    formatMeta (text, "G File type", 2, gFileType);
+    formatMeta (text, "G Storage", 2, gStorage);
+    formatMeta (text, "G File size", 4, gEof);
+    formatMeta (text, "G EOF", 2, gFileSize);
 
-    Utility.formatMeta (text, "Disk space", 4, diskSpace, "(all files)");
+    formatMeta (text, "Disk space", 4, diskSpace, "(all files)");
 
-    Utility.formatMeta (text, "OS type", 2, osType,
+    formatMeta (text, "OS type", 2, osType,
         (osType >= 0 && osType < bin2Formats.length) ? bin2Formats[osType] : "");
-    Utility.formatMeta (text, "Native file type", 4, nativeFileType);
-    Utility.formatMeta (text, "Phantom file", 2, phantomFile);
+    formatMeta (text, "Native file type", 4, nativeFileType);
+    formatMeta (text, "Phantom file", 2, phantomFile);
 
-    Utility.formatMeta (text, "Data flags", 2, dataFlags, getFlagsText (dataFlags));
+    formatMeta (text, "Data flags", 2, dataFlags, getFlagsText (dataFlags));
 
     String message =
         !squeezeName.isEmpty () && !isCompressed () ? "  <-- should be true" : "";
-    Utility.formatMeta (text, "  compressed?", isCompressed (), message);
+    formatMeta (text, "  compressed?", isCompressed (), message);
 
-    Utility.formatMeta (text, "  encrypted?", isEncrypted ());
-    Utility.formatMeta (text, "  sparse?", isSparse ());
-    Utility.formatMeta (text, "Bin2 version", 2, version);
-    Utility.formatMeta (text, "Files following", 2, filesFollowing);
+    formatMeta (text, "  encrypted?", isEncrypted ());
+    formatMeta (text, "  sparse?", isSparse ());
+    formatMeta (text, "Bin2 version", 2, version);
+    formatMeta (text, "Files following", 2, filesFollowing);
 
     return Utility.rtrim (text);
   }
