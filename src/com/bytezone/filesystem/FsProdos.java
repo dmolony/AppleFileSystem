@@ -68,17 +68,7 @@ public class FsProdos extends AbstractFileSystem
           case ProdosConstants.TREE:
             file = new FileProdos (this, container, catalogBlock, i);
             container.addFile (file);
-            if (file.getFileType () == ProdosConstants.FILE_TYPE_LBR)
-            {
-              if (file.getAuxType () == 0x0130)
-                System.out.println ("Possible 2mg file " + file.getFileName ());
-              addEmbeddedFileSystem (file, 0);
-            }
-
-            if (file.getFileType () == ProdosConstants.FILE_TYPE_NON
-                && file.getFileName ().endsWith (".SHK"))
-              addEmbeddedFileSystem (file, 0);
-
+            checkEmbeddedFileSystems (file);
             break;
 
           case ProdosConstants.PASCAL_ON_PROFILE:
@@ -92,8 +82,7 @@ public class FsProdos extends AbstractFileSystem
             break;
 
           case ProdosConstants.SUBDIRECTORY:
-            FolderProdos folder = new FolderProdos (this, container, catalogBlock, i);
-            container.addFile (folder);
+            container.addFile (new FolderProdos (this, container, catalogBlock, i));
             break;
 
           case ProdosConstants.SUBDIRECTORY_HEADER:
@@ -108,6 +97,22 @@ public class FsProdos extends AbstractFileSystem
         ptr += ProdosConstants.ENTRY_SIZE;
       }
     }
+  }
+
+  // ---------------------------------------------------------------------------------//
+  private void checkEmbeddedFileSystems (FileProdos file)
+  // ---------------------------------------------------------------------------------//
+  {
+    if (file.getFileType () == ProdosConstants.FILE_TYPE_LBR)
+    {
+      if (file.getAuxType () == 0x0130)
+        System.out.println ("Possible 2mg file " + file.getFileName ());
+      addEmbeddedFileSystem (file, 0);
+    }
+
+    if (file.getFileType () == ProdosConstants.FILE_TYPE_NON
+        && file.getFileName ().endsWith (".SHK"))
+      addEmbeddedFileSystem (file, 0);
   }
 
   // ---------------------------------------------------------------------------------//
