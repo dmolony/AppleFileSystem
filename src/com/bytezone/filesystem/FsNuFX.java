@@ -5,7 +5,7 @@ import static com.bytezone.utility.Utility.formatMeta;
 import com.bytezone.utility.DateTime;
 import com.bytezone.utility.Utility;
 
-// Shrinkit archive
+// Shrinkit archive (.SHK - NuFX archive, .SDK - disk images)
 // -----------------------------------------------------------------------------------//
 class FsNuFX extends AbstractFileSystem
 // -----------------------------------------------------------------------------------//

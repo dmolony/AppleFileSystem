@@ -307,7 +307,7 @@ public class ForkProdos extends AbstractAppleFile
   public Buffer getFileBuffer ()
   // ---------------------------------------------------------------------------------//
   {
-    if (adjustedFileBuffer == null)
+    if (exactFileBuffer == null)
     {
       getRawFileBuffer ();
       byte[] data = rawFileBuffer.data ();
@@ -322,10 +322,10 @@ public class ForkProdos extends AbstractAppleFile
         data = temp;
       }
 
-      adjustedFileBuffer = new Buffer (data, 0, eof == 0 ? data.length : eof);
+      exactFileBuffer = new Buffer (data, 0, eof == 0 ? data.length : eof);
     }
 
-    return adjustedFileBuffer;
+    return exactFileBuffer;
   }
 
   // ---------------------------------------------------------------------------------//
@@ -401,6 +401,7 @@ public class ForkProdos extends AbstractAppleFile
   }
 
   // ---------------------------------------------------------------------------------//
+  @Override
   public int getAuxType ()
   // ---------------------------------------------------------------------------------//
   {

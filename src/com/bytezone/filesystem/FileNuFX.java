@@ -129,13 +129,14 @@ public class FileNuFX extends AbstractAppleFile implements AppleFilePath, AppleF
           switch (thread.threadKind)
           {
             case NuFXThread.KIND_DATA_FORK:
+              ForkNuFX fork = new ForkNuFX (this, FileProdos.ForkType.DATA, thread);
               if (dataThreads == 2)
               {
                 isForkedFile = true;
-                forks.add (new ForkNuFX (this, FileProdos.ForkType.DATA, thread));
+                forks.add (fork);
               }
               else
-                dataFork = new ForkNuFX (this, FileProdos.ForkType.DATA, thread);
+                dataFork = fork;
               break;
 
             case NuFXThread.KIND_DISK_IMAGE:
@@ -161,19 +162,22 @@ public class FileNuFX extends AbstractAppleFile implements AppleFilePath, AppleF
   public int getTotalBlocks ()
   // ---------------------------------------------------------------------------------//
   {
+    if (hasDisk ())
+      return getAuxType ();                           // total blocks on disk
+
     switch (storType)
     {
-      case 1:                   // seedling
+      case 1:                                         // seedling
         return 1;
-      case 2:                   // sapling
+      case 2:                                         // sapling
         return (getFileLength () - 1) / 512 + 2;
-      case 3:                   // tree
-        return (getFileLength () - 1) / 512 + 3;        // wrong
-      case 5:                   // forked file
+      case 3:                                         // tree
+        return (getFileLength () - 1) / 512 + 3;                        // wrong
+      case 5:                                         // forked file
         int size = 1;
         for (AppleFile fork : forks)
           size += fork.getTotalBlocks ();
-        return size;                                    // also wrong
+        return size;                                                    // also wrong
       default:
         return 0;
     }

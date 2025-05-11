@@ -103,16 +103,22 @@ public class FsProdos extends AbstractFileSystem
   private void checkEmbeddedFileSystems (FileProdos file)
   // ---------------------------------------------------------------------------------//
   {
-    if (file.getFileType () == ProdosConstants.FILE_TYPE_LBR)
-    {
-      if (file.getAuxType () == 0x0130)
-        System.out.println ("Possible 2mg file " + file.getFileName ());
-      addEmbeddedFileSystem (file, 0);
-    }
+    // $E0/$8000 - Binary II
+    // $E0/$8002 - ShrinkIt (NuFX)
 
-    if (file.getFileType () == ProdosConstants.FILE_TYPE_NON
-        && file.getFileName ().endsWith (".SHK"))
-      addEmbeddedFileSystem (file, 0);
+    switch (file.getFileType ())
+    {
+      case ProdosConstants.FILE_TYPE_LBR:
+        addEmbeddedFileSystem (file, 0);
+        if (file.getAuxType () == 0x0130)
+          System.out.println ("Possible 2mg file " + file.getFileName ());
+        break;
+
+      case ProdosConstants.FILE_TYPE_NON:
+        if (file.getFileName ().endsWith (".SHK"))
+          addEmbeddedFileSystem (file, 0);
+        break;
+    }
   }
 
   // ---------------------------------------------------------------------------------//

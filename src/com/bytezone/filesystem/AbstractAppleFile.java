@@ -20,8 +20,9 @@ public abstract class AbstractAppleFile implements AppleFile
 
   protected String errorMessage = "";
   protected List<AppleBlock> dataBlocks = new ArrayList<> ();
-  protected Buffer rawFileBuffer;
-  protected Buffer adjustedFileBuffer;
+
+  protected Buffer rawFileBuffer;             // all data blocks
+  protected Buffer exactFileBuffer;           // adjusted for any offset or eof
 
   // ---------------------------------------------------------------------------------//
   AbstractAppleFile (AppleFileSystem parentFileSystem)
@@ -122,6 +123,15 @@ public abstract class AbstractAppleFile implements AppleFile
 
   // ---------------------------------------------------------------------------------//
   @Override
+  public int getAuxType ()
+  // ---------------------------------------------------------------------------------//
+  {
+    throw new UnsupportedOperationException (
+        "getAuxType() not implemented in " + getFileName ());
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
   public boolean hasData ()
   // ---------------------------------------------------------------------------------//
   {
@@ -129,7 +139,7 @@ public abstract class AbstractAppleFile implements AppleFile
   }
 
   // Used to obtain the full buffer using every data block in full. Any adjustments
-  // based on eof or offset can be applied by the FileXXX.
+  // based on eof or offset can be applied by overriding getFileBuffer().
   // ---------------------------------------------------------------------------------//
   @Override
   public Buffer getRawFileBuffer ()
@@ -144,24 +154,28 @@ public abstract class AbstractAppleFile implements AppleFile
     return rawFileBuffer;
   }
 
+  // same data as rawFileBuffer, but with any offset or eof applied
   // ---------------------------------------------------------------------------------//
   @Override
   public Buffer getFileBuffer ()
   // ---------------------------------------------------------------------------------//
   {
     // Override this if the file knows better
-    if (adjustedFileBuffer == null)
-      adjustedFileBuffer = getRawFileBuffer ();
+    if (exactFileBuffer == null)
+      exactFileBuffer = getRawFileBuffer ();
 
-    return adjustedFileBuffer;
+    return exactFileBuffer;
   }
 
+  // Override this if the file has a known offset or eof
   // ---------------------------------------------------------------------------------//
   @Override
   public int getFileLength ()                         // in bytes (eof)
   // ---------------------------------------------------------------------------------//
   {
-    // Override this if the file knows better
+    if (exactFileBuffer != null)
+      return exactFileBuffer.length ();
+
     return dataBlocks.size () * parentFileSystem.getBlockSize ();
   }
 
@@ -174,7 +188,7 @@ public abstract class AbstractAppleFile implements AppleFile
         "write() not implemented in " + getFileName ());
   }
 
-  // assumes no index blocks
+  // Override this to include index blocks
   // ---------------------------------------------------------------------------------//
   @Override
   public int getTotalBlocks ()                    // in blocks
@@ -183,6 +197,7 @@ public abstract class AbstractAppleFile implements AppleFile
     return dataBlocks.size ();
   }
 
+  // Override this to add index/catalog blocks
   // ---------------------------------------------------------------------------------//
   @Override
   public List<AppleBlock> getAllBlocks ()

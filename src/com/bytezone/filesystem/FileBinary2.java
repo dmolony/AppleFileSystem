@@ -224,7 +224,7 @@ public class FileBinary2 extends AbstractAppleFile
 
   // ---------------------------------------------------------------------------------//
   @Override
-  public List<AppleBlock> getDataBlocks ()
+  public List<AppleBlock> getAllBlocks ()
   // ---------------------------------------------------------------------------------//
   {
     List<AppleBlock> blocks = new ArrayList<AppleBlock> (dataBlocks);
@@ -304,8 +304,8 @@ public class FileBinary2 extends AbstractAppleFile
   public Buffer getFileBuffer ()
   // ---------------------------------------------------------------------------------//
   {
-    if (adjustedFileBuffer != null)
-      return adjustedFileBuffer;
+    if (exactFileBuffer != null)
+      return exactFileBuffer;
 
     getRawFileBuffer ();
     byte[] data = rawFileBuffer.data ();
@@ -317,13 +317,13 @@ public class FileBinary2 extends AbstractAppleFile
       Squeeze squeeze = new Squeeze ();
       byte[] unsqueeze = squeeze.unSqueeze (data);
 
-      adjustedFileBuffer = new Buffer (unsqueeze, 0, unsqueeze.length);
-      return adjustedFileBuffer;
+      exactFileBuffer = new Buffer (unsqueeze, 0, unsqueeze.length);
+      return exactFileBuffer;
     }
 
-    adjustedFileBuffer = rawFileBuffer;
+    exactFileBuffer = rawFileBuffer;
 
-    return adjustedFileBuffer;
+    return exactFileBuffer;
   }
 
   // ---------------------------------------------------------------------------------//

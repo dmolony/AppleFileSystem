@@ -1,5 +1,7 @@
 package com.bytezone.filesystem;
 
+// Binary II archive (.BNY, .BXY if it contains NuFX)
+// Apple II File Type Note for File Type $E0, Auxiliary Type $8000)
 // -----------------------------------------------------------------------------------//
 public class FsBinary2 extends AbstractFileSystem
 // -----------------------------------------------------------------------------------//

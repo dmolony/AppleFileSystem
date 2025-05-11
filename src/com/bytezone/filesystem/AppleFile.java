@@ -38,6 +38,8 @@ public interface AppleFile
 
   public boolean isLocked ();
 
+  public int getAuxType ();                         // Prodos only
+
   public int getFileLength ();                      // in bytes (eof)
 
   public int getTotalBlocks ();                     // in data+index blocks

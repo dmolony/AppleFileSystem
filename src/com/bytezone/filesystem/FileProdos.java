@@ -142,6 +142,7 @@ public class FileProdos extends AbstractAppleFile implements AppleForkedFile
   }
 
   // ---------------------------------------------------------------------------------//
+  @Override
   public int getAuxType ()
   // ---------------------------------------------------------------------------------//
   {
