@@ -28,7 +28,7 @@ public class ForkProdos extends AbstractAppleFile
   final int size;
   final int eof;
   final int keyPtr;
-  private int textFileGaps;
+  private int fileGaps;       // empty blocks are not stored, leaving gaps in the index
 
   private AppleBlock masterIndexBlock;
   private final List<AppleBlock> indexBlocks = new ArrayList<> ();
@@ -66,27 +66,16 @@ public class ForkProdos extends AbstractAppleFile
       switch (storageType)
       {
         case ProdosConstants.SEEDLING:
-          dataBlock.setBlockType (BlockType.FILE_DATA);
           blockNumbers.add (keyPtr);
+          dataBlock.setBlockType (BlockType.FILE_DATA);
           break;
 
         case ProdosConstants.SAPLING:
-          blockNumbers.addAll (readIndex (keyPtr));
+          blockNumbers.addAll (getSaplingBlocks (keyPtr));
           break;
 
         case ProdosConstants.TREE:
-          for (Integer indexBlock : readMasterIndex (keyPtr))
-            if (indexBlock > 0)
-            {
-              AppleBlock block =
-                  parentFileSystem.getBlock (indexBlock, BlockType.FS_DATA);
-              if (block != null)
-                blockNumbers.addAll (readIndex (indexBlock));
-            }
-            else
-              for (int i = 0; i < 256; i++)
-                blockNumbers.add (0);
-
+          blockNumbers.addAll (getTreeBlocks (keyPtr));
           break;
 
         case ProdosConstants.PASCAL_ON_PROFILE:
@@ -104,22 +93,35 @@ public class ForkProdos extends AbstractAppleFile
     while (blockNumbers.size () > 0 && blockNumbers.get (blockNumbers.size () - 1) == 0)
     {
       blockNumbers.remove (blockNumbers.size () - 1);
-      --textFileGaps;
+      --fileGaps;
     }
 
     // fill data blocks (cannot call fileContainsZero () until this is done)
     for (Integer blockNo : blockNumbers)
     {
-      dataBlock = parentFileSystem.getBlock (blockNo, BlockType.FILE_DATA);
-      dataBlock.setFileOwner (this);
+      dataBlock = parentFileSystem.getBlock (blockNo);
+      if (dataBlock.getBlockNo () > 0)
+      {
+        dataBlock.setBlockType (BlockType.FILE_DATA);
+        dataBlock.setFileOwner (this);
+      }
       dataBlocks.add (dataBlock);
+    }
+
+    // if eof is past the end of the listed blocks, add empty blocks
+    while (eof > dataBlocks.size () * 512)
+    {
+      //   System.out.printf ("eof: %,9d  raw: %,9d %s%n", eof, dataBlocks.size () * 512,
+      //       parentFile.getPath ());
+      dataBlocks.add (parentFileSystem.getBlock (0));
+      ++fileGaps;
     }
 
     if (getFileType () == ProdosConstants.FILE_TYPE_TEXT      // text file
         && forkType != ForkType.RESOURCE                      // but not resource fork
         && parentFile.getAuxType () > 1                       // with reclen > 1
         && parentFile.getAuxType () < 1000                    // but not stupid
-        && (textFileGaps > 0 || fileContainsZero ()))         // random-access file
+        && (fileGaps > 0 || fileContainsZero ()))             // random-access file
       createTextBlocks (blockNumbers);
   }
 
@@ -215,7 +217,27 @@ public class ForkProdos extends AbstractAppleFile
   }
 
   // ---------------------------------------------------------------------------------//
-  private List<Integer> readIndex (int blockPtr)
+  private List<Integer> getTreeBlocks (int keyPtr)
+  // ---------------------------------------------------------------------------------//
+  {
+    List<Integer> blockNumbers = new ArrayList<> ();
+
+    for (Integer indexBlock : readMasterIndex (keyPtr))
+      if (indexBlock > 0)
+      {
+        AppleBlock block = parentFileSystem.getBlock (indexBlock, BlockType.FS_DATA);
+        if (block != null)
+          blockNumbers.addAll (getSaplingBlocks (indexBlock));
+      }
+      else
+        for (int i = 0; i < 256; i++)
+          blockNumbers.add (0);
+
+    return blockNumbers;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  private List<Integer> getSaplingBlocks (int blockPtr)
   // ---------------------------------------------------------------------------------//
   {
     assert blockPtr > 0;
@@ -239,7 +261,7 @@ public class ForkProdos extends AbstractAppleFile
       else
       {
         blockNumbers.add (0);
-        ++textFileGaps;
+        ++fileGaps;
       }
     }
 
@@ -250,12 +272,11 @@ public class ForkProdos extends AbstractAppleFile
   private List<Integer> readMasterIndex (int keyPtr)
   // ---------------------------------------------------------------------------------//
   {
-    AppleBlock indexBlock = parentFileSystem.getBlock (keyPtr, BlockType.FS_DATA);
-    indexBlock.setBlockSubType ("M-INDEX");
-    indexBlock.setFileOwner (this);
+    masterIndexBlock = parentFileSystem.getBlock (keyPtr, BlockType.FS_DATA);
+    masterIndexBlock.setBlockSubType ("M-INDEX");
+    masterIndexBlock.setFileOwner (this);
 
-    masterIndexBlock = indexBlock;
-    indexBlocks.add (indexBlock);
+    indexBlocks.add (masterIndexBlock);
 
     byte[] buffer = masterIndexBlock.getBuffer ();             // master index
 
@@ -264,30 +285,30 @@ public class ForkProdos extends AbstractAppleFile
       if (buffer[highest] != 0 || buffer[highest + 0x100] != 0)
         break;
 
-    List<Integer> blockNumbers = new ArrayList<> (highest + 1);
+    List<Integer> indexBlockNumbers = new ArrayList<> (highest + 1);
     for (int i = 0; i <= highest; i++)
     {
       int blockNo = (buffer[i] & 0xFF) | ((buffer[i + 256] & 0xFF) << 8);
       if (blockNo > 0)
       {
         AppleBlock dataBlock = parentFileSystem.getBlock (blockNo, BlockType.FS_DATA);
-        blockNumbers.add (dataBlock == null ? 0 : blockNo);
+        indexBlockNumbers.add (dataBlock == null ? 0 : blockNo);
       }
       else
       {
-        blockNumbers.add (0);
-        textFileGaps += 256;
+        indexBlockNumbers.add (0);
+        fileGaps += 256;
       }
     }
 
-    return blockNumbers;
+    return indexBlockNumbers;
   }
 
   // ---------------------------------------------------------------------------------//
   private boolean fileContainsZero ()
   // ---------------------------------------------------------------------------------//
   {
-    assert textFileGaps == 0;
+    assert fileGaps == 0;
 
     // test entire buffer (in case reclen > block size)
     Buffer fileBuffer = getRawFileBuffer ();
@@ -497,11 +518,10 @@ public class ForkProdos extends AbstractAppleFile
           storageType, ProdosConstants.storageTypes[storageType]));
       text.append (String.format ("Key ptr ...............   %04X  %<,9d%n", keyPtr));
       text.append (String.format ("Size (blocks) .........   %04X  %<,9d%n%n", size));
-      text.append (
-          String.format ("Text file gaps ........ %04X    %<,7d%n%n", textFileGaps));
+      text.append (String.format ("Text file gaps ........ %04X    %<,7d%n%n", fileGaps));
     }
 
-    int dataSize = (dataBlocks.size () + textFileGaps) * 512;
+    int dataSize = (dataBlocks.size () + fileGaps) * 512;
     String message = dataSize < eof
         ? message = String.format ("<-- past data blocks (%,d)", dataSize) : "";
     if (eof == 0)
@@ -513,8 +533,7 @@ public class ForkProdos extends AbstractAppleFile
         String.format ("Data blocks ...........   %04X  %<,9d%n", dataBlocks.size ()));
     text.append (
         String.format ("EOF ................... %06X  %<,9d  %s%n", eof, message));
-    text.append (
-        String.format ("Text file gaps ........   %04X  %<,9d%n%n", textFileGaps));
+    text.append (String.format ("Text file gaps ........   %04X  %<,9d%n%n", fileGaps));
 
     return Utility.rtrim (text);
   }
