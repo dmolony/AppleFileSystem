@@ -56,20 +56,18 @@ public class FilePascal extends AbstractAppleFile
   }
 
   // ---------------------------------------------------------------------------------//
-  //  @Override
-  //  public List<AppleBlock> getDataBlocks ()
-  //  // ---------------------------------------------------------------------------------//
-  //  {
-  //    return dataBlocks;
-  //  }
-
+  @Override
+  public Buffer getFileBuffer ()
   // ---------------------------------------------------------------------------------//
-  //  @Override
-  //  public Buffer getFileBuffer ()
-  //  // ---------------------------------------------------------------------------------//
-  //  {
-  //    return getFileBuffer (getFileLength ());
-  //  }
+  {
+    if (exactFileBuffer == null)
+    {
+      getRawFileBuffer ();
+      exactFileBuffer = new Buffer (rawFileBuffer.data (), 0, getFileLength ());
+    }
+
+    return exactFileBuffer;
+  }
 
   // ---------------------------------------------------------------------------------//
   public LocalDate getDate ()

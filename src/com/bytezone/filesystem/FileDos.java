@@ -64,14 +64,14 @@ public abstract class FileDos extends AbstractAppleFile
       case FsDos.FILE_TYPE_INTEGER_BASIC:
         byte[] buffer = dataBlocks.get (0).getBuffer ();
         eof = Utility.unsignedShort (buffer, 0) + 2;
-        if (eof > dataBlocks.size () * blockSize - 2)
+        if (eof > dataBlocks.size () * blockSize)
           System.out.println ("bad size in " + getFileName ());
         break;
 
       case FsDos.FILE_TYPE_APPLESOFT:
         buffer = dataBlocks.get (0).getBuffer ();
         eof = Utility.unsignedShort (buffer, 0) + 2;
-        if (eof > dataBlocks.size () * blockSize - 2)
+        if (eof > dataBlocks.size () * blockSize)
           System.out.println ("bad size in " + getFileName ());
         if (eof > 6)
           loadAddress = Utility.getApplesoftLoadAddress (buffer);
@@ -84,7 +84,7 @@ public abstract class FileDos extends AbstractAppleFile
         buffer = dataBlocks.get (0).getBuffer ();
         loadAddress = Utility.unsignedShort (buffer, 0);
         eof = Utility.unsignedShort (buffer, 2) + 4;
-        if (eof > dataBlocks.size () * blockSize - 4)
+        if (eof > dataBlocks.size () * blockSize)
           System.out.println ("bad size in " + getFileName ());
         break;
 
@@ -244,14 +244,14 @@ public abstract class FileDos extends AbstractAppleFile
 
       case FsDos.FILE_TYPE_INTEGER_BASIC:
       case FsDos.FILE_TYPE_APPLESOFT:
-        exactFileBuffer = new Buffer (buffer, 2, eof);
+        exactFileBuffer = new Buffer (buffer, 2, eof - 2);
         break;
 
       case FsDos.FILE_TYPE_BINARY:
       case FsDos.FILE_TYPE_RELOCATABLE:
       case FsDos.FILE_TYPE_BINARY_B:
       case FsDos.FILE_TYPE_BINARY_L:
-        exactFileBuffer = new Buffer (buffer, 4, eof);
+        exactFileBuffer = new Buffer (buffer, 4, eof - 4);
         break;
 
       default:

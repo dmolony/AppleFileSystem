@@ -230,11 +230,15 @@ abstract class AbstractFileSystem implements AppleFileSystem
     int blockSize = blockReader.getBlockSize ();
     byte[] buffer = new byte[blocks.size () * blockSize];
 
-    int count = 0;
+    // what about trailing (suppressed) empty blocks?
+
+    int ptr = 0;
     for (AppleBlock block : blocks)
     {
-      byte[] blockBuffer = block.getBlockNo () == 0 ? empty : blockReader.read (block);
-      System.arraycopy (blockBuffer, 0, buffer, blockSize * count++, blockSize);
+      if (block.getBlockNo () > 0)
+        System.arraycopy (blockReader.read (block), 0, buffer, ptr, blockSize);
+
+      ptr += blockSize;
     }
 
     return buffer;
