@@ -312,7 +312,8 @@ public class ForkProdos extends AbstractAppleFile
       getRawFileBuffer ();
       byte[] data = rawFileBuffer.data ();
 
-      if (rawFileBuffer.length () < eof)
+      // prodos doesn't store a block number in the index when the block is empty
+      if (rawFileBuffer.length () < eof)      // pad the larger buffer with nulls
       {
         // see TOTAL.REPLAY/X/COLUMNS/COL2P/COLUMNS.MGEMS
         System.out.printf ("Buffer not long enough in %s%n", parentFile.getPath ());
