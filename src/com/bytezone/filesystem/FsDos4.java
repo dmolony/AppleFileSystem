@@ -94,21 +94,17 @@ class FsDos4 extends FsDos
       catalogSector.setBlockSubType ("CATALOG");
       catalogSectors.add (catalogSector);
 
-      readCatalogBlock (catalogSector);
-
       buffer = catalogSector.getBuffer ();
       track = buffer[1] & 0xFF;
       sector = buffer[2] & 0xFF;
     }
 
     setTotalCatalogBlocks (catalogSectors.size ());
-
-    if (volumeType == 'B')
-      flagDosSectors ();
   }
 
   // ---------------------------------------------------------------------------------//
-  private void readCatalogBlock (AppleBlock catalogSector)
+  @Override
+  protected void readCatalogBlock (AppleBlock catalogSector)
   // ---------------------------------------------------------------------------------//
   {
     byte[] buffer = catalogSector.getBuffer ();
@@ -136,6 +132,9 @@ class FsDos4 extends FsDos
 
       ptr += ENTRY_SIZE;
     }
+
+    if (volumeType == 'B')
+      flagDosSectors ();
   }
 
   // ---------------------------------------------------------------------------------//

@@ -115,8 +115,13 @@ public class FsProdos extends AbstractFileSystem
         break;
 
       case ProdosConstants.FILE_TYPE_NON:
-        if (file.getFileName ().endsWith (".SHK"))
-          addEmbeddedFileSystem (file, 0);
+        if (file.getFileLength () == 143360)
+        {
+          String fileName = file.getFileName ();
+          if (fileName.endsWith (".SHK") || fileName.endsWith (".DSK")
+              || fileName.endsWith (".DO") || fileName.endsWith (".PO"))
+            addEmbeddedFileSystem (file, 0);
+        }
         break;
     }
   }

@@ -12,7 +12,7 @@ import com.bytezone.filesystem.AppleBlock.BlockType;
 import com.bytezone.utility.Utility;
 
 // -----------------------------------------------------------------------------------//
-public class FsDos extends AbstractFileSystem
+public abstract class FsDos extends AbstractFileSystem
 // -----------------------------------------------------------------------------------//
 {
   private static Locale US = Locale.US;                 // to force 3 character months
@@ -43,12 +43,26 @@ public class FsDos extends AbstractFileSystem
   protected List<String> deletedFiles = new ArrayList<> ();
   protected List<String> failedFiles = new ArrayList<> ();
 
+  List<AppleBlock> catalogSectors = new ArrayList<> ();
+
   // ---------------------------------------------------------------------------------//
   FsDos (BlockReader blockReader, FileSystemType fileSystemType)
   // ---------------------------------------------------------------------------------//
   {
     super (blockReader, fileSystemType);
   }
+
+  // Finish reading the catalog after we have selected the 'correct' interleave. This
+  // avoids reading and validating files from the 'wrong' interleave.
+  // ---------------------------------------------------------------------------------//
+  public void readCatalogBlocks ()
+  // ---------------------------------------------------------------------------------//
+  {
+    for (AppleBlock sector : catalogSectors)
+      readCatalogBlock (sector);
+  }
+
+  protected abstract void readCatalogBlock (AppleBlock catalogSector);
 
   // ---------------------------------------------------------------------------------//
   protected boolean checkDuplicate (List<AppleBlock> catalogSectors,

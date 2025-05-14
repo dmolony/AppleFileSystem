@@ -114,7 +114,7 @@ public class BlockReader
     this.blocksPerTrack = blocksPerTrack;
 
     bytesPerTrack = bytesPerBlock * blocksPerTrack;
-    totalBlocks = (dataRecord.length () - 1) //
+    totalBlocks = (dataRecord.length () - 1)            //
         / bytesPerBlock + 1;                            // includes partial blocks
 
     appleBlocks = new AppleBlock[totalBlocks];
@@ -235,6 +235,7 @@ public class BlockReader
     return block;
   }
 
+  // Get the sector pointed to by the track/sector at buffer[offset]
   // ---------------------------------------------------------------------------------//
   AppleBlock getSector (AppleFileSystem fs, byte[] buffer, int offset)
   // ---------------------------------------------------------------------------------//
@@ -247,6 +248,7 @@ public class BlockReader
     return getSector (fs, track, sector);
   }
 
+  // Get the sector pointed to by the track/sector at buffer[offset]
   // ---------------------------------------------------------------------------------//
   AppleBlock getSector (AppleFileSystem fs, byte[] buffer, int offset,
       BlockType blockType)
@@ -440,6 +442,13 @@ public class BlockReader
   // ---------------------------------------------------------------------------------//
   {
     return totalBlocks;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  int getInterleave ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return interleave;
   }
 
   // ---------------------------------------------------------------------------------//

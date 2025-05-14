@@ -197,11 +197,11 @@ public class FileSystemFactory
     List<FsDos3> fsList = new ArrayList<> (2);
 
     if (blockReader.getDiskBuffer ().length () == SECTOR_35_16_SIZE)
-      for (int i = 0; i < 2; i++)
+      for (int interleave = 0; interleave < 2; interleave++)
         try
         {
           BlockReader dos33Reader = new BlockReader (blockReader);
-          dos33Reader.setParameters (256, AddressType.SECTOR, i, 16);
+          dos33Reader.setParameters (256, AddressType.SECTOR, interleave, 16);
 
           FsDos3 fs = new FsDos3 (dos33Reader);
 
@@ -227,16 +227,25 @@ public class FileSystemFactory
     switch (fsList.size ())
     {
       case 1:
-        fileSystems.add (fsList.get (0));
+        FsDos3 fs = fsList.get (0);
+        fileSystems.add (fs);
+        fs.readCatalogBlocks ();
         break;
 
       case 2:
         FsDos3 fs0 = fsList.get (0);
         FsDos3 fs1 = fsList.get (1);
+
         if (fs0.getTotalCatalogBlocks () > fs1.getTotalCatalogBlocks ())
+        {
           fileSystems.add (fs0);
+          fs0.readCatalogBlocks ();
+        }
         else
+        {
           fileSystems.add (fs1);
+          fs1.readCatalogBlocks ();
+        }
     }
 
     if (debug)
@@ -272,7 +281,10 @@ public class FileSystemFactory
       FsDos4 fs = new FsDos4 (dos4Reader);
 
       if (fs.getTotalCatalogBlocks () > 0)
+      {
         fileSystems.add (fs);
+        fs.readCatalogBlocks ();
+      }
     }
     catch (FileFormatException e)
     {

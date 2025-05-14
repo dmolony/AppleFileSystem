@@ -1,8 +1,5 @@
 package com.bytezone.filesystem;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.bytezone.filesystem.AppleBlock.BlockType;
 import com.bytezone.utility.Utility;
 
@@ -13,8 +10,6 @@ public class FsDos3 extends FsDos
   private static final String underline =
       "- --- ---  ------------------------------  -----  --------------"
           + "  -- ---  -------------------\n";
-
-  List<AppleBlock> catalogSectors = new ArrayList<> ();
 
   // ---------------------------------------------------------------------------------//
   FsDos3 (BlockReader blockReader)
@@ -61,19 +56,17 @@ public class FsDos3 extends FsDos
       catalogSector.setBlockSubType ("CATALOG");
       catalogSectors.add (catalogSector);
 
-      readCatalogBlock (catalogSector);
-
       buffer = catalogSector.getBuffer ();
       track = buffer[1] & 0xFF;
       sector = buffer[2] & 0xFF;
     }
 
     setTotalCatalogBlocks (catalogSectors.size ());
-    flagDosSectors ();
   }
 
   // ---------------------------------------------------------------------------------//
-  private void readCatalogBlock (AppleBlock catalogSector)
+  @Override
+  protected void readCatalogBlock (AppleBlock catalogSector)
   // ---------------------------------------------------------------------------------//
   {
     byte[] buffer = catalogSector.getBuffer ();
@@ -101,6 +94,8 @@ public class FsDos3 extends FsDos
 
       ptr += ENTRY_SIZE;
     }
+
+    flagDosSectors ();
   }
 
   // ---------------------------------------------------------------------------------//
