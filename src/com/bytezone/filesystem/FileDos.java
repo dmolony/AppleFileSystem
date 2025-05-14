@@ -62,13 +62,13 @@ public abstract class FileDos extends AbstractAppleFile
       case FsDos.FILE_TYPE_INTEGER_BASIC:
         byte[] buffer = dataBlocks.get (0).getBuffer ();
         eof = Utility.unsignedShort (buffer, 0) + 2;
-        checkEof ();
+        //        checkEof ();
         break;
 
       case FsDos.FILE_TYPE_APPLESOFT:
         buffer = dataBlocks.get (0).getBuffer ();
         eof = Utility.unsignedShort (buffer, 0) + 2;
-        checkEof ();
+        //        checkEof ();
         if (eof > 6)
           loadAddress = Utility.getApplesoftLoadAddress (buffer);
         break;
@@ -80,7 +80,7 @@ public abstract class FileDos extends AbstractAppleFile
         buffer = dataBlocks.get (0).getBuffer ();
         loadAddress = Utility.unsignedShort (buffer, 0);
         eof = Utility.unsignedShort (buffer, 2) + 4;
-        checkEof ();
+        //        checkEof ();
         break;
 
       case FsDos.FILE_TYPE_S:                 // AEPRO1.DSK uses this
@@ -93,20 +93,17 @@ public abstract class FileDos extends AbstractAppleFile
     }
   }
 
+  // some binary files are used as text files, which screws up the eof/load bytes
   // ---------------------------------------------------------------------------------//
   private void checkEof ()
   // ---------------------------------------------------------------------------------//
   {
     int blockSize = parentFileSystem.getBlockSize ();
     int maxEof = dataBlocks.size () * blockSize;
-    //    System.out.printf ("%,9d  %-30s   checking%n", eof, getFileName ());
 
     if (eof > maxEof)
-    {
-      String diskName = parentFileSystem.getFileName ();
       System.out.printf ("%,9d %,9d  %s  %-20s %s%n", eof, maxEof, getFileTypeText (),
-          getFileName (), diskName);
-    }
+          getFileName (), parentFileSystem.getFileName ());
   }
 
   // set eof for text files (size of file in bytes)
