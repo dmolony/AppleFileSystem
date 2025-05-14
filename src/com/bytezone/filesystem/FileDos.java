@@ -465,21 +465,47 @@ public abstract class FileDos extends AbstractAppleFile
   {
     int actualSize = getTotalIndexSectors () + getTotalDataSectors ();
     int maxDataSize = getTotalDataSectors () * 256;
-    String message = "";
+    int fileType = getFileType ();
+
+    StringBuilder message = new StringBuilder ();
 
     if (recordLength > 0)
-      message = String.format ("Reclen = %,d ?", recordLength);
+      addMessage (message, String.format ("Reclen = %,d ?", recordLength));
 
     if (getSectorCount () != actualSize && getTotalDataSectors () > 0)
-      message = String.format ("Actual size: %03d", actualSize);
+      addMessage (message, String.format ("Actual size: %03d", actualSize));
 
     if (getSectorCount () > 999)
-      message += " - Reported " + getSectorCount ();
+      addMessage (message, " - Reported " + getSectorCount ());
 
-    if (eof > maxDataSize)
-      message += String.format ("eof > max %,d", maxDataSize);
+    if (fileType != FsDos.FILE_TYPE_TEXT)
+    {
+      if (eof > maxDataSize)
+        addMessage (message, String.format ("eof > max %,d", maxDataSize));
 
-    return message.trim ();
+      if (eof > 0)
+      {
+        int blocksUsed = getTotalDataSectors ();
+        int blockSize = parentFileSystem.getBlockSize ();
+        int blocksNeeded = (eof - 1) / blockSize + 1;
+        int wastedBlocks = blocksUsed - blocksNeeded;
+        if (wastedBlocks > 0)
+          addMessage (message, String.format ("%d wasted block%s", wastedBlocks,
+              (wastedBlocks > 1) ? "s" : ""));
+      }
+    }
+
+    return Utility.rtrim (message);
+  }
+
+  // ---------------------------------------------------------------------------------//
+  private void addMessage (StringBuilder message, String appendText)
+  // ---------------------------------------------------------------------------------//
+  {
+    if (message.length () > 0)
+      message.append (", ");
+
+    message.append (appendText);
   }
 
   // ---------------------------------------------------------------------------------//
