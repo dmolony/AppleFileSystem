@@ -18,6 +18,7 @@ public abstract class FileDos extends AbstractAppleFile
   protected int eof;
   protected int loadAddress;
   protected int textFileGaps;       // total sparse file empty data sectors
+  protected int wastedBlocks;
 
   protected List<AppleBlock> indexBlocks = new ArrayList<> ();
   private final List<TextBlock> textBlocks = new ArrayList<> ();
@@ -62,13 +63,13 @@ public abstract class FileDos extends AbstractAppleFile
       case FsDos.FILE_TYPE_INTEGER_BASIC:
         byte[] buffer = dataBlocks.get (0).getBuffer ();
         eof = Utility.unsignedShort (buffer, 0) + 2;
-        //        checkEof ();
+        checkEof ();
         break;
 
       case FsDos.FILE_TYPE_APPLESOFT:
         buffer = dataBlocks.get (0).getBuffer ();
         eof = Utility.unsignedShort (buffer, 0) + 2;
-        //        checkEof ();
+        checkEof ();
         if (eof > 6)
           loadAddress = Utility.getApplesoftLoadAddress (buffer);
         break;
@@ -80,7 +81,7 @@ public abstract class FileDos extends AbstractAppleFile
         buffer = dataBlocks.get (0).getBuffer ();
         loadAddress = Utility.unsignedShort (buffer, 0);
         eof = Utility.unsignedShort (buffer, 2) + 4;
-        //        checkEof ();
+        checkEof ();
         break;
 
       case FsDos.FILE_TYPE_S:                 // AEPRO1.DSK uses this
@@ -101,9 +102,17 @@ public abstract class FileDos extends AbstractAppleFile
     int blockSize = parentFileSystem.getBlockSize ();
     int maxEof = dataBlocks.size () * blockSize;
 
-    if (eof > maxEof)
-      System.out.printf ("%,9d %,9d  %s  %-20s %s%n", eof, maxEof, getFileTypeText (),
-          getFileName (), parentFileSystem.getFileName ());
+    if (false)
+      if (eof > maxEof)
+        System.out.printf ("%,9d %,9d  %s  %-20s %s%n", eof, maxEof, getFileTypeText (),
+            getFileName (), parentFileSystem.getFileName ());
+
+    if (eof > 0)
+    {
+      int blocksUsed = dataBlocks.size ();
+      int blocksNeeded = (eof - 1) / blockSize + 1;
+      wastedBlocks = blocksUsed - blocksNeeded;
+    }
   }
 
   // set eof for text files (size of file in bytes)
@@ -402,6 +411,13 @@ public abstract class FileDos extends AbstractAppleFile
     return textBlocks.size ();
   }
 
+  // ---------------------------------------------------------------------------------//
+  public int getWastedBlocks ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return wastedBlocks;
+  }
+
   // attempt to weed out the catalog entries that are just labels
   // ---------------------------------------------------------------------------------//
   @Override
@@ -414,7 +430,7 @@ public abstract class FileDos extends AbstractAppleFile
       return false;
 
     // empty text files
-    if (getFileType () == FsDos.FILE_TYPE_TEXT && eof == 1)
+    if (getFileType () == FsDos.FILE_TYPE_TEXT && eof <= 1)
       return false;
 
     return catalogEntry.isNameValid && dataBlocks.size () > 0;
@@ -425,8 +441,11 @@ public abstract class FileDos extends AbstractAppleFile
   // ---------------------------------------------------------------------------------//
   {
     for (byte b : name.getBytes ())
-      if (b == (byte) 0x88)
+    {
+      int val = b & 0x7F;
+      if (val < 32 || val == 127)               // non-printable
         return false;
+    }
 
     return true;
   }
@@ -483,16 +502,9 @@ public abstract class FileDos extends AbstractAppleFile
       if (eof > maxDataSize)
         addMessage (message, String.format ("eof > max %,d", maxDataSize));
 
-      if (eof > 0)
-      {
-        int blocksUsed = getTotalDataSectors ();
-        int blockSize = parentFileSystem.getBlockSize ();
-        int blocksNeeded = (eof - 1) / blockSize + 1;
-        int wastedBlocks = blocksUsed - blocksNeeded;
-        if (wastedBlocks > 0)
-          addMessage (message, String.format ("%d wasted block%s", wastedBlocks,
-              (wastedBlocks > 1) ? "s" : ""));
-      }
+      if (wastedBlocks > 0)
+        addMessage (message, String.format ("%d wasted sector%s", wastedBlocks,
+            (wastedBlocks > 1) ? "s" : ""));
     }
 
     return Utility.rtrim (message);

@@ -1,5 +1,7 @@
 package com.bytezone.woz;
 
+import static com.bytezone.utility.Utility.formatMeta;
+
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -363,13 +365,12 @@ public class WozFile
 
       String diskTypeText = diskType == 1 ? "5.25" : "3.5";
 
-      text.append (String.format ("Version ............. %d%n", wozVersion));
-      text.append (
-          String.format ("Disk type ........... %d  (%s\")%n", diskType, diskTypeText));
-      text.append (String.format ("Write protected ..... %d%n", writeProtected));
-      text.append (String.format ("Synchronized ........ %d%n", synchronised));
-      text.append (String.format ("Cleaned ............. %d%n", cleaned));
-      text.append (String.format ("Creator ............. %s", creator));
+      formatMeta (text, "Version", 2, wozVersion);
+      formatMeta (text, "Disk type", 2, diskType, diskTypeText);
+      formatMeta (text, "Write protected", 2, writeProtected);
+      formatMeta (text, "Synchronized", 2, synchronised);
+      formatMeta (text, "Cleaned", 2, cleaned);
+      formatMeta (text, "Creator", creator);
 
       if (wozVersion > 1)
       {
@@ -377,16 +378,16 @@ public class WozFile
             bootSectorFormat == 0 ? "Unknown" : bootSectorFormat == 1 ? "16 sector"
                 : bootSectorFormat == 2 ? "13 sector" : "Hybrid";
 
-        text.append (String.format ("%nSides ............... %d%n", sides));
-        text.append (String.format ("Boot sector format .. %d  (%s)%n", bootSectorFormat,
-            bootSectorFormatText));
-        text.append (String.format ("Optimal bit timing .. %d%n", optimalBitTiming));
-        text.append (String.format ("Compatible hardware . %d%n", compatibleHardware));
-        text.append (String.format ("Required RAM ........ %d%n", requiredRam));
-        text.append (String.format ("Largest track ....... %d", largestTrack));
+        formatMeta (text, "Sides", 2, sides);
+        formatMeta (text, "Boot sector format", 2, bootSectorFormat,
+            bootSectorFormatText);
+        formatMeta (text, "Optimal bit timing", 2, optimalBitTiming);
+        formatMeta (text, "Compatible hardware", 2, compatibleHardware);
+        formatMeta (text, "Required RAM", 2, requiredRam);
+        formatMeta (text, "Largest track", 2, largestTrack);
       }
 
-      return text.toString ();
+      return Utility.rtrim (text);
     }
   }
 
@@ -621,6 +622,7 @@ public class WozFile
     // ---------------------------------------------------------------------------------//
     {
       StringBuilder text = new StringBuilder ();
+
       if (info.wozVersion == 1)
         text.append (
             String.format ("WOZ1: Bytes: %2d,  Bits: %,8d%n%n", bytesUsed, bitCount));

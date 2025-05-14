@@ -273,20 +273,25 @@ public abstract class FsDos extends AbstractFileSystem
   // ---------------------------------------------------------------------------------//
   {
     text.append (underline);
+    int totalWastedBlocks = 0;
 
     for (AppleFile file : getFiles ())
     {
       text.append (file.getCatalogLine ());
       text.append ("\n");
+      totalWastedBlocks += ((FileDos) file).getWastedBlocks ();
     }
 
     int totalSectors = getTotalBlocks ();
     int freeSectors = getTotalFreeBlocks ();
 
     text.append (underline);
+    String wasted = totalWastedBlocks > 0
+        ? String.format ("Wasted sectors: %3d", totalWastedBlocks) : "";
     text.append (String.format (
-        "           Free sectors: %3d    " + "Used sectors: %3d    Total sectors: %3d",
-        freeSectors, totalSectors - freeSectors, totalSectors));
+        "           Free sectors: %3d   "
+            + "Used sectors: %3d   Total sectors: %3d     %s",
+        freeSectors, totalSectors - freeSectors, totalSectors, wasted));
 
     if (deletedFiles.size () > 0)
     {
