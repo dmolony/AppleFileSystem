@@ -433,13 +433,17 @@ public abstract class FileDos extends AbstractAppleFile
     if (getFileType () == FsDos.FILE_TYPE_TEXT && eof <= 1)
       return false;
 
-    return catalogEntry.isNameValid && dataBlocks.size () > 0;
+    return catalogEntry.isNameValid && dataBlocks.size () > 0
+        && catalogEntry.sectorCount > 0;
   }
 
   // ---------------------------------------------------------------------------------//
   protected boolean checkName (String name)
   // ---------------------------------------------------------------------------------//
   {
+    if (name.length () == 0)
+      return false;
+
     for (byte b : name.getBytes ())
     {
       int val = b & 0x7F;

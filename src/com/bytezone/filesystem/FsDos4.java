@@ -22,8 +22,6 @@ class FsDos4 extends FsDos
   private int volumeLibrary;
   private LocalDateTime vtocTime;
 
-  //  List<AppleBlock> catalogSectors = new ArrayList<> ();
-
   boolean debug = false;
 
   // ---------------------------------------------------------------------------------//

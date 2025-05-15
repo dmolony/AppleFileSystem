@@ -244,6 +244,7 @@ public class ForkProdos extends AbstractAppleFile
 
     List<Integer> blockNumbers = new ArrayList<> (256);
     AppleBlock indexBlock = parentFileSystem.getBlock (blockPtr, BlockType.FS_DATA);
+
     indexBlock.setBlockSubType ("INDEX");
     indexBlock.setFileOwner (this);
     indexBlocks.add (indexBlock);
@@ -276,7 +277,7 @@ public class ForkProdos extends AbstractAppleFile
     masterIndexBlock.setBlockSubType ("M-INDEX");
     masterIndexBlock.setFileOwner (this);
 
-    indexBlocks.add (masterIndexBlock);
+    //    indexBlocks.add (masterIndexBlock);
 
     byte[] buffer = masterIndexBlock.getBuffer ();             // master index
 
@@ -355,8 +356,14 @@ public class ForkProdos extends AbstractAppleFile
   public List<AppleBlock> getAllBlocks ()
   // ---------------------------------------------------------------------------------//
   {
-    List<AppleBlock> blocks = new ArrayList<AppleBlock> (dataBlocks);
+    List<AppleBlock> blocks = new ArrayList<AppleBlock> ();
+
+    for (AppleBlock block : dataBlocks)
+      if (block.getBlockNo () > 0)
+        blocks.add (block);
+
     blocks.addAll (indexBlocks);
+
     if (masterIndexBlock != null)
       blocks.add (masterIndexBlock);
 
