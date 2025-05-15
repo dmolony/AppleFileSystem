@@ -235,7 +235,7 @@ abstract class AbstractFileSystem implements AppleFileSystem
     int ptr = 0;
     for (AppleBlock block : blocks)
     {
-      if (block.getBlockNo () > 0)
+      if (block != null)
         System.arraycopy (blockReader.read (block), 0, buffer, ptr, blockSize);
 
       ptr += blockSize;

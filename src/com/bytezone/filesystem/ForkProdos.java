@@ -21,7 +21,6 @@ public class ForkProdos extends AbstractAppleFile
   protected static final String NO_DATE = "<NO DATE>";
 
   final FileProdos parentFile;
-  final FsProdos parentFileSystem;
   final ForkType forkType;
 
   final int storageType;
@@ -51,7 +50,6 @@ public class ForkProdos extends AbstractAppleFile
     isFork = forkType != null;
 
     this.parentFile = parentFile;
-    this.parentFileSystem = (FsProdos) parentFile.getParentFileSystem ();
     this.forkType = forkType;
 
     this.storageType = storageType;
@@ -99,21 +97,21 @@ public class ForkProdos extends AbstractAppleFile
     // fill data blocks (cannot call fileContainsZero () until this is done)
     for (Integer blockNo : blockNumbers)
     {
-      dataBlock = parentFileSystem.getBlock (blockNo);
-      if (dataBlock.getBlockNo () > 0)
+      if (blockNo > 0)
       {
+        dataBlock = parentFileSystem.getBlock (blockNo);
         dataBlock.setBlockType (BlockType.FILE_DATA);
         dataBlock.setFileOwner (this);
+        dataBlocks.add (dataBlock);
       }
-      dataBlocks.add (dataBlock);
+      else
+        dataBlocks.add (null);
     }
 
     // if eof is past the end of the listed blocks, add empty blocks
     while (eof > dataBlocks.size () * 512)
     {
-      //   System.out.printf ("eof: %,9d  raw: %,9d %s%n", eof, dataBlocks.size () * 512,
-      //       parentFile.getPath ());
-      dataBlocks.add (parentFileSystem.getBlock (0));
+      dataBlocks.add (null);
       ++fileGaps;
     }
 
@@ -166,8 +164,8 @@ public class ForkProdos extends AbstractAppleFile
   // ---------------------------------------------------------------------------------//
   {
     assert contiguousBlocks.size () > 0;
-    TextBlockProdos textBlock =
-        new TextBlockProdos (parentFileSystem, this, contiguousBlocks, startBlock, aux);
+    TextBlockProdos textBlock = new TextBlockProdos ((FsProdos) parentFileSystem, this,
+        contiguousBlocks, startBlock, aux);
     textBlocks.add (textBlock);
   }
 
@@ -277,8 +275,6 @@ public class ForkProdos extends AbstractAppleFile
     masterIndexBlock.setBlockSubType ("M-INDEX");
     masterIndexBlock.setFileOwner (this);
 
-    //    indexBlocks.add (masterIndexBlock);
-
     byte[] buffer = masterIndexBlock.getBuffer ();             // master index
 
     int highest = 0x80;
@@ -359,7 +355,7 @@ public class ForkProdos extends AbstractAppleFile
     List<AppleBlock> blocks = new ArrayList<AppleBlock> ();
 
     for (AppleBlock block : dataBlocks)
-      if (block.getBlockNo () > 0)
+      if (block != null)
         blocks.add (block);
 
     blocks.addAll (indexBlocks);
@@ -520,7 +516,7 @@ public class ForkProdos extends AbstractAppleFile
       text.append (
           String.format ("File name ............. %s%n", parentFile.getFileName ()));
       text.append (String.format ("File system type ...... %s%n%n",
-          parentFileSystem.fileSystemType));
+          parentFileSystem.getFileSystemType ()));
       text.append (String.format ("Storage type ..........     %02X          %s%n",
           storageType, ProdosConstants.storageTypes[storageType]));
       text.append (String.format ("Key ptr ...............   %04X  %<,9d%n", keyPtr));
