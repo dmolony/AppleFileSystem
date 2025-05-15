@@ -1,8 +1,6 @@
 package com.bytezone.filesystem;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 
 import com.bytezone.filesystem.AppleBlock.BlockType;
 import com.bytezone.utility.Utility;
@@ -24,7 +22,7 @@ class FsDos4 extends FsDos
   private int volumeLibrary;
   private LocalDateTime vtocTime;
 
-  List<AppleBlock> catalogSectors = new ArrayList<> ();
+  //  List<AppleBlock> catalogSectors = new ArrayList<> ();
 
   boolean debug = false;
 
