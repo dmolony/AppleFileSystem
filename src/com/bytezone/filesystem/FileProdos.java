@@ -115,6 +115,14 @@ public class FileProdos extends AbstractAppleFile implements AppleForkedFile
 
   // ---------------------------------------------------------------------------------//
   @Override
+  public int getTotalFileGaps ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return isForkedFile ? fileGaps : dataFork.fileGaps;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
   public List<AppleBlock> getAllBlocks ()
   // ---------------------------------------------------------------------------------//
   {
@@ -176,7 +184,7 @@ public class FileProdos extends AbstractAppleFile implements AppleForkedFile
   // ---------------------------------------------------------------------------------//
   {
     if (isForkedFile ())
-      return super.getRawFileBuffer ();        // what is this doing?
+      return super.getRawFileBuffer ();
 
     return dataFork.getRawFileBuffer ();
   }

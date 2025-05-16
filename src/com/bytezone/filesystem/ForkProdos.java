@@ -29,7 +29,6 @@ public class ForkProdos extends AbstractAppleFile
   final int size;
   final int eof;
   final int keyPtr;
-  private int fileGaps;       // empty blocks are not stored, leaving gaps in the index
 
   private AppleBlock masterIndexBlock;
   private final List<AppleBlock> indexBlocks = new ArrayList<> ();

@@ -44,6 +44,8 @@ public interface AppleFile
 
   public int getTotalBlocks ();                     // in data+index blocks
 
+  public int getTotalFileGaps ();
+
   public List<AppleBlock> getDataBlocks ();         // dataBlocks only
 
   public List<AppleBlock> getAllBlocks ();          // dataBlocks + indexBlocks

@@ -19,7 +19,9 @@ public abstract class AbstractAppleFile implements AppleFile
   protected boolean isFork;                   // Data or Resource fork
 
   protected String errorMessage = "";
+
   protected List<AppleBlock> dataBlocks = new ArrayList<> ();
+  protected int fileGaps;      // empty blocks are not stored, leaving gaps in the index
 
   protected Buffer rawFileBuffer;             // all data blocks
   protected Buffer exactFileBuffer;           // adjusted for any offset or eof
@@ -197,6 +199,14 @@ public abstract class AbstractAppleFile implements AppleFile
     return dataBlocks.size ();
   }
 
+  // ---------------------------------------------------------------------------------//
+  @Override
+  public int getTotalFileGaps ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return fileGaps;
+  }
+
   // Override this to add index/catalog blocks
   // ---------------------------------------------------------------------------------//
   @Override
@@ -261,9 +271,9 @@ public abstract class AbstractAppleFile implements AppleFile
     if (embeddedFileSystem != null)
       Utility.formatMeta (text, "Embedded FS type",
           embeddedFileSystem.getFileSystemType ().toString ());
-    Utility.formatMeta (text, "File type", 2, getFileType (), getFileTypeText ());
-    Utility.formatMeta (text, "EOF", 6, getFileLength ());
-    Utility.formatMeta (text, "Data blocks", 4, dataBlocks.size ());
+    //    Utility.formatMeta (text, "File type", 2, getFileType (), getFileTypeText ());
+    //    Utility.formatMeta (text, "EOF", 6, getFileLength ());
+    //    Utility.formatMeta (text, "Data blocks", 4, dataBlocks.size () - fileGaps);
 
     return text.toString ();
   }
