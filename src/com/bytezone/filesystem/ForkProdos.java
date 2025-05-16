@@ -1,5 +1,7 @@
 package com.bytezone.filesystem;
 
+import static com.bytezone.utility.Utility.formatMeta;
+
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -513,30 +515,27 @@ public class ForkProdos extends AbstractAppleFile
 
     if (isFork)             // an actual fork, not the default data for a FileProdos
     {
-      text.append (
-          String.format ("File name ............. %s%n", parentFile.getFileName ()));
-      text.append (String.format ("File system type ...... %s%n%n",
-          parentFileSystem.getFileSystemType ()));
-      text.append (String.format ("Storage type ..........     %02X          %s%n",
-          storageType, ProdosConstants.storageTypes[storageType]));
-      text.append (String.format ("Key ptr ...............   %04X  %<,9d%n", keyPtr));
-      text.append (String.format ("Size (blocks) .........   %04X  %<,9d%n%n", size));
-      text.append (String.format ("Text file gaps ........ %04X    %<,7d%n%n", fileGaps));
+      formatMeta (text, "File name", parentFile.getFileName ());
+      formatMeta (text, "File system type",
+          parentFileSystem.getFileSystemType ().toString ());
+      formatMeta (text, "Storage type", 2, storageType,
+          ProdosConstants.storageTypes[storageType]);
+      formatMeta (text, "Key ptr", 4, keyPtr);
+      formatMeta (text, "Size (blocks)", 4, size);
+      formatMeta (text, "Text file gaps", 4, fileGaps);
+      text.append ("\n");
     }
 
-    int dataSize = (dataBlocks.size () + fileGaps) * 512;
+    int dataSize = dataBlocks.size () * 512;
     String message = dataSize < eof
         ? message = String.format ("<-- past data blocks (%,d)", dataSize) : "";
     if (eof == 0)
       message = "<-- zero";
 
-    text.append (
-        String.format ("Index blocks ..........   %04X  %<,9d%n", indexBlocks.size ()));
-    text.append (
-        String.format ("Data blocks ...........   %04X  %<,9d%n", dataBlocks.size ()));
-    text.append (
-        String.format ("EOF ................... %06X  %<,9d  %s%n", eof, message));
-    text.append (String.format ("Text file gaps ........   %04X  %<,9d%n%n", fileGaps));
+    formatMeta (text, "Index blocks", 4, indexBlocks.size ());
+    formatMeta (text, "Data blocks", 4, dataBlocks.size () - fileGaps);
+    formatMeta (text, "File gaps", 4, fileGaps);
+    formatMeta (text, "EOF", 6, eof, message);
 
     return Utility.rtrim (text);
   }

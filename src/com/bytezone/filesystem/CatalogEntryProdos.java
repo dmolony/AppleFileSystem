@@ -184,7 +184,7 @@ class CatalogEntryProdos extends CatalogEntry
     StringBuilder text = new StringBuilder ();
 
     for (int i = 0; i < 4; i++)
-      text.append (String.format ("%02X ", buffer[ptr + i]));
+      text.append (String.format ("%02X", buffer[ptr + i]));
 
     return text.toString ();
   }

@@ -116,9 +116,9 @@ public class DiskHeader2img extends DiskHeader
     formatMeta (text, "  locked", locked);
     formatMeta (text, "  has Dos Volume no", hasDosVolumeNumber);
     formatMeta (text, "  Dos Volume no", 4, volumeNumber);
-    formatMeta (text, "Blocks", 4, prodosBlocks);
-    formatMeta (text, "Data offset", 4, offset);
-    formatMeta (text, "Data size", 6, originalLength, message);
+    formatMeta (text, "Blocks", 6, prodosBlocks);
+    formatMeta (text, "Data offset", 2, offset);
+    formatMeta (text, "Data size", 8, originalLength, message);
     formatMeta (text, "Comment offset", 6, commentOffset);
     formatMeta (text, "Comment length", 6, commentLength);
     formatMeta (text, "Comment", comment);

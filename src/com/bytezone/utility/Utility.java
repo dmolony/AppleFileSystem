@@ -13,9 +13,9 @@ import java.util.Optional;
 public class Utility
 // -----------------------------------------------------------------------------------//
 {
-  private static final String FMT = "%s %21.21s  %s\n";
-  private static final String FMT2 = "%s %21.21s  %s  %s\n";
-  private static final String dots = "....................";
+  private static final String FMT = "%s %-21.21s  %s\n";
+  private static final String FMT2 = "%s %-21.21s  %s  %s\n";
+  private static final String dots = "........................";
   private static String[] hex =
       { "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "A", "B", "C", "D", "E", "F" };
   private static final int MAX_SHORT = 0xFFFF;
@@ -620,10 +620,10 @@ public class Utility
   {
     String out = switch (size)
     {
-      case 2 -> String.format ("      %02X  %<,10d", value);
-      case 4 -> String.format ("    %04X  %<,10d", value);
-      case 6 -> String.format ("  %06X  %<,10d", value);
-      default -> String.format ("%08X  %<,10d", value);
+      case 2 -> String.format ("      %02X %<,11d", value);
+      case 4 -> String.format ("    %04X %<,11d", value);
+      case 6 -> String.format ("  %06X %<,11d", value);
+      default -> String.format ("%08X %<,11d", value);
     };
 
     return String.format ("%s %s", makeLabel (label), out);
@@ -698,6 +698,19 @@ public class Utility
     text.append (formatMeta (label, size, value));
     text.append ("   ");
     text.append (message);
+    text.append ("\n");
+  }
+
+  // ---------------------------------------------------------------------------------//
+  public static void formatMeta (StringBuilder text, String label, int size, int value,
+      String message1, String message2)
+  // ---------------------------------------------------------------------------------//
+  {
+    text.append (formatMeta (label, size, value));
+    text.append ("   ");
+    text.append (message1);
+    text.append ("  ");
+    text.append (message2);
     text.append ("\n");
   }
 

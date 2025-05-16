@@ -540,7 +540,7 @@ public class BlockReader
     formatMeta (text, "File system offset", 4, dataRecord.offset ());
     formatMeta (text, "File system length", 8, dataRecord.length ());
     formatMeta (text, "Address type", addressType.toString ());
-    formatMeta (text, "Total blocks", 4, totalBlocks);
+    formatMeta (text, "Total blocks", 6, totalBlocks);
     formatMeta (text, "Bytes per block", 4, bytesPerBlock);
     formatMeta (text, "Blocks per track", 2, blocksPerTrack);
     formatMeta (text, "Interleave", 2, interleave);
