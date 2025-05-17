@@ -81,6 +81,7 @@ public abstract class FileDos extends AbstractAppleFile
 
       case FsDos.FILE_TYPE_S:                 // AEPRO1.DSK uses this
         eof = dataBlocks.size () * parentFileSystem.getBlockSize ();
+        checkEof ();
         break;
 
       default:
@@ -233,6 +234,9 @@ public abstract class FileDos extends AbstractAppleFile
         int ptr = record.offset () + textBlock.firstByteNumber;
         recordLength = recordLength == 0 ? ptr : Utility.gcd (recordLength, ptr);
       }
+
+    if (recordLength < 3)       // probably corrupted
+      textBlocks.clear ();
   }
 
   // ---------------------------------------------------------------------------------//
@@ -488,14 +492,17 @@ public abstract class FileDos extends AbstractAppleFile
 
     StringBuilder message = new StringBuilder ();
 
-    if (recordLength > 0)
-      addMessage (message, String.format ("Reclen = %,d ?", recordLength));
+    //    if (recordLength > 0)
+    //      addMessage (message, String.format ("Reclen = %,d ?", recordLength));
 
     if (getSectorCount () != actualSize && getTotalDataSectors () > 0)
       addMessage (message, String.format ("Actual size: %03d", actualSize));
 
     if (getSectorCount () > 999)
       addMessage (message, " - Reported " + getSectorCount ());
+
+    if (isRandomAccess ())
+      addMessage (message, String.format ("Random Access (%d)", recordLength));
 
     if (fileType != FsDos.FILE_TYPE_TEXT)
     {
