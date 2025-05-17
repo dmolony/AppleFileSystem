@@ -90,7 +90,9 @@ public abstract class FileDos extends AbstractAppleFile
     }
   }
 
-  // some binary files are used as text files, which screws up the eof/load bytes
+  // Some binary files are used as text files, which screws up the eof/load bytes.
+  // I have no idea how this happens, but it does. Presumably by programs manipulating
+  // the T/S index.
   // ---------------------------------------------------------------------------------//
   private void checkEof ()
   // ---------------------------------------------------------------------------------//
@@ -111,7 +113,7 @@ public abstract class FileDos extends AbstractAppleFile
     }
   }
 
-  // set eof for text files (size of file in bytes)
+  // Set eof for text files (size of file in bytes).
   // ---------------------------------------------------------------------------------//
   private int getTextFileEof ()
   // ---------------------------------------------------------------------------------//
@@ -185,20 +187,23 @@ public abstract class FileDos extends AbstractAppleFile
     return false;
   }
 
-  // file is random-access
+  // Random Access files can have large gaps between records, so keeping a list of
+  // consecutive data blocks is not feasible. Text Blocks are groups of contiguous
+  // data blocks (essentially islands of data in the file). A Random Access file
+  // can have any number of Text Blocks, but most will have only one as the records
+  // are all at the start of the file (and mostly consecutive).
   // ---------------------------------------------------------------------------------//
   void createTextBlocks (List<AppleBlock> dataBlocks)
   // ---------------------------------------------------------------------------------//
   {
-    // collect contiguous data blocks into TextBlocks
-    List<AppleBlock> contiguousBlocks = new ArrayList<> ();      // temporary storage
-    int startBlock = -1;
+    List<AppleBlock> contiguousBlocks = new ArrayList<> ();    // current data island
 
-    int logicalBlockNo = 0;                           // block # within the file
+    int startBlock = -1;                          // island's first logical block #
+    int logicalBlockNo = 0;                       // block # within the file
 
     for (AppleBlock dataBlock : dataBlocks)
     {
-      if (dataBlock == null)
+      if (dataBlock == null)                          // gap between islands
       {
         if (contiguousBlocks.size () > 0)
         {
@@ -212,7 +217,6 @@ public abstract class FileDos extends AbstractAppleFile
       {
         if (contiguousBlocks.size () == 0)            // this is the start of an island
           startBlock = logicalBlockNo;
-
         contiguousBlocks.add (dataBlock);
       }
 
@@ -235,8 +239,8 @@ public abstract class FileDos extends AbstractAppleFile
         recordLength = recordLength == 0 ? ptr : Utility.gcd (recordLength, ptr);
       }
 
-    if (recordLength < 3)       // probably corrupted
-      textBlocks.clear ();
+    if (recordLength < 4)       // probably corrupted
+      textBlocks.clear ();      // treat file as normal text
   }
 
   // ---------------------------------------------------------------------------------//
@@ -272,12 +276,16 @@ public abstract class FileDos extends AbstractAppleFile
       case FsDos.FILE_TYPE_BINARY_B:
       case FsDos.FILE_TYPE_BINARY_L:
         if (eof > rawFileBuffer.max ())
-          exactFileBuffer = rawFileBuffer;
+        {
+          eof = getTextFileEof ();
+          exactFileBuffer = new Buffer (buffer, 0, eof);
+        }
         else
           exactFileBuffer = new Buffer (buffer, 4, eof - 4);
         break;
 
       default:
+        System.out.println ("Impossible: " + getFileType ());
     }
 
     if (exactFileBuffer == null)
@@ -324,7 +332,12 @@ public abstract class FileDos extends AbstractAppleFile
   public List<AppleBlock> getAllBlocks ()
   // ---------------------------------------------------------------------------------//
   {
-    List<AppleBlock> blocks = new ArrayList<AppleBlock> (dataBlocks);
+    List<AppleBlock> blocks = new ArrayList<AppleBlock> ();
+
+    for (AppleBlock block : dataBlocks)
+      if (block != null)
+        blocks.add (block);
+
     blocks.addAll (indexBlocks);
     blocks.add (catalogEntry.catalogBlock);
 
@@ -466,6 +479,7 @@ public abstract class FileDos extends AbstractAppleFile
     ((FsDos) parentFileSystem).remove (this, force);
   }
 
+  // Used by Dos3 and Dos4 when building a catalog line.
   // ---------------------------------------------------------------------------------//
   protected String getAddressText ()
   // ---------------------------------------------------------------------------------//
@@ -475,6 +489,7 @@ public abstract class FileDos extends AbstractAppleFile
         : String.format ("$%4X", loadAddress);
   }
 
+  // Used by Dos3 and Dos4 when building a catalog line.
   // ---------------------------------------------------------------------------------//
   protected String getLengthText ()
   // ---------------------------------------------------------------------------------//
@@ -482,6 +497,7 @@ public abstract class FileDos extends AbstractAppleFile
     return getFileLength () == 0 ? "" : String.format ("$%5X %<,7d", getFileLength ());
   }
 
+  // Used by Dos3 and Dos4 when building a catalog line.
   // ---------------------------------------------------------------------------------//
   protected String getCatalogMessage ()
   // ---------------------------------------------------------------------------------//
