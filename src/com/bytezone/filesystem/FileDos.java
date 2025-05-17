@@ -158,7 +158,8 @@ public abstract class FileDos extends AbstractAppleFile
     // test entire buffer (in case reclen > block size)
     Buffer fileBuffer = getRawFileBuffer ();
     byte[] buffer = fileBuffer.data ();
-    int max = fileBuffer.max () - 2;            // avoid the last two bytes
+
+    int max = eof > 0 ? eof : fileBuffer.max () - 2;      // avoid the last two bytes
 
     for (int i = fileBuffer.offset (); i < max; i++)
       if (buffer[i] == 0)

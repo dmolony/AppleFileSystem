@@ -29,7 +29,7 @@ public class FsDos3 extends FsDos
     int sector = buffer[2] & 0xFF;
 
     dosVersion = buffer[0x03] & 0xFF;
-    if (dosVersion < 0x01 || dosVersion > 0x03)
+    if (dosVersion < 0x01 || dosVersion > 0x04)     // some disks get this wrong
       throw new FileFormatException (
           String.format ("Dos3: version byte invalid: %02X", dosVersion));
 

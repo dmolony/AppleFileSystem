@@ -605,4 +605,12 @@ public class FileSystemFactory
       errorMessages.add (e.toString ());
     }
   }
+
+  //  search/1/t  FiLeStArTfIlEsTaRt  binscii (apple ][) text
+  //  string    \x0aGL            Binary II (apple ][) data
+  //  string    \x76\xff          Squeezed (apple ][) data
+  //  string    NuFile            NuFile archive (apple ][) data
+  //  string    N\xf5F\xe9l\xe5   NuFile archive (apple ][) data
+  //  belong    0x00051600        AppleSingle encoded Macintosh file
+  //  belong    0x00051607        AppleDouble encoded Macintosh file
 }

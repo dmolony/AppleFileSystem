@@ -19,7 +19,7 @@ public class TestRead extends Tester
   {
     FileSystemFactory factory = new FileSystemFactory ();
 
-    int index = 46;
+    int index = 47;
     for (int fileNo = index; fileNo <= index; fileNo++)
     //    for (int fileNo = 0; fileNo < fileNames.length; fileNo++)
     {

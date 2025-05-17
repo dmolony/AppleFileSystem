@@ -30,6 +30,7 @@ public class Tester
   String dosm = base + "DosMaster/";
   String wiz4 = base + "Wizardry/wizardry_IV/";
   String orca = base + "ORCA/1/";
+  String nib = base + "Nibble89disks/";
 
   String[] fileNames = {                             //
       base + "dos/Assembler.dsk",                    // 0: 3.3 intl 0
@@ -79,5 +80,6 @@ public class Tester
       base + "Nibble89disks.zip",                    // 44: zip error
       wiz4 + "Version A/wiz4_d1.dsk",                // 45: wiz4
       orca + "ORCAM 1.img",                          // 46: diskcopy
+      nib + "NIB8902B.DSK",                          // 47: Dos 
   };
 }

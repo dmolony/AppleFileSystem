@@ -10,11 +10,13 @@ public class DiskHeader2img extends DiskHeader
 {
   static final byte[] TWO_IMG_MAGIC = { 0x32, 0x49, 0x4D, 0x47 };
   private static String[] twoIMGFormats = { "Dos", "Prodos", "NIB" };
-  private static String[] creatorCodes = { "!nfc", "APSX", "B2TR", "CTKG", "CdrP", "CPII",
-      "pdos", "SHEP", "ShIm", "WOOF", "XGS!" };
+  private static String[] creatorCodes =
+      { "!nfc", "APSX", "B2TR", "CTKG", "CdrP", "CPII", "pdos", "SHEP", "ShIm", "WOOF",
+          "XGS!", "RVLW", "|BD<", "Vi][", "PRFS", "FISH", "RVLW" };
   private static String[] creatorNames =
       { "ASIMOV2", "?", "Bernie ][ the Rescue", "Catakig", "CiderPress", "CiderPress II",
-          "?", "?", "Sheppy's ImageMaker", "Sweet 16", "XGS" };
+          "?", "Sheppy's ImageMaker", "Sheppy's ImageMaker", "Sweet 16", "XGS", "?",
+          "Cadius", "Virtual ][", "ProFUSE", "FishWings", "Revival for Windows" };
 
   private String creator;
   final int offset;
