@@ -50,14 +50,9 @@ public abstract class FileDos extends AbstractAppleFile
         if (eof == 0)
           break;
 
-        if (textFileGaps > 0)             // random-access file
-        {
+        if (textFileGaps > 0 || fileContainsZero ())             // random-access file
           createTextBlocks (dataBlocks);
-          break;
-        }
 
-        if (fileContainsZero ())          // random-access file
-          createTextBlocks (dataBlocks);
         break;
 
       case FsDos.FILE_TYPE_INTEGER_BASIC:
