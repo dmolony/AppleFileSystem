@@ -181,15 +181,15 @@ class FsDos4 extends FsDos
     StringBuilder text = new StringBuilder (super.toString ());
 
     text.append ("\n\n----- DOS4 Header -----\n");
-    Utility.formatMeta (text, "VTOC structure block", 2, vtocStructureBlock);
-    Utility.formatMeta (text, "Build number", 2, buildNumber);
-    Utility.formatMeta (text, "RAM DOS", ramDos, getRamTypeText ());
-    Utility.formatMeta (text, "Volume type", volumeType, getVolumeTypeText ());
-    Utility.formatMeta (text, "Volume name", volumeName);
-    Utility.formatMeta (text, "Volume library", 4, volumeLibrary);
-    Utility.formatMeta (text, "Tracks per disk", 2, tracksPerDisk);
-    Utility.formatMeta (text, "Initialised", initTime.format (sdf));
-    Utility.formatMeta (text, "Modified", vtocTime.format (sdf));
+    Utility.formatText (text, "VTOC structure block", 2, vtocStructureBlock);
+    Utility.formatText (text, "Build number", 2, buildNumber);
+    Utility.formatText (text, "RAM DOS", ramDos, getRamTypeText ());
+    Utility.formatText (text, "Volume type", volumeType, getVolumeTypeText ());
+    Utility.formatText (text, "Volume name", volumeName);
+    Utility.formatText (text, "Volume library", 4, volumeLibrary);
+    Utility.formatText (text, "Tracks per disk", 2, tracksPerDisk);
+    Utility.formatText (text, "Initialised", initTime.format (sdf));
+    Utility.formatText (text, "Modified", vtocTime.format (sdf));
 
     return Utility.rtrim (text);
   }

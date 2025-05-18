@@ -1,10 +1,11 @@
 package com.bytezone.filesystem;
 
+import static com.bytezone.utility.Utility.formatText;
+
 import java.util.ArrayList;
 import java.util.List;
 
 import com.bytezone.filesystem.AppleFileSystem.FileSystemType;
-import com.bytezone.utility.Utility;
 
 // -----------------------------------------------------------------------------------//
 public abstract class AbstractAppleFile implements AppleFile
@@ -266,10 +267,10 @@ public abstract class AbstractAppleFile implements AppleFile
     StringBuilder text = new StringBuilder ();
 
     text.append ("-------- File ---------\n");
-    Utility.formatMeta (text, "File name", getFileName ());
-    Utility.formatMeta (text, "File system type", getFileSystemType ().toString ());
+    formatText (text, "File name", getFileName ());
+    formatText (text, "File system type", getFileSystemType ().toString ());
     if (embeddedFileSystem != null)
-      Utility.formatMeta (text, "Embedded FS type",
+      formatText (text, "Embedded FS type",
           embeddedFileSystem.getFileSystemType ().toString ());
     //    Utility.formatMeta (text, "File type", 2, getFileType (), getFileTypeText ());
     //    Utility.formatMeta (text, "EOF", 6, getFileLength ());

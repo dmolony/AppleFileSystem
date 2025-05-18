@@ -1,5 +1,7 @@
 package com.bytezone.filesystem;
 
+import static com.bytezone.utility.Utility.formatText;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -12,7 +14,6 @@ import java.util.Optional;
 
 import com.bytezone.filesystem.AppleBlock.BlockType;
 import com.bytezone.filesystem.BlockReader.AddressType;
-import com.bytezone.utility.Utility;
 
 // -----------------------------------------------------------------------------------//
 abstract class AbstractFileSystem implements AppleFileSystem
@@ -544,13 +545,13 @@ abstract class AbstractFileSystem implements AppleFileSystem
     }
 
     text.append ("----- File System -----\n");
-    Utility.formatMeta (text, "File name", getFileName ());
-    Utility.formatMeta (text, "File system type", fileSystemType.toString ());
+    formatText (text, "File name", getFileName ());
+    formatText (text, "File system type", fileSystemType.toString ());
     text.append ("\n");
 
-    Utility.formatMeta (text, "Catalog blocks", 2, totalCatalogBlocks);
-    Utility.formatMeta (text, "Total file systems", 2, fileSystems.size ());
-    Utility.formatMeta (text, "Total files", 4, files.size (), msg);
+    formatText (text, "Catalog blocks", 2, totalCatalogBlocks);
+    formatText (text, "Total file systems", 2, fileSystems.size ());
+    formatText (text, "Total files", 4, files.size (), msg);
     text.append ("\n");
 
     text.append ("---- Block Reader -----\n");

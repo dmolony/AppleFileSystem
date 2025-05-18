@@ -1,6 +1,6 @@
 package com.bytezone.filesystem;
 
-import static com.bytezone.utility.Utility.formatMeta;
+import static com.bytezone.utility.Utility.formatText;
 
 import com.bytezone.utility.Utility;
 
@@ -110,23 +110,23 @@ public class DiskHeader2img extends DiskHeader
 
     String message = originalLength == 0 ? "   <-- wrong!" : "";
 
-    formatMeta (text, "Creator", creator, getCreator (creator));
-    formatMeta (text, "Header size", 2, headerSize);
-    formatMeta (text, "Version", 2, version);
-    formatMeta (text, "Format", 2, format, twoIMGFormats[format]);
-    formatMeta (text, "Flags", 8, flags);
-    formatMeta (text, "  locked", locked);
-    formatMeta (text, "  has Dos Volume no", hasDosVolumeNumber);
-    formatMeta (text, "  Dos Volume no", 4, volumeNumber);
-    formatMeta (text, "Blocks", 6, prodosBlocks);
-    formatMeta (text, "Data offset", 2, offset);
-    formatMeta (text, "Data size", 8, originalLength, message);
-    formatMeta (text, "Comment offset", 6, commentOffset);
-    formatMeta (text, "Comment length", 6, commentLength);
-    formatMeta (text, "Comment", comment);
-    formatMeta (text, "Creator Data offset", 6, creatorDataOffset);
-    formatMeta (text, "Creator Data length", 6, creatorDataLength);
+    formatText (text, "Creator", creator, getCreator (creator));
+    formatText (text, "Header size", 2, headerSize);
+    formatText (text, "Version", 2, version);
+    formatText (text, "Format", 2, format, twoIMGFormats[format]);
+    formatText (text, "Flags", 8, flags);
+    formatText (text, "  locked", locked);
+    formatText (text, "  has Dos Volume no", hasDosVolumeNumber);
+    formatText (text, "  Dos Volume no", 4, volumeNumber);
+    formatText (text, "Blocks", 6, prodosBlocks);
+    formatText (text, "Data offset", 2, offset);
+    formatText (text, "Data size", 8, originalLength, message);
+    formatText (text, "Comment offset", 6, commentOffset);
+    formatText (text, "Comment length", 6, commentLength);
+    formatText (text, "Comment", comment);
+    formatText (text, "Creator Data offset", 6, creatorDataOffset);
+    formatText (text, "Creator Data length", 6, creatorDataLength);
 
-    return text.toString ();
+    return Utility.rtrim (text);
   }
 }

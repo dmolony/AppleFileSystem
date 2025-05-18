@@ -1,6 +1,6 @@
 package com.bytezone.filesystem;
 
-import static com.bytezone.utility.Utility.formatMeta;
+import static com.bytezone.utility.Utility.formatText;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -196,28 +196,28 @@ class CatalogEntryProdos extends CatalogEntry
   {
     StringBuilder text = new StringBuilder (super.toString ());
 
-    formatMeta (text, "Storage type", 2, storageType, storageTypeText);
-    formatMeta (text, "File type", 2, fileType, fileTypeText);
+    formatText (text, "Storage type", 2, storageType, storageTypeText);
+    formatText (text, "File type", 2, fileType, fileTypeText);
 
-    formatMeta (text, "Block", 4, catalogBlock.getBlockNo (), blockChainText.get (0));
+    formatText (text, "Block", 4, catalogBlock.getBlockNo (), blockChainText.get (0));
 
     if (blockChainText.size () > 1)
       for (int i = 1; i < blockChainText.size (); i++)
         text.append (String.format ("%40s %s%n", "", blockChainText.get (i)));
 
-    formatMeta (text, "Key ptr", 4, keyPtr);
-    formatMeta (text, "Blocks used", 4, blocksUsed);
-    formatMeta (text, "EOF", 6, eof, eof == 0 ? "<-- zero" : "");
+    formatText (text, "Key ptr", 4, keyPtr);
+    formatText (text, "Blocks used", 4, blocksUsed);
+    formatText (text, "EOF", 6, eof, eof == 0 ? "<-- zero" : "");
 
-    formatMeta (text, "Created", dateBytes (0x18), dateCreated, timeCreated);
-    formatMeta (text, "Modified", dateBytes (0x21), dateModified, timeModified);
+    formatText (text, "Created", dateBytes (0x18), dateCreated, timeCreated);
+    formatText (text, "Modified", dateBytes (0x21), dateModified, timeModified);
 
-    formatMeta (text, "Version", 2, version);
-    formatMeta (text, "Min version", 2, minVersion);
+    formatText (text, "Version", 2, version);
+    formatText (text, "Min version", 2, minVersion);
 
-    formatMeta (text, "Access", 2, access, Utility.getAccessText (access));
-    formatMeta (text, "Auxtype", 4, auxType);
-    formatMeta (text, "VDH/SDH ptr", 4, headerPtr);
+    formatText (text, "Access", 2, access, Utility.getAccessText (access));
+    formatText (text, "Auxtype", 4, auxType);
+    formatText (text, "VDH/SDH ptr", 4, headerPtr);
 
     return Utility.rtrim (text);
   }

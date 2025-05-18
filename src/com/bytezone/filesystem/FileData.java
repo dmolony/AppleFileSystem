@@ -1,6 +1,6 @@
 package com.bytezone.filesystem;
 
-import static com.bytezone.utility.Utility.formatMeta;
+import static com.bytezone.utility.Utility.formatText;
 
 import com.bytezone.utility.Utility;
 
@@ -81,7 +81,7 @@ class FileData extends AbstractAppleFile
   {
     StringBuilder text = new StringBuilder (super.toString ());
 
-    formatMeta (text, "Length", 8, rawFileBuffer.length ());
+    formatText (text, "Length", 8, rawFileBuffer.length ());
 
     return Utility.rtrim (text);
   }

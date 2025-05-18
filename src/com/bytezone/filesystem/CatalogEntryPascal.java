@@ -1,6 +1,6 @@
 package com.bytezone.filesystem;
 
-import static com.bytezone.utility.Utility.formatMeta;
+import static com.bytezone.utility.Utility.formatText;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -229,20 +229,20 @@ public class CatalogEntryPascal extends CatalogEntry
     if (slot == 0)
     {
       text.append ("---- Pascal Header ----\n");
-      formatMeta (text, "Volume name", volumeName);
-      formatMeta (text, "First catalog block", 4, firstCatalogBlock);
-      formatMeta (text, "First file block", 4, lastCatalogBlock);
-      formatMeta (text, "Entry type", 4, entryType);
-      formatMeta (text, "Total blocks", 4, totalBlocks);
-      formatMeta (text, "Total files", 4, totalFiles);
-      formatMeta (text, "Date", volumeDate);
+      formatText (text, "Volume name", volumeName);
+      formatText (text, "First catalog block", 4, firstCatalogBlock);
+      formatText (text, "First file block", 4, lastCatalogBlock);
+      formatText (text, "Entry type", 4, entryType);
+      formatText (text, "Total blocks", 4, totalBlocks);
+      formatText (text, "Total files", 4, totalFiles);
+      formatText (text, "Date", volumeDate);
     }
     else
     {
-      formatMeta (text, "First block", 4, firstBlock);
-      formatMeta (text, "Last block", 4, lastBlock);
-      formatMeta (text, "Bytes in last block", 4, bytesUsedInLastBlock);
-      formatMeta (text, "Date", fileDateFormatted ());
+      formatText (text, "First block", 4, firstBlock);
+      formatText (text, "Last block", 4, lastBlock);
+      formatText (text, "Bytes in last block", 4, bytesUsedInLastBlock);
+      formatText (text, "Date", fileDateFormatted ());
     }
 
     return Utility.rtrim (text);

@@ -1,6 +1,6 @@
 package com.bytezone.filesystem;
 
-import static com.bytezone.utility.Utility.formatMeta;
+import static com.bytezone.utility.Utility.formatText;
 
 import com.bytezone.utility.Utility;
 
@@ -98,14 +98,14 @@ public class DiskHeaderDiskCopy extends DiskHeader
       default -> "???";
     };
 
-    formatMeta (text, "Name", name);
-    formatMeta (text, "Data size", 8, dataSize);
-    formatMeta (text, "Tag size", 8, tagSize);
-    formatMeta (text, "Data checksum", 8, dataChecksum);
-    formatMeta (text, "Tag checksum", 8, tagChecksum);
-    formatMeta (text, "Disk format", 2, diskFormat, formatTypes[diskFormat]);
-    formatMeta (text, "Encoding byte", 2, encoding, encodingText);
-    formatMeta (text, "ID", 4, id);
+    formatText (text, "Name", name);
+    formatText (text, "Data size", 8, dataSize);
+    formatText (text, "Tag size", 8, tagSize);
+    formatText (text, "Data checksum", 8, dataChecksum);
+    formatText (text, "Tag checksum", 8, tagChecksum);
+    formatText (text, "Disk format", 2, diskFormat, formatTypes[diskFormat]);
+    formatText (text, "Encoding byte", 2, encoding, encodingText);
+    formatText (text, "ID", 4, id);
 
     return Utility.rtrim (text);
   }

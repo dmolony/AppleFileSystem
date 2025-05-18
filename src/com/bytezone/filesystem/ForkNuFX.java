@@ -1,5 +1,7 @@
 package com.bytezone.filesystem;
 
+import static com.bytezone.utility.Utility.formatText;
+
 import com.bytezone.utility.Utility;
 
 // -----------------------------------------------------------------------------------//
@@ -119,18 +121,18 @@ public class ForkNuFX extends AbstractAppleFile
   {
     StringBuilder text = new StringBuilder ();
 
-    Utility.formatMeta (text, "File name", getFileName ());
-    Utility.formatMeta (text, "Fork type", forkType.toString ());
-    Utility.formatMeta (text, "File type", 2, getFileType (), getFileTypeText ());
-    Utility.formatMeta (text, "Aux", 4, getAuxType ());
-    Utility.formatMeta (text, "Eof", 4, getFileLength ());
-    Utility.formatMeta (text, "Parent", parentFile.fileName);
-    Utility.formatMeta (text, "File system", fileSystem.fileSystemType.toString ());
-    Utility.formatMeta (text, "File system id", 2, getFileSystemId ());
+    formatText (text, "File name", getFileName ());
+    formatText (text, "Fork type", forkType.toString ());
+    formatText (text, "File type", 2, getFileType (), getFileTypeText ());
+    formatText (text, "Aux", 4, getAuxType ());
+    formatText (text, "Eof", 4, getFileLength ());
+    formatText (text, "Parent", parentFile.fileName);
+    formatText (text, "File system", fileSystem.fileSystemType.toString ());
+    formatText (text, "File system id", 2, getFileSystemId ());
 
     text.append ("\n");
     text.append (thread.toString ());
 
-    return text.toString ();
+    return Utility.rtrim (text);
   }
 }

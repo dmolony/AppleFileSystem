@@ -1,6 +1,6 @@
 package com.bytezone.filesystem;
 
-import static com.bytezone.utility.Utility.formatMeta;
+import static com.bytezone.utility.Utility.formatText;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -179,18 +179,18 @@ public class CatalogEntryCpm implements Iterable<Integer>
     StringBuilder text = new StringBuilder ();
 
     text.append ("\n---- Catalog entry ----\n");
-    formatMeta (text, "File name", fileName);
-    formatMeta (text, "File extension", fileTypeText);
-    formatMeta (text, "Read only", readOnly);
-    formatMeta (text, "System file", systemFile);
-    formatMeta (text, "Archived", archived);
-    formatMeta (text, "User number", 2, userNumber);
-    formatMeta (text, "Extent lo", 2, extentCounterLo);
-    formatMeta (text, "Extent hi", 2, extentCounterHi);
-    formatMeta (text, "Extent no", 2, extentNo);
+    formatText (text, "File name", fileName);
+    formatText (text, "File extension", fileTypeText);
+    formatText (text, "Read only", readOnly);
+    formatText (text, "System file", systemFile);
+    formatText (text, "Archived", archived);
+    formatText (text, "User number", 2, userNumber);
+    formatText (text, "Extent lo", 2, extentCounterLo);
+    formatText (text, "Extent hi", 2, extentCounterHi);
+    formatText (text, "Extent no", 2, extentNo);
     //    Utility.formatMeta (text, "Data blocks", blocks.toString ());
-    formatMeta (text, "Record count", 4, recordCount);
-    formatMeta (text, "Byte count", 4, byteCount);
+    formatText (text, "Record count", 4, recordCount);
+    formatText (text, "Byte count", 4, byteCount);
 
     return Utility.rtrim (text);
   }

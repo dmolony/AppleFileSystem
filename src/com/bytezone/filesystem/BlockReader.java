@@ -1,6 +1,6 @@
 package com.bytezone.filesystem;
 
-import static com.bytezone.utility.Utility.formatMeta;
+import static com.bytezone.utility.Utility.formatText;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -537,13 +537,13 @@ public class BlockReader
   {
     StringBuilder text = new StringBuilder ();
 
-    formatMeta (text, "File system offset", 4, dataRecord.offset ());
-    formatMeta (text, "File system length", 8, dataRecord.length ());
-    formatMeta (text, "Address type", addressType.toString ());
-    formatMeta (text, "Total blocks", 6, totalBlocks);
-    formatMeta (text, "Bytes per block", 4, bytesPerBlock);
-    formatMeta (text, "Blocks per track", 2, blocksPerTrack);
-    formatMeta (text, "Interleave", 2, interleave);
+    formatText (text, "File system offset", 4, dataRecord.offset ());
+    formatText (text, "File system length", 8, dataRecord.length ());
+    formatText (text, "Address type", addressType.toString ());
+    formatText (text, "Total blocks", 6, totalBlocks);
+    formatText (text, "Bytes per block", 4, bytesPerBlock);
+    formatText (text, "Blocks per track", 2, blocksPerTrack);
+    formatText (text, "Interleave", 2, interleave);
 
     return Utility.rtrim (text);
   }

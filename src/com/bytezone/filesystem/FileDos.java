@@ -1,6 +1,6 @@
 package com.bytezone.filesystem;
 
-import static com.bytezone.utility.Utility.formatMeta;
+import static com.bytezone.utility.Utility.formatText;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -238,6 +238,9 @@ public abstract class FileDos extends AbstractAppleFile
       textBlocks.clear ();      // treat file as normal text
   }
 
+  // Try to convert the filesystem's raw buffer into a more precise buffer. This means
+  // removing the eof and load address from A/I/B files, and terminating the file at
+  // the eof.
   // ---------------------------------------------------------------------------------//
   @Override
   public Buffer getFileBuffer ()
@@ -315,6 +318,8 @@ public abstract class FileDos extends AbstractAppleFile
   public int getProbableRecordLength ()
   // ---------------------------------------------------------------------------------//
   {
+    assert isRandomAccess ();
+
     return recordLength;
   }
 
@@ -349,6 +354,8 @@ public abstract class FileDos extends AbstractAppleFile
   public int getLoadAddress ()
   // ---------------------------------------------------------------------------------//
   {
+    assert loadAddress > 0;
+
     return loadAddress;
   }
 
@@ -460,7 +467,7 @@ public abstract class FileDos extends AbstractAppleFile
 
     for (byte b : name.getBytes ())
     {
-      int val = b & 0x7F;
+      int val = b & 0xFF;
       if (val < 32 || val == 127)               // non-printable
         return false;
     }
@@ -509,14 +516,11 @@ public abstract class FileDos extends AbstractAppleFile
 
     StringBuilder message = new StringBuilder ();
 
-    //    if (recordLength > 0)
-    //      addMessage (message, String.format ("Reclen = %,d ?", recordLength));
-
     if (getSectorCount () != actualSize && getTotalDataSectors () > 0)
       addMessage (message, String.format ("Actual size: %03d", actualSize));
 
     if (getSectorCount () > 999)
-      addMessage (message, " - Reported " + getSectorCount ());
+      addMessage (message, "Reported " + getSectorCount ());
 
     if (isRandomAccess ())
       addMessage (message, String.format ("Random Access (%d)", recordLength));
@@ -553,19 +557,19 @@ public abstract class FileDos extends AbstractAppleFile
 
     AppleBlock catalogEntryBlock = catalogEntry.catalogBlock;
 
-    formatMeta (text, "Index blocks", 4, indexBlocks.size ());
-    formatMeta (text, "Locked", catalogEntry.isLocked ? "true" : "false");
-    formatMeta (text, "Catalog track", 2, catalogEntryBlock.getTrackNo ());
-    formatMeta (text, "Catalog sector", 2, catalogEntryBlock.getSectorNo ());
-    formatMeta (text, "Catalog slot #", 2, catalogEntry.slot);
-    formatMeta (text, "Sectors", 4, catalogEntry.sectorCount);
-    formatMeta (text, "Load address", 4, loadAddress);
+    formatText (text, "Index blocks", 4, indexBlocks.size ());
+    formatText (text, "Locked", (catalogEntry.isLocked ? "true" : "false"));
+    formatText (text, "Catalog track", 2, catalogEntryBlock.getTrackNo ());
+    formatText (text, "Catalog sector", 2, catalogEntryBlock.getSectorNo ());
+    formatText (text, "Catalog slot #", 2, catalogEntry.slot);
+    formatText (text, "Sectors", 4, catalogEntry.sectorCount);
+    formatText (text, "Load address", 4, loadAddress);
 
     if (isRandomAccess ())
     {
-      formatMeta (text, "Text file gaps", 4, fileGaps);
-      formatMeta (text, "Text blocks", 4, textBlocks.size ());
-      formatMeta (text, "Possible reclen", 4, recordLength);
+      formatText (text, "Text file gaps", 4, fileGaps);
+      formatText (text, "Text blocks", 4, textBlocks.size ());
+      formatText (text, "Possible reclen", 4, recordLength);
     }
 
     return Utility.rtrim (text);

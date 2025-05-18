@@ -1,6 +1,6 @@
 package com.bytezone.filesystem;
 
-import static com.bytezone.utility.Utility.formatMeta;
+import static com.bytezone.utility.Utility.formatText;
 
 import com.bytezone.filesystem.AppleBlock.BlockType;
 import com.bytezone.utility.Utility;
@@ -180,22 +180,22 @@ public class FileLbr extends AbstractAppleFile
   {
     StringBuilder text = new StringBuilder (super.toString ());
 
-    formatMeta (text, "Status", 2, status,
+    formatText (text, "Status", 2, status,
         status == 0 ? "Active" : status == 0xFF ? "Unused" : "Deleted");
-    formatMeta (text, "Extension ............. %s%n", extension);
-    formatMeta (text, "Aternate name ......... %s%n",
+    formatText (text, "Extension ............. %s%n", extension);
+    formatText (text, "Aternate name ......... %s%n",
         alternateName == null ? "" : alternateName);
-    formatMeta (text, "Aternate extension .... %s%n",
+    formatText (text, "Aternate extension .... %s%n",
         alternateExtension == null ? "" : alternateExtension);
-    formatMeta (text, "Extra text", extraText == null ? "" : extraText);
-    formatMeta (text, "Index", 4, index);
-    formatMeta (text, "Length", 4, length);
-    formatMeta (text, "Pad", 2, pad);
-    formatMeta (text, "Creation date", 4, creationDate);
-    formatMeta (text, "Creation time", 4, creationTime);
-    formatMeta (text, "Modified date", 4, modifiedDate);
-    formatMeta (text, "Modified time", 4, modifiedTime);
-    formatMeta (text, "CRC", 4, crc);
+    formatText (text, "Extra text", extraText == null ? "" : extraText);
+    formatText (text, "Index", 4, index);
+    formatText (text, "Length", 4, length);
+    formatText (text, "Pad", 2, pad);
+    formatText (text, "Creation date", 4, creationDate);
+    formatText (text, "Creation time", 4, creationTime);
+    formatText (text, "Modified date", 4, modifiedDate);
+    formatText (text, "Modified time", 4, modifiedTime);
+    formatText (text, "CRC", 4, crc);
 
     return Utility.rtrim (text);
   }

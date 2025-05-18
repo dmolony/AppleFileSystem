@@ -1,6 +1,6 @@
 package com.bytezone.filesystem;
 
-import static com.bytezone.utility.Utility.formatMeta;
+import static com.bytezone.utility.Utility.formatText;
 
 import java.nio.file.attribute.FileTime;
 import java.util.zip.ZipEntry;
@@ -108,15 +108,15 @@ public class FileZip extends AbstractAppleFile implements AppleFilePath
     byte[] bytes = zipEntry.getExtra ();
     String extra = bytes == null ? "" : "\n" + Utility.format (bytes);
 
-    formatMeta (text, "Compressed size", 8, (int) zipEntry.getCompressedSize ());
-    formatMeta (text, "Size", 8, (int) zipEntry.getSize ());
-    formatMeta (text, "Name", zipEntry.getName ());
-    formatMeta (text, "Comment", comment);
-    formatMeta (text, "CRC", 8, (int) zipEntry.getCrc ());
-    formatMeta (text, "Creation time", creationTime);
-    formatMeta (text, "Extra", extra);
-    formatMeta (text, "Method", 2, zipEntry.getMethod ());
-    formatMeta (text, "Is directory", zipEntry.isDirectory ());
+    formatText (text, "Compressed size", 8, (int) zipEntry.getCompressedSize ());
+    formatText (text, "Size", 8, (int) zipEntry.getSize ());
+    formatText (text, "Name", zipEntry.getName ());
+    formatText (text, "Comment", comment);
+    formatText (text, "CRC", 8, (int) zipEntry.getCrc ());
+    formatText (text, "Creation time", creationTime);
+    formatText (text, "Extra", extra);
+    formatText (text, "Method", 2, zipEntry.getMethod ());
+    formatText (text, "Is directory", zipEntry.isDirectory ());
 
     return Utility.rtrim (text);
   }

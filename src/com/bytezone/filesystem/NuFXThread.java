@@ -1,5 +1,7 @@
 package com.bytezone.filesystem;
 
+import static com.bytezone.utility.Utility.formatText;
+
 import com.bytezone.utility.LZW1;
 import com.bytezone.utility.LZW2;
 import com.bytezone.utility.Squeeze;
@@ -128,18 +130,17 @@ class NuFXThread
   {
     StringBuilder text = new StringBuilder ();
 
-    Utility.formatMeta (text, "  threadClass", 2, threadClass,
-        threadClassText[threadClass]);
-    Utility.formatMeta (text, "  format", 2, threadFormat, formatText[threadFormat]);
-    Utility.formatMeta (text, "  kind", 2, threadKind, getKindText ());
-    Utility.formatMeta (text, "  crc", 4, threadCrc);
-    Utility.formatMeta (text, "  uncompressedEOF", 6, uncompressedEOF);
-    Utility.formatMeta (text, "  compressedEOF", 6, compressedEOF);
+    formatText (text, "  threadClass", 2, threadClass, threadClassText[threadClass]);
+    formatText (text, "  format", 2, threadFormat, formatText[threadFormat]);
+    formatText (text, "  kind", 2, threadKind, getKindText ());
+    formatText (text, "  crc", 4, threadCrc);
+    formatText (text, "  uncompressedEOF", 6, uncompressedEOF);
+    formatText (text, "  compressedEOF", 6, compressedEOF);
 
     if (threadClass != CLASS_DATA)
     {
       //      text.append ("\n");
-      Utility.formatMeta (text, "  data", getDataString ());
+      formatText (text, "  data", getDataString ());
     }
 
     return Utility.rtrim (text);

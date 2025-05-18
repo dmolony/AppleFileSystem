@@ -1,6 +1,6 @@
 package com.bytezone.filesystem;
 
-import static com.bytezone.utility.Utility.formatMeta;
+import static com.bytezone.utility.Utility.formatText;
 
 import com.bytezone.utility.DateTime;
 import com.bytezone.utility.Utility;
@@ -149,16 +149,16 @@ class FsNuFX extends AbstractFileSystem
     StringBuilder text = new StringBuilder (super.toString ());
 
     text.append ("----- NuFX Header -----\n");
-    formatMeta (text, "Master CRC", 4, crc, crcPassed ? "Passed" : "** Failed **");
-    formatMeta (text, "Records", 2, totalRecords);
-    formatMeta (text, "Created", created.format ());
-    formatMeta (text, "Modified", modified.format ());
-    formatMeta (text, "Version", 2, version);
-    formatMeta (text, "Reserved", 6, reserved1);
-    formatMeta (text, "Reserved", 6, reserved2);
-    formatMeta (text, "Master EOF", 6, eof);
-    formatMeta (text, "Reserved", 6, reserved3);
-    formatMeta (text, "Reserved", 4, reserved4);
+    formatText (text, "Master CRC", 4, crc, crcPassed ? "Passed" : "** Failed **");
+    formatText (text, "Records", 2, totalRecords);
+    formatText (text, "Created", created.format ());
+    formatText (text, "Modified", modified.format ());
+    formatText (text, "Version", 2, version);
+    formatText (text, "Reserved", 6, reserved1);
+    formatText (text, "Reserved", 6, reserved2);
+    formatText (text, "Master EOF", 6, eof);
+    formatText (text, "Reserved", 6, reserved3);
+    formatText (text, "Reserved", 4, reserved4);
 
     return Utility.rtrim (text);
   }

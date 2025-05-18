@@ -1,6 +1,6 @@
 package com.bytezone.filesystem;
 
-import static com.bytezone.utility.Utility.formatMeta;
+import static com.bytezone.utility.Utility.formatText;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -159,29 +159,29 @@ class DirectoryHeaderProdos
       message = folderType == 0x75 ? "" : "<-- should be $75";
     }
 
-    formatMeta (text, "Storage type", 2, storageType, storageTypeText);
-    formatMeta (text, "File name", fileName);
-    formatMeta (text, "Reserved", 2, folderType, message);
-    formatMeta (text, "Reserved", reserved);
-    formatMeta (text, "Created", dateBytes (0x1C), dateCreated, timeCreated);
-    formatMeta (text, "Version", 2, version);
-    formatMeta (text, "Min version", 2, minVersion);
-    formatMeta (text, "Access", 2, access, Utility.getAccessText (access));
-    formatMeta (text, "Entry length", 2, entryLength);
-    formatMeta (text, "Entries per block", 2, entriesPerBlock);
-    formatMeta (text, "File count", 2, fileCount);
-    formatMeta (text, "Catalog blocks", 2, catalogBlocks.size ());
+    formatText (text, "Storage type", 2, storageType, storageTypeText);
+    formatText (text, "File name", fileName);
+    formatText (text, "Reserved", 2, folderType, message);
+    formatText (text, "Reserved", reserved);
+    formatText (text, "Created", dateBytes (0x1C), dateCreated, timeCreated);
+    formatText (text, "Version", 2, version);
+    formatText (text, "Min version", 2, minVersion);
+    formatText (text, "Access", 2, access, Utility.getAccessText (access));
+    formatText (text, "Entry length", 2, entryLength);
+    formatText (text, "Entries per block", 2, entriesPerBlock);
+    formatText (text, "File count", 2, fileCount);
+    formatText (text, "Catalog blocks", 2, catalogBlocks.size ());
 
     if (storageType == 0x0F)
     {
-      formatMeta (text, "Bitmap pointer", 4, keyPtr);
-      formatMeta (text, "Total blocks", 4, totalBlocks);
+      formatText (text, "Bitmap pointer", 4, keyPtr);
+      formatText (text, "Total blocks", 4, totalBlocks);
     }
     else
     {
-      formatMeta (text, "Parent pointer", 4, keyPtr, "(parent Directory Header block)");
-      formatMeta (text, "Parent entry", 2, parentEntry, "(slot in catalog)");
-      formatMeta (text, "Parent entry length", 2, parentEntryLength, "(always 0x27)");
+      formatText (text, "Parent pointer", 4, keyPtr, "(parent Directory Header block)");
+      formatText (text, "Parent entry", 2, parentEntry, "(slot in catalog)");
+      formatText (text, "Parent entry length", 2, parentEntryLength, "(always 0x27)");
     }
 
     return text.toString ();

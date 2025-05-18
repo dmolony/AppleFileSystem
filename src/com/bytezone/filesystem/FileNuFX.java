@@ -1,7 +1,7 @@
 package com.bytezone.filesystem;
 
 import static com.bytezone.filesystem.ProdosConstants.fileTypes;
-import static com.bytezone.utility.Utility.formatMeta;
+import static com.bytezone.utility.Utility.formatText;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -248,6 +248,7 @@ public class FileNuFX extends AbstractAppleFile implements AppleFilePath, AppleF
   }
 
   // ---------------------------------------------------------------------------------//
+  @Override
   public int getAuxType ()
   // ---------------------------------------------------------------------------------//
   {
@@ -517,44 +518,44 @@ public class FileNuFX extends AbstractAppleFile implements AppleFilePath, AppleF
     String decode = Utility.matchFlags (access, accessChars);
 
     if (!getFileName ().equals (getFullFileName ()))
-      formatMeta (text, "Full file name", getFullFileName ());
-    formatMeta (text, "Header CRC", 4, crc, crcPassed ? "Passed" : "** Failed **");
-    formatMeta (text, "Attributes", 2, attributeSectionLength);
-    formatMeta (text, "Version", 2, version);
-    formatMeta (text, "Threads", 2, totThreads);
-    formatMeta (text, "File sys id", 2, fileSystemID, fileSystems[fileSystemID]);
-    formatMeta (text, "Separator", separator);
-    formatMeta (text, "Access", bits, decode);
+      formatText (text, "Full file name", getFullFileName ());
+    formatText (text, "Header CRC", 4, crc, crcPassed ? "Passed" : "** Failed **");
+    formatText (text, "Attributes", 2, attributeSectionLength);
+    formatText (text, "Version", 2, version);
+    formatText (text, "Threads", 2, totThreads);
+    formatText (text, "File sys id", 2, fileSystemID, fileSystems[fileSystemID]);
+    formatText (text, "Separator", separator);
+    formatText (text, "Access", bits, decode);
 
     if (storType < 16)
     {
-      formatMeta (text, "File type", 2, fileType, fileTypes[fileType]);
-      formatMeta (text, "Aux type", 4, auxType);
-      formatMeta (text, "Storage type", 2, storType, storage[storType]);
+      formatText (text, "File type", 2, fileType, fileTypes[fileType]);
+      formatText (text, "Aux type", 4, auxType);
+      formatText (text, "Storage type", 2, storType, storage[storType]);
       text.append ("\n");
     }
     else
     {
-      formatMeta (text, "Zero", 2, fileType);
-      formatMeta (text, "Total blocks", 2, auxType);
-      formatMeta (text, "Block size", 2, storType);
+      formatText (text, "Zero", 2, fileType);
+      formatText (text, "Total blocks", 2, auxType);
+      formatText (text, "Block size", 2, storType);
       text.append ("\n");
     }
 
-    formatMeta (text, "Created", created.format ());
-    formatMeta (text, "Modified", modified.format ());
-    formatMeta (text, "Archived", archived.format ());
+    formatText (text, "Created", created.format ());
+    formatText (text, "Modified", modified.format ());
+    formatText (text, "Archived", archived.format ());
     text.append ("\n");
 
-    formatMeta (text, "Option size", 2, optionSize);
-    formatMeta (text, "Filename len", 2, fileNameLength);
-    formatMeta (text, "Filename", fileName1);
+    formatText (text, "Option size", 2, optionSize);
+    formatText (text, "Filename len", 2, fileNameLength);
+    formatText (text, "Filename", fileName1);
     text.append ("\n");
 
-    formatMeta (text, "Message threads", 2, messageThreads);
-    formatMeta (text, "Control threads", 2, controlThreads);
-    formatMeta (text, "Data threads", 2, dataThreads, threadKindText);
-    formatMeta (text, "Filename threads", 2, filenameThreads);
+    formatText (text, "Message threads", 2, messageThreads);
+    formatText (text, "Control threads", 2, controlThreads);
+    formatText (text, "Data threads", 2, dataThreads, threadKindText);
+    formatText (text, "Filename threads", 2, filenameThreads);
     text.append ("\n");
 
     for (NuFXThread thread : threads)

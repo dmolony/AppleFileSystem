@@ -1,6 +1,6 @@
 package com.bytezone.woz;
 
-import static com.bytezone.utility.Utility.formatMeta;
+import static com.bytezone.utility.Utility.formatText;
 
 import java.io.BufferedInputStream;
 import java.io.File;
@@ -365,12 +365,12 @@ public class WozFile
 
       String diskTypeText = diskType == 1 ? "5.25" : "3.5";
 
-      formatMeta (text, "Version", 2, wozVersion);
-      formatMeta (text, "Disk type", 2, diskType, diskTypeText);
-      formatMeta (text, "Write protected", 2, writeProtected);
-      formatMeta (text, "Synchronized", 2, synchronised);
-      formatMeta (text, "Cleaned", 2, cleaned);
-      formatMeta (text, "Creator", creator);
+      formatText (text, "Version", 2, wozVersion);
+      formatText (text, "Disk type", 2, diskType, diskTypeText);
+      formatText (text, "Write protected", 2, writeProtected);
+      formatText (text, "Synchronized", 2, synchronised);
+      formatText (text, "Cleaned", 2, cleaned);
+      formatText (text, "Creator", creator);
 
       if (wozVersion > 1)
       {
@@ -378,13 +378,13 @@ public class WozFile
             bootSectorFormat == 0 ? "Unknown" : bootSectorFormat == 1 ? "16 sector"
                 : bootSectorFormat == 2 ? "13 sector" : "Hybrid";
 
-        formatMeta (text, "Sides", 2, sides);
-        formatMeta (text, "Boot sector format", 2, bootSectorFormat,
+        formatText (text, "Sides", 2, sides);
+        formatText (text, "Boot sector format", 2, bootSectorFormat,
             bootSectorFormatText);
-        formatMeta (text, "Optimal bit timing", 2, optimalBitTiming);
-        formatMeta (text, "Compatible hardware", 2, compatibleHardware);
-        formatMeta (text, "Required RAM", 2, requiredRam);
-        formatMeta (text, "Largest track", 2, largestTrack);
+        formatText (text, "Optimal bit timing", 2, optimalBitTiming);
+        formatText (text, "Compatible hardware", 2, compatibleHardware);
+        formatText (text, "Required RAM", 2, requiredRam);
+        formatText (text, "Largest track", 2, largestTrack);
       }
 
       return Utility.rtrim (text);

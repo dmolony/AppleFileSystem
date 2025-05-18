@@ -1,6 +1,6 @@
 package com.bytezone.filesystem;
 
-import static com.bytezone.utility.Utility.formatMeta;
+import static com.bytezone.utility.Utility.formatText;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -514,14 +514,14 @@ public class ForkProdos extends AbstractAppleFile
 
     if (isFork)             // an actual fork, not the default data for a FileProdos
     {
-      formatMeta (text, "File name", parentFile.getFileName ());
-      formatMeta (text, "File system type",
+      formatText (text, "File name", parentFile.getFileName ());
+      formatText (text, "File system type",
           parentFileSystem.getFileSystemType ().toString ());
-      formatMeta (text, "Storage type", 2, storageType,
+      formatText (text, "Storage type", 2, storageType,
           ProdosConstants.storageTypes[storageType]);
-      formatMeta (text, "Key ptr", 4, keyPtr);
-      formatMeta (text, "Size (blocks)", 4, size);
-      formatMeta (text, "Text file gaps", 4, fileGaps);
+      formatText (text, "Key ptr", 4, keyPtr);
+      formatText (text, "Size (blocks)", 4, size);
+      formatText (text, "Text file gaps", 4, fileGaps);
       text.append ("\n");
     }
 
@@ -531,10 +531,10 @@ public class ForkProdos extends AbstractAppleFile
     if (eof == 0)
       message = "<-- zero";
 
-    formatMeta (text, "Index blocks", 4, indexBlocks.size ());
-    formatMeta (text, "Data blocks", 4, dataBlocks.size () - fileGaps);
-    formatMeta (text, "File gaps", 4, fileGaps);
-    formatMeta (text, "EOF", 6, eof, message);
+    formatText (text, "Index blocks", 4, indexBlocks.size ());
+    formatText (text, "Data blocks", 4, dataBlocks.size () - fileGaps);
+    formatText (text, "File gaps", 4, fileGaps);
+    formatText (text, "EOF", 6, eof, message);
 
     return Utility.rtrim (text);
   }
