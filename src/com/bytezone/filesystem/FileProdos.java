@@ -13,7 +13,7 @@ import com.bytezone.utility.Utility;
 public class FileProdos extends AbstractAppleFile implements AppleForkedFile
 // -----------------------------------------------------------------------------------//
 {
-  private static Locale US = Locale.US;                 // to force 3 character months
+  private static Locale US = Locale.US;               // to force 3 character months
   protected static final DateTimeFormatter sdf =
       DateTimeFormatter.ofPattern ("d-LLL-yy", US);
   protected static final DateTimeFormatter stf = DateTimeFormatter.ofPattern ("H:mm");

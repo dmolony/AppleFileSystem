@@ -53,7 +53,6 @@ class FolderProdos extends AbstractAppleFile implements AppleContainer
     dataBlocks.addAll (directoryEntry.catalogBlocks);
 
     fs.readCatalog (this, directoryEntry.catalogBlocks);
-    //    readCatalog ();
 
     isFolder = true;
   }
@@ -74,64 +73,6 @@ class FolderProdos extends AbstractAppleFile implements AppleContainer
       System.out.printf ("%04X  %04X%n", thisBlockNo, headerBlockNo);
     }
     ;
-  }
-
-  // ---------------------------------------------------------------------------------//
-  private void readCatalog ()
-  // ---------------------------------------------------------------------------------//
-  {
-    FsProdos fs = (FsProdos) parentFileSystem;
-    FileProdos file = null;
-
-    for (AppleBlock catalogBlock : directoryEntry.catalogBlocks)
-    {
-      byte[] buffer = catalogBlock.getBuffer ();
-      int ptr = 4;
-
-      for (int i = 0; i < ProdosConstants.ENTRIES_PER_BLOCK; i++)
-      {
-        int blockType = (buffer[ptr] & 0xF0) >>> 4;
-
-        switch (blockType)
-        {
-          case ProdosConstants.SEEDLING:
-          case ProdosConstants.SAPLING:
-          case ProdosConstants.TREE:
-            file = new FileProdos (fs, this, catalogBlock, i);
-            addFile (file);
-
-            if (file.getFileType () == ProdosConstants.FILE_TYPE_LBR)
-              fs.addEmbeddedFileSystem (file, 0);
-
-            break;
-
-          case ProdosConstants.PASCAL_ON_PROFILE:
-            file = new FileProdos (fs, this, catalogBlock, i);
-            addFile (file);
-            fs.addEmbeddedFileSystem (file, 1024);
-            break;
-
-          case ProdosConstants.GSOS_EXTENDED_FILE:
-            addFile (new FileProdos (fs, this, catalogBlock, i));
-            break;
-
-          case ProdosConstants.SUBDIRECTORY:
-            FolderProdos folder = new FolderProdos (fs, this, catalogBlock, i);
-            addFile (folder);
-            break;
-
-          case ProdosConstants.SUBDIRECTORY_HEADER:
-          case ProdosConstants.VOLUME_HEADER:
-          case ProdosConstants.FREE:
-            break;
-
-          default:
-            System.out.printf ("Unknown Blocktype: %02X%n", blockType);
-        }
-
-        ptr += ProdosConstants.ENTRY_SIZE;
-      }
-    }
   }
 
   // ---------------------------------------------------------------------------------//
