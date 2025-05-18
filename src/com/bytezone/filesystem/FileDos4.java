@@ -22,8 +22,9 @@ public class FileDos4 extends FileDos
     int nextTrack = buffer[ptr] & 0xFF;
     int nextSector = buffer[ptr + 1] & 0xFF;
 
-    // build lists of index and data sectors - NB cannot rely on catalogEntry.sectorCount
-    outer_loop: while (nextTrack != 0)                // 0x40 = track zero
+    // build lists of index and data sectors 
+    // NB cannot rely on catalogEntry.sectorCount
+    outer_loop: while (nextTrack != 0)                  // 0x40 = track zero
     {
       nextTrack &= 0x3F;            // 0x80 = deleted(?), 0x40 = track zero
       nextSector &= 0x1F;           // 0 : 31
@@ -53,7 +54,7 @@ public class FileDos4 extends FileDos
           if (getFileType () == FsDos.FILE_TYPE_TEXT)
           {
             dataBlocks.add (null);                          // must be a sparse file
-            ++textFileGaps;
+            ++fileGaps;
           }
           else
             break outer_loop;

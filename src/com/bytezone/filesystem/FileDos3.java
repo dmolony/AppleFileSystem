@@ -47,7 +47,7 @@ public class FileDos3 extends FileDos
           if (getFileType () == FsDos.FILE_TYPE_TEXT)
           {
             dataBlocks.add (null);                      // must be a sparse file
-            ++textFileGaps;
+            ++fileGaps;
           }
           else
             break outer_loop;

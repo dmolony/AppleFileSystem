@@ -17,7 +17,7 @@ public abstract class FileDos extends AbstractAppleFile
 
   protected int eof;
   protected int loadAddress;
-  protected int textFileGaps;       // total sparse file empty data sectors
+  //  protected int textFileGaps;       // total sparse file empty data sectors
   protected int wastedBlocks;
 
   protected List<AppleBlock> indexBlocks = new ArrayList<> ();
@@ -33,6 +33,13 @@ public abstract class FileDos extends AbstractAppleFile
     super (fs);
   }
 
+  // Integer, Applesoft and Binary files store the eof in the file itself. Text files
+  // can be either a sequence of char values terminated with a CR, or they can be a
+  // collection of fixed-length random-access records with zeroes in between.
+  // Random-access files are often corrupt with records overflowing, or error messages
+  // being written to the file by accident. The record length is not stored anywhere,
+  // so it's all mostly guesswork. And who knows what people have done with the other
+  // 'unused' file types.
   // ---------------------------------------------------------------------------------//
   protected void setFileLength ()
   // ---------------------------------------------------------------------------------//
@@ -50,7 +57,7 @@ public abstract class FileDos extends AbstractAppleFile
         if (eof == 0)
           break;
 
-        if (textFileGaps > 0 || fileContainsZero ())             // random-access file
+        if (fileGaps > 0 || fileContainsZero ())             // random-access file
           createTextBlocks (dataBlocks);
 
         break;
@@ -90,26 +97,17 @@ public abstract class FileDos extends AbstractAppleFile
     }
   }
 
-  // Some binary files are used as text files, which screws up the eof/load bytes.
+  // Some binary files contain text data, which screws up the eof/load bytes.
   // I have no idea how this happens, but it does. Presumably by programs manipulating
   // the T/S index.
   // ---------------------------------------------------------------------------------//
   private void checkEof ()
   // ---------------------------------------------------------------------------------//
   {
-    int blockSize = parentFileSystem.getBlockSize ();
-    int maxEof = dataBlocks.size () * blockSize;
-
-    if (false)
-      if (eof > maxEof)
-        System.out.printf ("%,9d %,9d  %s  %-20s %s%n", eof, maxEof, getFileTypeText (),
-            getFileName (), parentFileSystem.getFileName ());
-
     if (eof > 0)
     {
-      int blocksUsed = dataBlocks.size ();
-      int blocksNeeded = (eof - 1) / blockSize + 1;
-      wastedBlocks = blocksUsed - blocksNeeded;
+      int blocksNeeded = (eof - 1) / parentFileSystem.getBlockSize () + 1;
+      wastedBlocks = dataBlocks.size () - blocksNeeded;
     }
   }
 
@@ -122,20 +120,18 @@ public abstract class FileDos extends AbstractAppleFile
     while (dataBlocks.size () > 0 && dataBlocks.get (dataBlocks.size () - 1) == null)
     {
       dataBlocks.remove (dataBlocks.size () - 1);
-      --textFileGaps;
+      --fileGaps;
     }
 
     if (dataBlocks.size () == 0)
       return 0;
 
-    // get last block
+    // get last data block
     AppleBlock dataBlock = dataBlocks.get (dataBlocks.size () - 1);
     byte[] buffer = dataBlock.getBuffer ();
 
-    // set eof to maximum possible
-    int blockSize = parentFileSystem.getBlockSize ();
-    int eof = dataBlocks.size () * blockSize;
-    int ptr = blockSize;
+    int ptr = parentFileSystem.getBlockSize ();       // block size
+    int eof = dataBlocks.size () * ptr;               // maximum possible
 
     // decrement eof for each trailing zero
     while (--ptr >= 0 && buffer[ptr] == 0)
@@ -151,28 +147,27 @@ public abstract class FileDos extends AbstractAppleFile
   private boolean fileContainsZero ()
   // ---------------------------------------------------------------------------------//
   {
-    assert textFileGaps == 0;
+    assert fileGaps == 0;
 
     // test entire buffer (in case reclen > block size)
-    Buffer fileBuffer = getRawFileBuffer ();
-    byte[] buffer = fileBuffer.data ();
+    Buffer rawBuffer = getRawFileBuffer ();
+    byte[] buffer = rawBuffer.data ();
 
-    int max = eof > 0 ? eof : fileBuffer.max () - 2;      // avoid the last two bytes
+    int max = (eof > 0 ? eof : rawBuffer.max ()) - 2;      // ignore the last two bytes
 
-    for (int i = fileBuffer.offset (); i < max; i++)
+    for (int i = rawBuffer.offset (); i < max; i++)
       if (buffer[i] == 0)
         return true;
 
     return false;
   }
 
-  // Some text files on DISASM1.DSK contain a single zero two bytes before eof. They
-  // are all assembler source files, so should not be counted as random-access files.
+  // not used
   // ---------------------------------------------------------------------------------//
   private boolean fileContainsTwoZeros ()
   // ---------------------------------------------------------------------------------//
   {
-    assert textFileGaps == 0;
+    assert fileGaps == 0;
 
     // test (up to) the entire buffer (in case reclen > block size)
     Buffer fileBuffer = getRawFileBuffer ();
@@ -190,7 +185,7 @@ public abstract class FileDos extends AbstractAppleFile
   // Random Access files can have large gaps between records, so keeping a list of
   // consecutive data blocks is not feasible. Text Blocks are groups of contiguous
   // data blocks (essentially islands of data in the file). A Random Access file
-  // can have any number of Text Blocks, but most will have only one as the records
+  // can have any number of Text Blocks, but many will have only one as the records
   // are all at the start of the file (and mostly consecutive).
   // ---------------------------------------------------------------------------------//
   void createTextBlocks (List<AppleBlock> dataBlocks)
@@ -248,6 +243,8 @@ public abstract class FileDos extends AbstractAppleFile
   public Buffer getFileBuffer ()
   // ---------------------------------------------------------------------------------//
   {
+    assert !isRandomAccess ();
+
     if (exactFileBuffer != null)
       return exactFileBuffer;
 
@@ -282,6 +279,10 @@ public abstract class FileDos extends AbstractAppleFile
         }
         else
           exactFileBuffer = new Buffer (buffer, 4, eof - 4);
+        break;
+
+      case FsDos.FILE_TYPE_S:                 // AEPRO1.DSK uses this
+        exactFileBuffer = new Buffer (buffer, 0, eof);
         break;
 
       default:
@@ -322,7 +323,7 @@ public abstract class FileDos extends AbstractAppleFile
   public int getTotalBlocks ()                      // in blocks
   // ---------------------------------------------------------------------------------//
   {
-    return indexBlocks.size () + dataBlocks.size () - textFileGaps;
+    return indexBlocks.size () + dataBlocks.size () - fileGaps;
   }
 
   // This is used by the disk display to highlight the blocks that are relevant to
@@ -376,7 +377,7 @@ public abstract class FileDos extends AbstractAppleFile
   public int getTotalDataSectors ()
   // ---------------------------------------------------------------------------------//
   {
-    return dataBlocks.size () - textFileGaps;
+    return dataBlocks.size () - fileGaps;
   }
 
   // ---------------------------------------------------------------------------------//
@@ -562,7 +563,7 @@ public abstract class FileDos extends AbstractAppleFile
 
     if (isRandomAccess ())
     {
-      formatMeta (text, "Text file gaps", 4, textFileGaps);
+      formatMeta (text, "Text file gaps", 4, fileGaps);
       formatMeta (text, "Text blocks", 4, textBlocks.size ());
       formatMeta (text, "Possible reclen", 4, recordLength);
     }
