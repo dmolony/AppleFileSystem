@@ -130,10 +130,10 @@ public class FileNuFX extends AbstractAppleFile implements AppleFilePath, AppleF
           {
             case NuFXThread.KIND_DATA_FORK:
               ForkNuFX fork = new ForkNuFX (this, FileProdos.ForkType.DATA, thread);
+              forks.add (fork);
               if (dataThreads == 2)
               {
                 isForkedFile = true;
-                forks.add (fork);
               }
               else
                 dataFork = fork;
@@ -483,7 +483,16 @@ public class FileNuFX extends AbstractAppleFile implements AppleFilePath, AppleF
     if (!isForkedFile)
       throw new FileFormatException ("Cannot getCatalog() on a non-forked file");
 
-    return "Forked NuFX catalog";
+    StringBuilder text = new StringBuilder ();
+
+    text.append ("Forked NuFX catalog\n\n");
+    for (AppleFile fork : forks)
+    {
+      text.append (fork.getCatalogLine ());
+      text.append ("\n");
+    }
+
+    return text.toString ();
   }
 
   // ---------------------------------------------------------------------------------//

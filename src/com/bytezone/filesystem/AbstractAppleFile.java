@@ -272,9 +272,10 @@ public abstract class AbstractAppleFile implements AppleFile
     if (embeddedFileSystem != null)
       formatText (text, "Embedded FS type",
           embeddedFileSystem.getFileSystemType ().toString ());
-    //    Utility.formatMeta (text, "File type", 2, getFileType (), getFileTypeText ());
-    //    Utility.formatMeta (text, "EOF", 6, getFileLength ());
-    //    Utility.formatMeta (text, "Data blocks", 4, dataBlocks.size () - fileGaps);
+
+    formatText (text, "File type", 2, getFileType (), getFileTypeText ());
+    formatText (text, "EOF", 6, getFileLength ());
+    formatText (text, "Data blocks", 4, dataBlocks.size () - fileGaps);
 
     return text.toString ();
   }

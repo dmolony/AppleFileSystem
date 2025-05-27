@@ -355,6 +355,7 @@ public abstract class FileDos extends AbstractAppleFile
   // ---------------------------------------------------------------------------------//
   {
     assert loadAddress > 0;
+    //    System.out.printf ("%s load address: %d%n", getFileName (), loadAddress);
 
     return loadAddress;
   }

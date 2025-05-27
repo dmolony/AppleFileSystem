@@ -116,6 +116,36 @@ public class ForkNuFX extends AbstractAppleFile
 
   // ---------------------------------------------------------------------------------//
   @Override
+  public String getCatalogLine ()
+  // ---------------------------------------------------------------------------------//
+  {
+    StringBuilder text = new StringBuilder ();
+
+    //    LocalDateTime created = parentFile.getCreated ();
+    //    LocalDateTime modified = parentFile.getModified ();
+
+    int fileLength = isForkedFile () ? 0 : getFileLength ();
+
+    //    String dateCreated = created == null ? NO_DATE : created.format (sdf);
+    //    String timeCreated = created == null ? "" : created.format (stf);
+    //    String dateModified = modified == null ? NO_DATE : modified.format (sdf);
+    //    String timeModified = modified == null ? "" : modified.format (stf);
+
+    //    String forkFlag = isForkedFile () ? "+" : " ";
+
+    //    text.append (String.format ("%s%-15s %3s%s  %5d  %9s %5s  %9s %5s %8d %7s%n",
+    //        isLocked () ? "*" : " ", getFileName (), getFileTypeText (), forkFlag,
+    //        getTotalBlocks (), dateModified, timeModified, dateCreated, timeCreated,
+    //        fileLength, getSubType ()));
+    text.append (String.format ("%s%-15s %3s  %5d  %8d  %3d", isLocked () ? "*" : " ",
+        getFileName (), getFileTypeText (), getTotalBlocks (), fileLength,
+        getAuxType ()));
+
+    return Utility.rtrim (text);
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
   public String toString ()
   // ---------------------------------------------------------------------------------//
   {
