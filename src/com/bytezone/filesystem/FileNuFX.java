@@ -543,6 +543,7 @@ public class FileNuFX extends AbstractAppleFile implements AppleFilePath, AppleF
 
     if (!getFileName ().equals (getFullFileName ()))
       formatText (text, "Full file name", getFullFileName ());
+
     formatText (text, "Header CRC", 4, crc, crcPassed ? "Passed" : "** Failed **");
     formatText (text, "Attributes", 2, attributeSectionLength);
     formatText (text, "Version", 2, version);

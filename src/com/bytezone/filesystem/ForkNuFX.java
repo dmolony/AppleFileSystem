@@ -39,12 +39,23 @@ public class ForkNuFX extends AbstractAppleFile
   }
 
   // ---------------------------------------------------------------------------------//
+  public FileNuFX getParentFile ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return parentFile;
+  }
+
+  // ---------------------------------------------------------------------------------//
   @Override
   public String getFileName ()
   // ---------------------------------------------------------------------------------//
   {
-    return forkType == ForkType.DATA ? "Data fork"
-        : forkType == ForkType.RESOURCE ? "Resource fork" : "Not forked";
+    return switch (forkType)
+    {
+      case DATA -> "Data fork";
+      case RESOURCE -> "Resource fork";
+      case null -> parentFile.getFileName ();     // impossible?
+    };
   }
 
   // ---------------------------------------------------------------------------------//
