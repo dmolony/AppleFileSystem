@@ -2,12 +2,22 @@ package com.bytezone.filesystem;
 
 import static com.bytezone.utility.Utility.formatText;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Locale;
+
 import com.bytezone.utility.Utility;
 
 // -----------------------------------------------------------------------------------//
 public class ForkNuFX extends AbstractAppleFile
 // -----------------------------------------------------------------------------------//
 {
+  private static Locale US = Locale.US;          // to force 3 character months
+  protected static final DateTimeFormatter sdf =
+      DateTimeFormatter.ofPattern ("d-LLL-yy", US);
+  protected static final DateTimeFormatter stf = DateTimeFormatter.ofPattern ("H:mm");
+  protected static final String NO_DATE = "<NO DATE>";
+
   private final FileNuFX parentFile;
   private final FsNuFX fileSystem;
   private final ForkType forkType;
@@ -121,25 +131,19 @@ public class ForkNuFX extends AbstractAppleFile
   {
     StringBuilder text = new StringBuilder ();
 
-    //    LocalDateTime created = parentFile.getCreated ();
-    //    LocalDateTime modified = parentFile.getModified ();
+    LocalDateTime created = parentFile.getCreated ();
+    LocalDateTime modified = parentFile.getModified ();
 
     int fileLength = isForkedFile () ? 0 : getFileLength ();
 
-    //    String dateCreated = created == null ? NO_DATE : created.format (sdf);
-    //    String timeCreated = created == null ? "" : created.format (stf);
-    //    String dateModified = modified == null ? NO_DATE : modified.format (sdf);
-    //    String timeModified = modified == null ? "" : modified.format (stf);
+    String dateCreated = created == null ? NO_DATE : created.format (sdf);
+    String timeCreated = created == null ? "" : created.format (stf);
+    String dateModified = modified == null ? NO_DATE : modified.format (sdf);
+    String timeModified = modified == null ? "" : modified.format (stf);
 
-    //    String forkFlag = isForkedFile () ? "+" : " ";
-
-    //    text.append (String.format ("%s%-15s %3s%s  %5d  %9s %5s  %9s %5s %8d %7s%n",
-    //        isLocked () ? "*" : " ", getFileName (), getFileTypeText (), forkFlag,
-    //        getTotalBlocks (), dateModified, timeModified, dateCreated, timeCreated,
-    //        fileLength, getSubType ()));
-    text.append (String.format ("%s%-15s %3s  %5d  %8d  %3d", isLocked () ? "*" : " ",
-        getFileName (), getFileTypeText (), getTotalBlocks (), fileLength,
-        getAuxType ()));
+    text.append (String.format ("%s%-15s %3s  %5d  %9s %5s  %9s  %5s  %8d  %3d",
+        isLocked () ? "*" : " ", getFileName (), getFileTypeText (), getTotalBlocks (),
+        dateModified, timeModified, dateCreated, timeCreated, fileLength, getAuxType ()));
 
     return Utility.rtrim (text);
   }

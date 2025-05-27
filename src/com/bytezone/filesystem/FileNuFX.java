@@ -3,6 +3,7 @@ package com.bytezone.filesystem;
 import static com.bytezone.filesystem.ProdosConstants.fileTypes;
 import static com.bytezone.utility.Utility.formatText;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -221,6 +222,20 @@ public class FileNuFX extends AbstractAppleFile implements AppleFilePath, AppleF
   // ---------------------------------------------------------------------------------//
   {
     return fileTypes[fileType];
+  }
+
+  // ---------------------------------------------------------------------------------//
+  public LocalDateTime getCreated ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return created.getLocalDateTime ();
+  }
+
+  // ---------------------------------------------------------------------------------//
+  public LocalDateTime getModified ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return modified.getLocalDateTime ();
   }
 
   // ---------------------------------------------------------------------------------//
