@@ -45,6 +45,7 @@ public class BlockReader
 
   private AppleBlock[] appleBlocks;
   private List<AppleBlock> dirtyBlocks = new ArrayList<> ();
+  private ByteCopier byteCopier;
 
   //  public enum AddressType
   //  {
@@ -122,6 +123,14 @@ public class BlockReader
         / bytesPerBlock + 1;                            // includes partial blocks
 
     appleBlocks = new AppleBlock[totalBlocks];
+
+    if (bytesPerBlock == SECTOR_SIZE)
+      byteCopier = new SingleSectorCopier (dataBuffer, bytesPerTrack, interleave);
+    else if (interleave == 0)
+      byteCopier = new SingleBlockCopier (dataBuffer, bytesPerBlock);
+    else
+      byteCopier =
+          new MultipleSectorCopier (dataBuffer, bytesPerBlock, bytesPerTrack, interleave);
   }
 
   // ---------------------------------------------------------------------------------//
@@ -288,61 +297,7 @@ public class BlockReader
   private void read (AppleBlock block, byte[] blockBuffer, int bufferOffset)
   // ---------------------------------------------------------------------------------//
   {
-    assert block != null;     // sparse files should be using text records
-    if (block == null)        // sparse file
-      return;
-
-    byte[] diskBuffer = dataBuffer.data ();
-    int diskOffset = dataBuffer.offset ();
-
-    if (bytesPerBlock == SECTOR_SIZE)                           // Single-sector
-    {
-      int diskBufferOffset = diskOffset + block.getTrackNo () * bytesPerTrack
-          + interleaves[interleave][block.getSectorNo ()] * bytesPerBlock;
-      int xfrBytes = Math.min (bytesPerBlock, diskBuffer.length - diskBufferOffset);
-
-      if (xfrBytes > 0)
-        System.arraycopy (diskBuffer, diskBufferOffset, blockBuffer, bufferOffset,
-            xfrBytes);
-      else
-        System.out.printf ("Sector %d out of range%n", block.getBlockNo ());
-    }
-    else
-    {
-      if (interleave == 0)                                      // Single-block
-      {
-        int diskBufferOffset = diskOffset + block.getBlockNo () * bytesPerBlock;
-        int xfrBytes = Math.min (bytesPerBlock, diskBuffer.length - diskBufferOffset);
-
-        if (xfrBytes > 0)
-          System.arraycopy (diskBuffer, diskBufferOffset, blockBuffer, bufferOffset,
-              xfrBytes);
-        else
-          System.out.printf ("Block %d out of range%n", block.getBlockNo ());
-      }
-      else                                                      // Multiple-sector
-      {
-        int sectorsPerBlock = bytesPerBlock / SECTOR_SIZE;
-
-        for (int sectorNo = 0; sectorNo < sectorsPerBlock; sectorNo++)
-        {
-          int diskBufferOffset = diskOffset + block.getTrackNo () * bytesPerTrack
-              + interleaves[interleave][block.getSectorNo () * sectorsPerBlock + sectorNo]
-                  * SECTOR_SIZE;
-          int xfrBytes = Math.min (SECTOR_SIZE, diskBuffer.length - diskBufferOffset);
-
-          if (xfrBytes > 0)
-          {
-            System.arraycopy (diskBuffer, diskBufferOffset, blockBuffer, bufferOffset,
-                xfrBytes);
-            bufferOffset += SECTOR_SIZE;
-          }
-          else
-            System.out.printf ("Block %d, Sector %d out of range%n", block.getBlockNo (),
-                sectorNo);
-        }
-      }
-    }
+    byteCopier.read (block, blockBuffer, bufferOffset);
   }
 
   // ---------------------------------------------------------------------------------//
@@ -357,6 +312,14 @@ public class BlockReader
   // write the block's local buffer back to the disk buffer
   // ---------------------------------------------------------------------------------//
   public void write (AppleBlock block)
+  // ---------------------------------------------------------------------------------//
+  {
+    byteCopier.write (block);
+  }
+
+  // write the block's local buffer back to the disk buffer
+  // ---------------------------------------------------------------------------------//
+  public void write2 (AppleBlock block)
   // ---------------------------------------------------------------------------------//
   {
     byte[] blockBuffer = block.getBuffer ();
@@ -374,7 +337,6 @@ public class BlockReader
             bytesPerBlock);
         break;
 
-      //      case BLOCK:
       default:
         if (interleave == 0)
         {
@@ -396,11 +358,6 @@ public class BlockReader
         }
 
         break;
-
-      //      default:
-      //        System.out.println ("Unknown address type: " + addressType);
-      //        assert false;
-      //        break;          // impossible
     }
   }
 
