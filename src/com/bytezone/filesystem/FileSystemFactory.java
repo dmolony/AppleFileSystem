@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Objects;
 
 import com.bytezone.filesystem.AppleFileSystem.FileSystemType;
-import com.bytezone.filesystem.BlockReader.AddressType;
 import com.bytezone.utility.Utility;
 
 // -----------------------------------------------------------------------------------//
@@ -121,7 +120,7 @@ public class FileSystemFactory
     switch (fileSystems.size ())
     {
       case 0:
-        blockReader.setParameters (256, AddressType.SECTOR, 0, 16);
+        blockReader.setParameters (256, 0, 16);
         AppleFileSystem fs = new FsData (blockReader);
         if (errorMessages.size () > 0)
           fs.setErrorMessage (errorMessages.get (0));
@@ -172,12 +171,15 @@ public class FileSystemFactory
       try
       {
         BlockReader dos31Reader = new BlockReader (blockReader);
-        dos31Reader.setParameters (256, AddressType.SECTOR, 0, 13);
+        dos31Reader.setParameters (256, 0, 13);
 
         FsDos3 fs = new FsDos3 (dos31Reader);
 
         if (fs.getTotalCatalogBlocks () > 0)
+        {
+          fs.readCatalogBlocks ();
           fileSystems.add (fs);
+        }
       }
       catch (FileFormatException e)
       {
@@ -201,7 +203,7 @@ public class FileSystemFactory
         try
         {
           BlockReader dos33Reader = new BlockReader (blockReader);
-          dos33Reader.setParameters (256, AddressType.SECTOR, interleave, 16);
+          dos33Reader.setParameters (256, interleave, 16);
 
           FsDos3 fs = new FsDos3 (dos33Reader);
 
@@ -265,13 +267,13 @@ public class FileSystemFactory
         case SECTOR_35_16_SIZE:
         case SECTOR_40_16_SIZE:
         case SECTOR_48_16_SIZE:
-          dos4Reader.setParameters (256, AddressType.SECTOR, 0, 16);
+          dos4Reader.setParameters (256, 0, 16);
           break;
 
         case SECTOR_35_32_SIZE:
         case SECTOR_40_32_SIZE:
         case SECTOR_48_32_SIZE:
-          dos4Reader.setParameters (256, AddressType.SECTOR, 0, 32);
+          dos4Reader.setParameters (256, 0, 32);
           break;
 
         default:
@@ -301,7 +303,7 @@ public class FileSystemFactory
       try
       {
         BlockReader unidosReader = new BlockReader (blockReader);
-        unidosReader.setParameters (256, AddressType.SECTOR, 0, 32);
+        unidosReader.setParameters (256, 0, 32);
 
         FsUnidos fs = new FsUnidos (unidosReader);
 
@@ -325,7 +327,7 @@ public class FileSystemFactory
         try
         {
           BlockReader prodosReader = new BlockReader (blockReader);
-          prodosReader.setParameters (512, AddressType.BLOCK, i, i * 8);
+          prodosReader.setParameters (512, i, i * 8);
 
           FsProdos fs = new FsProdos (prodosReader);
 
@@ -356,7 +358,7 @@ public class FileSystemFactory
           if (debug)
             System.out.printf ("Pascal attempt %d%n", i);
           BlockReader pascalReader = new BlockReader (blockReader);
-          pascalReader.setParameters (512, AddressType.BLOCK, i, i * 8);
+          pascalReader.setParameters (512, i, i * 8);
 
           FsPascal fs = new FsPascal (pascalReader);
 
@@ -383,7 +385,7 @@ public class FileSystemFactory
       try
       {
         BlockReader cpmReader = new BlockReader (blockReader);
-        cpmReader.setParameters (1024, AddressType.BLOCK, 2, 4);
+        cpmReader.setParameters (1024, 2, 4);
 
         FsCpm fs = new FsCpm (cpmReader);
 
@@ -406,7 +408,7 @@ public class FileSystemFactory
       try
       {
         BlockReader cpamReader = new BlockReader (blockReader);
-        cpamReader.setParameters (1024, AddressType.BLOCK, 0, 4);
+        cpamReader.setParameters (1024, 0, 4);
 
         FsCpm fs = new FsCpm (cpamReader);
 
@@ -427,7 +429,7 @@ public class FileSystemFactory
     try
     {
       BlockReader lbrReader = new BlockReader (blockReader);
-      lbrReader.setParameters (128, AddressType.BLOCK, 0, 0);
+      lbrReader.setParameters (128, 0, 0);
 
       FsLbr fs = new FsLbr (lbrReader);
 
@@ -449,7 +451,7 @@ public class FileSystemFactory
       try
       {
         BlockReader lbrReader = new BlockReader (blockReader);
-        lbrReader.setParameters (128, AddressType.BLOCK, 0, 0);
+        lbrReader.setParameters (128, 0, 0);
 
         if (debug)
           System.out.println ("Bin2 magic OK");
@@ -477,11 +479,11 @@ public class FileSystemFactory
     if (blockReader.isMagic (0, FsNuFX.NuFile))
       try
       {
-        BlockReader lbrReader = new BlockReader (blockReader);
+        BlockReader nufxReader = new BlockReader (blockReader);
         //        lbrReader.setParameters (128, AddressType.BLOCK, 0, 0);
-        lbrReader.setParameters (256, AddressType.BLOCK, 0, 0);
+        nufxReader.setParameters (128, 0, 0);
 
-        FsNuFX fs = new FsNuFX (lbrReader);
+        FsNuFX fs = new FsNuFX (nufxReader);
 
         if (fs.getFileSystems ().size () > 0 || fs.getFiles ().size () > 0)
         {
@@ -498,41 +500,6 @@ public class FileSystemFactory
   }
 
   // ---------------------------------------------------------------------------------//
-  //  private Header2img read2imgHeader (BlockReader blockReader)
-  //  // ---------------------------------------------------------------------------------//
-  //  {
-  //    if (blockReader.isMagic (0, Fs2img.TWO_IMG))
-  //      return new Header2img (blockReader);
-  //
-  //    return null;
-  //  }
-
-  // ---------------------------------------------------------------------------------//
-  //  private void get2img (BlockReader blockReader)
-  //  // ---------------------------------------------------------------------------------//
-  //  {
-  //    if (blockReader.isMagic (0, Fs2img.TWO_IMG))
-  //      try
-  //      {
-  //        if (debug)
-  //          System.out.println ("Checking 2img");
-  //
-  //        BlockReader lbrReader = new BlockReader (blockReader);
-  //        lbrReader.setParameters (128, AddressType.BLOCK, 0, 0);
-  //
-  //        Fs2img fs = new Fs2img (lbrReader);
-  //
-  //        if (fs.getFileSystems ().size () > 0 || fs.getFiles ().size () > 0)
-  //          fileSystems.add (fs);
-  //      }
-  //      catch (FileFormatException e)
-  //      {
-  //        if (debug)
-  //          System.out.println (e);
-  //      }
-  //  }
-
-  // ---------------------------------------------------------------------------------//
   private void getZip (BlockReader blockReader)
   // ---------------------------------------------------------------------------------//
   {
@@ -540,7 +507,7 @@ public class FileSystemFactory
       try
       {
         BlockReader lbrReader = new BlockReader (blockReader);
-        lbrReader.setParameters (256, AddressType.BLOCK, 0, 0);
+        lbrReader.setParameters (128, 0, 0);
 
         FsZip fs = new FsZip (lbrReader);
 
@@ -562,7 +529,7 @@ public class FileSystemFactory
       try
       {
         BlockReader lbrReader = new BlockReader (blockReader);
-        lbrReader.setParameters (256, AddressType.BLOCK, 0, 0);
+        lbrReader.setParameters (128, 0, 0);
 
         FsGzip fs = new FsGzip (lbrReader);
 
@@ -590,7 +557,7 @@ public class FileSystemFactory
     try
     {
       BlockReader lbrReader = new BlockReader (blockReader);
-      lbrReader.setParameters (256, AddressType.BLOCK, 0, 0);
+      lbrReader.setParameters (128, 0, 0);
 
       FsWoz fs = new FsWoz (lbrReader, fileSystemType);
 

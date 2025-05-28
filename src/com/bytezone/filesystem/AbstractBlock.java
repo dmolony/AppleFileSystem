@@ -4,7 +4,6 @@ import static com.bytezone.utility.Utility.formatText;
 
 import java.util.Objects;
 
-import com.bytezone.filesystem.BlockReader.AddressType;
 import com.bytezone.utility.Utility;
 
 // -----------------------------------------------------------------------------------//
@@ -59,7 +58,7 @@ abstract class AbstractBlock implements AppleBlock
     this.trackNo = trackNo;
     this.sectorNo = sectorNo;
 
-    assert fileSystem.getAddressType () == AddressType.SECTOR;
+    //    assert fileSystem.getAddressType () == AddressType.SECTOR;
   }
 
   // ---------------------------------------------------------------------------------//
@@ -229,7 +228,7 @@ abstract class AbstractBlock implements AppleBlock
     String dos = trackNo >= 0 ? String.format ("(%02X/%02X)", trackNo, sectorNo) : "";
 
     formatText (text, "Block type", (this instanceof BlockDos) ? "DOS" : "PRD");
-    formatText (text, "Address type", fileSystem.getAddressType ().toString ());
+    //    formatText (text, "Address type", fileSystem.getAddressType ().toString ());
     formatText (text, "Block no", 4, blockNo, dos);
     formatText (text, "Block Type", blockType.toString ());
     formatText (text, "Block subtype", blockSubType);

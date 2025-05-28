@@ -86,7 +86,7 @@ public abstract class FileDos extends AbstractAppleFile
         checkEof ();
         break;
 
-      case FsDos.FILE_TYPE_S:                 // AEPRO1.DSK uses this
+      case FsDos.FILE_TYPE_S:                 // AEPRO1.DSK (Ascii Express) uses this
         eof = dataBlocks.size () * parentFileSystem.getBlockSize ();
         checkEof ();
         break;
@@ -354,9 +354,6 @@ public abstract class FileDos extends AbstractAppleFile
   public int getLoadAddress ()
   // ---------------------------------------------------------------------------------//
   {
-    assert loadAddress > 0;
-    //    System.out.printf ("%s load address: %d%n", getFileName (), loadAddress);
-
     return loadAddress;
   }
 

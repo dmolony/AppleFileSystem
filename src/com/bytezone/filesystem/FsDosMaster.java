@@ -1,6 +1,5 @@
 package com.bytezone.filesystem;
 
-import com.bytezone.filesystem.BlockReader.AddressType;
 import com.bytezone.utility.Utility;
 
 class FsDosMaster extends AbstractFileSystem
@@ -63,7 +62,7 @@ class FsDosMaster extends AbstractFileSystem
     {
       BlockReader slotReader =
           new BlockReader ("Slot " + slot, diskBuffer, 286_720 + slot * 143360, 143360);
-      slotReader.setParameters (256, AddressType.SECTOR, 0, 16);
+      slotReader.setParameters (256, 0, 16);
 
       try
       {

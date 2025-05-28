@@ -13,7 +13,6 @@ import java.util.Objects;
 import java.util.Optional;
 
 import com.bytezone.filesystem.AppleBlock.BlockType;
-import com.bytezone.filesystem.BlockReader.AddressType;
 
 // -----------------------------------------------------------------------------------//
 abstract class AbstractFileSystem implements AppleFileSystem
@@ -118,12 +117,12 @@ abstract class AbstractFileSystem implements AppleFileSystem
   }
 
   // ---------------------------------------------------------------------------------//
-  @Override
-  public AddressType getAddressType ()
-  // ---------------------------------------------------------------------------------//
-  {
-    return blockReader.getAddressType ();
-  }
+  //  @Override
+  //  public AddressType getAddressType ()
+  //  // ---------------------------------------------------------------------------------//
+  //  {
+  //    return blockReader.getAddressType ();
+  //  }
 
   // ---------------------------------------------------------------------------------//
   @Override
