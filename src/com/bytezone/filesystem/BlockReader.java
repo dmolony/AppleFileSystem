@@ -35,8 +35,6 @@ public class BlockReader
 
   private String name;
 
-  //  private AddressType addressType;      // BLOCK, SECTOR
-
   private int bytesPerBlock;            // 128, 256, 512, 1024
   private int interleave;               // 0, 1, 2
   private int blocksPerTrack;           // 4, 8, 13, 16, 32
@@ -46,11 +44,6 @@ public class BlockReader
   private AppleBlock[] appleBlocks;
   private List<AppleBlock> dirtyBlocks = new ArrayList<> ();
   private ByteCopier byteCopier;
-
-  //  public enum AddressType
-  //  {
-  //    BLOCK, SECTOR
-  //  }
 
   // ---------------------------------------------------------------------------------//
   public BlockReader (Path path)
@@ -317,50 +310,6 @@ public class BlockReader
     byteCopier.write (block);
   }
 
-  // write the block's local buffer back to the disk buffer
-  // ---------------------------------------------------------------------------------//
-  public void write2 (AppleBlock block)
-  // ---------------------------------------------------------------------------------//
-  {
-    byte[] blockBuffer = block.getBuffer ();
-    int bufferOffset = 0;     // fix this later
-
-    byte[] diskBuffer = dataBuffer.data ();
-    int diskOffset = dataBuffer.offset ();
-
-    switch (bytesPerBlock)
-    {
-      case 256:
-        int offset = block.getTrackNo () * bytesPerTrack
-            + interleaves[interleave][block.getSectorNo ()] * bytesPerBlock;
-        System.arraycopy (blockBuffer, bufferOffset, diskBuffer, diskOffset + offset,
-            bytesPerBlock);
-        break;
-
-      default:
-        if (interleave == 0)
-        {
-          System.arraycopy (blockBuffer, bufferOffset, diskBuffer,
-              diskOffset + block.getBlockNo () * bytesPerBlock, bytesPerBlock);
-          break;
-        }
-
-        // non-zero interleave
-        int base = block.getTrackNo () * bytesPerTrack;
-        int sectorsPerBlock = bytesPerBlock / 256;
-
-        for (int i = 0; i < sectorsPerBlock; i++)
-        {
-          offset = base
-              + interleaves[interleave][block.getSectorNo () * sectorsPerBlock + i] * 256;
-          System.arraycopy (blockBuffer, bufferOffset + i * 256, diskBuffer,
-              diskOffset + offset, 256);
-        }
-
-        break;
-    }
-  }
-
   // ---------------------------------------------------------------------------------//
   Buffer getDiskBuffer ()
   // ---------------------------------------------------------------------------------//
@@ -395,13 +344,6 @@ public class BlockReader
   {
     return interleave;
   }
-
-  // ---------------------------------------------------------------------------------//
-  //  AddressType getAddressType ()
-  //  // ---------------------------------------------------------------------------------//
-  //  {
-  //    return addressType;
-  //  }
 
   // ---------------------------------------------------------------------------------//
   boolean isValidAddress (int blockNo)
