@@ -115,6 +115,13 @@ class DirectoryHeaderProdos
 
       vtoc.setBlockSubType (subType);
       catalogBlocks.add (vtoc);
+      if (catalogBlocks.size () > 1000)
+      {
+        System.out.println (">1000 catalog blocks in " + fs.getFileName ());
+        break;
+      }
+
+      int currentBlockNo = nextBlockNo;
 
       byte[] buffer = vtoc.getBuffer ();
       prevBlockNo = Utility.unsignedShort (buffer, 0);
@@ -127,6 +134,12 @@ class DirectoryHeaderProdos
       if (!fs.isValidAddress (nextBlockNo))
         throw new FileFormatException (
             "FolderProdos: Invalid catalog next block - " + nextBlockNo);
+
+      if (nextBlockNo == currentBlockNo)
+      {
+        System.out.println ("bugger");
+        break;
+      }
     }
   }
 

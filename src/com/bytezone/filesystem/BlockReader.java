@@ -259,7 +259,6 @@ public class BlockReader
     return blockBuffer;         // this will be placed in the block's local buffer
   }
 
-  // ?? this doesn't belong here (BlockReader should only deal with single blocks)
   // ---------------------------------------------------------------------------------//
   public byte[] read (List<AppleBlock> blocks)
   // ---------------------------------------------------------------------------------//

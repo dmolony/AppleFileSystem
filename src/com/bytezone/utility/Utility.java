@@ -610,8 +610,7 @@ public class Utility
   static String makeLabel (String label)
   // ---------------------------------------------------------------------------------//
   {
-    int len = label.length ();
-    return label + " " + dots.substring (0, 22 - len);
+    return (label + " " + dots).substring (0, 23);
   }
 
   // ---------------------------------------------------------------------------------//

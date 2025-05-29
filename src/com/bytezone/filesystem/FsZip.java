@@ -95,7 +95,7 @@ class FsZip extends AbstractFileSystem
   }
 
   // ---------------------------------------------------------------------------------//
-  void addZipFile (FileZip file)
+  private void addZipFile (FileZip file)
   // ---------------------------------------------------------------------------------//
   {
     addEmbeddedFileSystem (file, 0);            // create FS and embed it

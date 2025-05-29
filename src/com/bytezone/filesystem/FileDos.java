@@ -234,8 +234,9 @@ public abstract class FileDos extends AbstractAppleFile
         recordLength = recordLength == 0 ? ptr : Utility.gcd (recordLength, ptr);
       }
 
-    if (recordLength < 4)       // probably corrupted
-      textBlocks.clear ();      // treat file as normal text
+    if ((recordLength < 4 || recordLength > 1000)       // probably not random-access
+        && fileGaps == 0)                               // 
+      textBlocks.clear ();                              // treat file as normal text
   }
 
   // Try to convert the filesystem's raw buffer into a more precise buffer. This means
