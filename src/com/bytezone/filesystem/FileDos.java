@@ -17,7 +17,6 @@ public abstract class FileDos extends AbstractAppleFile
 
   protected int eof;
   protected int loadAddress;
-  //  protected int textFileGaps;       // total sparse file empty data sectors
   protected int wastedBlocks;
 
   protected List<AppleBlock> indexBlocks = new ArrayList<> ();
@@ -157,26 +156,6 @@ public abstract class FileDos extends AbstractAppleFile
 
     for (int i = rawBuffer.offset (); i < max; i++)
       if (buffer[i] == 0)
-        return true;
-
-    return false;
-  }
-
-  // not used
-  // ---------------------------------------------------------------------------------//
-  private boolean fileContainsTwoZeros ()
-  // ---------------------------------------------------------------------------------//
-  {
-    assert fileGaps == 0;
-
-    // test (up to) the entire buffer (in case reclen > block size)
-    Buffer fileBuffer = getRawFileBuffer ();
-    byte[] buffer = fileBuffer.data ();
-    int max = fileBuffer.max ();
-    int totZeros = 0;
-
-    for (int i = fileBuffer.offset (); i < max; i++)
-      if (buffer[i] == 0 && ++totZeros > 1)
         return true;
 
     return false;
