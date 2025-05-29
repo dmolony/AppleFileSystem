@@ -4,23 +4,24 @@ package com.bytezone.filesystem;
 public class MultipleSectorCopier implements ByteCopier
 // -----------------------------------------------------------------------------------//
 {
-  private final Buffer dataBuffer;
   private final int bytesPerTrack;
   private final int interleave;
   private final int sectorsPerBlock;
-  private final DiskParameters diskParameters;
+
+  private final byte[] diskBuffer;
+  private final int diskOffset;
 
   // ---------------------------------------------------------------------------------//
   MultipleSectorCopier (Buffer dataBuffer, DiskParameters diskParameters)
   // ---------------------------------------------------------------------------------//
   {
-    this.dataBuffer = dataBuffer;
-    this.diskParameters = diskParameters;
-
     bytesPerTrack = diskParameters.bytesPerBlock () * diskParameters.blocksPerTrack ();
     interleave = diskParameters.interleave ();
 
     sectorsPerBlock = diskParameters.bytesPerBlock () / SECTOR_SIZE;
+
+    diskBuffer = dataBuffer.data ();
+    diskOffset = dataBuffer.offset ();
   }
 
   // ---------------------------------------------------------------------------------//
@@ -28,8 +29,6 @@ public class MultipleSectorCopier implements ByteCopier
   public void read (AppleBlock block, byte[] blockBuffer, int bufferOffset)
   // ---------------------------------------------------------------------------------//
   {
-    byte[] diskBuffer = dataBuffer.data ();
-    int diskOffset = dataBuffer.offset ();
     int base = block.getTrackNo () * bytesPerTrack;
 
     for (int sectorNo = 0; sectorNo < sectorsPerBlock; sectorNo++)
@@ -58,9 +57,6 @@ public class MultipleSectorCopier implements ByteCopier
   {
     byte[] blockBuffer = block.getBuffer ();
     int bufferOffset = 0;     // fix this later
-
-    byte[] diskBuffer = dataBuffer.data ();
-    int diskOffset = dataBuffer.offset ();
 
     int base = block.getTrackNo () * bytesPerTrack;
 

@@ -4,21 +4,21 @@ package com.bytezone.filesystem;
 public class SingleSectorCopier implements ByteCopier
 // -----------------------------------------------------------------------------------//
 {
-  private final Buffer dataBuffer;
-  private final DiskParameters diskParameters;
-
   private final int bytesPerTrack;
   private final int interleave;
+
+  private final byte[] diskBuffer;
+  private final int diskOffset;
 
   // ---------------------------------------------------------------------------------//
   SingleSectorCopier (Buffer dataBuffer, DiskParameters diskParameters)
   // ---------------------------------------------------------------------------------//
   {
-    this.dataBuffer = dataBuffer;
-    this.diskParameters = diskParameters;
-
     bytesPerTrack = diskParameters.bytesPerBlock () * diskParameters.blocksPerTrack ();
     interleave = diskParameters.interleave ();
+
+    diskBuffer = dataBuffer.data ();
+    diskOffset = dataBuffer.offset ();
   }
 
   // ---------------------------------------------------------------------------------//
@@ -26,9 +26,6 @@ public class SingleSectorCopier implements ByteCopier
   public void read (AppleBlock block, byte[] blockBuffer, int bufferOffset)
   // ---------------------------------------------------------------------------------//
   {
-    byte[] diskBuffer = dataBuffer.data ();
-    int diskOffset = dataBuffer.offset ();
-
     int diskBufferOffset = diskOffset + block.getTrackNo () * bytesPerTrack
         + interleaves[interleave][block.getSectorNo ()] * SECTOR_SIZE;
     int xfrBytes = Math.min (SECTOR_SIZE, diskBuffer.length - diskBufferOffset);
@@ -47,9 +44,6 @@ public class SingleSectorCopier implements ByteCopier
   {
     byte[] blockBuffer = block.getBuffer ();
     int bufferOffset = 0;     // fix this later
-
-    byte[] diskBuffer = dataBuffer.data ();
-    int diskOffset = dataBuffer.offset ();
 
     int offset = block.getTrackNo () * bytesPerTrack
         + interleaves[interleave][block.getSectorNo ()] * SECTOR_SIZE;

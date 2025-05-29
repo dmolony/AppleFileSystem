@@ -87,28 +87,19 @@ public class BlockReader
     name = original.name;
   }
 
-  //  public record DiskParameters (int bytesPerBlock, int interleave, int blocksPerTrack)
-  //  {
-  //    //  private int bytesPerBlock;            // 128, 256, 512, 1024
-  //    //  private int interleave;               // 0, 1, 2
-  //    //  private int blocksPerTrack;           // 4, 8, 13, 16, 32
-  //
-  //    //  private int bytesPerTrack;            // 3328, 4096, 8192     (calculated)
-  //  }
-
   // ---------------------------------------------------------------------------------//
   public void setParameters (DiskParameters diskParameters)
   // ---------------------------------------------------------------------------------//
   {
     this.diskParameters = diskParameters;
 
-    if (diskParameters.blocksPerTrack () == 0)     // should throw an exception
+    if (diskParameters.blocksPerTrack () == 0)            // should throw exceptions
     {
       assert diskParameters.bytesPerBlock () != 256 : "Must specify track size";
       assert diskParameters.interleave () == 0 : "Must specify track size";
     }
 
-    totalBlocks = (dataBuffer.length () - 1)            //
+    totalBlocks = (dataBuffer.length () - 1)               //
         / diskParameters.bytesPerBlock () + 1;             // includes partial blocks
 
     appleBlocks = new AppleBlock[totalBlocks];
