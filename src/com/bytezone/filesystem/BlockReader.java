@@ -19,8 +19,6 @@ import com.bytezone.utility.Utility;
 public class BlockReader
 // -----------------------------------------------------------------------------------//
 {
-  private static final int SECTOR_SIZE = 256;
-
   private final Buffer dataBuffer;
   private String name;
 
@@ -88,23 +86,8 @@ public class BlockReader
   {
     this.diskParameters = diskParameters;
 
-    if (diskParameters.blocksPerTrack () == 0)             // should throw exceptions
-    {
-      assert diskParameters.bytesPerBlock () != 256 : "Must specify track size";
-      assert diskParameters.interleave () == 0 : "Must specify track size";
-    }
-
-    int totalBlocks = (dataBuffer.length () - 1)               //
-        / diskParameters.bytesPerBlock () + 1;             // includes partial blocks
-
-    appleBlocks = new AppleBlock[totalBlocks];
-
-    if (diskParameters.bytesPerBlock () == SECTOR_SIZE)
-      byteCopier = new SingleSectorCopier (dataBuffer, diskParameters);
-    else if (diskParameters.interleave () == 0)
-      byteCopier = new SingleBlockCopier (dataBuffer, diskParameters);
-    else
-      byteCopier = new MultipleSectorCopier (dataBuffer, diskParameters);
+    appleBlocks = diskParameters.getAppleBlockArray (dataBuffer);
+    byteCopier = diskParameters.getByteCopier (dataBuffer);
   }
 
   // ---------------------------------------------------------------------------------//
@@ -405,9 +388,8 @@ public class BlockReader
     formatText (text, "File system offset", 4, dataBuffer.offset ());
     formatText (text, "File system length", 8, dataBuffer.length ());
     formatText (text, "Total blocks", 6, getTotalBlocks ());
-    formatText (text, "Bytes per block", 4, diskParameters.bytesPerBlock ());
-    formatText (text, "Blocks per track", 2, diskParameters.blocksPerTrack ());
-    formatText (text, "Interleave", 2, diskParameters.interleave ());
+    text.append ("\n");
+    text.append (diskParameters);
 
     return Utility.rtrim (text);
   }
