@@ -133,9 +133,7 @@ public class FileNuFX extends AbstractAppleFile implements AppleFilePath, AppleF
               ForkNuFX fork = new ForkNuFX (this, FileProdos.ForkType.DATA, thread);
               forks.add (fork);
               if (dataThreads == 2)
-              {
                 isForkedFile = true;
-              }
               else
                 dataFork = fork;
               break;

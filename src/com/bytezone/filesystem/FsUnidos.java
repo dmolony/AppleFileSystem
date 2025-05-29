@@ -1,12 +1,14 @@
 package com.bytezone.filesystem;
 
+import com.bytezone.utility.Utility;
+
 // -----------------------------------------------------------------------------------//
 class FsUnidos extends AbstractFileSystem
 // -----------------------------------------------------------------------------------//
 {
   private static final int UNIDOS_SIZE = 409_600;
 
-  private boolean debug = true;
+  private boolean debug = false;
 
   // ---------------------------------------------------------------------------------//
   FsUnidos (BlockReader blockReader)
@@ -17,16 +19,11 @@ class FsUnidos extends AbstractFileSystem
     byte[] buffer = getDiskBuffer ().data ();
     int offset = getDiskBuffer ().offset ();
 
-    //    addFile (new FileUnidos (this, "DISK 1", buffer, offset, UNIDOS_SIZE));
-    //    addFile (new FileUnidos (this, "DISK 2", buffer, offset + UNIDOS_SIZE, UNIDOS_SIZE));
-    //
-    //    checkFileSystem ((AbstractAppleFile) files.get (0), 0);
-    //    checkFileSystem ((AbstractAppleFile) files.get (1), 0);
-
     try
     {
       BlockReader blockReader1 = new BlockReader ("DISK 1", buffer, offset, UNIDOS_SIZE);
       blockReader1.setParameters (256, 0, 32);
+
       FsDos3 fs1 = new FsDos3 (blockReader1);
 
       if (fs1 != null && fs1.getTotalCatalogBlocks () > 0)
@@ -34,12 +31,16 @@ class FsUnidos extends AbstractFileSystem
         BlockReader blockReader2 =
             new BlockReader ("DISK 2", buffer, offset + UNIDOS_SIZE, UNIDOS_SIZE);
         blockReader2.setParameters (256, 0, 32);
+
         FsDos3 fs2 = new FsDos3 (blockReader2);
 
         if (fs2 != null && fs2.getTotalCatalogBlocks () > 0)
         {
           addFileSystem (fs1);
           addFileSystem (fs2);
+
+          fs1.readCatalogBlocks ();
+          fs2.readCatalogBlocks ();
         }
       }
     }
@@ -63,6 +64,6 @@ class FsUnidos extends AbstractFileSystem
       text.append ("\n\n");
     }
 
-    return text.toString ();
+    return Utility.rtrim (text);
   }
 }

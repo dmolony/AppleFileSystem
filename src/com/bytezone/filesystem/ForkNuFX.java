@@ -135,6 +135,29 @@ public class ForkNuFX extends AbstractAppleFile
     return rawFileBuffer;
   }
 
+  // same data as rawFileBuffer, but with any offset or eof applied
+  // ---------------------------------------------------------------------------------//
+  @Override
+  public Buffer getFileBuffer ()
+  // ---------------------------------------------------------------------------------//
+  {
+    if (exactFileBuffer != null)
+      return exactFileBuffer;
+
+    getRawFileBuffer ();
+
+    if (getFileLength () == rawFileBuffer.length ())
+      exactFileBuffer = rawFileBuffer;
+    else
+    {
+      byte[] buffer = rawFileBuffer.data ();
+      int offset = rawFileBuffer.offset ();
+      exactFileBuffer = new Buffer (buffer, offset, getFileLength ());
+    }
+
+    return exactFileBuffer;
+  }
+
   // ---------------------------------------------------------------------------------//
   @Override
   public String getCatalogLine ()

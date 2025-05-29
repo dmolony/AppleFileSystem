@@ -14,8 +14,8 @@ import com.bytezone.utility.Utility;
 
 // -----------------------------------------------------------------------------------//
 // Convert a byte array (disk buffer) into an array of AppleBlocks. The type of
-// file system is not known at this point. Block size and interleave must be specified
-// before use.
+// file system is not known at this point. Block size, track size and interleave must
+// be specified before use.
 // -----------------------------------------------------------------------------------//
 public class BlockReader
 // -----------------------------------------------------------------------------------//
@@ -23,12 +23,14 @@ public class BlockReader
   private static final int SECTOR_SIZE = 256;
 
   private final Buffer dataBuffer;
-
   private String name;
 
+  // mandatory - provided by setParameters()
   private int bytesPerBlock;            // 128, 256, 512, 1024
   private int interleave;               // 0, 1, 2
   private int blocksPerTrack;           // 4, 8, 13, 16, 32
+
+  // can be calculated
   private int bytesPerTrack;            // 3328, 4096, 8192
   private int totalBlocks;
 
@@ -86,6 +88,11 @@ public class BlockReader
   {
     dataBuffer = original.dataBuffer;       //.copyBuffer ();
     name = original.name;
+  }
+
+  public record DiskParameters (int bytesPerBlock, int interleave, int blocksPerTrack)
+  {
+
   }
 
   // ---------------------------------------------------------------------------------//
@@ -316,6 +323,13 @@ public class BlockReader
   }
 
   // ---------------------------------------------------------------------------------//
+  int getInterleave ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return interleave;
+  }
+
+  // ---------------------------------------------------------------------------------//
   int getBlocksPerTrack ()
   // ---------------------------------------------------------------------------------//
   {
@@ -327,13 +341,6 @@ public class BlockReader
   // ---------------------------------------------------------------------------------//
   {
     return totalBlocks;
-  }
-
-  // ---------------------------------------------------------------------------------//
-  int getInterleave ()
-  // ---------------------------------------------------------------------------------//
-  {
-    return interleave;
   }
 
   // ---------------------------------------------------------------------------------//
