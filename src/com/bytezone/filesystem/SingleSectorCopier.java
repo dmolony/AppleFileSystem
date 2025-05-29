@@ -5,16 +5,20 @@ public class SingleSectorCopier implements ByteCopier
 // -----------------------------------------------------------------------------------//
 {
   private final Buffer dataBuffer;
+  private final DiskParameters diskParameters;
+
   private final int bytesPerTrack;
   private final int interleave;
 
   // ---------------------------------------------------------------------------------//
-  SingleSectorCopier (Buffer dataBuffer, int bytesPerTrack, int interleave)
+  SingleSectorCopier (Buffer dataBuffer, DiskParameters diskParameters)
   // ---------------------------------------------------------------------------------//
   {
     this.dataBuffer = dataBuffer;
-    this.bytesPerTrack = bytesPerTrack;
-    this.interleave = interleave;
+    this.diskParameters = diskParameters;
+
+    bytesPerTrack = diskParameters.bytesPerBlock () * diskParameters.blocksPerTrack ();
+    interleave = diskParameters.interleave ();
   }
 
   // ---------------------------------------------------------------------------------//

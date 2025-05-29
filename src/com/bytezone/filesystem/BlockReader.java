@@ -26,12 +26,9 @@ public class BlockReader
   private String name;
 
   // mandatory - provided by setParameters()
-  private int bytesPerBlock;            // 128, 256, 512, 1024
-  private int interleave;               // 0, 1, 2
-  private int blocksPerTrack;           // 4, 8, 13, 16, 32
+  private DiskParameters diskParameters;
 
   // can be calculated
-  private int bytesPerTrack;            // 3328, 4096, 8192
   private int totalBlocks;
 
   private AppleBlock[] appleBlocks;
@@ -90,38 +87,45 @@ public class BlockReader
     name = original.name;
   }
 
-  public record DiskParameters (int bytesPerBlock, int interleave, int blocksPerTrack)
-  {
-
-  }
+  //  public record DiskParameters (int bytesPerBlock, int interleave, int blocksPerTrack)
+  //  {
+  //    //  private int bytesPerBlock;            // 128, 256, 512, 1024
+  //    //  private int interleave;               // 0, 1, 2
+  //    //  private int blocksPerTrack;           // 4, 8, 13, 16, 32
+  //
+  //    //  private int bytesPerTrack;            // 3328, 4096, 8192     (calculated)
+  //  }
 
   // ---------------------------------------------------------------------------------//
-  public void setParameters (int bytesPerBlock, int interleave, int blocksPerTrack)
+  public void setParameters (DiskParameters diskParameters)
   // ---------------------------------------------------------------------------------//
   {
-    this.bytesPerBlock = bytesPerBlock;
-    this.interleave = interleave;
-    this.blocksPerTrack = blocksPerTrack;
+    this.diskParameters = diskParameters;
 
-    if (blocksPerTrack == 0)
+    if (diskParameters.blocksPerTrack () == 0)     // should throw an exception
     {
-      assert bytesPerBlock != 256 : "256-byte blocks must specify track size";
-      assert interleave == 0 : "Interleave > 0 must specify track size";
+      assert diskParameters.bytesPerBlock () != 256 : "Must specify track size";
+      assert diskParameters.interleave () == 0 : "Must specify track size";
     }
 
-    bytesPerTrack = bytesPerBlock * blocksPerTrack;
     totalBlocks = (dataBuffer.length () - 1)            //
-        / bytesPerBlock + 1;                            // includes partial blocks
+        / diskParameters.bytesPerBlock () + 1;             // includes partial blocks
 
     appleBlocks = new AppleBlock[totalBlocks];
 
-    if (bytesPerBlock == SECTOR_SIZE)
-      byteCopier = new SingleSectorCopier (dataBuffer, bytesPerTrack, interleave);
-    else if (interleave == 0)
-      byteCopier = new SingleBlockCopier (dataBuffer, bytesPerBlock);
+    if (diskParameters.bytesPerBlock () == SECTOR_SIZE)
+      byteCopier = new SingleSectorCopier (dataBuffer, diskParameters);
+    else if (diskParameters.interleave () == 0)
+      byteCopier = new SingleBlockCopier (dataBuffer, diskParameters);
     else
-      byteCopier =
-          new MultipleSectorCopier (dataBuffer, bytesPerBlock, bytesPerTrack, interleave);
+      byteCopier = new MultipleSectorCopier (dataBuffer, diskParameters);
+  }
+
+  // ---------------------------------------------------------------------------------//
+  public DiskParameters getParameters ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return diskParameters;
   }
 
   // ---------------------------------------------------------------------------------//
@@ -200,7 +204,7 @@ public class BlockReader
     if (!isValidAddress (track, sector))
       return null;
 
-    int blockNo = track * blocksPerTrack + sector;
+    int blockNo = track * diskParameters.blocksPerTrack () + sector;
     AppleBlock block = appleBlocks[blockNo];
 
     if (block == null)                             // first time here
@@ -221,7 +225,7 @@ public class BlockReader
     if (!isValidAddress (track, sector))
       return null;
 
-    int blockNo = track * blocksPerTrack + sector;
+    int blockNo = track * diskParameters.blocksPerTrack () + sector;
     AppleBlock block = appleBlocks[blockNo];
 
     if (block == null)                             // first time here
@@ -262,7 +266,7 @@ public class BlockReader
   public byte[] read (AppleBlock block)
   // ---------------------------------------------------------------------------------//
   {
-    byte[] blockBuffer = new byte[bytesPerBlock];
+    byte[] blockBuffer = new byte[diskParameters.bytesPerBlock ()];
 
     read (block, blockBuffer, 0);
 
@@ -274,10 +278,10 @@ public class BlockReader
   public byte[] read (List<AppleBlock> blocks)
   // ---------------------------------------------------------------------------------//
   {
-    byte[] blockBuffer = new byte[bytesPerBlock * blocks.size ()];
+    byte[] blockBuffer = new byte[diskParameters.bytesPerBlock () * blocks.size ()];
 
     for (int i = 0; i < blocks.size (); i++)
-      read (blocks.get (i), blockBuffer, i * bytesPerBlock);
+      read (blocks.get (i), blockBuffer, i * diskParameters.bytesPerBlock ());
 
     return blockBuffer;
   }
@@ -319,21 +323,21 @@ public class BlockReader
   int getBlockSize ()
   // ---------------------------------------------------------------------------------//
   {
-    return bytesPerBlock;
+    return diskParameters.bytesPerBlock ();
   }
 
   // ---------------------------------------------------------------------------------//
   int getInterleave ()
   // ---------------------------------------------------------------------------------//
   {
-    return interleave;
+    return diskParameters.interleave ();
   }
 
   // ---------------------------------------------------------------------------------//
   int getBlocksPerTrack ()
   // ---------------------------------------------------------------------------------//
   {
-    return blocksPerTrack;
+    return diskParameters.blocksPerTrack ();
   }
 
   // ---------------------------------------------------------------------------------//
@@ -354,8 +358,8 @@ public class BlockReader
   boolean isValidAddress (int trackNo, int sectorNo)
   // ---------------------------------------------------------------------------------//
   {
-    return sectorNo >= 0 && sectorNo < blocksPerTrack
-        && isValidAddress (trackNo * blocksPerTrack + sectorNo);
+    return sectorNo >= 0 && sectorNo < diskParameters.blocksPerTrack ()
+        && isValidAddress (trackNo * diskParameters.blocksPerTrack () + sectorNo);
   }
 
   // ---------------------------------------------------------------------------------//
@@ -427,9 +431,9 @@ public class BlockReader
     formatText (text, "File system length", 8, dataBuffer.length ());
     //    formatText (text, "Address type", addressType == null ? "" : addressType.toString ());
     formatText (text, "Total blocks", 6, totalBlocks);
-    formatText (text, "Bytes per block", 4, bytesPerBlock);
-    formatText (text, "Blocks per track", 2, blocksPerTrack);
-    formatText (text, "Interleave", 2, interleave);
+    formatText (text, "Bytes per block", 4, diskParameters.bytesPerBlock ());
+    formatText (text, "Blocks per track", 2, diskParameters.blocksPerTrack ());
+    formatText (text, "Interleave", 2, diskParameters.interleave ());
 
     return Utility.rtrim (text);
   }

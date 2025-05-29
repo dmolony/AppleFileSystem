@@ -22,6 +22,19 @@ public class FileSystemFactory
   private static final int UNIDOS_SIZE = 819_200;
   private static final int CPAM_SIZE = 819_200;
 
+  public static final DiskParameters dos1 = new DiskParameters (256, 0, 16);
+  public static final DiskParameters dos2 = new DiskParameters (256, 1, 16);
+  public static final DiskParameters dos31 = new DiskParameters (256, 0, 13);
+  public static final DiskParameters dos4 = new DiskParameters (256, 0, 32);
+
+  public static final DiskParameters prodos1 = new DiskParameters (512, 0, 8);
+  public static final DiskParameters prodos2 = new DiskParameters (512, 1, 8);
+
+  public static final DiskParameters cpm = new DiskParameters (1024, 2, 4);
+  public static final DiskParameters cpam = new DiskParameters (1024, 0, 4);
+
+  public static final DiskParameters bin = new DiskParameters (128, 0, 0);
+
   private List<AppleFileSystem> fileSystems;
   private List<String> errorMessages;
 
@@ -120,7 +133,7 @@ public class FileSystemFactory
     switch (fileSystems.size ())
     {
       case 0:
-        blockReader.setParameters (256, 0, 16);
+        blockReader.setParameters (dos1);
         AppleFileSystem fs = new FsData (blockReader);
         if (errorMessages.size () > 0)
           fs.setErrorMessage (errorMessages.get (0));
@@ -171,7 +184,7 @@ public class FileSystemFactory
       try
       {
         BlockReader dos31Reader = new BlockReader (blockReader);
-        dos31Reader.setParameters (256, 0, 13);
+        dos31Reader.setParameters (dos31);
 
         FsDos3 fs = new FsDos3 (dos31Reader);
 
@@ -199,11 +212,11 @@ public class FileSystemFactory
     List<FsDos3> fsList = new ArrayList<> (2);
 
     if (blockReader.getDiskBuffer ().length () == SECTOR_35_16_SIZE)
-      for (int interleave = 0; interleave < 2; interleave++)
+      for (int i = 0; i < 2; i++)
         try
         {
           BlockReader dos33Reader = new BlockReader (blockReader);
-          dos33Reader.setParameters (256, interleave, 16);
+          dos33Reader.setParameters (i == 0 ? dos1 : dos2);
 
           FsDos3 fs = new FsDos3 (dos33Reader);
 
@@ -267,13 +280,13 @@ public class FileSystemFactory
         case SECTOR_35_16_SIZE:
         case SECTOR_40_16_SIZE:
         case SECTOR_48_16_SIZE:
-          dos4Reader.setParameters (256, 0, 16);
+          dos4Reader.setParameters (dos1);
           break;
 
         case SECTOR_35_32_SIZE:
         case SECTOR_40_32_SIZE:
         case SECTOR_48_32_SIZE:
-          dos4Reader.setParameters (256, 0, 32);
+          dos4Reader.setParameters (dos4);
           break;
 
         default:
@@ -303,7 +316,7 @@ public class FileSystemFactory
       try
       {
         BlockReader unidosReader = new BlockReader (blockReader);
-        unidosReader.setParameters (256, 0, 32);
+        unidosReader.setParameters (dos4);
 
         FsUnidos fs = new FsUnidos (unidosReader);
 
@@ -327,7 +340,7 @@ public class FileSystemFactory
         try
         {
           BlockReader prodosReader = new BlockReader (blockReader);
-          prodosReader.setParameters (512, i, i * 8);
+          prodosReader.setParameters (i == 0 ? prodos1 : prodos2);
 
           FsProdos fs = new FsProdos (prodosReader);
 
@@ -358,7 +371,7 @@ public class FileSystemFactory
           if (debug)
             System.out.printf ("Pascal attempt %d%n", i);
           BlockReader pascalReader = new BlockReader (blockReader);
-          pascalReader.setParameters (512, i, i * 8);
+          pascalReader.setParameters (i == 0 ? prodos1 : prodos2);
 
           FsPascal fs = new FsPascal (pascalReader);
 
@@ -385,7 +398,7 @@ public class FileSystemFactory
       try
       {
         BlockReader cpmReader = new BlockReader (blockReader);
-        cpmReader.setParameters (1024, 2, 4);
+        cpmReader.setParameters (cpm);
 
         FsCpm fs = new FsCpm (cpmReader);
 
@@ -408,7 +421,7 @@ public class FileSystemFactory
       try
       {
         BlockReader cpamReader = new BlockReader (blockReader);
-        cpamReader.setParameters (1024, 0, 4);
+        cpamReader.setParameters (cpam);
 
         FsCpm fs = new FsCpm (cpamReader);
 
@@ -429,7 +442,7 @@ public class FileSystemFactory
     try
     {
       BlockReader lbrReader = new BlockReader (blockReader);
-      lbrReader.setParameters (128, 0, 0);
+      lbrReader.setParameters (bin);
 
       FsLbr fs = new FsLbr (lbrReader);
 
@@ -451,7 +464,7 @@ public class FileSystemFactory
       try
       {
         BlockReader lbrReader = new BlockReader (blockReader);
-        lbrReader.setParameters (128, 0, 0);
+        lbrReader.setParameters (bin);
 
         if (debug)
           System.out.println ("Bin2 magic OK");
@@ -481,7 +494,7 @@ public class FileSystemFactory
       {
         BlockReader nufxReader = new BlockReader (blockReader);
         //        lbrReader.setParameters (128, AddressType.BLOCK, 0, 0);
-        nufxReader.setParameters (128, 0, 0);
+        nufxReader.setParameters (bin);
 
         FsNuFX fs = new FsNuFX (nufxReader);
 
@@ -507,7 +520,7 @@ public class FileSystemFactory
       try
       {
         BlockReader lbrReader = new BlockReader (blockReader);
-        lbrReader.setParameters (128, 0, 0);
+        lbrReader.setParameters (bin);
 
         FsZip fs = new FsZip (lbrReader);
 
@@ -529,7 +542,7 @@ public class FileSystemFactory
       try
       {
         BlockReader lbrReader = new BlockReader (blockReader);
-        lbrReader.setParameters (128, 0, 0);
+        lbrReader.setParameters (bin);
 
         FsGzip fs = new FsGzip (lbrReader);
 
@@ -557,7 +570,7 @@ public class FileSystemFactory
     try
     {
       BlockReader lbrReader = new BlockReader (blockReader);
-      lbrReader.setParameters (128, 0, 0);
+      lbrReader.setParameters (bin);
 
       FsWoz fs = new FsWoz (lbrReader, fileSystemType);
 

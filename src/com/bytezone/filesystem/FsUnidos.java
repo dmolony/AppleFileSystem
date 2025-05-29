@@ -22,7 +22,7 @@ class FsUnidos extends AbstractFileSystem
     try
     {
       BlockReader blockReader1 = new BlockReader ("DISK 1", buffer, offset, UNIDOS_SIZE);
-      blockReader1.setParameters (256, 0, 32);
+      blockReader1.setParameters (FileSystemFactory.dos4);
 
       FsDos3 fs1 = new FsDos3 (blockReader1);
 
@@ -30,7 +30,7 @@ class FsUnidos extends AbstractFileSystem
       {
         BlockReader blockReader2 =
             new BlockReader ("DISK 2", buffer, offset + UNIDOS_SIZE, UNIDOS_SIZE);
-        blockReader2.setParameters (256, 0, 32);
+        blockReader2.setParameters (FileSystemFactory.dos4);
 
         FsDos3 fs2 = new FsDos3 (blockReader2);
 

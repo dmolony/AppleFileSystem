@@ -8,17 +8,19 @@ public class MultipleSectorCopier implements ByteCopier
   private final int bytesPerTrack;
   private final int interleave;
   private final int sectorsPerBlock;
+  private final DiskParameters diskParameters;
 
   // ---------------------------------------------------------------------------------//
-  MultipleSectorCopier (Buffer dataBuffer, int bytesPerBlock, int bytesPerTrack,
-      int interleave)
+  MultipleSectorCopier (Buffer dataBuffer, DiskParameters diskParameters)
   // ---------------------------------------------------------------------------------//
   {
     this.dataBuffer = dataBuffer;
-    this.bytesPerTrack = bytesPerTrack;
-    this.interleave = interleave;
+    this.diskParameters = diskParameters;
 
-    sectorsPerBlock = bytesPerBlock / SECTOR_SIZE;
+    bytesPerTrack = diskParameters.bytesPerBlock () * diskParameters.blocksPerTrack ();
+    interleave = diskParameters.interleave ();
+
+    sectorsPerBlock = diskParameters.bytesPerBlock () / SECTOR_SIZE;
   }
 
   // ---------------------------------------------------------------------------------//

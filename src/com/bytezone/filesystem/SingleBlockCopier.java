@@ -6,13 +6,16 @@ public class SingleBlockCopier implements ByteCopier
 {
   private final Buffer dataBuffer;
   private final int bytesPerBlock;
+  private final DiskParameters diskParameters;
 
   // ---------------------------------------------------------------------------------//
-  SingleBlockCopier (Buffer dataBuffer, int bytesPerBlock)
+  SingleBlockCopier (Buffer dataBuffer, DiskParameters diskParameters)
   // ---------------------------------------------------------------------------------//
   {
     this.dataBuffer = dataBuffer;
-    this.bytesPerBlock = bytesPerBlock;
+    this.diskParameters = diskParameters;
+
+    bytesPerBlock = diskParameters.bytesPerBlock ();
   }
 
   // ---------------------------------------------------------------------------------//
