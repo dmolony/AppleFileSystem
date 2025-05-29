@@ -12,9 +12,9 @@ public record DiskParameters (int bytesPerBlock, int interleave, int blocksPerTr
 {
   private static final int SECTOR_SIZE = 256;
 
-  //  bytesPerBlock;            // 128, 256, 512, 1024
-  //  interleave;               // 0, 1, 2
-  //  blocksPerTrack;           // 0, 4, 8, 13, 16, 32
+  //  bytesPerBlock   : 128, 256, 512, 1024
+  //  interleave      : 0, 1, 2
+  //  blocksPerTrack  : 0, 4, 8, 13, 16, 32
 
   // ---------------------------------------------------------------------------------//
   public DiskParameters (int bytesPerBlock, int interleave, int blocksPerTrack)
@@ -34,33 +34,6 @@ public record DiskParameters (int bytesPerBlock, int interleave, int blocksPerTr
     this.bytesPerBlock = bytesPerBlock;
     this.interleave = interleave;
     this.blocksPerTrack = blocksPerTrack;
-  }
-
-  // ---------------------------------------------------------------------------------//
-  private int totalBlocks (int diskLength)
-  // ---------------------------------------------------------------------------------//
-  {
-    return (diskLength - 1) / bytesPerBlock + 1;        // includes partial blocks
-  }
-
-  // ---------------------------------------------------------------------------------//
-  public AppleBlock[] getAppleBlockArray (Buffer dataBuffer)
-  // ---------------------------------------------------------------------------------//
-  {
-    return new AppleBlock[totalBlocks (dataBuffer.length ())];
-  }
-
-  // ---------------------------------------------------------------------------------//
-  public ByteCopier getByteCopier (Buffer dataBuffer)
-  // ---------------------------------------------------------------------------------//
-  {
-    if (bytesPerBlock == SECTOR_SIZE)
-      return new SingleSectorCopier (dataBuffer, this);
-
-    if (interleave == 0)
-      return new SingleBlockCopier (dataBuffer, this);
-
-    return new MultipleSectorCopier (dataBuffer, this);
   }
 
   // ---------------------------------------------------------------------------------//

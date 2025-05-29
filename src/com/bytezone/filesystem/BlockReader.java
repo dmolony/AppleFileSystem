@@ -19,7 +19,9 @@ import com.bytezone.utility.Utility;
 public class BlockReader
 // -----------------------------------------------------------------------------------//
 {
-  private final Buffer dataBuffer;
+  private static final int SECTOR_SIZE = 256;
+
+  private final Buffer diskBuffer;
   private String name;
 
   private DiskParameters diskParameters;
@@ -39,7 +41,7 @@ public class BlockReader
 
     int diskLength = buffer.length == 143_488 ? 143_360 : buffer.length;
 
-    dataBuffer = new Buffer (buffer, 0, diskLength);
+    diskBuffer = new Buffer (buffer, 0, diskLength);
 
     name = path.toFile ().getName ();
   }
@@ -60,15 +62,15 @@ public class BlockReader
     if (diskLength == 143_488)
       diskLength = 143_360;
 
-    dataBuffer = new Buffer (diskBuffer, diskOffset, diskLength);
+    this.diskBuffer = new Buffer (diskBuffer, diskOffset, diskLength);
     this.name = name;
   }
 
   // ---------------------------------------------------------------------------------//
-  public BlockReader (String name, Buffer dataRecord)
+  public BlockReader (String name, Buffer dataBuffer)
   // ---------------------------------------------------------------------------------//
   {
-    this.dataBuffer = dataRecord.copyBuffer ();
+    this.diskBuffer = dataBuffer.copyBuffer ();
     this.name = name;
   }
 
@@ -76,7 +78,7 @@ public class BlockReader
   BlockReader (BlockReader original)
   // ---------------------------------------------------------------------------------//
   {
-    dataBuffer = original.dataBuffer;       //.copyBuffer ();
+    diskBuffer = original.diskBuffer;       //.copyBuffer ();
     name = original.name;
   }
 
@@ -86,15 +88,30 @@ public class BlockReader
   {
     this.diskParameters = diskParameters;
 
-    appleBlocks = diskParameters.getAppleBlockArray (dataBuffer);
-    byteCopier = diskParameters.getByteCopier (dataBuffer);
+    appleBlocks = getAppleBlockArray ();
+    byteCopier = getByteCopier ();
   }
 
   // ---------------------------------------------------------------------------------//
-  public DiskParameters getParameters ()
+  private AppleBlock[] getAppleBlockArray ()
   // ---------------------------------------------------------------------------------//
   {
-    return diskParameters;
+    int totalBlocks = (diskBuffer.length () - 1) / diskParameters.bytesPerBlock () + 1;
+
+    return new AppleBlock[totalBlocks];
+  }
+
+  // ---------------------------------------------------------------------------------//
+  private ByteCopier getByteCopier ()
+  // ---------------------------------------------------------------------------------//
+  {
+    if (diskParameters.bytesPerBlock () == SECTOR_SIZE)
+      return new SingleSectorCopier (diskBuffer, diskParameters);
+
+    if (diskParameters.interleave () == 0)
+      return new SingleBlockCopier (diskBuffer, diskParameters);
+
+    return new MultipleSectorCopier (diskBuffer, diskParameters);
   }
 
   // ---------------------------------------------------------------------------------//
@@ -116,14 +133,14 @@ public class BlockReader
   boolean isMagic (int offset, byte[] magic)
   // ---------------------------------------------------------------------------------//
   {
-    return Utility.isMagic (dataBuffer.data (), dataBuffer.offset () + offset, magic);
+    return Utility.isMagic (diskBuffer.data (), diskBuffer.offset () + offset, magic);
   }
 
   // ---------------------------------------------------------------------------------//
   boolean byteAt (int offset, byte magic)
   // ---------------------------------------------------------------------------------//
   {
-    return dataBuffer.data ()[dataBuffer.offset () + offset] == magic;
+    return diskBuffer.data ()[diskBuffer.offset () + offset] == magic;
   }
 
   // this routine always reads the block (in order to set block type)
@@ -248,8 +265,12 @@ public class BlockReader
   {
     byte[] blockBuffer = new byte[diskParameters.bytesPerBlock () * blocks.size ()];
 
+    int ptr = 0;
     for (int i = 0; i < blocks.size (); i++)
-      byteCopier.read (blocks.get (i), blockBuffer, i * diskParameters.bytesPerBlock ());
+    {
+      byteCopier.read (blocks.get (i), blockBuffer, ptr);
+      ptr += diskParameters.bytesPerBlock ();
+    }
 
     return blockBuffer;
   }
@@ -274,7 +295,14 @@ public class BlockReader
   Buffer getDiskBuffer ()
   // ---------------------------------------------------------------------------------//
   {
-    return dataBuffer;
+    return diskBuffer;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  public DiskParameters getDiskParameters ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return diskParameters;
   }
 
   // ---------------------------------------------------------------------------------//
@@ -385,8 +413,8 @@ public class BlockReader
     StringBuilder text = new StringBuilder ();
 
     formatText (text, "Name", name);
-    formatText (text, "File system offset", 4, dataBuffer.offset ());
-    formatText (text, "File system length", 8, dataBuffer.length ());
+    formatText (text, "File system offset", 4, diskBuffer.offset ());
+    formatText (text, "File system length", 8, diskBuffer.length ());
     formatText (text, "Total blocks", 6, getTotalBlocks ());
     text.append ("\n");
     text.append (diskParameters);
