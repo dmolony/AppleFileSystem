@@ -13,9 +13,8 @@ import com.bytezone.filesystem.AppleBlock.BlockType;
 import com.bytezone.utility.Utility;
 
 // -----------------------------------------------------------------------------------//
-// Convert a byte array (disk buffer) into an array of AppleBlocks. The type of
-// file system is not known at this point. Block size, track size and interleave must
-// be specified before use.
+// Convert a byte array (disk buffer) into an array of AppleBlocks. The type of file
+// system is not known at this point. DiskParameters must be provided before use.
 // -----------------------------------------------------------------------------------//
 public class BlockReader
 // -----------------------------------------------------------------------------------//
@@ -25,15 +24,11 @@ public class BlockReader
   private final Buffer dataBuffer;
   private String name;
 
-  // mandatory - provided by setParameters()
   private DiskParameters diskParameters;
-
-  // can be calculated
-  private int totalBlocks;
+  private ByteCopier byteCopier;
 
   private AppleBlock[] appleBlocks;
   private List<AppleBlock> dirtyBlocks = new ArrayList<> ();
-  private ByteCopier byteCopier;
 
   // ---------------------------------------------------------------------------------//
   public BlockReader (Path path)
@@ -93,13 +88,13 @@ public class BlockReader
   {
     this.diskParameters = diskParameters;
 
-    if (diskParameters.blocksPerTrack () == 0)            // should throw exceptions
+    if (diskParameters.blocksPerTrack () == 0)             // should throw exceptions
     {
       assert diskParameters.bytesPerBlock () != 256 : "Must specify track size";
       assert diskParameters.interleave () == 0 : "Must specify track size";
     }
 
-    totalBlocks = (dataBuffer.length () - 1)               //
+    int totalBlocks = (dataBuffer.length () - 1)               //
         / diskParameters.bytesPerBlock () + 1;             // includes partial blocks
 
     appleBlocks = new AppleBlock[totalBlocks];
@@ -259,12 +254,12 @@ public class BlockReader
   {
     byte[] blockBuffer = new byte[diskParameters.bytesPerBlock ()];
 
-    read (block, blockBuffer, 0);
+    byteCopier.read (block, blockBuffer, 0);
 
     return blockBuffer;         // this will be placed in the block's local buffer
   }
 
-  // this doesn't belong here (BlockReader should only deal with single blocks)
+  // ?? this doesn't belong here (BlockReader should only deal with single blocks)
   // ---------------------------------------------------------------------------------//
   public byte[] read (List<AppleBlock> blocks)
   // ---------------------------------------------------------------------------------//
@@ -272,18 +267,9 @@ public class BlockReader
     byte[] blockBuffer = new byte[diskParameters.bytesPerBlock () * blocks.size ()];
 
     for (int i = 0; i < blocks.size (); i++)
-      read (blocks.get (i), blockBuffer, i * diskParameters.bytesPerBlock ());
+      byteCopier.read (blocks.get (i), blockBuffer, i * diskParameters.bytesPerBlock ());
 
     return blockBuffer;
-  }
-
-  // copy the required disk buffer bytes into the provided local buffer
-  // this should fill the block's local buffer
-  // ---------------------------------------------------------------------------------//
-  private void read (AppleBlock block, byte[] blockBuffer, int bufferOffset)
-  // ---------------------------------------------------------------------------------//
-  {
-    byteCopier.read (block, blockBuffer, bufferOffset);
   }
 
   // ---------------------------------------------------------------------------------//
@@ -291,7 +277,6 @@ public class BlockReader
   // ---------------------------------------------------------------------------------//
   {
     for (int i = 0; i < blocks.size (); i++)
-      //      write (blocks.get (i), blockBuffer, i * bytesPerBlock);
       write (blocks.get (i));
   }
 
@@ -335,14 +320,14 @@ public class BlockReader
   int getTotalBlocks ()
   // ---------------------------------------------------------------------------------//
   {
-    return totalBlocks;
+    return appleBlocks.length;
   }
 
   // ---------------------------------------------------------------------------------//
   boolean isValidAddress (int blockNo)
   // ---------------------------------------------------------------------------------//
   {
-    return blockNo >= 0 && blockNo < totalBlocks;
+    return blockNo >= 0 && blockNo < getTotalBlocks ();
   }
 
   // ---------------------------------------------------------------------------------//
@@ -420,8 +405,7 @@ public class BlockReader
     formatText (text, "Name", name);
     formatText (text, "File system offset", 4, dataBuffer.offset ());
     formatText (text, "File system length", 8, dataBuffer.length ());
-    //    formatText (text, "Address type", addressType == null ? "" : addressType.toString ());
-    formatText (text, "Total blocks", 6, totalBlocks);
+    formatText (text, "Total blocks", 6, getTotalBlocks ());
     formatText (text, "Bytes per block", 4, diskParameters.bytesPerBlock ());
     formatText (text, "Blocks per track", 2, diskParameters.blocksPerTrack ());
     formatText (text, "Interleave", 2, diskParameters.interleave ());
