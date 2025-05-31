@@ -35,7 +35,7 @@ class FsNuFX extends AbstractFileSystem
   {
     super (blockReader, FileSystemType.NUFX);           // reader not used
 
-    if (!blockReader.isMagic (0, NuFile))
+    if (!Utility.isMagic (blockReader.getDiskBuffer (), 0, NuFile))
       throw new FileFormatException ("File not NuFX format");
 
     byte[] buffer = blockReader.getDiskBuffer ().data ();

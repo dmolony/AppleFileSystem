@@ -30,8 +30,9 @@ public class DiskHeaderDiskCopy extends DiskHeader
   {
     super (blockReader, DiskHeaderType.DISK_COPY);
 
-    byte[] buffer = blockReader.getDiskBuffer ().data ();
-    int ptr = blockReader.getDiskBuffer ().offset ();
+    Buffer diskBuffer = blockReader.getDiskBuffer ();
+    byte[] buffer = diskBuffer.data ();
+    int ptr = diskBuffer.offset ();
 
     int nameLength = buffer[ptr] * 0xFF;
     if (nameLength < 1 || nameLength > 0x3F)
@@ -56,8 +57,8 @@ public class DiskHeaderDiskCopy extends DiskHeader
     int ptr = blockReader.getDiskBuffer ().offset ();
     int id = Utility.unsignedShortBigEndian (buffer, ptr + 0x52);
 
-    return (blockReader.isMagic (0x40, diskCopySize800)
-        || blockReader.isMagic (0x40, diskCopySize400)) && id == 0x100;
+    return (Utility.isMagic (buffer, 0x40, diskCopySize800)
+        || Utility.isMagic (buffer, 0x40, diskCopySize400)) && id == 0x100;
   }
 
   // dataSize should be one of: 00 06 40 00 / 00 0C 80 00 / 00 0B 40 00 / 00 16 80 00

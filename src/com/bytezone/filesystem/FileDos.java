@@ -417,25 +417,6 @@ public abstract class FileDos extends AbstractAppleFile
     return wastedBlocks;
   }
 
-  // attempt to weed out the catalog entries that are just labels
-  // ---------------------------------------------------------------------------------//
-  @Override
-  public boolean isValidFile ()
-  // ---------------------------------------------------------------------------------//
-  {
-    // Beagle Brothers "applesoft program"
-    if (getFileType () == FsDos.FILE_TYPE_APPLESOFT && eof <= 3
-        && getFileName ().startsWith ("  "))
-      return false;
-
-    // empty text files
-    if (getFileType () == FsDos.FILE_TYPE_TEXT && eof <= 1)
-      return false;
-
-    return catalogEntry.isNameValid && dataBlocks.size () > 0
-        && catalogEntry.sectorCount > 0;
-  }
-
   // ---------------------------------------------------------------------------------//
   protected boolean checkName (String name)
   // ---------------------------------------------------------------------------------//

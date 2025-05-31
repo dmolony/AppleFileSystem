@@ -130,18 +130,11 @@ public class BlockReader
   }
 
   // ---------------------------------------------------------------------------------//
-  boolean isMagic (int offset, byte[] magic)
-  // ---------------------------------------------------------------------------------//
-  {
-    return Utility.isMagic (diskBuffer.data (), diskBuffer.offset () + offset, magic);
-  }
-
-  // ---------------------------------------------------------------------------------//
-  boolean byteAt (int offset, byte magic)
-  // ---------------------------------------------------------------------------------//
-  {
-    return diskBuffer.data ()[diskBuffer.offset () + offset] == magic;
-  }
+  //  boolean byteAt (int offset, byte magic)
+  //  // ---------------------------------------------------------------------------------//
+  //  {
+  //    return diskBuffer.data ()[diskBuffer.offset () + offset] == magic;
+  //  }
 
   // this routine always reads the block (in order to set block type)
   // ---------------------------------------------------------------------------------//

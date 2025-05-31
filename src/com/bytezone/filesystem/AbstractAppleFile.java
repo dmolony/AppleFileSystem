@@ -68,15 +68,6 @@ public abstract class AbstractAppleFile implements AppleFile
     return isFork;
   }
 
-  // override to flag files that are just catalog fillers
-  // ---------------------------------------------------------------------------------//
-  @Override
-  public boolean isValidFile ()
-  // ---------------------------------------------------------------------------------//
-  {
-    return dataBlocks.size () > 0;
-  }
-
   // ---------------------------------------------------------------------------------//
   @Override
   public boolean isContainer ()

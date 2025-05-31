@@ -460,7 +460,8 @@ public class FileSystemFactory
   private void getBinary2 (BlockReader blockReader)
   // ---------------------------------------------------------------------------------//
   {
-    if (blockReader.isMagic (0, FsBinary2.BIN2) && blockReader.byteAt (18, (byte) 0x02))
+    Buffer diskBuffer = blockReader.getDiskBuffer ();
+    if (diskBuffer.isMagic (0, FsBinary2.BIN2) && diskBuffer.byteAt (18, (byte) 0x02))
       try
       {
         BlockReader lbrReader = new BlockReader (blockReader);
@@ -489,7 +490,7 @@ public class FileSystemFactory
   private void getNuFx (BlockReader blockReader)
   // ---------------------------------------------------------------------------------//
   {
-    if (blockReader.isMagic (0, FsNuFX.NuFile))
+    if (Utility.isMagic (blockReader.getDiskBuffer (), 0, FsNuFX.NuFile))
       try
       {
         BlockReader nufxReader = new BlockReader (blockReader);
@@ -516,7 +517,7 @@ public class FileSystemFactory
   private void getZip (BlockReader blockReader)
   // ---------------------------------------------------------------------------------//
   {
-    if (blockReader.isMagic (0, FsZip.ZIP))
+    if (Utility.isMagic (blockReader.getDiskBuffer (), 0, FsZip.ZIP))
       try
       {
         BlockReader lbrReader = new BlockReader (blockReader);
@@ -538,7 +539,7 @@ public class FileSystemFactory
   private void getGZip (BlockReader blockReader)
   // ---------------------------------------------------------------------------------//
   {
-    if (blockReader.isMagic (0, FsGzip.GZIP))
+    if (Utility.isMagic (blockReader.getDiskBuffer (), 0, FsGzip.GZIP))
       try
       {
         BlockReader lbrReader = new BlockReader (blockReader);
@@ -561,8 +562,10 @@ public class FileSystemFactory
   // ---------------------------------------------------------------------------------//
   {
     FileSystemType fileSystemType =
-        blockReader.isMagic (0, FsWoz.WOZ_1) ? FileSystemType.WOZ1
-            : blockReader.isMagic (0, FsWoz.WOZ_2) ? FileSystemType.WOZ2 : null;
+        Utility.isMagic (blockReader.getDiskBuffer (), 0, FsWoz.WOZ_1)
+            ? FileSystemType.WOZ1
+            : Utility.isMagic (blockReader.getDiskBuffer (), 0, FsWoz.WOZ_2)
+                ? FileSystemType.WOZ2 : null;
 
     if (fileSystemType == null)
       return;

@@ -35,7 +35,7 @@ class FsGzip extends AbstractFileSystem
       throw new FileFormatException (e.getMessage ());
     }
 
-    assert blockReader.isMagic (0, GZIP);
+    assert Utility.isMagic (dataRecord, 0, GZIP);
   }
 
   // ---------------------------------------------------------------------------------//

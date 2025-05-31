@@ -21,8 +21,6 @@ class FileData extends AbstractAppleFile
   {
     super (fs);
 
-    //    fileName = "Raw data";
-    //    fileTypeText = "DATA";
     rawFileBuffer = dataRecord;
   }
 
@@ -68,7 +66,7 @@ class FileData extends AbstractAppleFile
 
   // ---------------------------------------------------------------------------------//
   @Override
-  public int getTotalBlocks ()                            // in blocks
+  public int getTotalBlocks ()                                // in blocks
   // ---------------------------------------------------------------------------------//
   {
     return rawFileBuffer.length () / 512;

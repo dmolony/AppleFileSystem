@@ -481,6 +481,7 @@ public class ForkProdos extends AbstractAppleFile
         isLocked () ? "*" : " ", getFileName (), getFileTypeText (), forkFlag,
         getTotalBlocks (), dateModified, timeModified, dateCreated, timeCreated,
         fileLength, getSubType ()));
+    System.out.printf ("%02X%n", getFileType ());
 
     return Utility.rtrim (text);
   }
@@ -498,6 +499,7 @@ public class ForkProdos extends AbstractAppleFile
       case ProdosConstants.FILE_TYPE_PNT:
       case ProdosConstants.FILE_TYPE_PIC:
       case ProdosConstants.FILE_TYPE_FOT:
+      case ProdosConstants.FILE_TYPE_PRG:
         return String.format ("A=$%4X", parentFile.getAuxType ());
 
       default:

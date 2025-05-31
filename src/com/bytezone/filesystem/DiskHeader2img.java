@@ -43,10 +43,11 @@ public class DiskHeader2img extends DiskHeader
   {
     super (blockReader, DiskHeaderType.TWO_IMG);
 
-    byte[] buffer = blockReader.getDiskBuffer ().data ();
-    int diskOffset = blockReader.getDiskBuffer ().offset ();
+    Buffer diskBuffer = blockReader.getDiskBuffer ();
+    assert diskBuffer.isMagic (0, TWO_IMG_MAGIC);
 
-    assert blockReader.isMagic (0, TWO_IMG_MAGIC);
+    byte[] buffer = diskBuffer.data ();
+    int diskOffset = diskBuffer.offset ();
 
     creator = new String (buffer, diskOffset + 4, 4);
     headerSize = Utility.unsignedShort (buffer, diskOffset + 8);
@@ -76,7 +77,7 @@ public class DiskHeader2img extends DiskHeader
   public static boolean isValid (BlockReader blockReader)
   // ---------------------------------------------------------------------------------//
   {
-    return blockReader.isMagic (0, TWO_IMG_MAGIC);
+    return Utility.isMagic (blockReader.getDiskBuffer (), 0, TWO_IMG_MAGIC);
   }
 
   // ---------------------------------------------------------------------------------//

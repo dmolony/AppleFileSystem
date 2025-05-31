@@ -91,7 +91,7 @@ class FsZip extends AbstractFileSystem
       throw new FileFormatException (e.getMessage ());
     }
 
-    assert blockReader.isMagic (0, ZIP);
+    assert Utility.isMagic (dataRecord, 0, ZIP);
   }
 
   // ---------------------------------------------------------------------------------//

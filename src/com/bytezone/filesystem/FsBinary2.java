@@ -1,5 +1,7 @@
 package com.bytezone.filesystem;
 
+import com.bytezone.utility.Utility;
+
 // Binary II archive (.BNY, .BXY if it contains NuFX)
 // Apple II File Type Note for File Type $E0, Auxiliary Type $8000)
 // -----------------------------------------------------------------------------------//
@@ -14,7 +16,8 @@ public class FsBinary2 extends AbstractFileSystem
   {
     super (blockReader, FileSystemType.BIN2);
 
-    if (!blockReader.isMagic (0, BIN2) || !blockReader.byteAt (18, (byte) 0x02))
+    Buffer diskBuffer = blockReader.getDiskBuffer ();
+    if (!Utility.isMagic (diskBuffer, 0, BIN2) || !diskBuffer.byteAt (18, (byte) 0x02))
       throw new FileFormatException ("File not BIN2 format");
 
     int nextBlockNo = 0;

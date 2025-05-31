@@ -107,6 +107,14 @@ public class FileProdos extends AbstractAppleFile implements AppleForkedFile
 
   // ---------------------------------------------------------------------------------//
   @Override
+  public boolean hasData ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return getDataBlocks ().size () > 0;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
   public List<AppleBlock> getDataBlocks ()
   // ---------------------------------------------------------------------------------//
   {
@@ -139,14 +147,6 @@ public class FileProdos extends AbstractAppleFile implements AppleForkedFile
       blocks.addAll (dataFork.getAllBlocks ());
 
     return blocks;
-  }
-
-  // ---------------------------------------------------------------------------------//
-  @Override
-  public boolean isValidFile ()
-  // ---------------------------------------------------------------------------------//
-  {
-    return getTotalBlocks () > 0;
   }
 
   // ---------------------------------------------------------------------------------//
@@ -296,16 +296,12 @@ public class FileProdos extends AbstractAppleFile implements AppleForkedFile
   private String getSubType ()
   // ---------------------------------------------------------------------------------//
   {
-    switch (getFileType ())
+    if (getAuxType () > 0)
     {
-      case ProdosConstants.FILE_TYPE_TEXT:
+      if (getFileType () == ProdosConstants.FILE_TYPE_TEXT)
         return String.format ("R=%5d", getAuxType ());
 
-      case ProdosConstants.FILE_TYPE_BINARY:
-      case ProdosConstants.FILE_TYPE_PNT:
-      case ProdosConstants.FILE_TYPE_PIC:
-      case ProdosConstants.FILE_TYPE_FOT:
-        return String.format ("A=$%04X", getAuxType ());
+      return String.format ("A=$%04X", getAuxType ());
     }
 
     return "";

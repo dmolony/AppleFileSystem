@@ -9,6 +9,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import com.bytezone.filesystem.Buffer;
+
 // -----------------------------------------------------------------------------------//
 public class Utility
 // -----------------------------------------------------------------------------------//
@@ -718,6 +720,13 @@ public class Utility
   // ---------------------------------------------------------------------------------//
   {
     text.append (String.format (FMT, makeLabel (label), "", date));
+  }
+
+  // ---------------------------------------------------------------------------------//
+  public static boolean isMagic (Buffer dataBuffer, int ptr, byte[] magic)
+  // ---------------------------------------------------------------------------------//
+  {
+    return isMagic (dataBuffer.data (), dataBuffer.offset () + ptr, magic);
   }
 
   // ---------------------------------------------------------------------------------//

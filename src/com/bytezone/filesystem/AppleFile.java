@@ -22,8 +22,6 @@ public interface AppleFile
 
   public boolean isFork ();                   // either a RESOURCE or DATA fork
 
-  public boolean isValidFile ();              // reject DOS catalog nonsense files
-
   public boolean isRandomAccess ();
 
   public ForkType getForkType ();

@@ -38,6 +38,7 @@ public interface ProdosConstants
   static int FILE_TYPE_PASCAL_VOLUME = 0xEF;
   static int FILE_TYPE_OVL = 0xF1;
   static int FILE_TYPE_BAT = 0xF5;
+  static int FILE_TYPE_PRG = 0xF8;
   static int FILE_TYPE_INTEGER_BASIC = 0xFA;
   static int FILE_TYPE_INTEGER_BASIC_VARS = 0xFB;
   static int FILE_TYPE_APPLESOFT_BASIC = 0xFC;
