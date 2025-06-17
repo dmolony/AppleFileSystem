@@ -25,6 +25,11 @@ public abstract class FileDos extends AbstractAppleFile
   protected CatalogEntryDos catalogEntry;
   protected int recordLength;
 
+  int shortestRecord = 99999;
+  int longestRecord = 0;
+  int totalRecords = 0;
+  int totalRecordsOutsideRange = 0;
+
   // ---------------------------------------------------------------------------------//
   FileDos (FsDos fs)
   // ---------------------------------------------------------------------------------//
@@ -164,8 +169,8 @@ public abstract class FileDos extends AbstractAppleFile
   // Random Access files can have large gaps between records, so keeping a list of
   // consecutive data blocks is not feasible. Text Blocks are groups of contiguous
   // data blocks (essentially islands of data in the file). A Random Access file
-  // can have any number of Text Blocks, but many will have only one as the records
-  // are all at the start of the file (and mostly consecutive).
+  // can have any number of Text Blocks, but most will have only one as the records
+  // are all at the start of the file (and usually consecutive).
   // ---------------------------------------------------------------------------------//
   void createTextBlocks (List<AppleBlock> dataBlocks)
   // ---------------------------------------------------------------------------------//
@@ -205,17 +210,45 @@ public abstract class FileDos extends AbstractAppleFile
       textBlocks.add (textBlock);
     }
 
+    analyseRecords ();
+
+    if ((recordLength < 4 || recordLength > 1000)     // probably not random-access
+        && fileGaps == 0)                             // 
+      textBlocks.clear ();                            // treat file as normal text
+  }
+
+  // ---------------------------------------------------------------------------------//
+  private void analyseRecords ()
+  // ---------------------------------------------------------------------------------//
+  {
     // calculate likely record length
     for (TextBlock textBlock : textBlocks)
       for (TextRecord record : textBlock)
       {
         int ptr = record.offset () + textBlock.firstByteNumber;
         recordLength = recordLength == 0 ? ptr : Utility.gcd (recordLength, ptr);
+        shortestRecord = Math.min (shortestRecord, record.length ());
+        longestRecord = Math.max (longestRecord, record.length ());
+        ++totalRecords;
       }
 
-    if ((recordLength < 4 || recordLength > 1000)       // probably not random-access
-        && fileGaps == 0)                               // 
-      textBlocks.clear ();                              // treat file as normal text
+    // count records longer than GCD
+    for (TextBlock textBlock : textBlocks)
+      for (TextRecord record : textBlock)
+        if (record.length () > recordLength)
+          ++totalRecordsOutsideRange;
+
+    if (false)
+      showTotals ();
+  }
+
+  // ---------------------------------------------------------------------------------//
+  private void showTotals ()
+  // ---------------------------------------------------------------------------------//
+  {
+    System.out.printf ("Shortest: %3d, Longest: %3d, GCD: %3d.  Total: %5d (%d)%n",
+        shortestRecord, longestRecord, recordLength, totalRecords,
+        totalRecordsOutsideRange);
   }
 
   // Try to convert the filesystem's raw buffer into a more precise buffer. This means
@@ -526,9 +559,15 @@ public abstract class FileDos extends AbstractAppleFile
 
     if (isRandomAccess ())
     {
+      text.append ("\n");
+      text.append ("---- Random Access ----\n");
       formatText (text, "Text file gaps", 4, fileGaps);
       formatText (text, "Text blocks", 4, textBlocks.size ());
       formatText (text, "Possible reclen", 4, recordLength);
+      formatText (text, "Shortest record", 4, shortestRecord);
+      formatText (text, "Longest record", 4, longestRecord);
+      formatText (text, "Total records", 4, totalRecords);
+      formatText (text, "Total records long", 4, totalRecordsOutsideRange);
     }
 
     return Utility.rtrim (text);

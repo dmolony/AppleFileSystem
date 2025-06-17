@@ -10,7 +10,7 @@ import com.bytezone.filesystem.AppleBlock.BlockType;
 import com.bytezone.utility.Utility;
 
 // -----------------------------------------------------------------------------------//
-public class FileProdos extends AbstractAppleFile implements AppleForkedFile
+public class FileProdos extends AbstractAppleFile //implements AppleForkedFile
 // -----------------------------------------------------------------------------------//
 {
   private static Locale US = Locale.US;               // to force 3 character months
@@ -216,7 +216,7 @@ public class FileProdos extends AbstractAppleFile implements AppleForkedFile
   }
 
   // ---------------------------------------------------------------------------------//
-  @Override
+  //    @Override
   public List<AppleFile> getForks ()
   // ---------------------------------------------------------------------------------//
   {
@@ -244,26 +244,26 @@ public class FileProdos extends AbstractAppleFile implements AppleForkedFile
   }
 
   // ---------------------------------------------------------------------------------//
-  @Override
-  public String getCatalogText ()
-  // ---------------------------------------------------------------------------------//
-  {
-    if (!isForkedFile)
-      throw new FileFormatException ("Cannot getCatalog() on a non-forked file");
-
-    StringBuilder text = new StringBuilder ();
-
-    text.append (" NAME           TYPE  BLOCKS  "
-        + "MODIFIED         CREATED          ENDFILE SUBTYPE" + "\n\n");
-
-    for (AppleFile file : getForks ())
-    {
-      text.append (file.getCatalogLine ());
-      text.append ("\n");
-    }
-
-    return text.toString ();
-  }
+  //  @Override
+  //  public String getCatalogText ()
+  //  // ---------------------------------------------------------------------------------//
+  //  {
+  //    if (!isForkedFile)
+  //      throw new FileFormatException ("Cannot getCatalog() on a non-forked file");
+  //
+  //    StringBuilder text = new StringBuilder ();
+  //
+  //    text.append (" NAME           TYPE  BLOCKS  "
+  //        + "MODIFIED         CREATED          ENDFILE SUBTYPE" + "\n\n");
+  //
+  //    for (AppleFile file : getForks ())
+  //    {
+  //      text.append (file.getCatalogLine ());
+  //      text.append ("\n");
+  //    }
+  //
+  //    return text.toString ();
+  //  }
 
   // ---------------------------------------------------------------------------------//
   @Override
@@ -287,24 +287,22 @@ public class FileProdos extends AbstractAppleFile implements AppleForkedFile
     text.append (String.format ("%s%-15s %3s%s  %5d  %9s %5s  %9s %5s %8d %7s%n",
         isLocked () ? "*" : " ", getFileName (), getFileTypeText (), forkFlag,
         getTotalBlocks (), dateModified, timeModified, dateCreated, timeCreated,
-        fileLength, getSubType ()));
+        fileLength, getAuxText ()));
 
     return Utility.rtrim (text);
   }
 
   // ---------------------------------------------------------------------------------//
-  private String getSubType ()
+  private String getAuxText ()
   // ---------------------------------------------------------------------------------//
   {
-    if (getAuxType () > 0)
-    {
-      if (getFileType () == ProdosConstants.FILE_TYPE_TEXT)
-        return String.format ("R=%5d", getAuxType ());
+    int auxType = getAuxType ();
 
-      return String.format ("A=$%04X", getAuxType ());
-    }
+    if (auxType == 0)
+      return "";
 
-    return "";
+    return getFileType () == ProdosConstants.FILE_TYPE_TEXT
+        ? String.format ("R=%5d", auxType) : String.format ("A=$%4X", auxType);
   }
 
   // ---------------------------------------------------------------------------------//
@@ -318,8 +316,14 @@ public class FileProdos extends AbstractAppleFile implements AppleForkedFile
     text.append (catalogEntry);
     text.append ("\n\n");
 
-    if (dataFork != null)
-      text.append (dataFork);
+    for (AppleFile fork : forks)
+    {
+      text.append (fork);
+      text.append ("\n\n");
+    }
+
+    //    if (dataFork != null)
+    //      text.append (dataFork);
 
     return Utility.rtrim (text);
   }

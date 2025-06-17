@@ -480,13 +480,13 @@ public class ForkProdos extends AbstractAppleFile
     text.append (String.format ("%s%-15s %3s%s  %5d  %9s %5s  %9s %5s %8d %7s%n",
         isLocked () ? "*" : " ", getFileName (), getFileTypeText (), forkFlag,
         getTotalBlocks (), dateModified, timeModified, dateCreated, timeCreated,
-        fileLength, getSubType ()));
+        fileLength, getAuxText ()));
 
     return Utility.rtrim (text);
   }
 
   // ---------------------------------------------------------------------------------//
-  private String getSubType ()
+  private String getAuxText ()
   // ---------------------------------------------------------------------------------//
   {
     int auxType = parentFile.getAuxType ();

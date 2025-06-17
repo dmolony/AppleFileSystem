@@ -37,7 +37,8 @@ class FileProdosGS extends AbstractAppleFile implements AppleContainer
   public void addFileSystem (AppleFileSystem fileSystem)
   // ---------------------------------------------------------------------------------//
   {
-    fileSystems.add (fileSystem);           // Not used AFAIK
+    throw new UnsupportedOperationException (
+        "addFileSystem () not implemented in FileProdosGS");
   }
 
   // ---------------------------------------------------------------------------------//
