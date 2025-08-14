@@ -22,23 +22,24 @@ class DiskReader16Sector extends DiskReader
     super (16);
   }
 
+  // convert 342 translated bytes into 256 data bytes
   // ---------------------------------------------------------------------------------//
   @Override
   byte[] decodeSector (byte[] buffer, int offset) throws DiskNibbleException
   // ---------------------------------------------------------------------------------//
   {
-    // rearrange 342 bytes into 256
-    byte[] decodedBuffer = new byte[SECTOR_SIZE];             // 256 bytes
+    byte[] decodedBuffer = new byte[SECTOR_SIZE];                 // 256 bytes
 
     // convert legal disk values to actual 6 bit values
-    for (int i = 0; i < BUFFER_WITH_CHECKSUM_SIZE; i++)      // 343 bytes
+    for (int i = 0; i < BUFFER_WITH_CHECKSUM_SIZE; i++)           // 343 bytes
       decodeA[i] = (byte) (byteTranslator.decode (buffer[offset++]) << 2);
 
     // reconstruct 342 bytes each with 6 bits
-    byte chk = 0;
-    for (int i = decodeB.length - 1; i >= 0; i--)            // 342 bytes
-      chk = decodeB[i] = (byte) (decodeA[i + 1] ^ chk);
-    if ((chk ^ decodeA[0]) != 0)
+    byte checksum = 0;
+    for (int i = decodeB.length - 1; i >= 0; i--)                 // 342 bytes
+      checksum = decodeB[i] = (byte) (decodeA[i + 1] ^ checksum);
+
+    if ((checksum ^ decodeA[0]) != 0)
       throw new DiskNibbleException ("Checksum failed");
 
     // move 6 bits into place
@@ -50,11 +51,11 @@ class DiskReader16Sector extends DiskReader
     {
       byte val = decodeB[i];
 
-      decodedBuffer[i] |= reverse ((val & 0x0C) >> 2);
-      decodedBuffer[j] |= reverse ((val & 0x30) >> 4);
+      decodedBuffer[i] |= reverseTwoBits ((val & 0x0C) >> 2);     // 0000 1100
+      decodedBuffer[j] |= reverseTwoBits ((val & 0x30) >> 4);     // 0011 0000
 
       if (k < SECTOR_SIZE)
-        decodedBuffer[k] |= reverse ((val & 0xC0) >> 6);
+        decodedBuffer[k] |= reverseTwoBits ((val & 0xC0) >> 6);   // 1100 0000
     }
 
     return decodedBuffer;
@@ -75,19 +76,19 @@ class DiskReader16Sector extends DiskReader
     // build extra 86 bytes from the bits stripped from the data bytes
     for (int i = 0; i < 86; i++)
     {
-      int b1 = reverse (buffer[i] & 0x03) << 2;
-      int b2 = reverse (buffer[i + 86] & 0x03) << 4;
+      int b1 = reverseTwoBits (buffer[i] & 0x03) << 2;
+      int b2 = reverseTwoBits (buffer[i + 86] & 0x03) << 4;
 
       if (i < 84)
       {
-        int b3 = reverse (buffer[i + 172] & 0x03) << 6;
+        int b3 = reverseTwoBits (buffer[i + 172] & 0x03) << 6;
         encodeA[i] = (byte) (b1 | b2 | b3);
       }
       else
         encodeA[i] = (byte) (b1 | b2);
     }
 
-    // convert into checksum bytes
+    // calculate checksum byte
     byte checksum = 0;
     for (int i = 0; i < RAW_BUFFER_SIZE; i++)
     {
@@ -102,5 +103,13 @@ class DiskReader16Sector extends DiskReader
       encodedBuffer[i] = byteTranslator.encode (encodeB[i]);
 
     return encodedBuffer;
+  }
+
+  // reverse 2 bits : 00 -> 00, 01 -> 10, 10 -> 01, 11 -> 11 
+  // ---------------------------------------------------------------------------------//
+  private int reverseTwoBits (int bits)
+  // ---------------------------------------------------------------------------------//
+  {
+    return bits == 1 ? 2 : bits == 2 ? 1 : bits;
   }
 }
