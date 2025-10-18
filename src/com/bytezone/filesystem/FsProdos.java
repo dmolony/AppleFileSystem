@@ -10,6 +10,7 @@ import com.bytezone.utility.Utility;
 
 // see https://prodos8.com/docs/techref/file-organization/
 // see https://prodos8.com/docs/technote/25/
+// see https://ciderpress2.com/formatdoc/PPM-notes.html
 // -----------------------------------------------------------------------------------//
 public class FsProdos extends AbstractFileSystem
 // -----------------------------------------------------------------------------------//
@@ -72,7 +73,7 @@ public class FsProdos extends AbstractFileSystem
             break;
 
           case ProdosConstants.PASCAL_ON_PROFILE:
-            file = new FileProdos (this, container, catalogBlock, i);
+            file = new FilePPM (this, container, catalogBlock, i);
             container.addFile (file);
             addEmbeddedFileSystem (file, 1024);       // fs starts 2 blocks in
             break;

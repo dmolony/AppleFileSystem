@@ -22,7 +22,7 @@ public class FileProdos extends AbstractAppleFile //implements AppleForkedFile
   final CatalogEntryProdos catalogEntry;
   private AppleContainer parentContainer;
 
-  private ForkProdos dataFork;                        // for non-forked files
+  protected ForkProdos dataFork;                        // for non-forked files
   List<AppleFile> forks = new ArrayList<> ();         // for forked files
 
   // ---------------------------------------------------------------------------------//

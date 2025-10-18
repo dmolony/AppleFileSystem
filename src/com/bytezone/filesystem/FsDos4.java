@@ -106,6 +106,7 @@ class FsDos4 extends FsDos
     byte[] buffer = catalogSector.getBuffer ();
 
     int ptr = HEADER_SIZE;
+    int slot = 0;
 
     while (ptr < buffer.length && buffer[ptr] != 0)
     {
@@ -113,12 +114,15 @@ class FsDos4 extends FsDos
       {
         String fileName = Utility.string (buffer, ptr + 3, 24).trim ();
         addDeletedFile (buffer, ptr, fileName);
+        CatalogEntry ce = new CatalogEntryDos4 (catalogSector, slot);
+        catalogEntries.add (ce);
       }
       else
         try
         {
           FileDos4 file = new FileDos4 (this, catalogSector, ptr);
           addFile (file);
+          catalogEntries.add (file.catalogEntry);
         }
         catch (FileFormatException e)
         {
@@ -126,6 +130,7 @@ class FsDos4 extends FsDos
           addFailedFile (buffer, ptr, fileName);
         }
 
+      ++slot;
       ptr += ENTRY_SIZE;
     }
 

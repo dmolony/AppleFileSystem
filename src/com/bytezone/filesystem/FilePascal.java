@@ -7,6 +7,7 @@ import java.time.format.FormatStyle;
 import com.bytezone.filesystem.AppleBlock.BlockType;
 import com.bytezone.utility.Utility;
 
+// https://ciderpress2.com/formatdoc/Pascal-notes.html
 // -----------------------------------------------------------------------------------//
 public class FilePascal extends AbstractAppleFile
 // -----------------------------------------------------------------------------------//

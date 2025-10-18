@@ -20,7 +20,6 @@ public class CatalogEntryDos4 extends CatalogEntryDos
 
   boolean tsListZero;
   LocalDateTime modified;
-  //  boolean deleted;
 
   // ---------------------------------------------------------------------------------//
   public CatalogEntryDos4 (AppleBlock catalogBlock, int slot)

@@ -90,7 +90,7 @@ public interface ProdosConstants
       "$D0", "$D1", "$D2", "$D3", "$D4", "MUS", "INS", "MDI", //
       "SND", "$D9", "$DA", "DBM", "$DC", "DDD", "$DE", "$DF", //
       "LBR", "$E1", "ATK", "$E3", "$E4", "$E5", "$E6", "$E7", //
-      "$E8", "$E9", "$EA", "$EB", "$EC", "$ED", "R16", "PAR", //
+      "$E8", "$E9", "$EA", "$EB", "$EC", "$ED", "R16", "PAS", //
       "CMD", "OVL", "UD2", "UD3", "UD4", "BAT", "UD6", "UD7", //
       "PRG", "P16", "INT", "IVR", "BAS", "VAR", "REL", "SYS" };
 
