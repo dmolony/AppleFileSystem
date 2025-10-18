@@ -1,5 +1,7 @@
 package com.bytezone.filesystem;
 
+import static com.bytezone.utility.Utility.formatText;
+
 import com.bytezone.utility.Utility;
 
 // -----------------------------------------------------------------------------------//
@@ -15,8 +17,9 @@ public abstract class CatalogEntryDos extends CatalogEntry
   int fileType;
   boolean isLocked;
   int sectorCount;
+  boolean isDeleted;
 
-  String fileName;
+  //  String fileName;
   //  boolean isNameValid;
 
   // ---------------------------------------------------------------------------------//
@@ -34,12 +37,17 @@ public abstract class CatalogEntryDos extends CatalogEntry
   {
     int ptr = HEADER_SIZE + slot * ENTRY_SIZE;
 
-    firstTrack = buffer[ptr] & 0xFF;
-    firstSector = buffer[ptr + 1] & 0xFF;
+    if (buffer[ptr] == (byte) 0xFF)
+      isDeleted = true;
+    else
+    {
+      firstTrack = buffer[ptr] & 0xFF;
+      firstSector = buffer[ptr + 1] & 0xFF;
 
-    isLocked = (buffer[ptr + 2] & 0x80) != 0;
-    fileType = buffer[ptr + 2] & 0x7F;
-    sectorCount = Utility.unsignedShort (buffer, ptr + 33);
+      isLocked = (buffer[ptr + 2] & 0x80) != 0;
+      fileType = buffer[ptr + 2] & 0x7F;
+      sectorCount = Utility.unsignedShort (buffer, ptr + 33);
+    }
   }
 
   // ---------------------------------------------------------------------------------//
@@ -70,4 +78,25 @@ public abstract class CatalogEntryDos extends CatalogEntry
   //
   //    isNameValid = true;
   //  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
+  public String toString ()
+  // ---------------------------------------------------------------------------------//
+  {
+    StringBuilder text = new StringBuilder (super.toString ());
+
+    formatText (text, "Deleted?", isDeleted);
+
+    if (!isDeleted)
+    {
+      formatText (text, "First track", 2, firstTrack);
+      formatText (text, "First sector", 2, firstSector);
+      formatText (text, "File type", 2, fileType);
+      formatText (text, "Locked", isLocked);
+      formatText (text, "Sector count", 2, sectorCount);
+    }
+
+    return text.toString ();
+  }
 }

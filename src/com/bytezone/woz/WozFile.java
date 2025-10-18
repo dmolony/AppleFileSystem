@@ -437,9 +437,9 @@ public class WozFile
   {
     private int trackNo;
     private int startingBlock;
-    private int blockCount;        // WOZ2 - not needed
+    private int blockCount;        // WOZ2
     private int bitCount;
-    private int bytesUsed;         // WOZ1 - not needed
+    private int bytesUsed;         // WOZ1
 
     private byte[] rawBuffer;
     private byte[] newBuffer;

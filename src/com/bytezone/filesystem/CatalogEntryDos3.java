@@ -1,7 +1,5 @@
 package com.bytezone.filesystem;
 
-import static com.bytezone.utility.Utility.formatText;
-
 import com.bytezone.utility.Utility;
 
 // -----------------------------------------------------------------------------------//
@@ -57,18 +55,5 @@ public class CatalogEntryDos3 extends CatalogEntryDos
     buffer[ptr] = (byte) 0xFF;            // deleted file
 
     catalogSector.markDirty ();
-  }
-
-  // ---------------------------------------------------------------------------------//
-  @Override
-  public String toString ()
-  // ---------------------------------------------------------------------------------//
-  {
-    StringBuilder text = new StringBuilder ();
-
-    formatText (text, "\nFirst track", 2, firstTrack);
-    formatText (text, "First sector", 2, firstSector);
-
-    return text.toString ();
   }
 }

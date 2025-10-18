@@ -4,6 +4,7 @@ import static com.bytezone.utility.Utility.formatText;
 
 import java.util.List;
 
+// Used by Dos, Prodos and Pascal
 // -----------------------------------------------------------------------------------//
 public abstract class CatalogEntry
 // -----------------------------------------------------------------------------------//
@@ -22,8 +23,9 @@ public abstract class CatalogEntry
   // ---------------------------------------------------------------------------------//
   {
     this.catalogBlock = catalogBlock;
-    this.buffer = catalogBlock.getBuffer ();
     this.slot = slot;
+
+    this.buffer = catalogBlock.getBuffer ();
   }
 
   // ---------------------------------------------------------------------------------//
@@ -42,6 +44,7 @@ public abstract class CatalogEntry
   public AppleBlock getCatalogBlock ()
   // ---------------------------------------------------------------------------------//
   {
+    assert catalogBlock != null;
     return catalogBlock;
   }
 
@@ -49,6 +52,7 @@ public abstract class CatalogEntry
   public List<AppleBlock> getCatalogBlocks ()
   // ---------------------------------------------------------------------------------//
   {
+    assert catalogBlocks != null;
     return catalogBlocks;
   }
 

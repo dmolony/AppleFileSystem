@@ -547,14 +547,10 @@ public abstract class FileDos extends AbstractAppleFile
   {
     StringBuilder text = new StringBuilder (super.toString ());
 
-    AppleBlock catalogEntryBlock = catalogEntry.catalogBlock;
+    text.append ("\n");
+    text.append (catalogEntry);
 
     formatText (text, "Index blocks", 4, indexBlocks.size ());
-    formatText (text, "Locked", (catalogEntry.isLocked ? "true" : "false"));
-    formatText (text, "Catalog track", 2, catalogEntryBlock.getTrackNo ());
-    formatText (text, "Catalog sector", 2, catalogEntryBlock.getSectorNo ());
-    formatText (text, "Catalog slot #", 2, catalogEntry.slot);
-    formatText (text, "Sectors", 4, catalogEntry.sectorCount);
     formatText (text, "Load address", 4, loadAddress);
 
     if (isRandomAccess ())

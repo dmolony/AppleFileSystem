@@ -44,6 +44,7 @@ public abstract class FsDos extends AbstractFileSystem
   protected List<String> failedFiles = new ArrayList<> ();
 
   List<AppleBlock> catalogSectors = new ArrayList<> ();
+  List<CatalogEntry> catalogEntries = new ArrayList<> ();
 
   // ---------------------------------------------------------------------------------//
   FsDos (BlockReader blockReader, FileSystemType fileSystemType)
@@ -58,8 +59,8 @@ public abstract class FsDos extends AbstractFileSystem
   public void readCatalogBlocks ()
   // ---------------------------------------------------------------------------------//
   {
-    for (AppleBlock sector : catalogSectors)
-      readCatalogBlock (sector);
+    for (AppleBlock catalogSector : catalogSectors)
+      readCatalogBlock (catalogSector);
   }
 
   protected abstract void readCatalogBlock (AppleBlock catalogSector);
@@ -267,6 +268,11 @@ public abstract class FsDos extends AbstractFileSystem
 
     vtoc.markDirty ();
   }
+
+  //  CatalogEntry getFirstAvailableCatalogEntry ()
+  //  {
+  //
+  //  }
 
   // ---------------------------------------------------------------------------------//
   protected StringBuilder addCatalogLines (StringBuilder text, String underline)

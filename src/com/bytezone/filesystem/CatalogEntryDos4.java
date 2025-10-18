@@ -20,7 +20,7 @@ public class CatalogEntryDos4 extends CatalogEntryDos
 
   boolean tsListZero;
   LocalDateTime modified;
-  boolean deleted;
+  //  boolean deleted;
 
   // ---------------------------------------------------------------------------------//
   public CatalogEntryDos4 (AppleBlock catalogBlock, int slot)
@@ -38,7 +38,7 @@ public class CatalogEntryDos4 extends CatalogEntryDos
 
     int ptr = HEADER_SIZE + slot * ENTRY_SIZE;
 
-    deleted = (buffer[ptr] & 0x80) != 0;
+    isDeleted = (buffer[ptr] & 0x80) != 0;
     tsListZero = (buffer[ptr] & 0x40) != 0;
 
     fileName = Utility.string (buffer, ptr + 3, 24).trim ();
@@ -105,7 +105,7 @@ public class CatalogEntryDos4 extends CatalogEntryDos
   public String toString ()
   // ---------------------------------------------------------------------------------//
   {
-    StringBuilder text = new StringBuilder ();
+    StringBuilder text = new StringBuilder (super.toString ());
 
     formatText (text, "\nZero flag", tsListZero);
     formatText (text, "Modified", getModified2 ());

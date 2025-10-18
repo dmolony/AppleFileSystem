@@ -237,7 +237,7 @@ public class FileSystemFactory
         }
 
     if (debug)
-      System.out.println ("Tried both interleaves");
+      System.out.println ("Tried both interleaves - found " + fsList.size ());
 
     switch (fsList.size ())
     {
