@@ -44,7 +44,7 @@ public abstract class FsDos extends AbstractFileSystem
   protected List<String> failedFiles = new ArrayList<> ();
 
   List<AppleBlock> catalogSectors = new ArrayList<> ();
-  List<CatalogEntry> catalogEntries = new ArrayList<> ();
+  List<CatalogEntry> catalogEntries = new ArrayList<> ();   // includes deleted files
 
   // ---------------------------------------------------------------------------------//
   FsDos (BlockReader blockReader, FileSystemType fileSystemType)
