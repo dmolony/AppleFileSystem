@@ -115,6 +115,8 @@ class DirectoryHeaderProdos
 
       vtoc.setBlockSubType (subType);
       catalogBlocks.add (vtoc);
+
+      // this can happen if FileSystemFactory is checking the wrong format
       if (catalogBlocks.size () > 1000)
       {
         System.out.println (">1000 catalog blocks in " + fs.getFileName ());
@@ -137,7 +139,7 @@ class DirectoryHeaderProdos
 
       if (nextBlockNo == currentBlockNo)
       {
-        System.out.println ("bugger");
+        System.out.println ("looping");
         break;
       }
     }

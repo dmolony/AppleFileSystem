@@ -11,6 +11,7 @@ import java.util.Objects;
 import com.bytezone.filesystem.AppleBlock.BlockType;
 import com.bytezone.utility.Utility;
 
+// see https://markbessey.blog/ucsd-p-system-info/
 // -----------------------------------------------------------------------------------//
 public class FsPascal extends AbstractFileSystem
 // -----------------------------------------------------------------------------------//

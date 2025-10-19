@@ -69,9 +69,9 @@ public record Buffer (byte[] data, int offset, int length)
   {
     StringBuilder text = new StringBuilder ();
 
-    text.append (String.format ("Buffer ... %d%n", data.length));
-    text.append (String.format ("Offset ... %d%n", offset));
-    text.append (String.format ("Length ... %d%n", length));
+    text.append (String.format ("Buffer ... %04X %<d%n", data.length));
+    text.append (String.format ("Offset ... %04X %<d%n", offset));
+    text.append (String.format ("Length ... %04X %<d%n", length));
     text.append (Utility.format (data, offset, length, true, offset));
 
     return text.toString ();

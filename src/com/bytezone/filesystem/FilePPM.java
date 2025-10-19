@@ -58,7 +58,7 @@ public class FilePPM extends FileProdos
         volumeInfo[i] = new VolumeInfo (firstBlock, volumeLength, defaultUnit,
             writeProtected, oldDriverAddress);
         buffers[i] = new Buffer (getRawFileBuffer ().data (),
-            (firstBlock - dataFork.keyPtr) * 512, volumeLength);
+            (firstBlock - dataFork.keyPtr) * 512, volumeLength * 512);
       }
 
       descriptions[i] = Utility.getPascalString (header, descriptionPtr);

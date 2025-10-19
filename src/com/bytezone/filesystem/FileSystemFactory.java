@@ -8,6 +8,7 @@ import java.util.Objects;
 import com.bytezone.filesystem.AppleFileSystem.FileSystemType;
 import com.bytezone.utility.Utility;
 
+// see https://ciderpress2.com/doc-index.html
 // -----------------------------------------------------------------------------------//
 public class FileSystemFactory
 // -----------------------------------------------------------------------------------//
@@ -70,6 +71,7 @@ public class FileSystemFactory
     {
       Buffer diskBuffer = blockReader.getDiskBuffer ();
       System.out.println ("-------------------------------------------------------");
+      System.out.printf ("Name    : %s%n", blockReader.getName ());
       System.out.printf ("Length  : %,d%n", diskBuffer.length ());
       System.out.println (Utility.format (diskBuffer.data (), diskBuffer.offset (), 100));
       System.out.println ("-------------------------------------------------------");
@@ -99,14 +101,20 @@ public class FileSystemFactory
       break;
     }
 
-    getDos33 (blockReader);
+    getDos33 (blockReader);           // DOS can be a hybrid with Prodos, CPM or Pascal
 
     if (fileSystems.size () == 0)
       getDos4 (blockReader);
 
-    getProdos (blockReader);
+    int soFar = fileSystems.size ();      // either 0 or 1
+
     getPascal (blockReader);
-    getCpm (blockReader);
+
+    if (fileSystems.size () == soFar)
+      getProdos (blockReader);
+
+    if (fileSystems.size () == soFar)
+      getCpm (blockReader);
 
     if (fileSystems.size () == 0)         // these file systems cannot be hybrids
       getDos31 (blockReader);
@@ -271,6 +279,9 @@ public class FileSystemFactory
   private void getDos4 (BlockReader blockReader)
   // ---------------------------------------------------------------------------------//
   {
+    if (debug)
+      System.out.println ("Checking Dos4");
+
     try
     {
       BlockReader dos4Reader = new BlockReader (blockReader);
@@ -334,35 +345,44 @@ public class FileSystemFactory
   private void getProdos (BlockReader blockReader)
   // ---------------------------------------------------------------------------------//
   {
+    Buffer buffer = blockReader.getDiskBuffer ();
+    if (debug)
+      System.out.printf ("Checking Prodos (size %,d)%n", buffer.length ());
+
     // should check for common HD sizes
-    if (blockReader.getDiskBuffer ().length () >= SECTOR_35_16_SIZE)
-      for (int i = 0; i < 2; i++)
-        try
-        {
-          BlockReader prodosReader = new BlockReader (blockReader);
-          prodosReader.setParameters (i == 0 ? prodos1 : prodos2);
+    if (buffer.length () < SECTOR_35_16_SIZE)
+      return;
 
-          FsProdos fs = new FsProdos (prodosReader);
+    for (int i = 0; i < 2; i++)
+      try
+      {
+        BlockReader prodosReader = new BlockReader (blockReader);
+        prodosReader.setParameters (i == 0 ? prodos1 : prodos2);
 
-          if (fs.getTotalCatalogBlocks () > 0)
-          {
-            fileSystems.add (fs);
-            if (debug)
-              System.out.println ("Adding Prodos");
-            break;
-          }
-        }
-        catch (FileFormatException e)
+        FsProdos fs = new FsProdos (prodosReader);
+
+        if (fs.getTotalCatalogBlocks () > 0)
         {
+          fileSystems.add (fs);
           if (debug)
-            System.out.println (e);
+            System.out.println ("Adding Prodos");
+          break;
         }
+      }
+      catch (FileFormatException e)
+      {
+        if (debug)
+          System.out.println (e);
+      }
   }
 
   // ---------------------------------------------------------------------------------//
   private void getPascal (BlockReader blockReader)
   // ---------------------------------------------------------------------------------//
   {
+    if (debug)
+      System.out.println ("Checking Pascal");
+
     // should check for common HD sizes
     if (blockReader.getDiskBuffer ().length () >= SECTOR_35_16_SIZE)
       for (int i = 0; i < 2; i++)
@@ -394,6 +414,9 @@ public class FileSystemFactory
   private void getCpm (BlockReader blockReader)
   // ---------------------------------------------------------------------------------//
   {
+    if (debug)
+      System.out.println ("Checking CPM");
+
     if (blockReader.getDiskBuffer ().length () == SECTOR_35_16_SIZE)
       try
       {
