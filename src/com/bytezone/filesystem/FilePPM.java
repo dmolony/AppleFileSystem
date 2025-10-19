@@ -16,9 +16,11 @@ public class FilePPM extends FileProdos
   int ppmSize;
   int totalVolumes;
   String signature;
+
   String[] descriptions = new String[32];
   String[] volumeNames = new String[32];
   VolumeInfo[] volumeInfo = new VolumeInfo[32];
+  Buffer[] buffers = new Buffer[32];
 
   // ---------------------------------------------------------------------------------//
   FilePPM (FsProdos parentFs, AppleContainer parentContainer,
@@ -52,8 +54,12 @@ public class FilePPM extends FileProdos
       int oldDriverAddress = Utility.unsignedShort (header, volInfoPtr + 6);
 
       if (firstBlock > 0)
+      {
         volumeInfo[i] = new VolumeInfo (firstBlock, volumeLength, defaultUnit,
             writeProtected, oldDriverAddress);
+        buffers[i] = new Buffer (getRawFileBuffer ().data (),
+            (firstBlock - dataFork.keyPtr) * 512, volumeLength);
+      }
 
       descriptions[i] = Utility.getPascalString (header, descriptionPtr);
       volumeNames[i] = Utility.getPascalString (header, volNamePtr);
@@ -62,6 +68,20 @@ public class FilePPM extends FileProdos
       descriptionPtr += 16;
       volNamePtr += 8;
     }
+  }
+
+  // ---------------------------------------------------------------------------------//
+  int getTotalVolumes ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return totalVolumes;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  Buffer getVolumeBuffer (int volumeNumber)
+  // ---------------------------------------------------------------------------------//
+  {
+    return buffers[volumeNumber];
   }
 
   private record VolumeInfo (int firstBlock, int volumeLength, int defaultUnit,

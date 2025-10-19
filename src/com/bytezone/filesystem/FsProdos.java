@@ -51,8 +51,6 @@ public class FsProdos extends AbstractFileSystem
   void readCatalog (AppleContainer container, List<AppleBlock> catalogBlocks)
   // ---------------------------------------------------------------------------------//
   {
-    FileProdos file = null;
-
     for (AppleBlock catalogBlock : catalogBlocks)
     {
       byte[] buffer = catalogBlock.getBuffer ();
@@ -67,15 +65,15 @@ public class FsProdos extends AbstractFileSystem
           case ProdosConstants.SEEDLING:
           case ProdosConstants.SAPLING:
           case ProdosConstants.TREE:
-            file = new FileProdos (this, container, catalogBlock, i);
-            container.addFile (file);
-            checkEmbeddedFileSystems (file);
+            FileProdos fileProdos = new FileProdos (this, container, catalogBlock, i);
+            container.addFile (fileProdos);
+            checkEmbeddedFileSystems (fileProdos);
             break;
 
           case ProdosConstants.PASCAL_ON_PROFILE:
-            file = new FilePPM (this, container, catalogBlock, i);
-            container.addFile (file);
-            addEmbeddedFileSystem (file, 1024);       // fs starts 2 blocks in
+            FilePPM filePPM = new FilePPM (this, container, catalogBlock, i);
+            container.addFile (filePPM);
+            addPpmVolumes (filePPM);
             break;
 
           case ProdosConstants.GSOS_EXTENDED_FILE:
@@ -101,6 +99,14 @@ public class FsProdos extends AbstractFileSystem
   }
 
   // ---------------------------------------------------------------------------------//
+  private void addPpmVolumes (FilePPM file)
+  // ---------------------------------------------------------------------------------//
+  {
+    for (int volume = 1; volume <= file.getTotalVolumes (); volume++)
+      addEmbeddedFileSystem (file, file.getVolumeBuffer (volume));
+  }
+
+  // ---------------------------------------------------------------------------------//
   private void checkEmbeddedFileSystems (FileProdos file)
   // ---------------------------------------------------------------------------------//
   {
@@ -110,7 +116,7 @@ public class FsProdos extends AbstractFileSystem
     switch (file.getFileType ())
     {
       case ProdosConstants.FILE_TYPE_LBR:
-        addEmbeddedFileSystem (file, 0);
+        addEmbeddedFileSystem (file);
         if (file.getAuxType () == 0x0130)
           System.out.println ("Possible 2mg file " + file.getFileName ());
         break;
@@ -121,7 +127,7 @@ public class FsProdos extends AbstractFileSystem
           String fileName = file.getFileName ();
           if (fileName.endsWith (".SHK") || fileName.endsWith (".DSK")
               || fileName.endsWith (".DO") || fileName.endsWith (".PO"))
-            addEmbeddedFileSystem (file, 0);
+            addEmbeddedFileSystem (file);
         }
         break;
     }

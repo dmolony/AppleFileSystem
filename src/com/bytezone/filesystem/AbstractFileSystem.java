@@ -367,15 +367,20 @@ abstract class AbstractFileSystem implements AppleFileSystem
     return factory;
   }
 
-  // Called when an AppleFile contains a FileSystem (LIB, PAR, FileZip etc)
+  // Called when an AppleFile contains a FileSystem (LIB, BIN2, FileZip etc)
   // ---------------------------------------------------------------------------------//
-  protected AppleFileSystem addEmbeddedFileSystem (AppleFile file, int offset)
+  protected AppleFileSystem addEmbeddedFileSystem (AppleFile file)
   // ---------------------------------------------------------------------------------//
   {
-    Buffer dataRecord = file.getRawFileBuffer ();
+    return addEmbeddedFileSystem (file, file.getRawFileBuffer ());
+  }
 
-    BlockReader blockReader = new BlockReader (file.getFileName (), dataRecord.data (),
-        dataRecord.offset () + offset, dataRecord.length () - offset);
+  // Called directly when Prodos file is type PAS
+  // ---------------------------------------------------------------------------------//
+  protected AppleFileSystem addEmbeddedFileSystem (AppleFile file, Buffer buffer)
+  // ---------------------------------------------------------------------------------//
+  {
+    BlockReader blockReader = new BlockReader (file.getFileName (), buffer);
 
     AppleFileSystem fs = getFactory ().getFileSystem (blockReader);
     ((AbstractAppleFile) file).embedFileSystem (fs);            // embedded FS
