@@ -84,8 +84,10 @@ public class FilePPM extends FileProdos
     return buffers[volumeNumber];
   }
 
+  // ---------------------------------------------------------------------------------//
   private record VolumeInfo (int firstBlock, int volumeLength, int defaultUnit,
       boolean writeProtected, int oldDriverAddress)
+  // ---------------------------------------------------------------------------------//
   {
   }
 
@@ -113,6 +115,8 @@ public class FilePPM extends FileProdos
         formatText (text, "Default unit", 2, volumeInfo[i].defaultUnit);
         formatText (text, "Write protected", volumeInfo[i].writeProtected);
         formatText (text, "Old driver address", 4, volumeInfo[i].oldDriverAddress);
+        formatText (text, "Buffer offset", 8, buffers[i].offset ());
+        formatText (text, "Buffer length", 8, buffers[i].length ());
       }
 
     return Utility.rtrim (text);

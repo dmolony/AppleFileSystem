@@ -12,7 +12,7 @@ public abstract class AbstractAppleFile implements AppleFile
 // -----------------------------------------------------------------------------------//
 {
   protected AppleFileSystem parentFileSystem;
-  protected AppleFileSystem embeddedFileSystem;
+  protected List<AppleFileSystem> embeddedFileSystems = new ArrayList<> (1);
 
   protected boolean isFile = true;
   protected boolean isFolder;
@@ -39,7 +39,7 @@ public abstract class AbstractAppleFile implements AppleFile
   public boolean hasEmbeddedFileSystem ()
   // ---------------------------------------------------------------------------------//
   {
-    return embeddedFileSystem != null;
+    return embeddedFileSystems.size () > 0;
   }
 
   // ---------------------------------------------------------------------------------//
@@ -105,14 +105,17 @@ public abstract class AbstractAppleFile implements AppleFile
   public AppleFileSystem getEmbeddedFileSystem ()
   // ---------------------------------------------------------------------------------//
   {
-    return embeddedFileSystem;
+    if (embeddedFileSystems.size () == 0)
+      return null;
+
+    return embeddedFileSystems.get (embeddedFileSystems.size () - 1);
   }
 
   // ---------------------------------------------------------------------------------//
   void embedFileSystem (AppleFileSystem fileSystem)
   // ---------------------------------------------------------------------------------//
   {
-    embeddedFileSystem = fileSystem;
+    embeddedFileSystems.add (fileSystem);
   }
 
   // ---------------------------------------------------------------------------------//
@@ -260,9 +263,15 @@ public abstract class AbstractAppleFile implements AppleFile
     text.append ("-------- File ---------\n");
     formatText (text, "File name", getFileName ());
     formatText (text, "File system type", getFileSystemType ().toString ());
-    if (embeddedFileSystem != null)
+
+    for (AppleFileSystem embeddedFs : embeddedFileSystems)
+    {
+      int totalFiles = embeddedFs.getFiles ().size ();
       formatText (text, "Embedded FS type",
-          embeddedFileSystem.getFileSystemType ().toString ());
+          String.format ("%s (%s %,d file%s)",
+              embeddedFs.getFileSystemType ().toString (), embeddedFs.getFileName (),
+              totalFiles, totalFiles == 1 ? "" : "s"));
+    }
 
     formatText (text, "File type", 2, getFileType (), getFileTypeText ());
     formatText (text, "EOF", 6, getFileLength ());

@@ -103,7 +103,8 @@ public class FsProdos extends AbstractFileSystem
   // ---------------------------------------------------------------------------------//
   {
     for (int volume = 1; volume <= file.getTotalVolumes (); volume++)
-      addEmbeddedFileSystem (file, file.getVolumeBuffer (volume));
+      addEmbeddedFileSystem (file, file.volumeNames[volume],
+          file.getVolumeBuffer (volume));
   }
 
   // ---------------------------------------------------------------------------------//
