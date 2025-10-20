@@ -30,7 +30,9 @@ public interface AppleFile
 
   public AppleFileSystem getParentFileSystem ();
 
-  public AppleFileSystem getEmbeddedFileSystem ();
+  public int getTotalEmbeddedFileSystems ();
+
+  public List<AppleFileSystem> getEmbeddedFileSystems ();
 
   public FileSystemType getFileSystemType ();
 

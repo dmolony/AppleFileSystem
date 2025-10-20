@@ -332,6 +332,7 @@ public class FileNuFX extends AbstractAppleFile implements AppleFilePath, AppleF
       {
         byte[] buffer = diskImageThread.getData ();
         rawFileBuffer = new Buffer (buffer, 0, buffer.length);
+
         return rawFileBuffer;
       }
 
@@ -342,6 +343,7 @@ public class FileNuFX extends AbstractAppleFile implements AppleFilePath, AppleF
     {
       errorMessage = String.format ("Reading NuFX file %s failed : %s%n",
           getFullFileName (), e.getMessage ());
+
       return null;
     }
   }

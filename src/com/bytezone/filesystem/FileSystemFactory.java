@@ -462,6 +462,9 @@ public class FileSystemFactory
   private void getLbr (BlockReader blockReader)
   // ---------------------------------------------------------------------------------//
   {
+    if (debug)
+      System.out.println ("Checking LBR");
+
     try
     {
       BlockReader lbrReader = new BlockReader (blockReader);
@@ -483,6 +486,9 @@ public class FileSystemFactory
   private void getBinary2 (BlockReader blockReader)
   // ---------------------------------------------------------------------------------//
   {
+    if (debug)
+      System.out.println ("Checking BIN2");
+
     Buffer diskBuffer = blockReader.getDiskBuffer ();
     if (diskBuffer.isMagic (0, FsBinary2.BIN2) && diskBuffer.byteAt (18, (byte) 0x02))
       try
@@ -513,11 +519,13 @@ public class FileSystemFactory
   private void getNuFx (BlockReader blockReader)
   // ---------------------------------------------------------------------------------//
   {
+    if (debug)
+      System.out.println ("Checking NuFX");
+
     if (Utility.isMagic (blockReader.getDiskBuffer (), 0, FsNuFX.NuFile))
       try
       {
         BlockReader nufxReader = new BlockReader (blockReader);
-        //        lbrReader.setParameters (128, AddressType.BLOCK, 0, 0);
         nufxReader.setParameters (bin);
 
         FsNuFX fs = new FsNuFX (nufxReader);

@@ -384,7 +384,8 @@ abstract class AbstractFileSystem implements AppleFileSystem
     BlockReader blockReader = new BlockReader (name, buffer);
 
     AppleFileSystem fs = getFactory ().getFileSystem (blockReader);
-    ((AbstractAppleFile) file).embedFileSystem (fs);            // embedded FS
+    if (fs != null)
+      ((AbstractAppleFile) file).embedFileSystem (fs);            // embedded FS
 
     return fs;
   }

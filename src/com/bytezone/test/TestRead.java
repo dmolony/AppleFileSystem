@@ -2,6 +2,7 @@ package com.bytezone.test;
 
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.List;
 
 import com.bytezone.filesystem.AppleContainer;
 import com.bytezone.filesystem.AppleFile;
@@ -19,7 +20,7 @@ public class TestRead extends Tester
   {
     FileSystemFactory factory = new FileSystemFactory ();
 
-    int index = 47;
+    int index = 25;
     for (int fileNo = index; fileNo <= index; fileNo++)
     //    for (int fileNo = 0; fileNo < fileNames.length; fileNo++)
     {
@@ -33,15 +34,31 @@ public class TestRead extends Tester
         continue;
       }
 
-      System.out.printf ("%2d  %s  %s%n", fileNo, line (fs),
+      System.out.printf ("%2d  %s  %s%n%n", fileNo, line (fs),
           fileNames[fileNo].substring (base.length ()));
 
       for (AppleFileSystem fs2 : fs.getFileSystems ())
-        System.out.printf ("    %s%n", line (fs2));
+      {
+        System.out.printf ("FS    %s%n", line (fs2));
+        //        listFiles (fs2, 2);
+      }
 
       for (AppleFile file : fs.getFiles ())
+      {
+        System.out.println (file.getFileName ());
         if (file.hasEmbeddedFileSystem ())
-          System.out.printf ("    %s%n", line (file.getEmbeddedFileSystem ()));
+        {
+          List<AppleFileSystem> fsList = file.getEmbeddedFileSystems ();
+          System.out.printf ("    %s%n", line (fsList.get (0)));
+
+          for (AppleFileSystem afs : fsList)
+          {
+            //            System.out.println (afs);
+            for (AppleFile af : afs.getFiles ())
+              System.out.println (af.getCatalogLine ());
+          }
+        }
+      }
     }
   }
 
@@ -69,7 +86,7 @@ public class TestRead extends Tester
       //      System.out.println (file.getFileName ());
       int totalBlocks;
       if (file.hasEmbeddedFileSystem ())
-        totalBlocks = file.getEmbeddedFileSystem ().getTotalBlocks ();
+        totalBlocks = file.getEmbeddedFileSystems ().get (0).getTotalBlocks ();
       else
         totalBlocks = file.getTotalBlocks ();
 
@@ -79,7 +96,7 @@ public class TestRead extends Tester
       if (file instanceof AppleContainer ac)                    // folder
         listFiles (ac, depth + 1);
       else if (file.hasEmbeddedFileSystem ())                    // PAR, LBR
-        listFiles (file.getEmbeddedFileSystem (), depth + 1);
+        listFiles (file.getEmbeddedFileSystems ().get (0), depth + 1);
     }
 
     if (container.getFileSystems () != null)

@@ -102,13 +102,18 @@ public abstract class AbstractAppleFile implements AppleFile
 
   // ---------------------------------------------------------------------------------//
   @Override
-  public AppleFileSystem getEmbeddedFileSystem ()
+  public List<AppleFileSystem> getEmbeddedFileSystems ()
   // ---------------------------------------------------------------------------------//
   {
-    if (embeddedFileSystems.size () == 0)
-      return null;
+    return embeddedFileSystems;
+  }
 
-    return embeddedFileSystems.get (embeddedFileSystems.size () - 1);
+  // ---------------------------------------------------------------------------------//
+  @Override
+  public int getTotalEmbeddedFileSystems ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return embeddedFileSystems.size ();
   }
 
   // ---------------------------------------------------------------------------------//

@@ -3,6 +3,12 @@ package com.bytezone.filesystem;
 import java.util.List;
 import java.util.Optional;
 
+// AppleFileSystem
+// FolderProdos
+// Folder
+// FileProdosGS
+// FilePascalCode
+// FilePascalSegment
 // -----------------------------------------------------------------------------------//
 public interface AppleContainer
 // -----------------------------------------------------------------------------------//

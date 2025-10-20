@@ -7,7 +7,7 @@ import com.bytezone.utility.Utility;
 
 // Shrinkit archive (.SHK - NuFX archive, .SDK - disk images)
 // -----------------------------------------------------------------------------------//
-class FsNuFX extends AbstractFileSystem
+public class FsNuFX extends AbstractFileSystem
 // -----------------------------------------------------------------------------------//
 {
   static final byte[] NuFile =
@@ -30,7 +30,7 @@ class FsNuFX extends AbstractFileSystem
   private boolean crcPassed;
 
   // ---------------------------------------------------------------------------------//
-  FsNuFX (BlockReader blockReader)
+  public FsNuFX (BlockReader blockReader)
   // ---------------------------------------------------------------------------------//
   {
     super (blockReader, FileSystemType.NUFX);           // reader not used
@@ -64,10 +64,12 @@ class FsNuFX extends AbstractFileSystem
     {
       FileNuFX file = new FileNuFX (this, getDiskBuffer ().data (), ptr);
 
+      // keep everything as a file so that the catalog display works correctly
+      addFile (file);         // never uses fileSystems<>
+
+      // if the file contains a disk image, embed it in the file
       if (file.hasDisk () || file.isLibrary ())
         addEmbeddedFileSystem (file);
-
-      addFile (file);         // never uses fileSystems<>
 
       ptr += file.rawLength;
     }
