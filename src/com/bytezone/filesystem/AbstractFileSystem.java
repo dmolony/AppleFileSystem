@@ -281,6 +281,7 @@ abstract class AbstractFileSystem implements AppleFileSystem
     return blockReader.getName ();
   }
 
+  // Only used by FsHybrid and FsUnidos.
   // ---------------------------------------------------------------------------------//
   @Override
   public void addFileSystem (AppleFileSystem fileSystem)
@@ -289,6 +290,7 @@ abstract class AbstractFileSystem implements AppleFileSystem
     fileSystems.add (fileSystem);
   }
 
+  // Used by the top-level (local) file.
   // ---------------------------------------------------------------------------------//
   @Override
   public List<AppleFileSystem> getFileSystems ()

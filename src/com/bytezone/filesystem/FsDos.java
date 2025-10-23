@@ -128,6 +128,13 @@ public abstract class FsDos extends AbstractFileSystem
   }
 
   // ---------------------------------------------------------------------------------//
+  protected boolean validCatalogSector (int track, int sector)
+  // ---------------------------------------------------------------------------------//
+  {
+    return track > 0 && !volumeBitMap.get (track * sectorsPerTrack + sector);
+  }
+
+  // ---------------------------------------------------------------------------------//
   protected void createVolumeBitMap (byte[] buffer)
   // ---------------------------------------------------------------------------------//
   {

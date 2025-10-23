@@ -75,6 +75,7 @@ class FsDos4 extends FsDos
 
     createVolumeBitMap (buffer);
 
+    //    while (validCatalogSector (track, sector))
     while (track > 0)           // track needs zero flag for loop to work
     {
       track &= 0x3F;            // remove deleted (0x80) and track zero (0x40) flags

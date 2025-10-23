@@ -40,11 +40,14 @@ public class FsProdos extends AbstractFileSystem
     volumeBitMap = createVolumeBitMap ();
     freeBlocks = volumeBitMap.cardinality ();
 
-    //    if (file.getFileType () == ProdosConstants.FILE_TYPE_SYS
-    //        && file.getFileName ().equals ("DOS.3.3"))
-    //      isDosMaster = true;                             // possibly
-    //    if (isDosMaster)                                    // found DOS.3.3 file
-    //      isDosMaster = checkDosMaster ();
+    if (blockReader.getDiskLength () > 143360)      // not a floppy
+      for (AppleFile file : getFiles ())
+        if (file.getFileType () == ProdosConstants.FILE_TYPE_SYS
+            && file.getFileName ().equals ("DOS.3.3"))
+        {
+          isDosMaster = checkDosMaster ();
+          break;
+        }
   }
 
   // ---------------------------------------------------------------------------------//
@@ -236,16 +239,10 @@ public class FsProdos extends AbstractFileSystem
 
     AbstractAppleFile appleFile = (AbstractAppleFile) opt.get ();
 
-    //    byte[] diskBuffer = getDataRecord ().data ();
-    BlockReader diskReader = new BlockReader ("Disk", getDiskBuffer ());
+    BlockReader diskReader = new BlockReader ("DosMaster", getDiskBuffer ());
+    diskReader.setParameters (FileSystemFactory.dos1);
 
-    //    DataRecord dataRecord = appleFile.getDataRecord ();
-    //    byte[] fileBuffer = appleFile.read ();
-    //    byte[] fileBuffer = dataRecord.data ();
-    BlockReader fileReader =
-        new BlockReader (appleFile.getFileName (), appleFile.getRawFileBuffer ());
-
-    FsDosMaster afs = new FsDosMaster (diskReader, fileReader);
+    FsDosMaster afs = new FsDosMaster (diskReader);
     if (afs != null && afs.getFileSystems ().size () > 0)
     {
       appleFile.embedFileSystem (afs);

@@ -10,6 +10,7 @@ public class FsDos3 extends FsDos
   private static final String underline =
       "- --- ---  ------------------------------  -----  --------------"
           + "  -- ---  ------------------------\n";
+  private boolean debug = false;
 
   // ---------------------------------------------------------------------------------//
   FsDos3 (BlockReader blockReader)
@@ -44,12 +45,18 @@ public class FsDos3 extends FsDos
 
     createVolumeBitMap (buffer);
 
-    while (track > 0)
+    while (validCatalogSector (track, sector))
     {
       AppleBlock catalogSector = getSector (track, sector, BlockType.FS_DATA);
+      if (debug)
+      {
+        System.out.printf ("track %d  sector %d%n", track, sector);
+        System.out.println (Utility.format (catalogSector.getBuffer ()));
+      }
 
       if (catalogSector == null)
         throw new FileFormatException ("Dos: Invalid catalog sector");
+
       if (checkDuplicate (catalogSectors, catalogSector))
         throw new FileFormatException ("Dos: Duplicate catalog sector (looping)");
 
@@ -62,6 +69,9 @@ public class FsDos3 extends FsDos
     }
 
     setTotalCatalogBlocks (catalogSectors.size ());
+
+    if (debug)
+      System.out.printf ("found %d catalog sectors%n", catalogSectors.size ());
   }
 
   // ---------------------------------------------------------------------------------//

@@ -299,6 +299,13 @@ public class BlockReader
   }
 
   // ---------------------------------------------------------------------------------//
+  int getDiskLength ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return diskBuffer.length ();
+  }
+
+  // ---------------------------------------------------------------------------------//
   int getBlockSize ()
   // ---------------------------------------------------------------------------------//
   {
@@ -406,7 +413,7 @@ public class BlockReader
     StringBuilder text = new StringBuilder ();
 
     formatText (text, "Name", name);
-    formatText (text, "File system offset", 4, diskBuffer.offset ());
+    formatText (text, "File system offset", 8, diskBuffer.offset ());
     formatText (text, "File system length", 8, diskBuffer.length ());
     formatText (text, "Total blocks", 6, getTotalBlocks ());
     text.append ("\n");
