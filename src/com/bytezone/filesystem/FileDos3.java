@@ -25,10 +25,14 @@ public class FileDos3 extends FileDos
     // build lists of index and data sectors - NB cannot rely on catalogEntry.sectorCount
     outer_loop: while (nextTrack != 0)
     {
-      AppleBlock tsSector = fs.getSector (nextTrack, nextSector, BlockType.FS_DATA);
+      AppleBlock tsSector = fs.getSector (nextTrack, nextSector);
+
       if (tsSector == null)
         break;
+      if (tsSector.getBlockType () == BlockType.EMPTY)
+        throw new FileFormatException (blockSubType);
 
+      tsSector.setBlockType (BlockType.FS_DATA);
       tsSector.setBlockSubType ("TSLIST");
       tsSector.setFileOwner (this);
 

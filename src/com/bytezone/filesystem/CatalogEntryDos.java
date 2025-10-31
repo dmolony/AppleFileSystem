@@ -19,9 +19,6 @@ public abstract class CatalogEntryDos extends CatalogEntry
   int sectorCount;
   boolean isDeleted;
 
-  //  String fileName;
-  //  boolean isNameValid;
-
   // ---------------------------------------------------------------------------------//
   public CatalogEntryDos (AppleBlock catalogBlock, int slot)
   // ---------------------------------------------------------------------------------//
@@ -65,19 +62,6 @@ public abstract class CatalogEntryDos extends CatalogEntry
 
     Utility.writeShort (buffer, ptr + 33, sectorCount);
   }
-
-  // ---------------------------------------------------------------------------------//
-  //  protected void checkName (byte[] buffer, int ptr, int len)
-  //  // ---------------------------------------------------------------------------------//
-  //  {
-  //    isNameValid = false;
-  //
-  //    for (int i = 0; i < len; i++)
-  //      if ((buffer[ptr++] == (byte) 0x88))
-  //        return;
-  //
-  //    isNameValid = true;
-  //  }
 
   // ---------------------------------------------------------------------------------//
   @Override

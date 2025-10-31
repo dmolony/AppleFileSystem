@@ -1,6 +1,7 @@
 package com.bytezone.filesystem;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.BitSet;
 import java.util.List;
 import java.util.Optional;
@@ -19,7 +20,11 @@ public class FsProdos extends AbstractFileSystem
   private static final int BITS_PER_BLOCK = 0x1000;
 
   private DirectoryHeaderProdos directoryHeader;
-  private boolean isDosMaster;
+  //  private boolean isDosMaster;
+  private static List<FileDetails> dosMasterFiles = Arrays.asList (      //
+      new FileDetails ("DOS.3.3", ProdosConstants.FILE_TYPE_SYS, 21),
+      new FileDetails ("DOS", ProdosConstants.FILE_TYPE_BINARY, 19),
+      new FileDetails ("DOS.MASTER", ProdosConstants.FILE_TYPE_BINARY, 4));
 
   // ---------------------------------------------------------------------------------//
   FsProdos (BlockReader blockReader)
@@ -40,14 +45,36 @@ public class FsProdos extends AbstractFileSystem
     volumeBitMap = createVolumeBitMap ();
     freeBlocks = volumeBitMap.cardinality ();
 
-    if (blockReader.getDiskLength () > 143360)      // not a floppy
+    if (blockReader.getDiskLength () > 143360 && directoryHeader.fileCount >= 10
+        && diskContains (dosMasterFiles))
+      checkDosMaster ();
+  }
+
+  // Search the top level directory for each of the files listed. All must exist.
+  // ---------------------------------------------------------------------------------//
+  private boolean diskContains (List<FileDetails> fileDetails)
+  // ---------------------------------------------------------------------------------//
+  {
+    int filesFound = 0;
+
+    loop: for (FileDetails details : fileDetails)
       for (AppleFile file : getFiles ())
-        if (file.getFileType () == ProdosConstants.FILE_TYPE_SYS
-            && file.getFileName ().equals ("DOS.3.3"))
+        if (file.getFileType () == details.fileType
+            && file.getTotalBlocks () == details.totalBlocks
+            && file.getFileName ().equals (details.fileName))
         {
-          isDosMaster = checkDosMaster ();
-          break;
+          ++filesFound;
+          continue loop;
         }
+
+    return filesFound == fileDetails.size ();
+  }
+
+  // ---------------------------------------------------------------------------------//
+  record FileDetails (String fileName, int fileType, int totalBlocks)
+  // ---------------------------------------------------------------------------------//
+  {
+
   }
 
   // ---------------------------------------------------------------------------------//
