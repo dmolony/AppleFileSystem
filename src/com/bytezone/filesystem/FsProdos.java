@@ -20,7 +20,7 @@ public class FsProdos extends AbstractFileSystem
   private static final int BITS_PER_BLOCK = 0x1000;
 
   private DirectoryHeaderProdos directoryHeader;
-  //  private boolean isDosMaster;
+
   private static List<FileDetails> dosMasterFiles = Arrays.asList (      //
       new FileDetails ("DOS.3.3", ProdosConstants.FILE_TYPE_SYS, 21),
       new FileDetails ("DOS", ProdosConstants.FILE_TYPE_BINARY, 19),
@@ -37,13 +37,13 @@ public class FsProdos extends AbstractFileSystem
     directoryHeader = new DirectoryHeaderProdos (this, FIRST_CATALOG_BLOCK);
     setTotalCatalogBlocks (directoryHeader.catalogBlocks.size ());
 
+    volumeBitMap = createVolumeBitMap ();
+    freeBlocks = volumeBitMap.cardinality ();
+
     // Create a FileProdos or FolderProdos for each catalog entry. Each one creates
     // its own CatalogEntryProdos. When a FolderProdos is created, it reads its
     // own catalog and repeats the process.
     readCatalog (this, directoryHeader.catalogBlocks);
-
-    volumeBitMap = createVolumeBitMap ();
-    freeBlocks = volumeBitMap.cardinality ();
 
     if (blockReader.getDiskLength () > 143360 && directoryHeader.fileCount >= 10
         && diskContains (dosMasterFiles))
@@ -264,12 +264,15 @@ public class FsProdos extends AbstractFileSystem
     if (opt.isEmpty ())
       return false;
 
+    // temp
+    //    compare ();
+
     AbstractAppleFile appleFile = (AbstractAppleFile) opt.get ();
 
     BlockReader diskReader = new BlockReader ("DosMaster", getDiskBuffer ());
-    diskReader.setParameters (FileSystemFactory.dos1);
+    diskReader.setParameters (FileSystemFactory.prodos1);
 
-    FsDosMaster afs = new FsDosMaster (diskReader);
+    FsDosMaster afs = new FsDosMaster (diskReader, appleFile);
     if (afs != null && afs.getFileSystems ().size () > 0)
     {
       appleFile.embedFileSystem (afs);
@@ -374,6 +377,38 @@ public class FsProdos extends AbstractFileSystem
 
     Utility.writeShort (buffer, 0x25, fileCount - 1);
     firstCatalogBlock.markDirty ();
+  }
+
+  // ---------------------------------------------------------------------------------//
+  private void compare ()
+  // ---------------------------------------------------------------------------------//
+  {
+    Optional<AppleFile> opt1 = getFile ("DOS.MASTER");
+    Optional<AppleFile> opt2 = getFile ("DOS.3.3");
+
+    if (opt1.isEmpty () || opt2.isEmpty ())
+      return;
+
+    AppleFile dosMaster = opt1.get ();
+    AppleFile dos33 = opt2.get ();
+
+    System.out.printf ("Comparing %s to %s%n%n", dosMaster.getFileName (),
+        dos33.getFileName ());
+
+    List<AppleBlock> dosMasterBlocks = dosMaster.getDataBlocks ();
+    List<AppleBlock> dos33Blocks = dos33.getDataBlocks ();
+
+    byte[] buffer1 = dosMasterBlocks.get (0).getBuffer ();
+    byte[] buffer2 = dos33Blocks.get (0).getBuffer ();
+
+    for (int i = 0; i < 512; i++)
+    {
+      boolean diff = buffer1[i] != buffer2[i];
+      if (diff)
+        System.out.printf ("%03d  %<02X :  %02X -> %02X  %s%n", i, buffer1[i], buffer2[i],
+            diff ? "*" : "");
+    }
+    System.out.println (Utility.format (buffer2, 0, 256));
   }
 
   // ---------------------------------------------------------------------------------//
