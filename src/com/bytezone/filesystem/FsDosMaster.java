@@ -8,8 +8,6 @@ import com.bytezone.utility.Utility;
 
 class FsDosMaster extends AbstractFileSystem
 {
-  //  int ptr;
-
   int[] slot = new int[8];
   int[] drive = new int[8];
   int[] partitionStart = new int[8];
@@ -75,11 +73,9 @@ class FsDosMaster extends AbstractFileSystem
       }
     }
 
-    //    if (debug)
-    //      for (AppleFileSystem afs : fileSystems)
-    //      {
-    //        System.out.println (afs.getBlockReader ());
-    //      }
+    if (debug)
+      for (AppleFileSystem afs : fileSystems)
+        System.out.println (afs.getBlockReader ());
   }
 
   // Based on REVISE.DM
