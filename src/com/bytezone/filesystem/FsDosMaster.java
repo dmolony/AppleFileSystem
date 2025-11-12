@@ -133,7 +133,9 @@ class FsDosMaster extends AbstractFileSystem
         formatText (text, "Volumes", 2, volumes[d]);
         formatText (text, "Vol start", 4, partitionStart[d]);
         formatText (text, "Vol end", 4, partitionEnd[d]);
-        formatText (text, "Sectors", 4, blocks[d]);
+
+        String sectors = String.format ("(%d sectors)", blocks[d] * 2);
+        formatText (text, "Blocks", 4, blocks[d], sectors);
         text.append ("\n");
       }
 
