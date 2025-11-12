@@ -6,7 +6,9 @@ import java.util.List;
 
 import com.bytezone.utility.Utility;
 
+// -----------------------------------------------------------------------------------//
 class FsDosMaster extends AbstractFileSystem
+// -----------------------------------------------------------------------------------//
 {
   int[] slot = new int[8];
   int[] drive = new int[8];
@@ -30,20 +32,20 @@ class FsDosMaster extends AbstractFileSystem
 
     analyse (buffer2);
 
-    for (int d = 0; d < 8; d++)
+    for (int i = 0; i < 8; i++)
     {
-      if (slot[d] == 0 || volumes[d] == 0)
+      if (slot[i] == 0 || volumes[i] == 0)
         continue;
 
-      int offset = (partitionStart[d] + blocks[d]) * 512;
-      int diskLength = blocks[d] * 512;
+      int offset = (partitionStart[i] + blocks[i]) * 512;
+      int diskLength = blocks[i] * 512;
 
-      for (int vol = 0; vol < volumes[d]; vol++)
+      for (int vol = 0; vol < volumes[i]; vol++)
       {
         if (debug)
           System.out.printf ("Slot %d : ", vol);
 
-        String name = String.format ("S%d D%d Volume %d", slot[d], drive[d], (vol + 1));
+        String name = String.format ("S%d D%d Volume %d", slot[i], drive[i], (vol + 1));
         BlockReader slotReader =
             new BlockReader (name, diskBuffer, offset + vol * diskLength, diskLength);
         slotReader.setParameters (FileSystemFactory.dos1);
