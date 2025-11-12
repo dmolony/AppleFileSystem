@@ -109,8 +109,14 @@ class FsDos4 extends FsDos
     int ptr = HEADER_SIZE;
     int slot = 0;
 
-    while (ptr < buffer.length && buffer[ptr] != 0)
+    while (ptr < buffer.length)// && buffer[ptr] != 0)
     {
+      if (buffer[ptr] == 0)
+      {
+        emptySlotFound = true;
+        break;
+      }
+
       if ((buffer[ptr] & 0x80) != 0)         // deleted file
       {
         String fileName = Utility.string (buffer, ptr + 3, 24).trim ();

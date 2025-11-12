@@ -10,6 +10,8 @@ public interface AppleFile
 {
   public String getFileName ();
 
+  public boolean isFileNameValid ();
+
   public int getFileType ();
 
   public String getFileTypeText ();

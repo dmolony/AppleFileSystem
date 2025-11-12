@@ -23,7 +23,20 @@ public class CatalogEntryDos3 extends CatalogEntryDos
     int ptr = HEADER_SIZE + slot * ENTRY_SIZE;
 
     fileName = Utility.string (buffer, ptr + 3, 30).trim ();
-    //    checkName (buffer, ptr + 3, 30);             // check for invalid characters
+
+    checkName (buffer, ptr + 3, 30);             // check for invalid characters
+  }
+
+  // ---------------------------------------------------------------------------------//
+  protected void checkName (byte[] buffer, int offset, int length)
+  // ---------------------------------------------------------------------------------//
+  {
+    for (int ptr = offset; ptr < offset + length; ptr++)
+      if ((buffer[ptr]) == (byte) 0x88)
+      {
+        isFileNameValid = false;
+        break;
+      }
   }
 
   // ---------------------------------------------------------------------------------//

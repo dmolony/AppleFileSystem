@@ -16,6 +16,7 @@ public abstract class CatalogEntry
   protected List<AppleBlock> catalogBlocks;     // pascal uses 4 contiguous blocks
 
   protected String fileName = "";
+  protected boolean isFileNameValid = true;
   protected String blockList = "";
 
   // ---------------------------------------------------------------------------------//

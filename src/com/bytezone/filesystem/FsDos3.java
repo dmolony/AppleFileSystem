@@ -84,8 +84,14 @@ public class FsDos3 extends FsDos
     int ptr = HEADER_SIZE;
     int slot = 0;
 
-    while (ptr < buffer.length && buffer[ptr] != 0)
+    while (ptr < buffer.length)// && buffer[ptr] != 0)
     {
+      if (buffer[ptr] == 0)
+      {
+        emptySlotFound = true;
+        break;
+      }
+
       if (buffer[ptr] == (byte) 0xFF)        // deleted file
       {
         String fileName = Utility.string (buffer, ptr + 3, 29).trim ();

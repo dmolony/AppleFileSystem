@@ -8,13 +8,13 @@ import com.bytezone.utility.Utility;
 
 class FsDosMaster extends AbstractFileSystem
 {
-  int ptr;
+  //  int ptr;
 
   int[] slot = new int[8];
   int[] drive = new int[8];
-  int[] volStart = new int[8];
-  int[] sectors = new int[8];
-  int[] volEnd = new int[8];
+  int[] partitionStart = new int[8];
+  int[] blocks = new int[8];
+  int[] partitionEnd = new int[8];
   int[] volumes = new int[8];
 
   boolean debug = false;
@@ -32,48 +32,54 @@ class FsDosMaster extends AbstractFileSystem
 
     analyse (buffer2);
 
-    int offset = 560 * 512;                     // always seems to start in block 560
-    int partitionSize = 560;                    // 560 / 640 / 800 / 1600 blocks
-    int diskLength = partitionSize * 256;
-
-    for (int slot = 0; slot < 110; slot++)
+    for (int d = 0; d < 8; d++)
     {
-      if (debug)
-        System.out.printf ("Slot %d : ", slot);
+      if (slot[d] == 0 || volumes[d] == 0)
+        continue;
 
-      BlockReader slotReader = new BlockReader ("Volume " + (slot + 1), diskBuffer,
-          offset + slot * diskLength, diskLength);
-      slotReader.setParameters (FileSystemFactory.dos1);
+      int offset = (partitionStart[d] + blocks[d]) * 512;
+      int diskLength = blocks[d] * 512;
 
-      try
-      {
-        FsDos3 fs = new FsDos3 (slotReader);
-
-        if (fs != null)
-        {
-          fs.readCatalogBlocks ();
-          if (fs.getFiles ().size () > 0)
-            addFileSystem (fs);
-
-          if (debug)
-            System.out.printf ("found %s  files : %d%n", fs.fileSystemType,
-                fs.files.size ());
-        }
-        else if (debug)
-          System.out.println ("not found");
-      }
-      catch (FileFormatException e)
+      for (int vol = 0; vol < volumes[d]; vol++)
       {
         if (debug)
-          System.out.println (e);
+          System.out.printf ("Slot %d : ", vol);
+
+        String name = String.format ("S%d D%d Volume %d", slot[d], drive[d], (vol + 1));
+        BlockReader slotReader =
+            new BlockReader (name, diskBuffer, offset + vol * diskLength, diskLength);
+        slotReader.setParameters (FileSystemFactory.dos1);
+
+        try
+        {
+          FsDos3 fs = new FsDos3 (slotReader);
+
+          if (fs != null)
+          {
+            fs.readCatalogBlocks ();
+            if (fs.getFiles ().size () > 0)
+              addFileSystem (fs);
+
+            if (debug)
+              System.out.printf ("found %s  files : %d%n", fs.fileSystemType,
+                  fs.files.size ());
+          }
+          else if (debug)
+            System.out.println ("not found");
+        }
+        catch (FileFormatException e)
+        {
+          if (debug)
+            System.out.println (e);
+        }
       }
     }
 
-    if (debug)
-      for (AppleFileSystem afs : fileSystems)
-      {
-        System.out.println (afs.getBlockReader ());
-      }
+    //    if (debug)
+    //      for (AppleFileSystem afs : fileSystems)
+    //      {
+    //        System.out.println (afs.getBlockReader ());
+    //      }
   }
 
   // Based on REVISE.DM
@@ -81,68 +87,33 @@ class FsDosMaster extends AbstractFileSystem
   private void analyse (byte[] buffer)
   // ---------------------------------------------------------------------------------//
   {
-    //    byte[] copyright = Utility.setHiBits ("Copyright 1988 by Glen Bredon");
-    //    int pos = Utility.find (buffer, copyright);
-    //    if (pos < 0)
-    //      return;
+    int ptr = 0x38;
 
-    //    System.out.println (Utility.format (buffer, 0, 100));
+    if (debug)
+      System.out.println ("#  S  D  ?   start     end   blocks  sectors  volumes");
 
-    int slots = 3 * 16 + 8;         // offset from load address 0x2000
-    int v0 = slots + 8;
-    int size = v0 + 16;
-    int vsize = size + 8;
-    int adrs = vsize + 8;
-
-    for (int d = 0; d < 8; d++)
+    for (int i = 0; i < 8; i++)          // 8 possible partitions (4 slots * 2 drives)
     {
-      int d0 = d / 2 * 2;
-      int s = buffer[slots + d] & 0xFF;
-      if (s == 0)
+      slot[i] = (buffer[ptr + i] & 0x70) >>> 4;      // ignore the drive bit
+      if (slot[i] == 0)
         continue;
 
-      int dr = 0;
-      if (s >= 128)
-      {
-        s -= 128;
-        dr = 1;
-      }
+      drive[i] = i % 2;
+      int ndx = i / 2 * 2;                       // 0, 0, 2, 2, 4,  4,  6,  6
 
-      int ptr = v0 + 2 * d0 + 2 * dr;
-      int st = Utility.unsignedShort (buffer, ptr);
-      int sz = Utility.unsignedShort (buffer, vsize + d0);
-      int v = Utility.unsignedShort (buffer, size + d0);
+      partitionStart[i] = Utility.unsignedShort (buffer, ptr + 8 + i * 2);
+      partitionEnd[i] = Utility.unsignedShort (buffer, ptr + 24 + ndx);
+      blocks[i] = Utility.unsignedShort (buffer, ptr + 32 + ndx);
 
-      if (st > v)
-      {
-        if (debug)
-          System.out.print ("xx");
-        st -= 16 * 4096;
-      }
+      if (partitionStart[i] > partitionEnd[i])      // no idea
+        partitionStart[i] -= 0x10000;
 
-      int num = (v - st) / sz - 1;
-
-      slot[d] = s / 16;
-      volStart[d] = st;
-      volEnd[d] = v;
-      sectors[d] = sz;
-      volumes[d] = (v - st) / sz - 1;
-      drive[d] = dr;
+      volumes[i] = (partitionEnd[i] - partitionStart[i]) / blocks[i] - 1;
 
       if (debug)
-      {
-        System.out.printf ("Ptr           %d%n", ptr);
-        System.out.printf ("Slot          %d  (/16 = %d)%n", s, s / 16);
-        System.out.printf ("Drive         %d%n", dr);
-        System.out.printf ("Volume Start  %d  (*2 = %d)%n", st, st * 2);
-        System.out.printf ("Disk Sectors  %d  (*2 = %d)%n", sz, sz * 2);
-        System.out.printf ("Volume End    %d%n", v);
-        System.out.printf ("Volumes       %d  ((%d - %d) / %d - 1)%n", num, v, st, sz);
-      }
-
-      if (debug)
-        System.out.printf ("%nSlot %d, drive %d has %3d volumes of %,d sectors%n%n",
-            s / 16, dr + 1, num, sz * 2);
+        System.out.printf ("%d  %d  %d  %d  %,6d  %,6d  %,6d   %,6d    %,4d %n", i,
+            slot[i], drive[i], ndx, partitionStart[i], partitionEnd[i], blocks[i],
+            blocks[i] * 2, volumes[i]);
     }
   }
 
@@ -162,9 +133,9 @@ class FsDosMaster extends AbstractFileSystem
         formatText (text, "Slot", 2, slot[d]);
         formatText (text, "Drive", 2, drive[d]);
         formatText (text, "Volumes", 2, volumes[d]);
-        formatText (text, "Vol start", 4, volStart[d]);
-        formatText (text, "Vol end", 4, volEnd[d]);
-        formatText (text, "Sectors", 4, sectors[d]);
+        formatText (text, "Vol start", 4, partitionStart[d]);
+        formatText (text, "Vol end", 4, partitionEnd[d]);
+        formatText (text, "Sectors", 4, blocks[d]);
         text.append ("\n");
       }
 

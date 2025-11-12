@@ -40,6 +40,8 @@ public abstract class FsDos extends AbstractFileSystem
   protected int sectorsPerTrack;
   protected int bytesPerSector;
 
+  protected boolean emptySlotFound;
+
   protected List<String> deletedFiles = new ArrayList<> ();
   protected List<String> failedFiles = new ArrayList<> ();
 
@@ -60,7 +62,11 @@ public abstract class FsDos extends AbstractFileSystem
   // ---------------------------------------------------------------------------------//
   {
     for (AppleBlock catalogSector : catalogSectors)
+    {
       readCatalogBlock (catalogSector);
+      if (emptySlotFound)                     // no more valid files
+        break;
+    }
   }
 
   protected abstract void readCatalogBlock (AppleBlock catalogSector);
