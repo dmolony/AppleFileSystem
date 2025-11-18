@@ -110,8 +110,8 @@ public abstract class FileDos extends AbstractAppleFile
   {
     if (eof > 0)
     {
-      int blocksNeeded = (eof - 1) / parentFileSystem.getBlockSize () + 1;
-      wastedBlocks = dataBlocks.size () - blocksNeeded;
+      int dataBlocksRequired = (eof - 1) / parentFileSystem.getBlockSize () + 1;
+      wastedBlocks = dataBlocks.size () - dataBlocksRequired;
     }
   }
 

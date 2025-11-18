@@ -109,7 +109,7 @@ class FsDos4 extends FsDos
     int ptr = HEADER_SIZE;
     int slot = 0;
 
-    while (ptr < buffer.length)// && buffer[ptr] != 0)
+    while (ptr < buffer.length)
     {
       if (buffer[ptr] == 0)
       {
@@ -120,7 +120,7 @@ class FsDos4 extends FsDos
       if ((buffer[ptr] & 0x80) != 0)         // deleted file
       {
         String fileName = Utility.string (buffer, ptr + 3, 24).trim ();
-        addDeletedFile (buffer, ptr, fileName);
+        addBadFile (buffer, ptr, fileName, FailType.DELETED);
         CatalogEntry ce = new CatalogEntryDos4 (catalogSector, slot);
         catalogEntries.add (ce);
       }
@@ -134,7 +134,7 @@ class FsDos4 extends FsDos
         catch (FileFormatException e)
         {
           String fileName = Utility.string (buffer, ptr + 3, 24).trim ();
-          addFailedFile (buffer, ptr, fileName);
+          addBadFile (buffer, ptr, fileName, FailType.ERROR);
         }
 
       ++slot;

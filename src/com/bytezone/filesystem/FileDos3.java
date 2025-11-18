@@ -40,6 +40,7 @@ public class FileDos3 extends FileDos
 
       byte[] sectorBuffer = tsSector.getBuffer ();
       int sectorOffset = Utility.unsignedShort (sectorBuffer, 5);   // 0/122/244/366 etc
+      boolean isTextFile = getFileType () == FsDos.FILE_TYPE_TEXT;
 
       for (int i = 12; i < sectorBuffer.length; i += 2)
       {
@@ -48,7 +49,7 @@ public class FileDos3 extends FileDos
 
         if (track == 0 && sector == 0)                  // invalid address
         {
-          if (getFileType () == FsDos.FILE_TYPE_TEXT)
+          if (isTextFile)
           {
             dataBlocks.add (null);                      // must be a sparse file
             ++fileGaps;

@@ -10,12 +10,14 @@ import com.bytezone.utility.Utility;
 class FsDosMaster extends AbstractFileSystem
 // -----------------------------------------------------------------------------------//
 {
-  int[] slot = new int[8];
-  int[] drive = new int[8];
-  int[] partitionStart = new int[8];
-  int[] blocks = new int[8];
-  int[] partitionEnd = new int[8];
-  int[] volumes = new int[8];
+  private static final int MAX_PARTITIONS = 8;
+
+  int[] slot = new int[MAX_PARTITIONS];
+  int[] drive = new int[MAX_PARTITIONS];
+  int[] partitionStart = new int[MAX_PARTITIONS];
+  int[] blocks = new int[MAX_PARTITIONS];
+  int[] partitionEnd = new int[MAX_PARTITIONS];
+  int[] volumes = new int[MAX_PARTITIONS];
 
   boolean debug = false;
 
@@ -32,13 +34,13 @@ class FsDosMaster extends AbstractFileSystem
 
     analyse (buffer2);
 
-    for (int i = 0; i < 8; i++)
+    for (int i = 0; i < MAX_PARTITIONS; i++)
     {
       if (slot[i] == 0 || volumes[i] == 0)
         continue;
 
-      int offset = (partitionStart[i] + blocks[i]) * 512;
-      int diskLength = blocks[i] * 512;
+      int offset = (partitionStart[i] + blocks[i]) * ProdosConstants.BLOCK_SIZE;
+      int diskLength = blocks[i] * ProdosConstants.BLOCK_SIZE;
 
       for (int vol = 0; vol < volumes[i]; vol++)
       {
@@ -90,14 +92,14 @@ class FsDosMaster extends AbstractFileSystem
     if (debug)
       System.out.println ("#  S  D  ?   start     end   blocks  sectors  volumes");
 
-    for (int i = 0; i < 8; i++)          // 8 possible partitions (4 slots * 2 drives)
+    for (int i = 0; i < MAX_PARTITIONS; i++)        // 4 slots * 2 drives
     {
-      slot[i] = (buffer[ptr + i] & 0x70) >>> 4;      // ignore the drive bit
+      slot[i] = (buffer[ptr + i] & 0x70) >>> 4;     // ignore the drive bit
       if (slot[i] == 0)
         continue;
 
       drive[i] = i % 2;
-      int ndx = i / 2 * 2;                       // 0, 0, 2, 2, 4,  4,  6,  6
+      int ndx = i / 2 * 2;                          // 0, 0, 2, 2, 4, 4, 6, 6
 
       partitionStart[i] = Utility.unsignedShort (buffer, ptr + 8 + i * 2);
       partitionEnd[i] = Utility.unsignedShort (buffer, ptr + 24 + ndx);
@@ -117,6 +119,28 @@ class FsDosMaster extends AbstractFileSystem
 
   // ---------------------------------------------------------------------------------//
   @Override
+  public String getCatalogText ()
+  // ---------------------------------------------------------------------------------//
+  {
+    StringBuilder text = new StringBuilder ();
+
+    text.append ("#  S  D    start     end   blocks  sectors  volumes\n");
+
+    for (int i = 0; i < MAX_PARTITIONS; i++)
+    {
+      if (slot[i] == 0)
+        break;
+
+      text.append (String.format ("%d  %d  %d   %,6d  %,6d  %,6d   %,6d    %,4d %n", i,
+          slot[i], drive[i], partitionStart[i], partitionEnd[i], blocks[i], blocks[i] * 2,
+          volumes[i]));
+    }
+
+    return Utility.rtrim (text);
+  }
+
+  // ---------------------------------------------------------------------------------//
+  @Override
   public String toString ()
   // ---------------------------------------------------------------------------------//
   {
@@ -124,18 +148,18 @@ class FsDosMaster extends AbstractFileSystem
 
     text.append ("----- DOS Master ------\n");
 
-    for (int d = 0; d < 8; d++)
-      if (slot[d] > 0)
+    for (int i = 0; i < MAX_PARTITIONS; i++)
+      if (slot[i] > 0)
       {
-        formatText (text, "Partition", 2, d);
-        formatText (text, "Slot", 2, slot[d]);
-        formatText (text, "Drive", 2, drive[d]);
-        formatText (text, "Volumes", 2, volumes[d]);
-        formatText (text, "Vol start", 4, partitionStart[d]);
-        formatText (text, "Vol end", 4, partitionEnd[d]);
+        formatText (text, "Partition", 2, i);
+        formatText (text, "Slot", 2, slot[i]);
+        formatText (text, "Drive", 2, drive[i]);
+        formatText (text, "Volumes", 2, volumes[i]);
+        formatText (text, "Vol start", 4, partitionStart[i]);
+        formatText (text, "Vol end", 4, partitionEnd[i]);
 
-        String sectors = String.format ("(%d sectors)", blocks[d] * 2);
-        formatText (text, "Blocks", 4, blocks[d], sectors);
+        String sectors = String.format ("(%d sectors)", blocks[i] * 2);
+        formatText (text, "Blocks", 4, blocks[i], sectors);
         text.append ("\n");
       }
 

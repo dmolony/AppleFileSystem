@@ -48,6 +48,11 @@ public abstract class FsDos extends AbstractFileSystem
   List<AppleBlock> catalogSectors = new ArrayList<> ();
   List<CatalogEntry> catalogEntries = new ArrayList<> ();   // includes deleted files
 
+  enum FailType
+  {
+    DELETED, ERROR
+  }
+
   // ---------------------------------------------------------------------------------//
   FsDos (BlockReader blockReader, FileSystemType fileSystemType)
   // ---------------------------------------------------------------------------------//
@@ -216,27 +221,25 @@ public abstract class FsDos extends AbstractFileSystem
   }
 
   // ---------------------------------------------------------------------------------//
-  protected void addDeletedFile (byte[] buffer, int ptr, String fileName)
+  protected void addBadFile (byte[] buffer, int ptr, String fileName, FailType fail)
   // ---------------------------------------------------------------------------------//
   {
     int sectorCount = Utility.unsignedShort (buffer, ptr + 33);
     int fileType = buffer[ptr + 2] & 0x7F;
     boolean isLocked = (buffer[ptr + 2] & 0x80) != 0;
 
-    deletedFiles.add (String.format ("%s  %s  %03d  %s", isLocked ? "*" : " ",
-        getFileTypeText (fileType), sectorCount, fileName));
-  }
+    switch (fail)
+    {
+      case DELETED:
+        deletedFiles.add (String.format ("%s  %s  %03d  %s", isLocked ? "*" : " ",
+            getFileTypeText (fileType), sectorCount, fileName));
+        break;
 
-  // ---------------------------------------------------------------------------------//
-  protected void addFailedFile (byte[] buffer, int ptr, String fileName)
-  // ---------------------------------------------------------------------------------//
-  {
-    int sectorCount = Utility.unsignedShort (buffer, ptr + 33);
-    int fileType = buffer[ptr + 2] & 0x7F;
-    boolean isLocked = (buffer[ptr + 2] & 0x80) != 0;
-
-    failedFiles.add (String.format ("%s  %s  %03d  %s", isLocked ? "*" : " ",
-        getFileTypeText (fileType), sectorCount, fileName));
+      case ERROR:
+        failedFiles.add (String.format ("%s  %s  %03d  %s", isLocked ? "*" : " ",
+            getFileTypeText (fileType), sectorCount, fileName));
+        break;
+    }
   }
 
   // ---------------------------------------------------------------------------------//
