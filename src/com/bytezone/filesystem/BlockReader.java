@@ -413,6 +413,7 @@ public class BlockReader
     StringBuilder text = new StringBuilder ();
 
     formatText (text, "Name", name);
+    formatText (text, "Actual buffer length", 8, diskBuffer.data ().length);
     formatText (text, "File system offset", 8, diskBuffer.offset ());
     formatText (text, "File system length", 8, diskBuffer.length ());
     formatText (text, "Total blocks", 6, getTotalBlocks ());
