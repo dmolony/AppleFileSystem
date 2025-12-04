@@ -252,8 +252,9 @@ public class Utility
         freq[c]++;
         hexLine.append (String.format ("%02X ", c));
 
-        if (c > 127)
-          c -= c < 160 ? 64 : 128;
+        //        if (c > 127)
+        //          c -= c < 160 ? 64 : 128;
+        c &= 0x7F;
 
         if (c < 32 || c == 127)         // non-printable
           trans.append (".");

@@ -25,6 +25,7 @@ public class FileDosMaster extends AbstractAppleFile implements AppleContainer
   protected List<AppleFileSystem> fileSystems = new ArrayList<> ();
   protected List<AppleFile> files = new ArrayList<> ();
   protected List<AppleBlock> indexBlocks = new ArrayList<> ();
+  protected String helloProgram = "";
 
   byte[] dos33Buffer;
 
@@ -44,6 +45,7 @@ public class FileDosMaster extends AbstractAppleFile implements AppleContainer
     indexBlocks.add (dos33FirstBlock);
 
     dos33Buffer = dos33FirstBlock.getBuffer ();
+    helloProgram = Utility.getPascalString (dos33Buffer, 6);
     analyse (dos33Buffer);
 
     for (int i = 0; i < MAX_PARTITIONS; i++)
@@ -171,6 +173,10 @@ public class FileDosMaster extends AbstractAppleFile implements AppleContainer
       partitionStart[i] = Utility.unsignedShort (buffer, ptr + 8 + i * 2);
       partitionEnd[i] = Utility.unsignedShort (buffer, ptr + 24 + ndx);
       blocks[i] = Utility.unsignedShort (buffer, ptr + 32 + ndx);
+      //      int adrs = buffer[ptr + 40 + i] & 0xFF;
+      //      int adrs2 = Utility.unsignedShort (buffer, ptr + 40 + ndx);
+      //      System.out.printf ("%02X  %<d%n", adrs);
+      //      System.out.printf ("%04X  %<d%n", adrs2);
 
       if (partitionStart[i] > partitionEnd[i])      // no idea
         partitionStart[i] -= 0x10000;
@@ -187,6 +193,13 @@ public class FileDosMaster extends AbstractAppleFile implements AppleContainer
   // ---------------------------------------------------------------------------------//
   @Override
   public String getCatalogText ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return "";
+  }
+
+  // ---------------------------------------------------------------------------------//
+  public String getDebugText ()
   // ---------------------------------------------------------------------------------//
   {
     StringBuilder text = new StringBuilder ();
@@ -213,15 +226,28 @@ public class FileDosMaster extends AbstractAppleFile implements AppleContainer
 
     text.append ("\n");
 
-    String thing = Utility.getPascalString (dos33Buffer, 6);
-    text.append (thing);
+    text.append (Utility.getPascalString (dos33Buffer, 6));       // hello text
     text.append ("\n\n");
 
-    for (int i = 34; i < 104; i += 2)
+    for (int i = 38; i < 104; i += 2)
+    {
+      if (i == 0x38 || i == 0x40 || i == 0x50 || i == 0x58 || i == 0x60)
+        text.append ("\n");
       text.append (String.format ("%02X : %04X  %<,6d %n", i,
           Utility.unsignedShort (dos33Buffer, i)));
+    }
 
     return Utility.rtrim (text);
+  }
+
+  // ---------------------------------------------------------------------------------//
+  public Optional<AppleFile> getHelloProgram ()
+  // ---------------------------------------------------------------------------------//
+  {
+    if (!helloProgram.isEmpty () && fileSystems.size () > 0)
+      return fileSystems.get (0).getFile (helloProgram);
+
+    return Optional.empty ();
   }
 
   // ---------------------------------------------------------------------------------//
