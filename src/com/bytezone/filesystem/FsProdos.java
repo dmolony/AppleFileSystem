@@ -270,25 +270,25 @@ public class FsProdos extends AbstractFileSystem
         new BlockReader ("DosMaster", getBlockReader ().getDiskBuffer ());
     diskReader.setParameters (FileSystemFactory.prodos1);
 
-    if (false)
-    {
-      FsDosMaster afs = new FsDosMaster (diskReader, appleFile);
+    //    if (false)
+    //    {
+    //      FsDosMaster afs = new FsDosMaster (diskReader, appleFile);
+    //
+    //      if (afs != null && afs.getFileSystems ().size () > 0)
+    //      {
+    //        appleFile.embedFileSystem (afs);
+    //        return true;
+    //      }
+    //    }
+    //    else
+    //    {
+    FileDosMaster fileDosMaster =
+        new FileDosMaster (this, appleFile.getDataBlocks ().get (0));
+    files.add (fileDosMaster);
+    return true;
+    //    }
 
-      if (afs != null && afs.getFileSystems ().size () > 0)
-      {
-        appleFile.embedFileSystem (afs);
-        return true;
-      }
-    }
-    else
-    {
-      FileDosMaster fileDosMaster =
-          new FileDosMaster (this, appleFile.getDataBlocks ().get (0));
-      files.add (fileDosMaster);
-      return true;
-    }
-
-    return false;
+    //    return false;
   }
 
   // ---------------------------------------------------------------------------------//

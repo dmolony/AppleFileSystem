@@ -6,6 +6,7 @@ import java.util.List;
 
 import com.bytezone.utility.Utility;
 
+// Not used
 // -----------------------------------------------------------------------------------//
 class FsDosMaster extends AbstractFileSystem
 // -----------------------------------------------------------------------------------//
@@ -144,7 +145,7 @@ class FsDosMaster extends AbstractFileSystem
   public String toString ()
   // ---------------------------------------------------------------------------------//
   {
-    StringBuilder text = new StringBuilder ();
+    StringBuilder text = new StringBuilder (super.toString ());
 
     text.append ("----- DOS Master ------\n");
 

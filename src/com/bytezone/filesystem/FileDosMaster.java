@@ -24,10 +24,11 @@ public class FileDosMaster extends AbstractAppleFile implements AppleContainer
 
   protected List<AppleFileSystem> fileSystems = new ArrayList<> ();
   protected List<AppleFile> files = new ArrayList<> ();
-  protected List<AppleBlock> indexBlocks = new ArrayList<> ();
+  protected List<AppleBlock> allBlocks = new ArrayList<> ();
   protected String helloProgram = "";
 
-  byte[] dos33Buffer;
+  protected byte[] dos33Buffer;
+  protected AppleBlock dos33FirstBlock;
 
   boolean debug = false;
 
@@ -42,10 +43,12 @@ public class FileDosMaster extends AbstractAppleFile implements AppleContainer
     byte[] diskBuffer = br.getDiskBuffer ().data ();
     int dataPtr = br.getDiskBuffer ().offset ();
 
-    indexBlocks.add (dos33FirstBlock);
+    this.dos33FirstBlock = dos33FirstBlock;
+    //    indexBlocks.add (dos33FirstBlock);
 
     dos33Buffer = dos33FirstBlock.getBuffer ();
     helloProgram = Utility.getPascalString (dos33Buffer, 6);
+
     analyse (dos33Buffer);
 
     for (int i = 0; i < MAX_PARTITIONS; i++)
@@ -98,6 +101,8 @@ public class FileDosMaster extends AbstractAppleFile implements AppleContainer
         System.out.println (afs.getBlockReader ());
 
     isFolder = true;
+    allBlocks.addAll (dataBlocks);
+    allBlocks.add (dos33FirstBlock);
   }
 
   // ---------------------------------------------------------------------------------//
@@ -151,6 +156,14 @@ public class FileDosMaster extends AbstractAppleFile implements AppleContainer
     return true;
   }
 
+  // ---------------------------------------------------------------------------------//
+  @Override
+  public List<AppleBlock> getAllBlocks ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return allBlocks;
+  }
+
   // Based on REVISE.DM
   // ---------------------------------------------------------------------------------//
   private void analyse (byte[] buffer)
@@ -173,6 +186,7 @@ public class FileDosMaster extends AbstractAppleFile implements AppleContainer
       partitionStart[i] = Utility.unsignedShort (buffer, ptr + 8 + i * 2);
       partitionEnd[i] = Utility.unsignedShort (buffer, ptr + 24 + ndx);
       blocks[i] = Utility.unsignedShort (buffer, ptr + 32 + ndx);
+
       //      int adrs = buffer[ptr + 40 + i] & 0xFF;
       //      int adrs2 = Utility.unsignedShort (buffer, ptr + 40 + ndx);
       //      System.out.printf ("%02X  %<d%n", adrs);
@@ -311,9 +325,12 @@ public class FileDosMaster extends AbstractAppleFile implements AppleContainer
   public String toString ()
   // ---------------------------------------------------------------------------------//
   {
-    StringBuilder text = new StringBuilder ();
+    StringBuilder text = new StringBuilder (super.toString ());
 
-    text.append ("----- DOS Master ------\n");
+    text.append ("\n----- DOS Master ------\n");
+    formatText (text, "Dos33 First Block", 4, dos33FirstBlock.getBlockNo ());
+    formatText (text, "Hello Program", helloProgram);
+    text.append ("\n");
 
     for (int i = 0; i < MAX_PARTITIONS; i++)
       if (slot[i] > 0)

@@ -9,7 +9,6 @@ import java.util.Optional;
 // FileProdosGS
 // FilePascalCode
 // FilePascalSegment
-// FileDosMaster
 // -----------------------------------------------------------------------------------//
 public interface AppleContainer
 // -----------------------------------------------------------------------------------//
