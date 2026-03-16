@@ -628,6 +628,16 @@ public class Utility
       default -> String.format ("%08X %<,11d", value);
     };
 
+    if (value < 0)
+      if (size == 2)
+        out = "      " + out.substring (12);
+      else if (size == 4)
+        out = "      " + out.substring (14);
+      else if (size == 6)
+        out = "      " + out.substring (16);
+
+    //    System.out.printf ("[%s]%n", out);
+
     return String.format ("%s %s", makeLabel (label), out);
   }
 

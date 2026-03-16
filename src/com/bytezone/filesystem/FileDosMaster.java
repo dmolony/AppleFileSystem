@@ -44,7 +44,6 @@ public class FileDosMaster extends AbstractAppleFile implements AppleContainer
     int dataPtr = br.getDiskBuffer ().offset ();
 
     this.dos33FirstBlock = dos33FirstBlock;
-    //    indexBlocks.add (dos33FirstBlock);
 
     dos33Buffer = dos33FirstBlock.getBuffer ();
     helloProgram = Utility.getPascalString (dos33Buffer, 6);
@@ -101,6 +100,7 @@ public class FileDosMaster extends AbstractAppleFile implements AppleContainer
         System.out.println (afs.getBlockReader ());
 
     isFolder = true;
+
     allBlocks.addAll (dataBlocks);
     allBlocks.add (dos33FirstBlock);
   }

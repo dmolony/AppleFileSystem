@@ -81,6 +81,6 @@ public abstract class CatalogEntryDos extends CatalogEntry
       formatText (text, "Sector count", 2, sectorCount);
     }
 
-    return text.toString ();
+    return Utility.rtrim (text);
   }
 }

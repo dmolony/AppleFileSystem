@@ -129,13 +129,6 @@ public class BlockReader
     this.name = Objects.requireNonNull (correctName, "Name is null");
   }
 
-  // ---------------------------------------------------------------------------------//
-  //  boolean byteAt (int offset, byte magic)
-  //  // ---------------------------------------------------------------------------------//
-  //  {
-  //    return diskBuffer.data ()[diskBuffer.offset () + offset] == magic;
-  //  }
-
   // this routine always reads the block (in order to set block type)
   // ---------------------------------------------------------------------------------//
   public AppleBlock getBlock (AppleFileSystem fs, int blockNo)

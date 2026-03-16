@@ -335,7 +335,8 @@ public class FsProdos extends AbstractFileSystem
     //    else
     //    {
     //      FileProdos file = (FileProdos) appleFile;
-    //      deleteCatalogEntry (file.parentCatalogBlock, file.parentCatalogPtr, file.fileEntry);
+    //      deleteCatalogEntry (file.parentCatalogBlock, 
+    //                       file.parentCatalogPtr, file.fileEntry);
     //    }
 
     FileProdos fileProdos = (FileProdos) appleFile;
