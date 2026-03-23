@@ -29,6 +29,7 @@ class DirectoryHeaderProdos
   protected final int entryLength;
   protected final int entriesPerBlock;
   protected final String reserved;
+  protected final String dateBytes;
 
   int fileCount;                  // modified if a file is added or deleted
 
@@ -68,6 +69,7 @@ class DirectoryHeaderProdos
     reserved = Utility.formatRaw (buffer, 0x14, 7);
 
     created = Utility.getAppleDate (buffer, 0x1C);
+    dateBytes = dateBytes (buffer, 0x1C);
     dateCreated = created == null ? NO_DATE : created.format (df);
     timeCreated = created == null ? "" : created.format (tf);
 
@@ -145,10 +147,9 @@ class DirectoryHeaderProdos
   }
 
   // ---------------------------------------------------------------------------------//
-  private String dateBytes (int ptr)
+  private String dateBytes (byte[] buffer, int ptr)
   // ---------------------------------------------------------------------------------//
   {
-    byte[] buffer = catalogBlocks.get (0).getBuffer ();
     StringBuilder text = new StringBuilder ();
 
     for (int i = 0; i < 4; i++)
@@ -177,7 +178,7 @@ class DirectoryHeaderProdos
     formatText (text, "File name", fileName);
     formatText (text, "Reserved", 2, folderType, message);
     formatText (text, "Reserved", reserved);
-    formatText (text, "Created", dateBytes (0x1C), dateCreated, timeCreated);
+    formatText (text, "Created", dateBytes, dateCreated, timeCreated);
     formatText (text, "Version", 2, version);
     formatText (text, "Min version", 2, minVersion);
     formatText (text, "Access", 2, access, Utility.getAccessText (access));
