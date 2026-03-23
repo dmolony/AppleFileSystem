@@ -21,7 +21,6 @@ class DirectoryHeaderProdos
   private static final DateTimeFormatter tf = DateTimeFormatter.ofPattern ("H:mm");
   private static final String NO_DATE = "<NO DATE>";
 
-  //  int firstCatalogBlock;
   protected final String fileName;
   protected final int storageType;
   protected final int version;
@@ -44,7 +43,7 @@ class DirectoryHeaderProdos
   final String dateCreated, timeCreated;
   final String storageTypeText;
 
-  final List<AppleBlock> catalogBlocks = new ArrayList<AppleBlock> ();
+  final List<AppleBlock> catalogBlocks = new ArrayList<> ();
 
   // Either a Volume Directory Header or Subdirectory Header. It is the first of up to
   // 13 entries in the first directory block. The Volume Directory always has exactly
