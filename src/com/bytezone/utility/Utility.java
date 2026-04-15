@@ -308,6 +308,16 @@ public class Utility
   }
 
   // ---------------------------------------------------------------------------------//
+  public static void writeString (String text, byte[] buffer, int offset, int length)
+  // ---------------------------------------------------------------------------------//
+  {
+    writeString (text, buffer, offset);
+
+    for (int i = offset + text.length (); i < offset + length; i++)
+      buffer[i] = 32;
+  }
+
+  // ---------------------------------------------------------------------------------//
   public static void writePascalString (String text, byte[] buffer, int offset)
   // ---------------------------------------------------------------------------------//
   {
@@ -449,6 +459,17 @@ public class Utility
     }
 
     return null;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  public static void putAppleDate (LocalDateTime dateTime, byte[] buffer, int offset)
+  // ---------------------------------------------------------------------------------//
+  {
+    int val = dateTime.getYear () << 9 | dateTime.getMonthValue () << 5
+        | dateTime.getDayOfYear ();
+    Utility.writeShort (buffer, offset, val);
+    buffer[offset + 2] = (byte) dateTime.getMinute ();
+    buffer[offset + 3] = (byte) dateTime.getHour ();
   }
 
   // ---------------------------------------------------------------------------------//

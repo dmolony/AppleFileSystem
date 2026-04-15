@@ -137,8 +137,12 @@ public class FilePascal extends AbstractAppleFile
   public String getCatalogLine ()
   // ---------------------------------------------------------------------------------//
   {
-    return String.format ("%4d   %-15s   %-4s   %8s  %,7d   %4d   %4d", getTotalBlocks (),
-        getFileName (), getFileTypeText (), getDate ().format (dtf), getFileLength (),
+    //    return String.format ("%4d   %-15s   %-4s   %8s  %,7d   %4d   %4d", getTotalBlocks (),
+    //        getFileName (), getFileTypeText (), getDate ().format (dtf), getFileLength (),
+    //        getFirstBlock (), getLastBlock ());
+
+    return String.format ("%-15s   %-4s   %4d   %8s  %,7d   %4d   %4d", getFileName (),
+        getFileTypeText (), getTotalBlocks (), getDate ().format (dtf), getFileLength (),
         getFirstBlock (), getLastBlock ());
   }
 
