@@ -84,6 +84,13 @@ public class FolderProdos extends AbstractAppleFile implements AppleContainer
   }
 
   // ---------------------------------------------------------------------------------//
+  public String getHeaderName ()
+  // ---------------------------------------------------------------------------------//
+  {
+    return directoryEntry.fileName;
+  }
+
+  // ---------------------------------------------------------------------------------//
   @Override
   public List<AppleBlock> getAllBlocks ()
   // ---------------------------------------------------------------------------------//
