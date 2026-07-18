@@ -1,5 +1,8 @@
 package com.bytezone.filesystem;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.bytezone.filesystem.AppleBlock.BlockType;
 import com.bytezone.utility.Utility;
 
@@ -72,6 +75,80 @@ public class FsDos3 extends FsDos
 
     if (debug)
       System.out.printf ("found %d catalog sectors%n", catalogSectors.size ());
+
+    if (false)
+      showDosBits ();
+  }
+
+  // ---------------------------------------------------------------------------------//
+  private void showDosBits ()
+  // ---------------------------------------------------------------------------------//
+  {
+    AppleBlock dosBlock = getSector (2, 2);
+    byte[] buffer = readBlock (dosBlock);
+    String s = Utility.string (buffer, 0xA7, 8);
+    if (s.equals ("TIABSRAB"))
+    {
+      s = Utility.string (buffer, 0xAF, 12);          // "DISK VOLUME "
+      StringBuilder text = new StringBuilder (s);
+      System.out.println (text.reverse ());
+    }
+
+    System.out.println ();
+
+    List<AppleBlock> blocks = new ArrayList<AppleBlock> ();
+    blocks.add (getSector (1, 7));
+    blocks.add (getSector (1, 8));
+    blocks.add (getSector (1, 9));
+    blocks.add (getSector (1, 10));
+    buffer = readBlocks (blocks);
+
+    // DOS commands
+    int ptr = 0x84;
+    while (true)
+    {
+      String cmd = getText (buffer, ptr);
+      if (cmd.length () == 0)
+        break;
+      System.out.println (cmd);
+      ptr += cmd.length ();
+    }
+
+    System.out.println ();
+
+    // error messages
+    ptr = 0x174;
+    while (true)
+    {
+      String cmd = getText (buffer, ptr);
+      if (cmd.length () == 0)
+        break;
+      System.out.println (cmd);
+      ptr += cmd.length ();
+    }
+
+    System.out.println ();
+
+    // startup program
+    String hello = Utility.string (buffer, 0x275, 32).trim ();
+    System.out.println (hello);
+  }
+
+  // ---------------------------------------------------------------------------------//
+  private String getText (byte[] buffer, int ptr)
+  // ---------------------------------------------------------------------------------//
+  {
+    StringBuilder text = new StringBuilder ();
+    int val;
+
+    while ((val = buffer[ptr++] & 0xFF) != 0)
+    {
+      text.append ((char) (val & 0x7F));
+      if ((val & 0x80) != 0)
+        break;
+    }
+
+    return text.toString ();
   }
 
   // ---------------------------------------------------------------------------------//
