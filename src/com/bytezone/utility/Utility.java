@@ -2,6 +2,8 @@ package com.bytezone.utility;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.math.BigDecimal;
+import java.math.MathContext;
 import java.time.DateTimeException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -21,6 +23,7 @@ public class Utility
   private static String[] hex =
       { "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "A", "B", "C", "D", "E", "F" };
   private static final int MAX_SHORT = 0xFFFF;
+  private static MathContext mathContext = new MathContext (9);
 
   public static final List<String> suffixes = List.of ("po", "dsk", "do", "hdv", "2mg",
       "d13", "sdk", "shk", "bxy", "bny", "bqy", "lbr", "woz", "img", "dimg", "zip", "gz");
@@ -77,10 +80,35 @@ public class Utility
   }
 
   // ---------------------------------------------------------------------------------//
+  public static int unsignedShortBigEndian (byte[] buffer, int ptr)
+  // ---------------------------------------------------------------------------------//
+  {
+    try
+    {
+      return (buffer[ptr + 1] & 0xFF) | (buffer[ptr] & 0xFF) << 8;
+    }
+    catch (ArrayIndexOutOfBoundsException e)
+    {
+      System.out.printf ("Index out of range (unsignedShortBigEndian): %d > %d%n", ptr,
+          buffer.length);
+      return 0;
+    }
+  }
+
+  // ---------------------------------------------------------------------------------//
   public static int signedShort (byte[] buffer, int ptr)
   // ---------------------------------------------------------------------------------//
   {
     int val = unsignedShort (buffer, ptr);
+
+    return ((val & 0x8000) == 0) ? val : val - MAX_SHORT - 1;
+  }
+
+  // ---------------------------------------------------------------------------------//
+  public static int signedShortBigEndian (byte[] buffer, int ptr)
+  // ---------------------------------------------------------------------------------//
+  {
+    int val = unsignedShortBigEndian (buffer, ptr);
 
     return ((val & 0x8000) == 0) ? val : val - MAX_SHORT - 1;
   }
@@ -123,22 +151,6 @@ public class Utility
   }
 
   // ---------------------------------------------------------------------------------//
-  public static int unsignedShortBigEndian (byte[] buffer, int ptr)
-  // ---------------------------------------------------------------------------------//
-  {
-    try
-    {
-      return (buffer[ptr + 1] & 0xFF) | (buffer[ptr] & 0xFF) << 8;
-    }
-    catch (ArrayIndexOutOfBoundsException e)
-    {
-      System.out.printf ("Index out of range (unsignedShortBigEndian): %d > %d%n", ptr,
-          buffer.length);
-      return 0;
-    }
-  }
-
-  // ---------------------------------------------------------------------------------//
   public static int unsignedIntBigEndian (byte[] buffer, int ptr)
   // ---------------------------------------------------------------------------------//
   {
@@ -157,6 +169,31 @@ public class Utility
           buffer.length);
       return 0;
     }
+  }
+
+  // Applesoft float routine
+  // ---------------------------------------------------------------------------------//
+  public static double floatValue (byte[] buffer, int ptr)
+  // ---------------------------------------------------------------------------------//
+  {
+    int exponent = buffer[ptr] & 0x7F;                      // biased 128
+    if (exponent == 0)
+      return 0.0;
+
+    int mantissa = (buffer[ptr + 1] & 0x7F) << 24 | (buffer[ptr + 2] & 0xFF) << 16
+        | (buffer[ptr + 3] & 0xFF) << 8 | (buffer[ptr + 4] & 0xFF);
+    boolean negative = (buffer[ptr + 1] & 0x80) != 0;
+    double value = 0.5;
+
+    for (int i = 2, weight = 0x40_00_00_00; i <= 32; i++, weight >>>= 1)
+      if ((mantissa & weight) > 0)
+        value += Math.pow (0.5, i);
+
+    value *= Math.pow (2, exponent);
+    BigDecimal bd = new BigDecimal (value);
+    double rounded = bd.round (mathContext).doubleValue ();
+
+    return negative ? rounded * -1 : rounded;
   }
 
   // ---------------------------------------------------------------------------------//
