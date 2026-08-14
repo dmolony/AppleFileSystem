@@ -493,8 +493,16 @@ public abstract class FileDos extends AbstractAppleFile
   // ---------------------------------------------------------------------------------//
   {
     int loadAddress = getLoadAddress ();
-    return loadAddress == 0 || loadAddress == 0x801 ? ""
-        : String.format ("$%4X", loadAddress);
+
+    if (catalogEntry.fileType == FsDos.FILE_TYPE_BINARY)
+      return String.format ("$%4X", loadAddress);
+    if (catalogEntry.fileType == FsDos.FILE_TYPE_APPLESOFT)
+      if (loadAddress != 0x801)
+        return String.format ("$%4X", loadAddress);
+      else
+        return "";
+
+    return loadAddress == 0 ? "" : String.format ("$%4X", loadAddress);
   }
 
   // Used by Dos3 and Dos4 when building a catalog line.
@@ -502,7 +510,14 @@ public abstract class FileDos extends AbstractAppleFile
   protected String getLengthText ()
   // ---------------------------------------------------------------------------------//
   {
-    return getFileLength () == 0 ? "" : String.format ("$%5X %<,7d", getFileLength ());
+    int length = getFileLength ();
+    if (catalogEntry.fileType == FsDos.FILE_TYPE_APPLESOFT
+        || catalogEntry.fileType == FsDos.FILE_TYPE_INTEGER_BASIC)
+      length -= 2;
+    else if (catalogEntry.fileType == FsDos.FILE_TYPE_BINARY)
+      length -= 4;
+
+    return length == 0 ? "" : String.format ("$%5X %<,7d", length);
   }
 
   // Used by Dos3 and Dos4 when building a catalog line.
