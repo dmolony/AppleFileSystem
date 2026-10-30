@@ -321,10 +321,26 @@ public class Utility
   }
 
   // ---------------------------------------------------------------------------------//
+  public static String hexString (byte[] buffer, int ptr, int length)
+  // ---------------------------------------------------------------------------------//
+  {
+    StringBuilder text = new StringBuilder ();
+
+    for (int i = 0; i < length; i++)
+    {
+      int c = buffer[ptr + i] & 0xFF;
+      text.append (String.format ("%02X ", c));
+    }
+
+    return text.toString ();
+  }
+
+  // ---------------------------------------------------------------------------------//
   public static String string (byte[] buffer, int ptr, int length)
   // ---------------------------------------------------------------------------------//
   {
     StringBuilder text = new StringBuilder ();
+
     for (int i = 0; i < length; i++)
     {
       int c = buffer[ptr + i] & 0x7F;
@@ -498,6 +514,7 @@ public class Utility
     return null;
   }
 
+  // why are there two of these?
   // ---------------------------------------------------------------------------------//
   public static void putAppleDate (LocalDateTime dateTime, byte[] buffer, int offset)
   // ---------------------------------------------------------------------------------//
@@ -507,6 +524,36 @@ public class Utility
     Utility.writeShort (buffer, offset, val);
     buffer[offset + 2] = (byte) dateTime.getMinute ();
     buffer[offset + 3] = (byte) dateTime.getHour ();
+  }
+
+  // why are there two of these?
+  // ---------------------------------------------------------------------------------//
+  public static void putAppleDate (byte[] buffer, int offset, LocalDateTime date)
+  // ---------------------------------------------------------------------------------//
+  {
+    if (date == null)
+    {
+      for (int i = 0; i < 4; i++)
+        buffer[offset + i] = 0;
+    }
+    else
+    {
+      int year = date.getYear ();
+      int month = date.getMonthValue ();
+      int day = date.getDayOfMonth ();
+      int hour = date.getHour ();
+      int minute = date.getMinute ();
+
+      if (year < 2000)
+        year -= 1900;
+      else
+        year -= 2000;
+
+      int val1 = year << 9 | month << 5 | day;
+      writeShort (buffer, offset, val1);
+      buffer[offset + 2] = (byte) minute;
+      buffer[offset + 3] = (byte) hour;
+    }
   }
 
   // ---------------------------------------------------------------------------------//
@@ -556,30 +603,6 @@ public class Utility
     }
 
     return Optional.empty ();
-  }
-
-  // ---------------------------------------------------------------------------------//
-  public static void putAppleDate (byte[] buffer, int offset, LocalDateTime date)
-  // ---------------------------------------------------------------------------------//
-  {
-    if (date != null)
-    {
-      int year = date.getYear ();
-      int month = date.getMonthValue ();
-      int day = date.getDayOfMonth ();
-      int hour = date.getHour ();
-      int minute = date.getMinute ();
-
-      if (year < 2000)
-        year -= 1900;
-      else
-        year -= 2000;
-
-      int val1 = year << 9 | month << 5 | day;
-      writeShort (buffer, offset, val1);
-      buffer[offset + 2] = (byte) minute;
-      buffer[offset + 3] = (byte) hour;
-    }
   }
 
   // ---------------------------------------------------------------------------------//

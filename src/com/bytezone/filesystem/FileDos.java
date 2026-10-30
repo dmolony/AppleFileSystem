@@ -513,9 +513,11 @@ public abstract class FileDos extends AbstractAppleFile
     int length = getFileLength ();
     if (catalogEntry.fileType == FsDos.FILE_TYPE_APPLESOFT
         || catalogEntry.fileType == FsDos.FILE_TYPE_INTEGER_BASIC)
-      length -= 2;
+      length -= 2;        // file length
     else if (catalogEntry.fileType == FsDos.FILE_TYPE_BINARY)
-      length -= 4;
+      length -= 4;        // load address and file length
+    else if (catalogEntry.fileType == FsDos.FILE_TYPE_RELOCATABLE)
+      length -= 6;        // load address, file length and length w/o index table
 
     return length == 0 ? "" : String.format ("$%5X %<,7d", length);
   }
@@ -573,6 +575,7 @@ public abstract class FileDos extends AbstractAppleFile
     text.append ("\n");
     text.append (catalogEntry);
 
+    text.append ("\n");
     formatText (text, "Index blocks", 4, indexBlocks.size ());
     formatText (text, "Load address", 4, loadAddress);
 

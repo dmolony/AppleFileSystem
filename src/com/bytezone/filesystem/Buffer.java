@@ -31,6 +31,7 @@ public record Buffer (byte[] data, int offset, int length)
     return data == other.data && offset == other.offset && length == other.length;
   }
 
+  // Create a new byte[] and copy the Buffer.data into it.
   // ---------------------------------------------------------------------------------//
   public byte[] copyData ()
   // ---------------------------------------------------------------------------------//
@@ -48,6 +49,7 @@ public record Buffer (byte[] data, int offset, int length)
     return new Buffer (copyData (), 0, length);
   }
 
+  // Match a sequence of bytes
   // ---------------------------------------------------------------------------------//
   public boolean isMagic (int offset, byte[] magic)
   // ---------------------------------------------------------------------------------//
@@ -55,6 +57,7 @@ public record Buffer (byte[] data, int offset, int length)
     return Utility.isMagic (data, this.offset + offset, magic);
   }
 
+  // Match a single byte
   // ---------------------------------------------------------------------------------//
   public boolean byteAt (int offset, byte magic)
   // ---------------------------------------------------------------------------------//
